@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<Import Project="Directory.Build.props" />
+	<Target Name="SetPlatform" BeforeTargets="CoreCompile">
+		<PropertyGroup>
+			<PlatformTarget>AnyCPU</PlatformTarget>
+		</PropertyGroup>
+	</Target>
+	<!--删除来自游戏本地的引用（不复制本地）-->
+	<!--Delete reference from ONI game file(don't copy locak)-->
+
+	<Target Name="ClearGameFolderCopyLocal" AfterTargets="ResolveAssemblyReferences">
+		<ItemGroup>
+			<ReferenceCopyLocalPaths Remove="$(GameFolderActive)\*" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="CopyArtifactsToInstallFolder" AfterTargets="Build">
+		<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+			<RootInstallFolder>..\Release\$(ProjectName)</RootInstallFolder>
+		</PropertyGroup>
+		<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+			<RootInstallFolder>$(ModFolder)\$(ProjectName)</RootInstallFolder>
+		</PropertyGroup>
+		<PropertyGroup>
+			<InstallFolder>$(RootInstallFolder)$(ArchivedVersionPath)</InstallFolder>
+		</PropertyGroup>
+
+		<PropertyGroup>
+			<OutputFolder>$(ProjectDir)</OutputFolder>
+		</PropertyGroup>
+		<PropertyGroup Condition="Exists('$(ProjectDir)\out')">
+			<OutputFolder>$(ProjectDir)\out</OutputFolder>
+		</PropertyGroup>
+
+		<!--在生成目录或者项目目录下查找PLib.dll文件-->
+		<!--Find PLib.dll at TargetPath or project path-->
+		<PropertyGroup>
+			<PLibFolder>$(ProjectDir)\..\libs\PLibCore.dll</PLibFolder>
+		</PropertyGroup>
+		<PropertyGroup Condition="Exists('$(OutputFolder)\PLibCore.dll')">
+			<PLibFolder>$(OutputFolder)\PLib.dll</PLibFolder>
+		</PropertyGroup>
+
+		<ItemGroup>
+			<AnimFiles Include="$(ProjectDir)\anim\**\*.*" />
+			<AssetsFiles Include="$(ProjectDir)\assets\**\*.*" />
+			<TranslationFiles Include="$(ProjectDir)\translations\*.*" />
+			<WorldGenFiles Include="$(ProjectDir)\worldgen\**\*.*" />
+			<WorldGenTemplates Include="$(ProjectDir)\templates\**\*.*" />
+			<YamlFiles Include="$(ProjectDir)\*.yaml" />
+			<PLibFiles Include="$(PLibFolder)" />
+		</ItemGroup>
+
+		<!--InstallFolder是Mods路径下的Dev文件夹-->
+		<!--InstallFolder is path to Mods\Dev-->
+		<Copy SourceFiles="@(AnimFiles)" DestinationFiles="@(AnimFiles->'$(InstallFolder)\anim\%(RecursiveDir)%(Filename)%(Extension)')" />
+		<Copy SourceFiles="@(AssetsFiles)" DestinationFiles="@(AssetsFiles->'$(InstallFolder)\assets\%(RecursiveDir)%(Filename)%(Extension)')" />
+		<Copy SourceFiles="@(TranslationFiles)" DestinationFolder="$(InstallFolder)\translations" />
+		<Copy SourceFiles="@(WorldGenFiles)" DestinationFiles="@(WorldGenFiles->'$(InstallFolder)\worldgen\%(RecursiveDir)%(Filename)%(Extension)')" />
+		<Copy SourceFiles="@(WorldGenTemplates)" DestinationFiles="@(WorldGenTemplates->'$(InstallFolder)\templates\%(RecursiveDir)%(Filename)%(Extension)')" />
+		<Copy SourceFiles="@(YamlFiles)" DestinationFolder="$(InstallFolder)" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFiles="$(InstallFolder)\$(TargetFileName)" />
+		<Copy SourceFiles="@(PLibFiles)" DestinationFolder="$(InstallFolder)" Condition=" Exists(@(PLibFiles))"/>
+
+		<Message Text="===== Publish To Mod Dev Folder: $(InstallFolder) =====" Importance="High" />
+	</Target>
+</Project>

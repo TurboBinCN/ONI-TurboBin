@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    <!-- 核心配置：移除所有元数据依赖，极简写法 -->
+    <ItemDefinitionGroup>
+        <!-- 设置为False可以不把依赖复制到生成路径 -->
+        <Reference Private="False" />
+    </ItemDefinitionGroup>
+
+    <PropertyGroup>
+		<LangVersion>9.0</LangVersion>
+        <!-- 1. 核心路径变量：游戏DLL目录 -->
+		<ModFolder>C:\Users\Administrator\Documents\Klei\OxygenNotIncluded\mods\dev</ModFolder>
+        <GameFolderActive>G:\Program Files (x86)\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed</GameFolderActive>
+    </PropertyGroup>
+
+    <!-- 2. 直接添加程序集引用（硬编码路径，无元数据依赖） -->
+    <ItemGroup>
+        <Reference Include="Assembly-CSharp" Condition="Exists('$(GameFolderActive)\Assembly-CSharp.dll')">
+            <HintPath>$(GameFolderActive)\Assembly-CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="Assembly-CSharp-firstpass" Condition="Exists('$(GameFolderActive)\Assembly-CSharp-firstpass.dll')">
+            <HintPath>$(GameFolderActive)\Assembly-CSharp-firstpass.dll</HintPath>
+        </Reference>
+        <Reference Include="0Harmony" Condition="Exists('$(GameFolderActive)\0Harmony.dll')">
+            <HintPath>$(GameFolderActive)\0Harmony.dll</HintPath>
+        </Reference>
+        <Reference Include="FMODUnity" Condition="Exists('$(GameFolderActive)\FMODUnity.dll')">
+            <HintPath>$(GameFolderActive)\FMODUnity.dll</HintPath>
+        </Reference>
+        <Reference Include="Newtonsoft.Json" Condition="Exists('$(GameFolderActive)\Newtonsoft.Json.dll')">
+            <HintPath>$(GameFolderActive)\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine" Condition="Exists('$(GameFolderActive)\UnityEngine.dll')">
+            <HintPath>$(GameFolderActive)\UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule" Condition="Exists('$(GameFolderActive)\UnityEngine.CoreModule.dll')">
+            <HintPath>$(GameFolderActive)\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ImageConversionModule" Condition="Exists('$(GameFolderActive)\UnityEngine.ImageConversionModule.dll')">
+            <HintPath>$(GameFolderActive)\UnityEngine.ImageConversionModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.InputLegacyModule" Condition="Exists('$(GameFolderActive)\UnityEngine.InputLegacyModule.dll')">
+            <HintPath>$(GameFolderActive)\UnityEngine.InputLegacyModule.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.TextMeshPro" Condition="Exists('$(GameFolderActive)\Unity.TextMeshPro.dll')">
+            <HintPath>$(GameFolderActive)\Unity.TextMeshPro.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.TextRenderingModule" Condition="Exists('$(GameFolderActive)\UnityEngine.TextRenderingModule.dll')">
+            <HintPath>$(GameFolderActive)\UnityEngine.TextRenderingModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UI" Condition="Exists('$(GameFolderActive)\UnityEngine.UI.dll')">
+            <HintPath>$(GameFolderActive)\UnityEngine.UI.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UIModule" Condition="Exists('$(GameFolderActive)\UnityEngine.UIModule.dll')">
+            <HintPath>$(GameFolderActive)\UnityEngine.UIModule.dll</HintPath>
+        </Reference>
+		<Reference Include="UnityEngine.AssetBundleModule" Condition="Exists('$(GameFolderActive)\UnityEngine.AssetBundleModule.dll')">
+			<HintPath>$(GameFolderActive)\UnityEngine.AssetBundleModule.dll</HintPath>
+		</Reference>
+    </ItemGroup>
+
+    <!-- 3. 直接添加分析器引用（硬编码路径，无元数据依赖） -->
+    <ItemGroup>
+        <Analyzer Include="$(GameFolderActive)\Assembly-CSharp.dll" Condition="Exists('$(GameFolderActive)\Assembly-CSharp.dll')" />
+        <Analyzer Include="$(GameFolderActive)\Assembly-CSharp-firstpass.dll" Condition="Exists('$(GameFolderActive)\Assembly-CSharp-firstpass.dll')" />
+        <Analyzer Include="$(GameFolderActive)\0Harmony.dll" Condition="Exists('$(GameFolderActive)\0Harmony.dll')" />
+        <Analyzer Include="$(GameFolderActive)\FMODUnity.dll" Condition="Exists('$(GameFolderActive)\FMODUnity.dll')" />
+        <Analyzer Include="$(GameFolderActive)\Newtonsoft.Json.dll" Condition="Exists('$(GameFolderActive)\Newtonsoft.Json.dll')" />
+        <Analyzer Include="$(GameFolderActive)\UnityEngine.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.dll')" />
+        <Analyzer Include="$(GameFolderActive)\UnityEngine.CoreModule.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.CoreModule.dll')" />
+        <Analyzer Include="$(GameFolderActive)\UnityEngine.ImageConversionModule.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.ImageConversionModule.dll')" />
+        <Analyzer Include="$(GameFolderActive)\UnityEngine.InputLegacyModule.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.InputLegacyModule.dll')" />
+        <Analyzer Include="$(GameFolderActive)\Unity.TextMeshPro.dll" Condition="Exists('$(GameFolderActive)\Unity.TextMeshPro.dll')" />
+        <Analyzer Include="$(GameFolderActive)\UnityEngine.TextRenderingModule.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.TextRenderingModule.dll')" />
+        <Analyzer Include="$(GameFolderActive)\UnityEngine.UI.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.UI.dll')" />
+        <Analyzer Include="$(GameFolderActive)\UnityEngine.UIModule.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.UIModule.dll')" />
+		<Analyzer Include="$(GameFolderActive)\UnityEngine.AssetBundleModule.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.AssetBundleModule.dll')" />
+	</ItemGroup>
+
+    <!-- 4. 路径检查Target（仅用内置变量，无自定义元数据） -->
+    <Target Name="CheckAnalyzerPaths" BeforeTargets="CoreCompile">
+        <!-- 兜底日志：验证Target触发 -->
+        <Message Text="===== Analyzer Path Check START =====" Importance="High" />
+        <Message Text="GameFolderActive: $(GameFolderActive)" Importance="High" />
+
+        <Message Text="===== Analyzer Path Check END =====" Importance="High" />
+    </Target>
+</Project>

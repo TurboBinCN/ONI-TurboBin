@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36717.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ONI-TurboBin", "ONI-TurboBin\ONI-TurboBin.csproj", "{BD07949E-FF85-43C7-95E5-027D35977156}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransferPort", "TransferPort\TransferPort.csproj", "{5115CCAB-E700-419A-B9E7-A0E0A6889B52}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BD07949E-FF85-43C7-95E5-027D35977156}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD07949E-FF85-43C7-95E5-027D35977156}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD07949E-FF85-43C7-95E5-027D35977156}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD07949E-FF85-43C7-95E5-027D35977156}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5115CCAB-E700-419A-B9E7-A0E0A6889B52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5115CCAB-E700-419A-B9E7-A0E0A6889B52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5115CCAB-E700-419A-B9E7-A0E0A6889B52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5115CCAB-E700-419A-B9E7-A0E0A6889B52}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ED760890-884C-44BC-A7F4-8AD5D4A27690}
+	EndGlobalSection
+EndGlobal

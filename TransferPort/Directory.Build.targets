@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<Import Project="$(SolutionDir)Directory.Build.targets" />
+	<Target Name="CopyProjectToDev" DependsOnTargets="CopyArtifactsToInstallFolder" AfterTargets="CopyArtifactsToInstallFolder">
+
+		<PropertyGroup>
+			<JsonFile>$(ProjectDir)..\libs\Hjson.dll</JsonFile>
+		</PropertyGroup>
+		
+		<ItemGroup>
+			<JsonFiles Include="$(JsonFile)"/>
+		</ItemGroup>
+		<Copy SourceFiles="@(JsonFiles)" DestinationFolder="$(InstallFolder)" Condition=" Exists(@(JsonFiles))"/>
+		<Message Text="=====(CopyProjectToDev) Publish To Mod Dev Folder: $(InstallFolder) =====" Importance="High" />
+	</Target>
+</Project>

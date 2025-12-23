@@ -1,0 +1,6 @@
+E:\oni_mods\ONI-TurboBin\TransferPort\bin\Debug\TransferPort.dll
+E:\oni_mods\ONI-TurboBin\TransferPort\bin\Debug\TransferPort.pdb
+E:\oni_mods\ONI-TurboBin\TransferPort\obj\Debug\TransferPort.csproj.AssemblyReference.cache
+E:\oni_mods\ONI-TurboBin\TransferPort\obj\Debug\TransferPort.csproj.CoreCompileInputs.cache
+E:\oni_mods\ONI-TurboBin\TransferPort\obj\Debug\TransferPort.dll
+E:\oni_mods\ONI-TurboBin\TransferPort\obj\Debug\TransferPort.pdb
