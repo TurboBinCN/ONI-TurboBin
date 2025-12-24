@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <!--  if necessary, make copy this file named as 'Directory.Build.props.user' 
+          and write down the correct paths to the game files, vanilla and dlc, and PLib*.dll s -->
+	<GamePlatform>Steam</GamePlatform><!--Steam/Backup-->
+	<UsesPublicise>false</UsesPublicise>
+	  <UsesPLib>true</UsesPLib>
+    <SteamFolder>$(MSBuildProgramFiles32)Steam</SteamFolder>
+    <GameFolderSteam>G:\Program Files (x86)\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed</GameFolderSteam>
+    <GameFolderBackup>path\to\backup\of\game\folder</GameFolderBackup>
+    <PLibFolder>E:\oni_mods\PLib</PLibFolder>
+    <ModOutputFolderDebug>$(UserProfile)\Documents\Klei\OxygenNotIncluded\mods\Dev</ModOutputFolderDebug>
+    <ModOutputFolderRelease>$(MSBuildProjectDirectory)\..\..\Mods</ModOutputFolderRelease>
+  </PropertyGroup>
+</Project>

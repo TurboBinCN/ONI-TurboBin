@@ -1,0 +1,20 @@
+KnownVersions:
+- GameVersion: U41
+  MinimumBuildNumber: 496173
+- GameVersion: U50
+  MinimumBuildNumber: 579980
+- GameVersion: U51
+  MinimumBuildNumber: 594211
+- GameVersion: U52
+  MinimumBuildNumber: 616718
+- GameVersion: U53
+  MinimumBuildNumber: 640445
+- GameVersion: U54
+  MinimumBuildNumber: 644175
+- GameVersion: U55
+  MinimumBuildNumber: 658361
+- GameVersion: U56
+  MinimumBuildNumber: 670711
+- GameVersion: U57
+  MinimumBuildNumber: 697549
+PreserveVersion: U56
