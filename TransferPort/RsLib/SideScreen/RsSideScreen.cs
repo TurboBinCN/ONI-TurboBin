@@ -60,8 +60,7 @@ namespace RsLib
         }
 
         private static void DetailsScreen_OnPrefabInit_Patch(
-            List<DetailsScreen.SideScreenRef> ___sideScreens,
-            GameObject ___sideScreenConfigContentBody)
+            List<DetailsScreen.SideScreenRef> ___sideScreens)
         {
             foreach (var itemInfo in Instance.itemInfos)
             {
@@ -106,11 +105,11 @@ namespace RsLib
             IList<DetailsScreen.SideScreenRef> existing, Type sourceScreen, Type newScreen)
         {
             if (sourceScreen.IsAssignableFrom(typeof(SideScreenContent)))
-                throw new TypeLoadException(
+                    throw new TypeLoadException(
                     "参数sourceScreen不可用的，该类型必须继承" + typeof(SideScreenContent).FullName);
 
             if (newScreen.IsAssignableFrom(typeof(RsSideScreenContent)))
-                throw new TypeLoadException(
+                    throw new TypeLoadException(
                     "参数newScreen不可用的，该类型必须继承" + typeof(RsSideScreenContent).FullName);
 
             foreach (var sideScreenRef in existing)

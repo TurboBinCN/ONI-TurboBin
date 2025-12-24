@@ -1,2 +1,4 @@
 ﻿/ONI-TurboBin/obj
 /packages
+/MSBuildTasksHelper/bin/Release
+/MSBuildTasksHelper/obj
