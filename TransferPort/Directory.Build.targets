@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-	<Import Project="$(SolutionDir)Directory.Build.targets" />
-	<Target Name="CopyProjectToDev" DependsOnTargets="CopyArtifactsToInstallFolder" AfterTargets="CopyArtifactsToInstallFolder">
-
-		<PropertyGroup>
-			<JsonFile>$(ProjectDir)..\libs\Hjson.dll</JsonFile>
-		</PropertyGroup>
-		
+	<Import  Project="..\Directory.Build.targets" Condition=" Exists('..\Directory.Build.targets') " />
+	<Target Name="copyPorjectFiles" DependsOnTargets="CopyArtifactsToInstallFolder" AfterTargets="CopyArtifactsToInstallFolder">
 		<ItemGroup>
-			<JsonFiles Include="$(JsonFile)"/>
+			<customDlls Include="$(ProjectDir)/../libs/Hjson.dll" />
+			<assetsFiles Include="$(ProjectDir)/assets/**/*" />
+			<TranslationFiles Include="$(ProjectDir)/translations/*.*" />
 		</ItemGroup>
-		<Copy SourceFiles="@(JsonFiles)" DestinationFolder="$(InstallFolder)" Condition=" Exists(@(JsonFiles))"/>
-		<Message Text="=====(CopyProjectToDev) Publish To Mod Dev Folder: $(InstallFolder) =====" Importance="High" />
+		<Copy SourceFiles="@(customDlls)" DestinationFolder="$(InstallFolder)" />
+		<Copy SourceFiles="@(assetsFiles)" DestinationFiles="@(assetsFiles->'$(InstallFolder)/assets/%(RecursiveDir)%(Filename)%(Extension)')" />
+		<Copy SourceFiles="@(TranslationFiles)" DestinationFiles="@(TranslationFiles->'$(InstallFolder)/translations/%(RecursiveDir)%(Filename)%(Extension)')" />
 	</Target>
 </Project>
