@@ -2,9 +2,6 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Title>传送端口 (Transfer Port)</Title>
-    <Description>嫌长途拉管道影响规划吗？来试试这个mod吧，帮你解决管道烦恼。</Description>
-    <ModVersion>1.7.4</ModVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{5115CCAB-E700-419A-B9E7-A0E0A6889B52}</ProjectGuid>
@@ -32,24 +29,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Steam|Steam'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Steam\Steam\</OutputPath>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>9.0</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Steam|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Steam\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <WarningLevel>5</WarningLevel>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>9.0</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -170,7 +149,6 @@
     <Compile Include="TransferPortMod.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include=".gitignore" />
     <Content Include="anim\assets\rs_gas_transfer_conduit_receiver\rs_gas_transfer_conduit_receiver.png" />
     <Content Include="anim\assets\rs_gas_transfer_conduit_sender\rs_gas_transfer_conduit_sender.png" />
     <Content Include="anim\assets\rs_liquid_transfer_conduit_receiver\rs_liquid_transfer_conduit_receiver.png" />
@@ -183,6 +161,7 @@
     <Content Include="anim\assets\rs_wireless_logic_receiver\rs_wireless_logic_receiver.png" />
     <Content Include="anim\assets\rs_wireless_logic_sender\rs_wireless_logic_sender.png" />
     <Content Include="anim\assets\rs_wireless_power_port\rs_wireless_power_port.png" />
+    <Content Include="Directory.Build.props.user" />
   </ItemGroup>
   <ItemGroup>
     <None Include="anim\assets\rs_gas_transfer_conduit_receiver\rs_gas_transfer_conduit_receiver_anim.bytes" />

@@ -129,7 +129,7 @@
 	<!-- 署名 -->
 	<PropertyGroup>
 		<Author>priy0315</Author>
-		<Company>Sanchozz (https://github.com/SanchozzDeponianin)</Company>
+		<Company>priy0315 (https://github.com/TurboBinCN)</Company>
 		<Product>priy0315's ONI Mods</Product>
 		<Copyright>Copyright © priy0315 2025-$([System.DateTime]::Now.Year)</Copyright>
 	</PropertyGroup>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<PropertyGroup>
+		<Title>传送端口 (Transfer Port)</Title>
+		<Description>嫌长途拉管道影响规划吗？来试试这个mod吧，帮你解决管道烦恼。</Description>
+		<ModVersion>1.7.4</ModVersion>
+	</PropertyGroup>
+</Project>

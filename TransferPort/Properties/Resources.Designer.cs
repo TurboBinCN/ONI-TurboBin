@@ -59,32 +59,5 @@ namespace TransferPort.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   查找类似 嫌长途拉管道影响规划吗？来试试这个mod吧，帮你解决管道烦恼。 的本地化字符串。
-        /// </summary>
-        public static string description {
-            get {
-                return ResourceManager.GetString("description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 1.3.1 的本地化字符串。
-        /// </summary>
-        public static string ModVersion {
-            get {
-                return ResourceManager.GetString("ModVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 传送端口 (Transfer Port) 的本地化字符串。
-        /// </summary>
-        public static string Title {
-            get {
-                return ResourceManager.GetString("Title", resourceCulture);
-            }
-        }
     }
 }
