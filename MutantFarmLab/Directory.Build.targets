@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<Import  Project="..\Directory.Build.targets" Condition=" Exists('..\Directory.Build.targets') " />
+	<Target Name="copyPorjectFiles" DependsOnTargets="CopyArtifactsToInstallFolder" AfterTargets="CopyArtifactsToInstallFolder">
+		<ItemGroup>
+			<customDlls Include="$(ProjectDir)/../libs/Hjson.dll" />
+			<TranslationFiles Include="$(ProjectDir)/translations/*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(customDlls)" DestinationFolder="$(InstallFolder)" />
+		<Copy SourceFiles="@(TranslationFiles)" DestinationFiles="@(TranslationFiles->'$(InstallFolder)/translations/%(RecursiveDir)%(Filename)%(Extension)')" />
+	</Target>
+</Project>

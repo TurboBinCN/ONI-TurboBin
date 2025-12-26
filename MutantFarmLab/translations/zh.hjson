@@ -1,0 +1,42 @@
+{
+  STRINGS:
+  {
+    BUILDING: 
+    {
+      STATUSITEMS: 
+      {
+        MUTANTFARMLAB:
+        {
+          NAME: 变异农场实验台
+          TOOLTIP: 消耗粒子的高科技实验室，可将普通植物种子诱变为稀有变异品种。复制人可放入原始种子，获取带有独特特性的变异种子
+        }
+      }
+    }
+    BUILDINGS:
+    {
+      PREFABS:
+      {
+        MUTANTFARMLAB:
+        {
+          NAME: <link="MUTANTFARMLAB">变异农场实验台</link>
+          DESC: 消耗粒子的高科技实验室，可将普通植物种子诱变为稀有变异品种。复制人可放入原始种子，获取带有独特特性的变异种子
+          EFFECT: 通过使用<link="MUTANTFARMLAB">变异农场实验台</link>实验，从普通种子获得变异
+          DEFAULTNAME: 变异农场实验台
+        }
+      }
+    }
+    UI:
+    {
+      GENETICANALYSISSIDESCREEN: 
+      {
+        TITLE:种子变异
+        NONE_DISCOVERED: 没有种子
+        SELECT_SEEDS: 选择种子
+        SEED_FORBIDDEN: 禁用种子
+        SEED_ALLOWED: 允许种子
+        SEED_NO_MUTANTS: 种子没有变异
+       
+      }
+    }
+  }
+}
