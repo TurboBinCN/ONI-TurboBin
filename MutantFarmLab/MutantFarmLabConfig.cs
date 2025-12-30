@@ -1,13 +1,5 @@
-﻿using PeterHan.PLib.Core;
-using PeterHan.PLib.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TUNING;
+﻿using TUNING;
 using UnityEngine;
-using static STRINGS.COLONY_ACHIEVEMENTS.ACTIVATEGEOTHERMALPLANT;
 
 namespace MutantFarmLab
 {
@@ -15,6 +7,9 @@ namespace MutantFarmLab
     {
         public static string ID = "MutantFarmLab";
         public static string TagName = "MutantFarmLab";
+        public static float Deliverycapacity = 5f;
+        public static float ParticleConsumeAmount = 100f;
+        public static float MutationDuration = 40f;
         public override BuildingDef CreateBuildingDef()
         {
             int width = 7;
@@ -49,18 +44,11 @@ namespace MutantFarmLab
             go.GetComponent<KPrefabID>().AddTag(RoomConstraints.ConstraintTags.ScienceBuilding, false);
             go.AddOrGet<BuildingComplete>().isManuallyOperated = true;
             go.AddOrGetDef<MutantFarmLabStates.Def>();
-            go.AddOrGet<MutantFarmLabWorkable>().finishedSeedDropOffset = new Vector3(-3f, 1.5f, 0f);
+            go.AddOrGet<MutantFarmLabWorkable>();
             Prioritizable.AddRef(go);
             go.AddOrGet<DropAllWorkable>();
             go.AddOrGetDef<PoweredActiveController.Def>();
-            Storage storage = go.AddOrGet<Storage>();
-            ManualDeliveryKG manualDeliveryKG = go.AddOrGet<ManualDeliveryKG>();
-            manualDeliveryKG.SetStorage(storage);
-            manualDeliveryKG.choreTypeIDHash = Db.Get().ChoreTypes.MachineFetch.IdHash;
-            manualDeliveryKG.RequestedItemTag = GameTags.Seed;
-            manualDeliveryKG.refillMass = 1.1f;
-            manualDeliveryKG.MinimumMass = 1f;
-            manualDeliveryKG.capacity = 5f;
+
             HighEnergyParticleStorage highEnergyParticleStorage = go.AddOrGet<HighEnergyParticleStorage>();
             highEnergyParticleStorage.capacity = 2000f;
             highEnergyParticleStorage.autoStore = true;
@@ -72,6 +60,22 @@ namespace MutantFarmLab
                 kPrefabID = go.AddComponent<KPrefabID>();
             kPrefabID.AddTag(TagManager.Create(TagName));
 
+            // 你的原有FlatTagFilterable代码（保留不变）
+            var filterable = go.AddOrGet<FlatTagFilterable>();
+            filterable.headerText = STRINGS.UI.UISIDESCREENS.MUTANTFARMLAB.FILTER_CATEGORY;
+            filterable.displayOnlyDiscoveredTags = true;
+
+            var treeFilterable = go.AddOrGet<TreeFilterable>();
+            treeFilterable.storageToFilterTag = GameTags.Seed;
+            treeFilterable.dropIncorrectOnFilterChange = false;
+            treeFilterable.filterByStorageCategoriesOnSpawn = false;
+            treeFilterable.autoSelectStoredOnLoad = false;
+            treeFilterable.uiHeight = TreeFilterable.UISideScreenHeight.Short;
+
+            Storage storage = go.AddOrGet<Storage>();
+            storage.SetDefaultStoredItemModifiers(Storage.StandardSealedStorage);
+            storage.storageID = GameTags.Seed;
+
         }
 
         public override void DoPostConfigureComplete(GameObject go)
@@ -79,19 +83,24 @@ namespace MutantFarmLab
         }
         public override void ConfigurePost(BuildingDef def)
         {
-            List<Tag> list = new List<Tag>();
-            foreach (GameObject gameObject in Assets.GetPrefabsWithTag(GameTags.CropSeed))
-            {
-                if (gameObject.GetComponent<MutantPlant>() != null)
-                {
-                    list.Add(gameObject.PrefabID());
-                }
-            }
-            def.BuildingComplete.GetComponent<Storage>().storageFilters = list;
+
         }
+
         public override string[] GetRequiredDlcIds()
         {
             return DlcManager.EXPANSION1;
+        }
+        public static ManualDeliveryKG AddSeedMDKG(GameObject go, Tag seedTag, float capacity, float refillRate = 0.75f, bool enable = false)
+        {
+            ManualDeliveryKG mdkg = go.AddComponent<ManualDeliveryKG>();
+            mdkg.RequestedItemTag = seedTag; // ✅ 核心：每个MDKG绑定单独的种子Tag
+            mdkg.capacity = capacity;        // 该种子的仓储容量（你的allValidTags对应容量）
+            mdkg.refillMass = refillRate * capacity; // 补货阈值（75%容量时触发配送）
+            mdkg.choreTypeIDHash = Db.Get().ChoreTypes.MachineFetch.IdHash;
+            mdkg.operationalRequirement = Operational.State.Functional; // 建筑可用才激活
+            mdkg.allowPause = false;          // 允许暂停，适配筛选取消
+            mdkg.enabled = enable;            // 默认禁用，勾选后激活
+            return mdkg;
         }
     }
 }

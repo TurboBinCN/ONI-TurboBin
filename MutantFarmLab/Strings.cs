@@ -23,7 +23,7 @@ namespace MutantFarmLab
         {
             public static class UISIDESCREENS
             {
-                public static class GENETICANALYSISSIDESCREEN
+                public static class MUTANTFARMLAB
                 {
                     public static string TITLE ="title";
                     public static string NONE_DISCOVERED = "No seeds";
@@ -31,6 +31,15 @@ namespace MutantFarmLab
                     public static string SEED_FORBIDDEN = "Forbidden seeds";
                     public static string SEED_ALLOWED = "Allowed seeds";
                     public static string SEED_NO_MUTANTS = "seed has no subpieces";
+                    public static string FILTER_CATEGORY = "Seeds To Delivery";
+                }
+            }
+            public static class NOTIFICATIONS
+            {
+                public static class MUTANTFARM_NEED_MATERIALS
+                {
+                    public static LocString NAME = "变异条件不足";
+                    public static LocString TOOLTIP = "需要满足：设备通电 + 有效种子入库 + 高能粒子充足(≥10)";
                 }
             }
         }

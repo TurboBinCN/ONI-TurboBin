@@ -1,350 +1,296 @@
-﻿using Database;
-using Klei.AI;
-using KSerialization;
+﻿using PeterHan.PLib.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace MutantFarmLab
 {
-    // 变异农场实验室状态机（完全适配缺氧源码）
     public class MutantFarmLabStates : GameStateMachine<MutantFarmLabStates, MutantFarmLabStates.StatesInstance, IStateMachineTarget, MutantFarmLabStates.Def>
     {
-        #region 配置项（直接存储，无需存档重写）
-        public float particleConsumeAmount = 10f; // 每次消耗高能粒子数量
-        public float mutationTime = 3f; // 变异所需时间（秒）
+        #region ===== 配置项=====
+        public float ParticleConsumeAmount = 10f;
+        public float MutationDuration = 3f;
         #endregion
 
-        #region 状态定义
-        public State idle; // 空闲（无有效种子）
-        public State waitingForParticles; // 等待粒子（有种子但粒子不足）
-        public State mutating; // 变异中（消耗粒子+生成变异种子）
-        public State outputting; // 输出就绪（变异种子已生成）
-        #endregion
-
-        #region 核心数据（从官方源码获取）
-        private readonly List<string> _officialMutationIDs = new List<string>
-        {
-            "moderatelyLoose", "moderatelyTight", "extremelyTight",
-            "bonusLice", "sunnySpeed", "slowBurn",
-            "blooms", "loadedWithFruit", "rottenHeaps", "heavyFruit"
-        };
-        private PlantMutations _plantMutations;
+        #region ===== 状态定义 =====
+        public State idle;
+        public State noParticles;
+        public State ready;
+        public State outputReady;
         #endregion
 
         public override void InitializeStates(out BaseState default_state)
         {
             default_state = idle;
-            _plantMutations = Db.Get().PlantMutations; // 初始化官方变异配置
 
-            // 根状态：全局配置
+
             root
-                .Update("MutationTimerUpdate", UpdateMutationTimer)
-                .Enter(OnInitRoot);
-
-            // 1. 空闲状态
+                .Update("MutationTimerTick", UpdateMutationTimer, UpdateRate.SIM_1000ms)
+                // ✅ 新增：核心巡检，自动激活/禁用Workable，保证条件就绪即开工
+                .Update("AutoCheckWorkableStatus", (smi, dt) => smi.AutoCheckWorkableStatus(), UpdateRate.SIM_1000ms)
+                .Enter(OnInitRoot)
+                .Exit(smi => { if (smi.controller != null) smi.controller.ResetMutationTimer(); });
             idle
-                .EventTransition(GameHashes.OnStorageChange, waitingForParticles, smi => HasValidSeed(smi))
-                .Enter(smi => ClearOutput(smi))
-                // 修正：BuildingStatusItems正确路径
-                .ToggleStatusItem(Db.Get().BuildingStatusItems.FabricatorIdle, smi => smi.master);
+                .Enter(smi => smi.ClearMutantSeedOutput())
+                .EventTransition(GameHashes.OnStorageChange, noParticles, smi => smi.HasValidSeed && !smi.HasEnoughParticles && smi.IsMachineOperational)
+                .EventTransition(GameHashes.OnStorageChange, ready, smi => smi.HasValidSeed && smi.HasEnoughParticles && smi.IsMachineOperational)
+                .ToggleStatusItem(Db.Get().BuildingStatusItems.FabricatorIdle, smi => true);
 
-            // 2. 等待粒子状态
-            waitingForParticles
-                .EventTransition(GameHashes.OnStorageChange, mutating, smi => HasEnoughParticles(smi))
-                .EventTransition(GameHashes.OnStorageChange, idle, smi => !HasValidSeed(smi))
-                .ToggleStatusItem(Db.Get().BuildingStatusItems.WaitingForMaterials, smi => smi.master);
+            // 2. 缺粒子状态
+            noParticles
+                .Enter(smi => PUtil.LogDebug("[状态流转] 进入缺粒子状态，等待高能粒子补给"))
+                .EventTransition(GameHashes.OnStorageChange, ready, smi => smi.HasEnoughParticles && smi.IsMachineOperational)
+                .EventTransition(GameHashes.OnStorageChange, idle, smi => !smi.HasValidSeed || !smi.IsMachineOperational)
+                .ToggleStatusItem(Db.Get().BuildingStatusItems.WaitingForMaterials, smi => true);
 
-            // 3. 变异中状态
-            mutating
-                .Enter(smi => StartMutation(smi))
-                .Transition(outputting, smi => IsMutationComplete(smi))
-                .ToggleStatusItem(Db.Get().BuildingStatusItems.ComplexFabricatorProducing, smi => smi.master);
-
-            // 4. 输出状态
-            outputting
-                .Enter(smi => SpawnMutantSeed(smi))
-                .Transition(idle, smi => IsOutputCollected(smi))
-                .ToggleStatusItem(Db.Get().BuildingStatusItems.FabricatorEmpty, smi => smi.master)
-                .ToggleChore(this.CreateChore, MutantFarmLabStates.SetRemoteChore, this.idle);
-        }
-        //创建种子运送任务
-        private Chore CreateChore(MutantFarmLabStates.StatesInstance smi)
-        {
-            return new WorkChore<MutantFarmLabWorkable>(Db.Get().ChoreTypes.AnalyzeSeed, smi.workable, null, true, null, null, null, true, null, false, true, null, false, true, true, PriorityScreen.PriorityClass.basic, 5, false, true);
+            ready
+                .Enter(OnReadyStateEnter)
+                .Exit(smi => smi.CancelMutationWorkChore()) // 状态退出时取消未完成的Chore
+                .ToggleStatusItem(Db.Get().BuildingStatusItems.ComplexFabricatorResearching, smi => true);
         }
 
-        private static void SetRemoteChore(MutantFarmLabStates.StatesInstance smi, Chore chore)
-        {
-            smi.remoteChore.SetChore(chore);
-        }
-        #region 根状态初始化
+        #region ===== 全局通用方法 =====
         private void OnInitRoot(StatesInstance smi)
         {
-            // 初始化高能粒子存储组件
-            smi.master.gameObject.AddOrGet<HighEnergyParticleStorage>();
-            // 初始化Storage过滤（仅允许种子）
-            smi.storage.storageFilters = new List<Tag>() { GameTags.Seed };
-            // 重置计时器
-            var controller = smi.master.GetComponent<MutantFarmLabController>();
-            if (controller == null)
-            {
-                controller = smi.master.gameObject.AddOrGet<MutantFarmLabController>();
-            }
-            controller.ResetMutationTimer();
+            if (smi.master.gameObject.GetComponent<HighEnergyParticleStorage>() == null)
+                smi.master.gameObject.AddComponent<HighEnergyParticleStorage>();
+
+            if (smi.master.gameObject.GetComponent<MutantFarmLabController>() == null)
+                smi.controller = smi.master.gameObject.AddComponent<MutantFarmLabController>();
+            else
+                smi.controller = smi.master.gameObject.GetComponent<MutantFarmLabController>();
+
+            smi.controller.ResetMutationTimer();
+            PUtil.LogDebug("[状态机初始化] 根状态初始化完成，组件加载完毕");
         }
-        #endregion
-
-        #region 核心功能方法（无语法错误版）
-        private bool HasValidSeed(StatesInstance smi)
+        private void OnReadyStateEnter(StatesInstance smi)
         {
-            if (smi.storage == null) return false;
-
-            foreach (var item in smi.storage.items)
+            PUtil.LogDebug("[状态流转] 进入就绪状态 → 开始校验条件+指派小人任务");
+            // ✅ 前置双重校验：粒子+种子+设备全部就绪，才创建任务
+            if (smi.IsMachineOperational && smi.HasValidSeed && smi.HasEnoughParticles)
             {
-                bool isSeed = item.HasTag(GameTags.Seed);
-                bool isNotTree = item.GetComponent<PlantableSeed>()?.PlantID != "ForestTreeSeed";
-                bool isNotMutated = item.GetComponent<MutantPlant>() == null;
-
-                if (isSeed && isNotTree && isNotMutated)
+                var workable = smi.gameObject.GetComponent<MutantFarmLabWorkable>();
+                if (workable != null)
                 {
-                    return true;
+                    workable.enabled = true; // ✅ 强制激活Workable，确保任务可绑定
+                    smi.CreateMutationWorkChore(); // 创建任务
+                    PUtil.LogDebug("✅ 条件全满足 → Workable激活+Chore任务创建成功！");
                 }
+                else
+                    PUtil.LogError("❌ 创建任务失败 → 未找到Workable组件");
             }
-            return false;
+            else
+                PUtil.LogWarning("⚠️ 未创建任务 → 粒子/种子/设备未就绪");
         }
-
-        private bool HasEnoughParticles(StatesInstance smi)
-        {
-            var particleStorage = smi.master.gameObject.GetComponent<HighEnergyParticleStorage>();
-            return particleStorage != null && particleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) >= particleConsumeAmount;
-        }
-
-        private void StartMutation(StatesInstance smi)
-        {
-            if (!HasEnoughParticles(smi)) return;
-
-            // 消耗高能粒子（源码官方用法）
-            var particleStorage = smi.master.gameObject.GetComponent<HighEnergyParticleStorage>();
-            particleStorage.ConsumeAndGet(particleConsumeAmount);
-
-            // 重置计时器
-            var controller = smi.master.GetComponent<MutantFarmLabController>();
-            if (controller != null)
-            {
-                controller.ResetMutationTimer();
-            }
-
-            Debug.Log($"MutantFarmLab: 消耗 {particleConsumeAmount} 单位高能粒子，开始变异");
-        }
-
         private void UpdateMutationTimer(StatesInstance smi, float dt)
         {
-            if (smi.GetCurrentState() == mutating)
-            {
-                var controller = smi.master.GetComponent<MutantFarmLabController>();
-                if (controller != null)
-                {
-                    controller.currentMutationTime += dt;
-                }
-            }
-        }
-
-        private bool IsMutationComplete(StatesInstance smi)
-        {
-            var controller = smi.master.GetComponent<MutantFarmLabController>();
-            return controller != null && controller.currentMutationTime >= mutationTime;
-        }
-
-        /// <summary>
-        /// 生成变异种子（核心方法，全适配源码）
-        /// </summary>
-        private void SpawnMutantSeed(StatesInstance smi)
-        {
-            if (smi.storage == null || !HasValidSeed(smi)) return;
-
-            // 1. 获取有效种子
-            GameObject rawSeed = null;
-            PlantableSeed rawSeedComp = null;
-            foreach (var item in smi.storage.items)
-            {
-                if (item.HasTag(GameTags.Seed) && item.GetComponent<PlantableSeed>()?.PlantID != "ForestTreeSeed")
-                {
-                    rawSeed = item;
-                    rawSeedComp = rawSeed.GetComponent<PlantableSeed>();
-                    break;
-                }
-            }
-            if (rawSeed == null || rawSeedComp == null)
-            {
-                Debug.LogError("MutantFarmLab: 未找到有效普通种子");
-                return;
-            }
-
-            // 2. 移除原种子
-            smi.storage.ConsumeIgnoringDisease(rawSeed.tag, 1);
-
-            // 3. 随机变异ID
-            string randomMutationID = _officialMutationIDs[UnityEngine.Random.Range(0, _officialMutationIDs.Count)];
-            PlantMutation validMutation = _plantMutations.Get(randomMutationID);
-            if (validMutation == null)
-            {
-                randomMutationID = "moderatelyLoose";
-                validMutation = _plantMutations.Get(randomMutationID);
-            }
-
-            // 4. 实例化变异种子（修正：改用Util.KInstantiate，源码通用方法）
-            string mutantSeedName = $"MutantSeed_{rawSeedComp.PlantID}_{randomMutationID}";
-            GameObject mutantSeed = Util.KInstantiate(rawSeed, smi.master.gameObject.transform.position, Quaternion.identity);
-            mutantSeed.name = mutantSeedName;
-
-            // 5. 配置MutantPlant组件（修正：TagManager.Create → new Tag）
-            MutantPlant mutantPlantComp = mutantSeed.AddOrGet<MutantPlant>();
-            if (mutantPlantComp != null)
-            {
-                mutantPlantComp.SpeciesID = new Tag(rawSeedComp.PlantID); // 核心修正
-                mutantPlantComp.SetSubSpecies(new List<string> { randomMutationID });
-                mutantPlantComp.Analyze();
-                mutantSeed.AddTag(GameTags.MutatedSeed);
-                // 注册亚种（源码逻辑）
-                if (PlantSubSpeciesCatalog.Instance != null)
-                {
-                    PlantSubSpeciesCatalog.Instance.DiscoverSubSpecies(mutantPlantComp.GetSubSpeciesInfo(), mutantPlantComp);
-                }
-            }
-
-            // 6. 存入Storage
-            smi.storage.Store(mutantSeed);
-
-            Debug.Log($"MutantFarmLab: 变异种子生成成功 - 物种={rawSeedComp.PlantID}，变异={randomMutationID}");
-        }
-
-        private bool IsOutputCollected(StatesInstance smi)
-        {
-            if (smi.storage == null) return true;
-
-            foreach (var item in smi.storage.items)
-            {
-                if (item.HasTag(GameTags.MutatedSeed) || item.GetComponent<MutantPlant>() != null)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private void ClearOutput(StatesInstance smi)
-        {
-            if (smi.storage == null) return;
-
-            List<GameObject> toRemove = new List<GameObject>();
-            foreach (var item in smi.storage.items)
-            {
-                if (item.HasTag(GameTags.MutatedSeed) || item.GetComponent<MutantPlant>() != null)
-                {
-                    toRemove.Add(item);
-                }
-            }
-
-            foreach (var item in toRemove)
-            {
-                smi.storage.ConsumeIgnoringDisease(item.tag, 1);
-                UnityEngine.Object.Destroy(item);
-            }
+            if (smi.GetCurrentState() == ready && smi.controller != null && smi.IsMachineOperational)
+                smi.controller.currentMutationTime += dt;
         }
         #endregion
 
-        #region 状态机实例类
+        #region ===== 状态机实例类【核心修复所有报错】=====
         public class StatesInstance : GameInstance
         {
-            [MyCmpReq]
-            public Storage storage;
+            [MyCmpReq] public Storage SeedStorage;
+            [MyCmpReq] public Operational MachineOperational;
+            [MyCmpReq] public FlatTagFilterable SeedFilter;
+            [MyCmpReq] public TreeFilterable TreeSeedFilter;
 
-            [MyCmpAdd]
-            public ManuallySetRemoteWorkTargetComponent remoteChore;
+            public MutantFarmLabController controller;
+            private HighEnergyParticleStorage _particleStorage;
+            private readonly Tag[] _forbiddenTags = { GameTags.MutatedSeed };
+            public List<Tag> ValidSeedTags = new List<Tag>();
 
-            [Serialize]
-            private HashSet<Tag> forbiddenSeeds;
+            private Chore _mutationWorkChore; // 缓存Chore实例，避免重复创建
 
-            [MyCmpReq]
-            public ManualDeliveryKG manualDelivery;
-
-            [MyCmpReq]
-            public MutantFarmLabWorkable workable;
 
             public StatesInstance(IStateMachineTarget master, Def def) : base(master, def)
             {
-                // 修正：Storage过滤改用allowItemFn（无SetFilter方法）
-                //storage.allowItemFn = (item) => item.HasTag(GameTags.Seed);
-                storage.storageFilters = new List<Tag>() { GameTags.Seed };
+                InitSeedDeliverySystem();
+                InitSeedFilterSystem();
+                PUtil.LogDebug("[实例初始化] 状态机实例创建完成");
             }
-            public bool GetSeedForbidden(Tag seedID)
+
+            #region ===== 初始化子系统 =====
+            private void InitSeedDeliverySystem()
             {
-                if (this.forbiddenSeeds == null)
+                PlantSeedManager.InitPlantSeedMapping();
+                foreach (var seedInfo in PlantSeedManager.GetAllPlantSeedInfos())
                 {
-                    this.forbiddenSeeds = new HashSet<Tag>();
+                    if (!seedInfo.SeedID.IsValid || ValidSeedTags.Contains(seedInfo.SeedID)) continue;
+                    ValidSeedTags.Add(seedInfo.SeedID);
+                    var mdkg = MutantFarmLabConfig.AddSeedMDKG(master.gameObject, seedInfo.SeedID, MutantFarmLabConfig.Deliverycapacity);
+                    mdkg.ForbiddenTags = _forbiddenTags;
+                    mdkg.SetStorage(SeedStorage);
+                    mdkg.enabled = false;
                 }
-                return this.forbiddenSeeds.Contains(seedID);
+                SeedStorage.storageFilters = ValidSeedTags;
             }
-            public void SetSeedForbidden(Tag seedID, bool forbidden)
+
+            private void InitSeedFilterSystem()
             {
-                if (this.forbiddenSeeds == null)
+                SeedFilter.tagOptions.Clear();
+                SeedFilter.tagOptions.AddRange(ValidSeedTags);
+                SeedFilter.selectedTags.AddRange(ValidSeedTags);
+                if (Game.Instance == null || !Game.Instance.IsLoading())
                 {
-                    this.forbiddenSeeds = new HashSet<Tag>();
+                    SeedFilter.selectedTags.Clear(); // 仅新建筑初始化时清空，读档不执行
+                    PUtil.LogDebug($"✅ 新建筑筛选框初始化 → 所有种子全未勾选");
                 }
-                bool flag;
-                if (forbidden)
+                SeedFilter.currentlyUserAssignable = true;
+                TreeSeedFilter.OnFilterChanged += _ => SyncMDKGWithFilter();
+            }
+            #endregion
+
+            #region ===== 核心业务方法 =====
+            private void SyncMDKGWithFilter()
+            {
+                foreach (var mdkg in master.gameObject.GetComponents<ManualDeliveryKG>())
                 {
-                    flag = this.forbiddenSeeds.Add(seedID);
+                    bool isTagSelected = SeedFilter.selectedTags.Contains(mdkg.RequestedItemTag);
+                    // 核心逻辑：选中=取消暂停（Pause false），未选中=暂停（Pause true）
+                    mdkg.Pause(!isTagSelected, isTagSelected ? "筛选勾选，取消暂停配送" : "筛选未勾选，暂停配送");
+                    // MDKG启用状态跟随暂停状态，保持逻辑统一
+                    mdkg.enabled = isTagSelected;
+                }
+            }
+
+            public void StartSeedMutation()
+            {
+                PUtil.LogDebug($"===HasEnoughParticles:{HasEnoughParticles} HasValidSeed:{HasValidSeed} IsMachineOperational:{IsMachineOperational}======");
+                if (!HasEnoughParticles || !HasValidSeed || !IsMachineOperational) return;
+
+                ParticleStorage.ConsumeAndGet(MutantFarmLabConfig.ParticleConsumeAmount);
+                controller.ResetMutationTimer();
+                PUtil.LogDebug($"[变异开始] 消耗{MutantFarmLabConfig.ParticleConsumeAmount}高能粒子，计时启动");
+            }
+
+            public void ClearMutantSeedOutput()
+            {
+                if (SeedStorage == null) return;
+                var mutantSeeds = SeedStorage.items.Where(item => item.HasTag(GameTags.MutatedSeed)).ToList();
+                foreach (var seed in mutantSeeds)
+                {
+                    SeedStorage.Remove(seed, false);
+                    UnityEngine.Object.Destroy(seed);
+                }
+                if (mutantSeeds.Count > 0)
+                    PUtil.LogDebug($"[清理完成] 移除{mutantSeeds.Count}个残留变异种子");
+            }
+            #endregion
+
+            #region ===== 核心判定属性 =====
+            public bool IsMachineOperational
+            {
+                get => MachineOperational != null && MachineOperational.IsOperational;
+            }
+
+            public bool HasValidSeed
+            {
+                get
+                {
+                    if (!IsMachineOperational || SeedStorage == null) return false;
+                    return SeedStorage.items.Any(IsSeedValidForMutation);
+                }
+            }
+
+            public bool HasEnoughParticles
+            {
+                get
+                {
+                    if (!IsMachineOperational) return false;
+                    return ParticleStorage != null && ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) >= MutantFarmLabConfig.ParticleConsumeAmount;
+                }
+            }
+
+            #endregion
+
+            #region ===== 辅助工具方法 =====
+            private HighEnergyParticleStorage ParticleStorage
+            {
+                get => _particleStorage ??= master.gameObject.GetComponent<HighEnergyParticleStorage>();
+            }
+
+            private bool IsSeedValidForMutation(GameObject seedObj)
+            {
+                if (seedObj == null) return false;
+                var seedComp = seedObj.GetComponent<PlantableSeed>();
+                bool isSeed = seedObj.HasTag(GameTags.Seed);
+                bool isNotMutated = !seedObj.HasTag(GameTags.MutatedSeed);
+                return isSeed && isNotMutated;
+            }
+            #endregion
+
+
+            // ✅ 核心：创建自动工作的Chore，关联你的Workable
+            public void CreateMutationWorkChore()
+            {
+                if (!IsMachineOperational || !HasValidSeed || !HasEnoughParticles || _mutationWorkChore != null)
+                {
+                    PUtil.LogDebug("❌ 任务创建拦截 → 条件不满足/任务已存在");
+                    return;
+                }
+                var workable = gameObject.GetComponent<MutantFarmLabWorkable>();
+                if (workable == null) return;
+
+                // 缺氧原生Chore创建API，自动指派小人执行Workable
+                _mutationWorkChore = new WorkChore<MutantFarmLabWorkable>(
+                    Db.Get().ChoreTypes.Research, // 工作类型（科研，可自定义）
+                    workable, // 关联你的Workable
+                    null,
+                    true,
+                    null,
+                    null,
+                    null,
+                    true
+                );
+                if (_mutationWorkChore != null)
+                {
+                    PUtil.LogDebug("✅ 小人任务创建成功！已加入系统任务队列，等待小人指派");
                 }
                 else
                 {
-                    flag = this.forbiddenSeeds.Remove(seedID);
-                }
-                if (flag)
-                {
-                    this.RefreshFetchTags();
+                    PUtil.LogError("❌ 任务创建失败 → WorkChore实例创建返回Null");
                 }
             }
-            private void RefreshFetchTags()
+
+            // 取消Chore，避免状态退出后小人继续工作
+            public void CancelMutationWorkChore()
             {
-                if (this.forbiddenSeeds == null)
+                if (_mutationWorkChore != null)
                 {
-                    this.manualDelivery.ForbiddenTags = null;
-                    return;
+                    _mutationWorkChore.Cancel("状态退出，取消工作");
+                    _mutationWorkChore = null;
                 }
-                Tag[] array = new Tag[this.forbiddenSeeds.Count];
-                int num = 0;
-                foreach (Tag tag in this.forbiddenSeeds)
-                {
-                    array[num++] = tag;
-                    this.storage.Drop(tag);
-                }
-                this.manualDelivery.ForbiddenTags = array;
             }
+
+            public void AutoCheckWorkableStatus()
+            {
+                var workable = master.gameObject.GetComponent<MutantFarmLabWorkable>();
+                if (workable == null) return;
+                // 条件就绪 → 激活Workable；否则禁用
+                bool isAllReady = IsMachineOperational && HasValidSeed && HasEnoughParticles;
+                workable.enabled = isAllReady;
+                //PUtil.LogDebug($"🔍 自动巡检 → 条件就绪[{isAllReady}] → Workable激活[{workable.enabled}]");
+            }
+
         }
         #endregion
 
-        #region 状态机配置类（修正：删除无效重写）
+        #region ===== 状态机配置类 =====
         public class Def : BaseDef
         {
-            // 直接存储配置项，无需OnSerialize/OnDeserialize
-            public float savedParticleConsumeAmount = 10f;
-            public float savedMutationTime = 3f;
         }
         #endregion
 
-        #region 辅助控制器
+        #region ===== 计时器控制器 =====
         public class MutantFarmLabController : KMonoBehaviour
         {
             public float currentMutationTime = 0f;
-
-            public void ResetMutationTimer()
-            {
-                currentMutationTime = 0f;
-            }
+            public void ResetMutationTimer() => currentMutationTime = 0f;
         }
         #endregion
-
     }
 }
