@@ -154,7 +154,7 @@ namespace MutantFarmLab
                 PUtil.LogError("[PlantSeedManager] 生成失败：源种子无效/已销毁");
                 return null;
             }
-
+            
             var sourceMutant = sourceSeed.GetComponent<MutantPlant>();
             var sourcePrimary = sourceSeed.GetComponent<PrimaryElement>();
             var sourcePickable = sourceSeed.GetComponent<Pickupable>();
