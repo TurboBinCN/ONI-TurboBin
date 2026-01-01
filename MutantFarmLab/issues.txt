@@ -5,6 +5,7 @@
 	1.MutantFarmLab 建筑的动画
 
 2.农场辐射用的设备RadiationBoomLine
+	1.信号控制
 
 现在需要解决的问题
 7.状态中显示同种资源多条缺失信息

@@ -1,41 +1,60 @@
 {
-  STRINGS:
-  {
-    BUILDING: 
-    {
-      STATUSITEMS: 
-      {
-        MUTANTFARMLAB:
-        {
+  STRINGS: {
+    # ✅ 严格对应C#: STRINGS.BUILDINGS.PREFABS
+    BUILDINGS: {
+      PREFABS: {
+        MUTANTFARMLAB: {
           NAME: 变异农场实验台
-          TOOLTIP: 消耗粒子的高科技实验室，可将普通植物种子诱变为稀有变异品种。复制人可放入原始种子，获取带有独特特性的变异种子
+          DESC: 消耗辐射粒子的高科技实验室，可将普通植物种子诱变为稀有变异品种。
+          EFFECT: 消耗辐射粒子，对植物种子进行定向诱变
+        }
+        CUSTOMRADIATIONLIGHT: {
+          NAME: 辐射灯带
+          DESC: 以存储的辐射粒子为能源，为变异植物提供生长所需的辐射环境，可调节功率等级改变辐射强度。
+          LOW_PARTICLE_SIGNAL: 粒子不足信号
+          LOW_PARTICLE_SIGNAL_TOOLTIP: 当粒子储量低于启动阈值时触发信号输出
+          LOGIC_PORT_STORAGE: 粒子储量状态
+          LOGIC_PORT_STORAGE_ACTIVE: 储量不足
+          LOGIC_PORT_STORAGE_INACTIVE: 储量充足
+        }
+        RADIATIONPARTICLEADAPTER: {
+          NAME: 辐射粒子适配模块
+          DESC: 可贴附于任意种植砖/水培砖表面的自动化配件，接收高能粒子并定向释放辐射，加速植物变异进程。
+          EFFECT: 通过内部存储的粒子作为能源，向种植砖/液培砖提供辐射
+          LOGIC_PORT_NAME: 粒子不足告警
+          LOGIC_PORT_ACTIVE: 粒子储量不足，请求补能
+          LOGIC_PORT_INACTIVE: 粒子储量充足，工作正常
+          WARNING_NO_FARMTILE: 未绑定种植砖
+          WARNING_NO_FARMTILE_TOOLTIP: 请将配件首个单元格紧贴种植砖/水培砖放置！
+          WARNING_LOW_PARTICLE: 粒子储量不足
+          WARNING_LOW_PARTICLE_TOOLTIP: 高能粒子供给不足，辐射已暂停，请检查粒子发生器状态。
         }
       }
     }
-    BUILDINGS:
-    {
-      PREFABS:
-      {
-        MUTANTFARMLAB:
-        {
-          NAME: <link="MUTANTFARMLAB">变异农场实验台</link>
-          DESC: 消耗粒子的高科技实验室，可将普通植物种子诱变为稀有变异品种。复制人可放入原始种子，获取带有独特特性的变异种子
-          EFFECT: 通过使用<link="MUTANTFARMLAB">变异农场实验台</link>实验，从普通种子获得变异
-          DEFAULTNAME: 变异农场实验台
+
+    # ✅ 严格对应C#: STRINGS.UI.XXX
+    UI: {
+      UISIDESCREENS: {
+        MUTANTFARMLAB: {
+          TITLE: 种子变异面板
+          NONE_DISCOVERED: 未解锁任何种子
+          SELECT_SEEDS: 选择诱变种子
+          SEED_FORBIDDEN: 禁用种子
+          SEED_ALLOWED: 允许种子
+          SEED_NO_MUTANTS: 无变异分支
+          FILTER_CATEGORY: 待投放种子列表
+        }
+        SLIDERCONTROL: {
+          TITLE: 辐射功率调节
+          DESC: 调节辐射功率等级，同步改变粒子消耗速度
+          TOOLTIP: 功率越高，辐射越强，粒子消耗速度越快
         }
       }
-    }
-    UI:
-    {
-      GENETICANALYSISSIDESCREEN: 
-      {
-        TITLE:种子变异
-        NONE_DISCOVERED: 没有种子
-        SELECT_SEEDS: 选择种子
-        SEED_FORBIDDEN: 禁用种子
-        SEED_ALLOWED: 允许种子
-        SEED_NO_MUTANTS: 种子没有变异
-       
+      NOTIFICATIONS: {
+        MUTANTFARM_NEED_MATERIALS: {
+          NAME: 变异条件不足
+          TOOLTIP: 需满足条件：设备通电 + 有效种子入库 + 高能粒子储量≥10
+        }
       }
     }
   }

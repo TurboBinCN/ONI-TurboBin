@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DualLayerRadiationFarmConfig.cs" />
     <Compile Include="ManualDeliveryKGPatch.cs" />
     <Compile Include="PlantSeedManager.cs" />
     <Compile Include="MutantFarmLabConfig.cs" />
@@ -48,6 +50,9 @@
     <Compile Include="MutantFarmLabStates.cs" />
     <Compile Include="MutantFarmLabWorkable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RadiationParticleAdapterConfig.cs" />
+    <Compile Include="RadiationParticleAdapterController.cs" />
+    <Compile Include="StaticRadiationField.cs" />
     <Compile Include="Strings.cs" />
     <Compile Include="tbbLibs\TbbDebuger.cs" />
     <Compile Include="tbbLibs\TbbSideScreenContent.cs" />
@@ -58,7 +63,12 @@
     <Compile Include="tbbLibs\TbbTypes.cs" />
     <Compile Include="tbbLibs\TbbModule.cs" />
     <Compile Include="tbbLibs\TbbBuilding.cs" />
+    <Compile Include="CustomRadiationLightConfig.cs" />
+    <Compile Include="CustomRadiationLight.cs" />
+    <Compile Include="TestRA.cs" />
+    <Compile Include="TestRaConfig.cs" />
     <Compile Include="TranspilerUtils.cs" />
+    <Compile Include="BuildLocationPatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Directory.Build.props.user" />

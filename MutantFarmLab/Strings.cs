@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Klei; // 必须引入LocString所在命名空间！！！
 
 namespace MutantFarmLab
 {
@@ -10,36 +6,71 @@ namespace MutantFarmLab
     {
         public static class BUILDINGS
         {
-            public static class PREABS
+            public static class PREFABS
             {
-                public static class MUTANTFARMLAB{
-                    public static string NAME = "Mutant farm lab";
-                    public static string EFFECT = "";
-                    public static string DESC = "";
+                public static class MUTANTFARMLAB
+                {
+                    public static LocString NAME = "Mutant Farm Lab";
+                    public static LocString DESC = "A high-tech lab that consumes radiation particles to mutate seeds into rare variants.";
+                    public static LocString EFFECT = "Consumes Radiation Particles to mutate plant seeds.";
+                }
+
+                public static class CUSTOMRADIATIONLIGHT
+                {
+                    public static LocString NAME = "Radiation Light Strip";
+                    public static LocString DESC = "Provides radiation for mutated plants using stored particles, adjustable power level.";
+                    public static LocString LOW_PARTICLE_SIGNAL = "Low Particle Signal";
+                    public static LocString LOW_PARTICLE_SIGNAL_TOOLTIP = "Triggers when particle storage is below activation threshold.";
+                    public static LocString LOGIC_PORT_STORAGE = "Particle Storage";
+                    public static LocString LOGIC_PORT_STORAGE_ACTIVE = "Low";
+                    public static LocString LOGIC_PORT_STORAGE_INACTIVE = "Full";
+                }
+
+                public static class RADIATIONPARTICLEADAPTER
+                {
+                    public static LocString NAME = "Radiation Particle Adapter";
+                    public static LocString DESC = "Attachable accessory for farm tiles, emits radiation to boost mutation rate.";
+                    public static LocString EFFECT = "Emits radiation for the farm tiles by consuming the radioactive particles";
+                    public static LocString LOGIC_PORT_NAME = "Particle Low Alert";
+                    public static LocString LOGIC_PORT_ACTIVE = "Particle Low, Request Refill";
+                    public static LocString LOGIC_PORT_INACTIVE = "Particle Sufficient, Working Normal";
+                    public static LocString WARNING_NO_FARMTILE = "Unbound Farm Tile";
+                    public static LocString WARNING_NO_FARMTILE_TOOLTIP = "Place the first cell of the accessory directly on a farm tile!";
+                    public static LocString WARNING_LOW_PARTICLE = "Low Particle Reserves";
+                    public static LocString WARNING_LOW_PARTICLE_TOOLTIP = "Radiation paused due to insufficient particles, check your generator.";
                 }
             }
         }
+
         public static class UI
         {
             public static class UISIDESCREENS
             {
                 public static class MUTANTFARMLAB
                 {
-                    public static string TITLE ="title";
-                    public static string NONE_DISCOVERED = "No seeds";
-                    public static string SELECT_SEEDS = "Select seeds";
-                    public static string SEED_FORBIDDEN = "Forbidden seeds";
-                    public static string SEED_ALLOWED = "Allowed seeds";
-                    public static string SEED_NO_MUTANTS = "seed has no subpieces";
-                    public static string FILTER_CATEGORY = "Seeds To Delivery";
+                    public static LocString TITLE = "Seed Mutation";
+                    public static LocString NONE_DISCOVERED = "No Seeds Unlocked";
+                    public static LocString SELECT_SEEDS = "Select Seeds";
+                    public static LocString SEED_FORBIDDEN = "Forbidden Seeds";
+                    public static LocString SEED_ALLOWED = "Allowed Seeds";
+                    public static LocString SEED_NO_MUTANTS = "No Mutation Branches";
+                    public static LocString FILTER_CATEGORY = "Seeds To Deliver";
+                }
+
+                public static class SLIDERCONTROL
+                {
+                    public static LocString TITLE = "Radiation Power Setting";
+                    public static LocString DESC = "Adjust power level and particle consumption rate";
+                    public static LocString TOOLTIP = "Higher power = stronger radiation = faster particle consumption";
                 }
             }
+
             public static class NOTIFICATIONS
             {
                 public static class MUTANTFARM_NEED_MATERIALS
                 {
-                    public static LocString NAME = "变异条件不足";
-                    public static LocString TOOLTIP = "需要满足：设备通电 + 有效种子入库 + 高能粒子充足(≥10)";
+                    public static LocString NAME = "Insufficient Mutation Conditions";
+                    public static LocString TOOLTIP = "Requires: Power On + Valid Seeds Stored + Radiation Particles ≥10";
                 }
             }
         }
