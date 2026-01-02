@@ -88,6 +88,7 @@ namespace MutantFarmLab
                 foreach (var (tag, infos) in (Dictionary<Tag, List<PlantSubSpeciesCatalog.SubSpeciesInfo>>)discoveredSubspeciesBySpecies)
                 {
                     PUtil.LogDebug($"[PlantSeedManager] 遍历植物Tag:{tag}");
+                    
                     foreach (var list in infos)
                     {
                         var plantName = list.ID.ToString();
@@ -118,11 +119,11 @@ namespace MutantFarmLab
                         }
                         if (seedID != null && !_plantToSeedCache.ContainsKey(tag))
                         {
-                            _plantToSeedCache.Add(tag, new PlantSeedInfo
+                            _plantToSeedCache.Add(list.speciesID, new PlantSeedInfo
                             {
                                 PlantID = list.ID,
                                 PlantName = plantName,
-                                speciesID = list.speciesID,
+                                speciesID = list.speciesID, // 核心：物种ID作为缓存key
                                 SeedID = seedID,
                                 SeedName = seedName,
                                 SeedPropName = seedPropName
@@ -369,6 +370,38 @@ namespace MutantFarmLab
             seed.Trigger(1623392196, null);
             seed.Trigger(-1736624145, seed);
             PUtil.LogDebug($"[PlantSeedManager] ✅ 种子激活成功，掉落位置：{spawnPos}");
+        }
+        #endregion
+        #region 种子有效性判定（供Workable/StatesInstance调用）
+        /// <summary>
+        /// 全局唯一种子校验入口 → 所有模块统一调用此方法
+        /// 复用_plantToSeedCache缓存，自动兼容冰霜小麦/小吃豆/气囊芦荟
+        /// </summary>
+        public static bool IsSeedValidForMutation(GameObject seedObj)
+        {
+            if (seedObj == null || !seedObj.activeInHierarchy) return false;
+            // 1. 过滤已变异种子（全局规则：禁止重复变异）
+            if (seedObj.HasTag(GameTags.MutatedSeed)) return false;
+
+            // 2. 获取种子关联的植物Tag（从MutantPlant组件取，100%兼容所有自定义种子）
+            var mutantPlantComp = seedObj.GetComponent<MutantPlant>();
+            if (mutantPlantComp == null || string.IsNullOrEmpty(mutantPlantComp.SpeciesID.ToString()))
+                return false;
+
+            Tag plantSpeciesTag = mutantPlantComp.SpeciesID;
+            // 3. 核心判定：缓存中存在该植物Tag → 即为有效可变异种子
+            bool isInCache = ContainsTag(plantSpeciesTag);
+            PUtil.LogDebug($"[PlantSeedManager] 种子校验结果：物种[{plantSpeciesTag}] → 缓存存在={isInCache}");
+            return isInCache;
+        }
+
+        /// <summary>
+        /// 重载：批量校验仓储内种子（简化外部调用）
+        /// </summary>
+        public static bool HasValidMutationSeed(Storage seedStorage)
+        {
+            if (seedStorage == null || seedStorage.items.Count == 0) return false;
+            return seedStorage.items.Any(IsSeedValidForMutation);
         }
         #endregion
     }

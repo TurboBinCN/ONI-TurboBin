@@ -12,9 +12,10 @@ namespace MutantFarmLab
         public static float MutationDuration = 40f;
         public override BuildingDef CreateBuildingDef()
         {
-            int width = 7;
+            int width = 4;
             int height = 3;
-            string anim = "genetic_analysisstation_kanim";
+            //string anim = "genetic_analysisstation_kanim";
+            string anim = "mutant_farm_lab_kanim";
             int hitpoints = 30;
             float construction_time = 30f;
             float[] tier = BUILDINGS.CONSTRUCTION_MASS_KG.TIER4;
@@ -52,8 +53,8 @@ namespace MutantFarmLab
             HighEnergyParticleStorage highEnergyParticleStorage = go.AddOrGet<HighEnergyParticleStorage>();
             highEnergyParticleStorage.capacity = 2000f;
             highEnergyParticleStorage.autoStore = true;
-            highEnergyParticleStorage.PORT_ID = "HEP_STORAGE";
-            highEnergyParticleStorage.showCapacityStatusItem = true;
+            highEnergyParticleStorage.PORT_ID = "HEP_STORAGE_MUTANTFARM_LAB";
+            //highEnergyParticleStorage.showCapacityStatusItem = true;
 
             KPrefabID kPrefabID = go.GetComponent<KPrefabID>();
             if (kPrefabID == null)
@@ -90,16 +91,22 @@ namespace MutantFarmLab
         {
             return DlcManager.EXPANSION1;
         }
-        public static ManualDeliveryKG AddSeedMDKG(GameObject go, Tag seedTag, float capacity, float refillRate = 0.75f, bool enable = false)
+        public static ManualDeliveryKG AddSeedMDKG(GameObject go, Tag seedTag, bool enable = false)
         {
             ManualDeliveryKG mdkg = go.AddComponent<ManualDeliveryKG>();
-            mdkg.RequestedItemTag = seedTag; // ✅ 核心：每个MDKG绑定单独的种子Tag
-            mdkg.capacity = capacity;        // 该种子的仓储容量（你的allValidTags对应容量）
-            mdkg.refillMass = refillRate * capacity; // 补货阈值（75%容量时触发配送）
             mdkg.choreTypeIDHash = Db.Get().ChoreTypes.MachineFetch.IdHash;
+            mdkg.RequestedItemTag = seedTag; // ✅ 核心：每个MDKG绑定单独的种子Tag
             mdkg.operationalRequirement = Operational.State.Functional; // 建筑可用才激活
+            mdkg.capacity = Deliverycapacity;
+            //mdkg.refillMass = (float)(Deliverycapacity * 0.6);
+
+            mdkg.MinimumMass = 1f;// 最小有效阈值 核心配置
+            mdkg.FillToMinimumMass = true; // 核心开关：开启后永不触发「资源不足」红色警告，仅显等待运送
+            mdkg.RoundFetchAmountToInt = false; // 关闭整数取量，适配小数容量计算，避免阈值判定异常
+
             mdkg.allowPause = false;          // 允许暂停，适配筛选取消
             mdkg.enabled = enable;            // 默认禁用，勾选后激活
+            //mdkg.ShowStatusItem = true;
             return mdkg;
         }
     }

@@ -71,10 +71,13 @@
     <Compile Include="BuildLocationPatch.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="anim\assets\mutant_farm_lab\mutant_farm_lab.png" />
     <Content Include="Directory.Build.props.user" />
     <Content Include="issues.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="anim\assets\mutant_farm_lab\mutant_farm_lab_anim.bytes" />
+    <None Include="anim\assets\mutant_farm_lab\mutant_farm_lab_build.bytes" />
     <None Include="Directory.Build.props" />
     <None Include="Directory.Build.targets" />
     <None Include="translations\zh.hjson" />

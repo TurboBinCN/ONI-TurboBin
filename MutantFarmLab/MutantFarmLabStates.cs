@@ -36,13 +36,11 @@ namespace MutantFarmLab
             idle
                 .Enter(smi => smi.ClearMutantSeedOutput())
                 .EventTransition(GameHashes.OnStorageChange, noParticles, smi => smi.HasValidSeed && !smi.HasEnoughParticles && smi.IsMachineOperational)
-                .EventTransition(GameHashes.OnStorageChange, ready, smi => smi.HasValidSeed && smi.HasEnoughParticles && smi.IsMachineOperational)
-                .ToggleStatusItem(Db.Get().BuildingStatusItems.FabricatorIdle, smi => true);
+                .EventTransition(GameHashes.OnStorageChange, ready, smi => smi.HasValidSeed && smi.HasEnoughParticles && smi.IsMachineOperational);
 
             noParticles
                 .EventTransition(GameHashes.OnStorageChange, ready, smi => smi.HasEnoughParticles && smi.IsMachineOperational && smi.HasValidSeed)
-                .EventTransition(GameHashes.OnStorageChange, idle, smi => !smi.HasValidSeed || !smi.IsMachineOperational)
-                .ToggleStatusItem(Db.Get().BuildingStatusItems.WaitingForMaterials, smi => true);
+                .EventTransition(GameHashes.OnStorageChange, idle, smi => !smi.HasValidSeed || !smi.IsMachineOperational);
 
             ready
                 .Enter(OnReadyStateEnter)
@@ -56,8 +54,7 @@ namespace MutantFarmLab
                             smi.CreateMutationWorkChore();
                         }
                     }
-                }, UpdateRate.SIM_200ms)
-                .ToggleStatusItem(Db.Get().BuildingStatusItems.ComplexFabricatorResearching, smi => true);
+                }, UpdateRate.SIM_200ms);
         }
 
         #region ===== 全局通用方法 =====
@@ -137,7 +134,7 @@ namespace MutantFarmLab
                 {
                     if (!seedInfo.SeedID.IsValid || ValidSeedTags.Contains(seedInfo.SeedID)) continue;
                     ValidSeedTags.Add(seedInfo.SeedID);
-                    var mdkg = MutantFarmLabConfig.AddSeedMDKG(master.gameObject, seedInfo.SeedID, MutantFarmLabConfig.Deliverycapacity);
+                    var mdkg = MutantFarmLabConfig.AddSeedMDKG(master.gameObject, seedInfo.SeedID);
                     mdkg.ForbiddenTags = _forbiddenTags;
                     mdkg.SetStorage(SeedStorage);
                     mdkg.enabled = false;
@@ -225,7 +222,7 @@ namespace MutantFarmLab
                 get
                 {
                     if (!IsMachineOperational || SeedStorage == null) return false;
-                    return SeedStorage.items.Any(IsSeedValidForMutation);
+                    return PlantSeedManager.HasValidMutationSeed(SeedStorage);
                 }
             }
 
@@ -246,13 +243,6 @@ namespace MutantFarmLab
                 get => _particleStorage ??= master.gameObject.GetComponent<HighEnergyParticleStorage>();
             }
 
-            private bool IsSeedValidForMutation(GameObject seedObj)
-            {
-                if (seedObj == null) return false;
-                bool isSeed = seedObj.HasTag(GameTags.Seed) || (seedObj.GetComponent<KPrefabID>()?.PrefabTag == GameTags.Seed);
-                bool isNotMutated = !seedObj.HasTag(GameTags.MutatedSeed) && (seedObj.GetComponent<KPrefabID>()?.PrefabTag != GameTags.MutatedSeed);
-                return isSeed && isNotMutated;
-            }
             #endregion
 
             public void CreateMutationWorkChore()

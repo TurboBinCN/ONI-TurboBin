@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TUNING;
 using UnityEngine;
+using UnityEngine.UI;
 using static STRINGS.UI.SCHEDULEGROUPS;
 
 namespace MutantFarmLab
@@ -19,6 +20,7 @@ namespace MutantFarmLab
         {
             base.OnPrefabInit();
             this.requiredSkillPerk = Db.Get().SkillPerks.CanIdentifyMutantSeeds.Id;
+            this.shouldShowSkillPerkStatusItem = true;
             this.workerStatusItem = Db.Get().DuplicantStatusItems.AnalyzingGenes;
             this.attributeConverter = Db.Get().AttributeConverters.ResearchSpeed;
             this.attributeExperienceMultiplier = DUPLICANTSTATS.ATTRIBUTE_LEVELING.PART_DAY_EXPERIENCE;
@@ -31,24 +33,33 @@ namespace MutantFarmLab
             base.SetWorkTime(MutantFarmLabConfig.MutationDuration);
             this.showProgressBar = true;
             this.lightEfficiencyBonus = true;
+
+
+
+        }
+        public override Vector3 GetWorkOffset()
+        {
+            return new Vector3(2f, 0f, 0f);
         }
         protected override void OnSpawn()
         {
             base.OnSpawn();
             _particleStorage ??= gameObject.GetComponent<HighEnergyParticleStorage>();
+
         }
         protected override void OnStartWork(WorkerBase worker)
         {
             base.OnStartWork(worker);
-            base.GetComponent<KSelectable>().AddStatusItem(Db.Get().BuildingStatusItems.ComplexFabricatorResearching, this.SeedStorage.FindFirst(GameTags.Seed));
 
             //消耗粒子
             if (!CanDoMutation())
             {
                 StopWork(worker, true);
-                base.GetComponent<KSelectable>().RemoveStatusItem(Db.Get().BuildingStatusItems.ComplexFabricatorResearching, false);
                 return;
             }
+            var validSeed = SeedStorage.items.FirstOrDefault(PlantSeedManager.IsSeedValidForMutation);
+            if (validSeed != null)
+                base.GetComponent<KSelectable>().AddStatusItem(Db.Get().BuildingStatusItems.ComplexFabricatorResearching, validSeed);
             ParticleStorage.ConsumeAndGet(MutantFarmLabConfig.ParticleConsumeAmount);
         }
 
@@ -86,8 +97,8 @@ namespace MutantFarmLab
 
         public void SpawnFinalMutantSeed()
         {
-            var rawSeed = SeedStorage.FindFirst(GameTags.Seed);
-            if (rawSeed == null || !IsSeedValidForMutation(rawSeed))
+            var rawSeed = SeedStorage.items.FirstOrDefault(PlantSeedManager.IsSeedValidForMutation);
+            if (rawSeed == null || !PlantSeedManager.IsSeedValidForMutation(rawSeed))
                 return;
 
             var seedComp = rawSeed.GetComponent<PlantableSeed>();
@@ -96,7 +107,7 @@ namespace MutantFarmLab
 
             try
             {
-                var dropPos = gameObject.transform.position + new Vector3(-3f, 1.5f, 0f);
+                var dropPos = gameObject.transform.position + new Vector3(0f, 1.5f, 0f);
                 var mutantSeed = PlantSeedManager.GenerateMutantSubspeciesSeed(rawSeed, dropPos, SeedStorage, true);
                 if (mutantSeed == null)
                     return;
@@ -111,14 +122,6 @@ namespace MutantFarmLab
             }
         }
 
-        private bool IsSeedValidForMutation(GameObject seedObj)
-        {
-            if (seedObj == null) return false;
-            bool isSeed = seedObj.HasTag(GameTags.Seed) || (seedObj.GetComponent<KPrefabID>()?.PrefabTag == GameTags.Seed);
-            bool isNotMutated = !seedObj.HasTag(GameTags.MutatedSeed) && (seedObj.GetComponent<KPrefabID>()?.PrefabTag != GameTags.MutatedSeed);
-            return isSeed && isNotMutated;
-        }
-
         [MyCmpReq]
         public Operational MachineOperational;
         [MyCmpReq]
@@ -129,7 +132,7 @@ namespace MutantFarmLab
             get
             {
                 if (!IsMachineOperational || SeedStorage == null) return false;
-                return SeedStorage.items.Any(IsSeedValidForMutation);
+                return PlantSeedManager.HasValidMutationSeed(SeedStorage);
             }
         }
 
