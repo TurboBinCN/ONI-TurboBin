@@ -19,7 +19,7 @@ namespace MutantFarmLab
             base.OnSpawn();
             if (this.radiationEmitter != null)
             {
-                this.radiationEmitter.SetEmitting(true);
+                this.radiationEmitter.SetEmitting(false);
             }
             particleStorage = GetComponent<HighEnergyParticleStorage>();
             Subscribe((int)GameHashes.OnParticleStorageChanged, OnParticleChangedDelegate);
@@ -96,6 +96,7 @@ namespace MutantFarmLab
             //radiationEmitter.emitRadiusX = (short)RadiationLevel;
             //radiationEmitter.emitRadiusY = (short)RadiationLevel;
             radiationEmitter.Refresh();
+            Refresh();
         }
 
         public int SliderDecimalPlaces(int index)=>0;

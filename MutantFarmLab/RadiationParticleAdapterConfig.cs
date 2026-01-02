@@ -21,9 +21,9 @@ namespace MutantFarmLab
 
         public override BuildingDef CreateBuildingDef()
         {
-            int width = 2;
-            int height = 1;
-            string anim = "logic_buffer_kanim";
+            int width = 1;
+            int height = 2;
+            string anim = "radiation_tile_adapter_kanim";
             int hitpoints = 10;
             float constructionTime = 3f;
             float[] buildMass = BUILDINGS.CONSTRUCTION_MASS_KG.TIER0;
@@ -51,16 +51,16 @@ namespace MutantFarmLab
             def.AudioCategory = "Metal";
             def.AudioSize = "small";
             def.BaseTimeUntilRepair = -1f;
-            def.PermittedRotations = PermittedRotations.R360;
+            def.PermittedRotations = PermittedRotations.FlipV;
             def.DragBuild = true;
 
             def.UseHighEnergyParticleInputPort = true;
-            def.HighEnergyParticleInputOffset = new CellOffset(1, 0);
+            def.HighEnergyParticleInputOffset = new CellOffset(0, 0);
             def.LogicOutputPorts = new List<LogicPorts.Port>()
             {
                 LogicPorts.Port.OutputPort(
                     "HEPT_PORT_RP", 
-                    new CellOffset(1, 0),
+                    new CellOffset(0, 0),
                     STRINGS.BUILDINGS.PREFABS.RADIATIONPARTICLEADAPTER.LOGIC_PORT_NAME,
                     STRINGS.BUILDINGS.PREFABS.RADIATIONPARTICLEADAPTER.LOGIC_PORT_ACTIVE,
                     STRINGS.BUILDINGS.PREFABS.RADIATIONPARTICLEADAPTER.LOGIC_PORT_INACTIVE,
@@ -101,7 +101,7 @@ namespace MutantFarmLab
             radiationEmitter.emitRads = RADIATION_EMIT_VALUE;
             radiationEmitter.emitAngle = 90f;
             radiationEmitter.emitDirection = 90f;
-            radiationEmitter.emissionOffset = new Vector3(0f, 1f, 0);
+            radiationEmitter.emissionOffset = new Vector3(0f, 2f, 0);
 
             RadiationParticleAdapterController controller = go.AddOrGet<RadiationParticleAdapterController>();
             controller.ParticleConsumeRate = 1f;

@@ -16,7 +16,7 @@ namespace MutantFarmLab
         {
             int width = 3;
             int height = 1;
-            string anim = "radiation_lamp_kanim";
+            string anim = "radiation_lamp_line_kanim";
             int hitpoints = 100;
             float construction_time = 3f;
             float[] tier = BUILDINGS.CONSTRUCTION_MASS_KG.TIER0;
@@ -30,14 +30,14 @@ namespace MutantFarmLab
             buildingDef.AudioSize = "large";
             buildingDef.Floodable = false;
             buildingDef.Overheatable = false;
-            buildingDef.PermittedRotations = PermittedRotations.FlipV; // 仅允许水平翻转
+            buildingDef.PermittedRotations = PermittedRotations.FlipV;
 
             buildingDef.UseHighEnergyParticleInputPort = true;
-            buildingDef.HighEnergyParticleInputOffset = new CellOffset(1, 0);
+            buildingDef.HighEnergyParticleInputOffset = new CellOffset(0, 0);
 
             buildingDef.LogicOutputPorts = new List<LogicPorts.Port>
             {
-                LogicPorts.Port.OutputPort("HEP_STORAGE_REQ", new CellOffset(1, 0), STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE, STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE_ACTIVE, STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE_INACTIVE, false, false)
+                LogicPorts.Port.OutputPort("HEP_STORAGE_REQ", new CellOffset(0, 0), STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE, STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE_ACTIVE, STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE_INACTIVE, false, false)
             };
             return buildingDef;
         }
@@ -68,7 +68,7 @@ namespace MutantFarmLab
             controller.consumerRate = 1f;
             controller.lowParticleThreshold = 200f; // 低粒子阈值（200单位触发信号）
 
-            //go.AddOrGetDef<CustomRadiationLightSM.Def>();
+            go.AddOrGetDef<CustomRadiationLightSM.Def>();
 
         }
 
