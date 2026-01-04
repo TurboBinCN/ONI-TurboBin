@@ -10,7 +10,8 @@ namespace MutantFarmLab
 {
     public class CustomRadiationLightConfig : IBuildingConfig
     {
-        public const string ID = "CustomRadiationLight_LongBar";
+        public const string ID = "CustomRadiationLight";
+        public static readonly HashedString LOGIC_PORT_ID = "CRL_HEP_STORAGE_REQ";
 
         public override BuildingDef CreateBuildingDef()
         {
@@ -37,7 +38,7 @@ namespace MutantFarmLab
 
             buildingDef.LogicOutputPorts = new List<LogicPorts.Port>
             {
-                LogicPorts.Port.OutputPort("HEP_STORAGE_REQ", new CellOffset(0, 0), STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE, STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE_ACTIVE, STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE_INACTIVE, false, false)
+                LogicPorts.Port.OutputPort(LOGIC_PORT_ID, new CellOffset(0, 0), STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE, STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE_ACTIVE, STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE_INACTIVE, false, false)
             };
             return buildingDef;
         }

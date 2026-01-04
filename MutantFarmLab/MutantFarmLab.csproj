@@ -42,7 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DualLayerRadiationFarmConfig.cs" />
+    <Compile Include="RadiationFarmTile.cs" />
+    <Compile Include="RadiationFarmTileConfig.cs" />
     <Compile Include="ManualDeliveryKGPatch.cs" />
     <Compile Include="PlantSeedManager.cs" />
     <Compile Include="MutantFarmLabConfig.cs" />
@@ -65,13 +66,12 @@
     <Compile Include="tbbLibs\TbbBuilding.cs" />
     <Compile Include="CustomRadiationLightConfig.cs" />
     <Compile Include="CustomRadiationLight.cs" />
-    <Compile Include="TestRA.cs" />
-    <Compile Include="TestRaConfig.cs" />
     <Compile Include="TranspilerUtils.cs" />
     <Compile Include="BuildLocationPatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="anim\assets\mutant_farm_lab\mutant_farm_lab.png" />
+    <Content Include="anim\assets\radiation_farm_tile\radiation_farm_tile.png" />
     <Content Include="anim\assets\radiation_lamp_line\radiation_lamp_line.png" />
     <Content Include="anim\assets\radiation_tile_adapter\radiation_tile_adapter.png" />
     <Content Include="Directory.Build.props.user" />
@@ -80,6 +80,8 @@
   <ItemGroup>
     <None Include="anim\assets\mutant_farm_lab\mutant_farm_lab_anim.bytes" />
     <None Include="anim\assets\mutant_farm_lab\mutant_farm_lab_build.bytes" />
+    <None Include="anim\assets\radiation_farm_tile\radiation_farm_tile_anim.bytes" />
+    <None Include="anim\assets\radiation_farm_tile\radiation_farm_tile_build.bytes" />
     <None Include="anim\assets\radiation_lamp_line\radiation_lamp_line_anim.bytes" />
     <None Include="anim\assets\radiation_lamp_line\radiation_lamp_line_build.bytes" />
     <None Include="anim\assets\radiation_tile_adapter\radiation_tile_adapter_anim.bytes" />

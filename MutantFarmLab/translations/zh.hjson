@@ -1,6 +1,8 @@
 {
   STRINGS: {
-    # ✅ 严格对应C#: STRINGS.BUILDINGS.PREFABS
+    # ==============================================
+    # ✅ 严格对齐 C# → STRINGS.BUILDINGS.PREFABS
+    # ==============================================
     BUILDINGS: {
       PREFABS: {
         MUTANTFARMLAB: {
@@ -11,6 +13,7 @@
         CUSTOMRADIATIONLIGHT: {
           NAME: 辐射灯带
           DESC: 以存储的辐射粒子为能源，为变异植物提供生长所需的辐射环境，可调节功率等级改变辐射强度。
+          EFFECT: 通过内部存储的粒子作为能源，提供较宽范围的辐射
           LOW_PARTICLE_SIGNAL: 粒子不足信号
           LOW_PARTICLE_SIGNAL_TOOLTIP: 当粒子储量低于启动阈值时触发信号输出
           LOGIC_PORT_STORAGE: 粒子储量状态
@@ -29,10 +32,19 @@
           WARNING_LOW_PARTICLE: 粒子储量不足
           WARNING_LOW_PARTICLE_TOOLTIP: 高能粒子供给不足，辐射已暂停，请检查粒子发生器状态。
         }
+        RADIATIONFARMTILE: {
+          NAME: 辐射种植砖
+          DESC: 可为上方的植株提供辐射生长环境
+          EFFECT: 通过消耗铀矿，持续为上方植株释放辐射环境
+          LOW_URANIUMORE: 低铀矿储量
+          LOW_URANIUMORE_TOOLTIP: 铀矿储量不足，无法释放辐射。
+        }
       }
     }
 
-    # ✅ 严格对应C#: STRINGS.UI.XXX
+    # ==============================================
+    # ✅ 严格对齐 C# → STRINGS.UI (全节点无遗漏)
+    # ==============================================
     UI: {
       UISIDESCREENS: {
         MUTANTFARMLAB: {
@@ -50,11 +62,37 @@
           TOOLTIP: 功率越高，辐射越强，粒子消耗速度越快
         }
       }
+
       NOTIFICATIONS: {
         MUTANTFARM_NEED_MATERIALS: {
           NAME: 变异条件不足
           TOOLTIP: 需满足条件：设备通电 + 有效种子入库 + 高能粒子储量≥10
         }
+      }
+
+      UNITSUFFIXES: {
+        RADIATION: {
+          SETTING_RAD_LEVEL: 辐射等级设置
+          RADLEVEL: 辐射等级
+        }
+      }
+
+      # ✅ 新增补齐：C#中UI.TASKS节点 完整翻译
+      TASKS: {
+        CANCEL_REASONS: {
+          STORAGE_FULL: 储存已满。
+          DESTROYED: 任务已销毁。
+        }
+      }
+    }
+
+    # ==============================================
+    # ✅ 关键对齐：C#是单数ELEMENT → HJSON同步单数，翻译必生效
+    # ==============================================
+    ELEMENT: {
+      RADSEED: {
+        NAME: 辐射籽
+        DESC: 辐射抗性种子，食用后可提升自身辐射抗性
       }
     }
   }

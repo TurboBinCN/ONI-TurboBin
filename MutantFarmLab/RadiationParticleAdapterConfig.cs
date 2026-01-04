@@ -16,8 +16,6 @@ namespace MutantFarmLab
         // 可配置参数
         private const float PARTICLE_STORAGE_CAP = 2000f;
         private const float RADIATION_EMIT_VALUE = 350f;
-        private const float PARTICLE_CONSUME_RATE = 0.6f;
-        private const float LOW_PARTICLE_THRESHOLD = 250f;
 
         public override BuildingDef CreateBuildingDef()
         {

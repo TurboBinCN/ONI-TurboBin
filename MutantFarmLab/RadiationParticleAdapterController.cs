@@ -91,7 +91,7 @@ namespace MutantFarmLab
             int adapterCenterCell = Grid.PosToCell(gameObject); // 自身中心格子（判定基准）
             if (!Grid.IsValidCell(adapterCenterCell))
             {
-                PUtil.LogDebug($"⚠️ 种植砖绑定失败：自身中心格子无效，格子ID={adapterCenterCell}");
+                //PUtil.LogDebug($"⚠️ 种植砖绑定失败：自身中心格子无效，格子ID={adapterCenterCell}");
                 return;
             }
 
@@ -151,18 +151,19 @@ namespace MutantFarmLab
         #region 粒子状态判定 + 联动控制
         private void JudgeParticleEnoughState()
         {
-            _isParticleEnough = _particleStorage != null && _particleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) >= LowParticleThreshold;
+            _isParticleEnough = _particleStorage != null && _particleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) > LowParticleThreshold;
         }
 
         private void ControlRadiation_Logic_ParticleConsume()
         {
             bool canEmitRadiation = _isBindFarmTileValid && _isParticleEnough;
-            _radiationEmitter.enabled = canEmitRadiation;
             if (canEmitRadiation && _particleStorage != null)
             {
                 float consumeNum = ParticleConsumeRate * UPDATE_INTERVAL * RadiationLevel;
                 _particleStorage.ConsumeAndGet(consumeNum);
             }
+            JudgeParticleEnoughState();
+            _radiationEmitter.SetEmitting(_isParticleEnough);
 
             // 逻辑信号输出：粒子不足=1，充足=0
             _logicPorts?.SendSignal(PORT_ID, _isParticleEnough ? 0 : 1);
@@ -201,8 +202,8 @@ namespace MutantFarmLab
         //SliderControl
         public string SliderTitleKey => STRINGS.UI.UISIDESCREENS.SLIDERCONTROL.TITLE;
 
-        public string SliderUnits => UI.UNITSUFFIXES.RADIATION.RADS;
-        public int SliderDecimalPlaces(int index) => RadiationLevel;
+        public string SliderUnits => STRINGS.UI.UNITSUFFIXES.RADIATION.RADLEVEL;
+        public int SliderDecimalPlaces(int index) => 0;
 
         public float GetSliderMin(int index) => 0;
 
