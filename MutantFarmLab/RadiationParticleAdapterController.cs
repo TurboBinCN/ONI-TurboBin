@@ -16,7 +16,8 @@ namespace MutantFarmLab
         private HighEnergyParticleStorage _particleStorage;
         private RadiationEmitter _radiationEmitter;
         private LogicPorts _logicPorts;
-
+        private bool _logicHolding = false;
+        private int _powerBase = 300;
         // 配置参数
         public float ParticleConsumeRate{set;get;} = 1.0f;
         public float LowParticleThreshold { set; get; } = 200f;
@@ -27,7 +28,8 @@ namespace MutantFarmLab
         private bool _isParticleEnough;
 
         private float UPDATE_INTERVAL;
-        private int RadiationLevel = 0;
+        [Serialize]
+        private int RadiationLevel = 1;
 
         private static readonly HashedString PORT_ID = "HEPT_PORT_RP";
 
@@ -53,8 +55,10 @@ namespace MutantFarmLab
             _logicPorts = GetComponent<LogicPorts>();
             _isBindFarmTileValid = false;
 
-            if (_radiationEmitter == null)
+            if (_radiationEmitter == null){
                 _radiationEmitter = GetComponent<RadiationEmitter>();
+                _radiationEmitter.emitRads = RadiationLevel * _powerBase;
+            }
 
             _radiationEmitter.SetEmitting(false);
             if(_particleStorage  == null)
@@ -132,7 +136,7 @@ namespace MutantFarmLab
                 }
             }
 
-            PUtil.LogDebug($"⚠️ 绑定失败：自身中心上下左右1格范围内，无自身占据且包含种植砖的格子");
+            //PUtil.LogDebug($"⚠️ 绑定失败：自身中心上下左右1格范围内，无自身占据且包含种植砖的格子");
         }
 
         #region 核心辅助方法（精准无错，可复用）
@@ -166,7 +170,22 @@ namespace MutantFarmLab
             _radiationEmitter.SetEmitting(_isParticleEnough);
 
             // 逻辑信号输出：粒子不足=1，充足=0
-            _logicPorts?.SendSignal(PORT_ID, _isParticleEnough ? 0 : 1);
+            int signal = 0;
+            if(_particleStorage != null)
+            {
+                float particleAmount = _particleStorage.GetAmountAvailable(GameTags.HighEnergyParticle);
+                if (particleAmount < LowParticleThreshold) _logicHolding = true;
+                if(particleAmount < (_particleStorage.capacity - ParticleConsumeRate * UPDATE_INTERVAL * RadiationLevel) && _logicHolding)
+                {
+                    signal = 1;
+                }
+                else
+                {
+                    _logicHolding = false;
+                    signal = 0;
+                }
+            }
+            _logicPorts?.SendSignal(PORT_ID, signal);
         }
         #endregion
 

@@ -1,7 +1,7 @@
 {
   STRINGS: {
     # ==============================================
-    # ✅ 严格对齐 C# → STRINGS.BUILDINGS.PREFABS
+    # ✅ 建筑翻译 → 严格对齐 C# BUILDINGS.PREFABS
     # ==============================================
     BUILDINGS: {
       PREFABS: {
@@ -43,7 +43,7 @@
     }
 
     # ==============================================
-    # ✅ 严格对齐 C# → STRINGS.UI (全节点无遗漏)
+    # ✅ UI翻译 → 严格对齐 C# UI 所有节点
     # ==============================================
     UI: {
       UISIDESCREENS: {
@@ -77,7 +77,6 @@
         }
       }
 
-      # ✅ 新增补齐：C#中UI.TASKS节点 完整翻译
       TASKS: {
         CANCEL_REASONS: {
           STORAGE_FULL: 储存已满。
@@ -87,12 +86,35 @@
     }
 
     # ==============================================
-    # ✅ 关键对齐：C#是单数ELEMENT → HJSON同步单数，翻译必生效
+    # ✅ 核心翻译：抗辐籽 RADSEED → 与C# ELEMENT.RADSEED严格对齐
     # ==============================================
     ELEMENT: {
       RADSEED: {
         NAME: 辐射籽
-        DESC: 辐射抗性种子，食用后可提升自身辐射抗性
+        DESC: 具备强辐射抗性的特殊种子，食用后可彻底清除体内辐射，并获得一段时间的辐射免疫能力。
+      }
+    }
+    # ✅ 新增：食物中文翻译（对应 ITEMS.FOOD.RADSEED）
+    ITEMS: {
+      FOOD: {
+        RADSEED: {
+          NAME: "辐射籽"
+          DESC: "一种散发微光的特殊种子，食用后可彻底清除体内辐射，并获得辐射免疫能力。"
+        }
+      }
+    }
+
+    # ✅ 新增：效果中文翻译（对应 DUPLICANTS.MODIFIERS）
+    DUPLICANTS: {
+      MODIFIERS: {
+        RADCLEAR: {
+          NAME: "辐射净化"
+          DESCRIPTION: "体内所有辐射被瞬间清除。"
+        }
+        RADIMMUNITY: {
+          NAME: "辐射免疫"
+          DESCRIPTION: "5个周期内完全免疫辐射伤害。"
+        }
       }
     }
   }

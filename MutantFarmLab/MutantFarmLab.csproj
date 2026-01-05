@@ -42,6 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="mutantplants\FoodEffectRegister.cs" />
+    <Compile Include="mutantplants\PlantMutationRegister.cs" />
+    <Compile Include="mutantplants\RadiationResistSeedConfig.cs" />
     <Compile Include="RadiationFarmTile.cs" />
     <Compile Include="RadiationFarmTileConfig.cs" />
     <Compile Include="ManualDeliveryKGPatch.cs" />
@@ -54,6 +57,7 @@
     <Compile Include="RadiationParticleAdapterConfig.cs" />
     <Compile Include="RadiationParticleAdapterController.cs" />
     <Compile Include="StaticRadiationField.cs" />
+    <Compile Include="StringInjectorPatch.cs" />
     <Compile Include="Strings.cs" />
     <Compile Include="tbbLibs\TbbDebuger.cs" />
     <Compile Include="tbbLibs\TbbSideScreenContent.cs" />
@@ -76,6 +80,7 @@
     <Content Include="anim\assets\radiation_tile_adapter\radiation_tile_adapter.png" />
     <Content Include="Directory.Build.props.user" />
     <Content Include="issues.txt" />
+    <Content Include="mutantplants\test.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="anim\assets\mutant_farm_lab\mutant_farm_lab_anim.bytes" />

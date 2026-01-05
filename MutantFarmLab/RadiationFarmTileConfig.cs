@@ -92,10 +92,13 @@ namespace MutantFarmLab
             RadiationPlot.AddOrGet<KMonoBehaviour>();
             KPrefabID kPrefabID = RadiationPlot.AddOrGet<KPrefabID>();
             kPrefabID.PrefabTag = Tag.Invalid;
+            kPrefabID.AddTag(GameTags.StorageLocker, false);
 
             KSelectable kSelectable = RadiationPlot.AddOrGet<KSelectable>();
             kSelectable.SetName("RadiationPlot"); // 设置UI显示名称
             kSelectable.IsSelectable = true;
+
+            RadiationPlot.AddOrGet<SaveLoadRoot>();
 
             KBatchedAnimController animController = RadiationPlot.AddOrGet<KBatchedAnimController>();
             animController.AnimFiles = new KAnimFile[]{Assets.GetAnim("farmtilehydroponicrotating_kanim")}; // 自定义GO可空，不影响功能

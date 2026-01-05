@@ -1,4 +1,5 @@
-﻿using PeterHan.PLib.Core;
+﻿using KSerialization;
+using PeterHan.PLib.Core;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace MutantFarmLab
     {
         public Storage _storage;
         private RadiationEmitter _radiationEmitter;
+        [Serialize]
         private int _powerLevel = 1;
         private float _consumRate = 0.01f;
         private int _powerBase = 300;

@@ -1,0 +1,16 @@
+﻿\    PlantMutation highYieldMut = new PlantMutation(
+        "HighYieldMutation", "高产变异", "产量翻倍，养料消耗增加50%")
+        .AttributeModifier(Db.Get().PlantAttributes.YieldAmount, 1f, false)
+        .AttributeModifier(Db.Get().PlantAttributes.FertilizerUsageMod, 0.5f, true)
+        .VisualTint(0.5f, 0.2f, 0.2f);
+
+    // 两步挂载：存入原生仓库 + 注册种子目录
+    Db.Get().PlantMutations.Add(highYieldMut);
+
+    public string[] GetDlcIds() => DlcManager.AVAILABLE_ALL_VERSIONS;
+
+
+    辐射剂量存储属性（清零目标）：Db.Get().Amounts.RadiationBalance.Id ✅（源码BaseMinionConfig第 777 行已验证）
+辐射抗性属性（免疫核心）：Db.Get().Attributes.RadiationResistance.Id ✅（源码BaseMinionConfig第 729 行已验证）
+辐射恢复属性（防数值反弹）：Db.Get().Attributes.RadiationRecovery.Id ✅（源码BaseMinionConfig第 730 行已验证）
+实现逻辑：辐射清零 + 免疫 = RadiationBalance清零 + RadiationResistance拉满 + RadiationRecovery暂停，全程无需任何 Effect 免疫 → 彻底规避Could not find Effect报错！
