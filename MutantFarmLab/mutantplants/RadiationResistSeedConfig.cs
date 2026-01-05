@@ -21,7 +21,7 @@ namespace MutantFarmLab.mutantplants
                 Description,
                 1f,
                 false,
-                Assets.GetAnim("meallicegrain_kanim"),
+                Assets.GetAnim("radiation_seed_kanim"),
                 "object",
                 Grid.SceneLayer.Front,
                 EntityTemplates.CollisionShape.CIRCLE,

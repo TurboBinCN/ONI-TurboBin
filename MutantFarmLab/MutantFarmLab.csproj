@@ -77,6 +77,7 @@
     <Content Include="anim\assets\mutant_farm_lab\mutant_farm_lab.png" />
     <Content Include="anim\assets\radiation_farm_tile\radiation_farm_tile.png" />
     <Content Include="anim\assets\radiation_lamp_line\radiation_lamp_line.png" />
+    <Content Include="anim\assets\radiation_seed\radiation_seed.png" />
     <Content Include="anim\assets\radiation_tile_adapter\radiation_tile_adapter.png" />
     <Content Include="Directory.Build.props.user" />
     <Content Include="issues.txt" />
@@ -89,6 +90,8 @@
     <None Include="anim\assets\radiation_farm_tile\radiation_farm_tile_build.bytes" />
     <None Include="anim\assets\radiation_lamp_line\radiation_lamp_line_anim.bytes" />
     <None Include="anim\assets\radiation_lamp_line\radiation_lamp_line_build.bytes" />
+    <None Include="anim\assets\radiation_seed\radiation_seed_anim.bytes" />
+    <None Include="anim\assets\radiation_seed\radiation_seed_build.bytes" />
     <None Include="anim\assets\radiation_tile_adapter\radiation_tile_adapter_anim.bytes" />
     <None Include="anim\assets\radiation_tile_adapter\radiation_tile_adapter_build.bytes" />
     <None Include="Directory.Build.props" />
