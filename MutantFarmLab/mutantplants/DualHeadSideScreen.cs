@@ -24,6 +24,10 @@ namespace MutantFarmLab
         private SingleEntityReceptacle _targetReceptacle;
         private PlanterSideScreen _planterSideScreen;
         private DetailsScreen _detailsScreen;
+        private Operational _plotOperational;
+
+        // 新增：标记是否为自定义操作（避免原生销毁）
+        public static bool IsCustomPlantOperation = false;
 
         #region 单例初始化
         public static DualHeadSideScreen Instance { get; private set; }
@@ -56,6 +60,7 @@ namespace MutantFarmLab
             _targetPlantPlot = targetPlotObj.GetComponent<PlantablePlot>();
             _targetReceptacle = targetPlotObj.GetComponent<SingleEntityReceptacle>();
             _planterSideScreen = planterSideScreenRoot.GetComponent<PlanterSideScreen>();
+            _plotOperational = targetPlotObj.GetComponent<Operational>(); // 新增：获取运行状态组件
 
             // 校验核心组件
             if (_targetPlantPlot == null || _targetReceptacle == null)
@@ -72,6 +77,10 @@ namespace MutantFarmLab
             {
                 PUtil.LogError("[第二株按钮] 初始化失败：未找到DetailsScreen");
                 return;
+            }
+            if (_plotOperational == null)
+            {
+                PUtil.LogWarning("[第二株按钮] 未找到Operational组件，使用默认状态");
             }
 
             // 查找按钮容器并创建按钮
@@ -177,98 +186,144 @@ namespace MutantFarmLab
         }
         #endregion
 
-        #region 按钮点击核心逻辑（拔除+重置+界面切换）
+        #region 按钮点击核心逻辑（修复种植按钮灰色问题）
         private void OnDualPlantButtonClick()
         {
-            PUtil.LogDebug("[第二株按钮] 点击触发，执行拔除逻辑 ✔️");
+            PUtil.LogDebug("[第二株按钮] 点击触发，执行清空种植盆逻辑 ✔️");
 
             try
             {
-                // ========== 步骤1：拔除当前植株（原生流程） ==========
-                RemoveCurrentPlant();
+                // 核心标记：自定义操作，禁止销毁植株
+                IsCustomPlantOperation = true;
 
-                // ========== 步骤2：重置种植盆状态 ==========
+                // 步骤1：只清空种植盆，不调用原生拔除逻辑
+                ClearPlantablePlotWithoutDestroy();
+
+                // 步骤2：重置种植盆状态（关键修复：恢复可种植状态）
                 ResetPlantablePlotState();
 
-                // ========== 步骤3：强制刷新UI，切回选择植株界面 ==========
-                RefreshSideScreen();
+                // 步骤3：强制刷新UI和PlanterSideScreen（修复按钮灰色）
+                RefreshSideScreenFull();
+
+                // 重置标记
+                IsCustomPlantOperation = false;
 
                 PUtil.LogDebug("[第二株按钮] 操作完成，已切回选择植株界面 ✔️");
             }
             catch (Exception ex)
             {
+                // 异常时重置标记，避免影响原生逻辑
+                IsCustomPlantOperation = false;
                 PUtil.LogError($"[第二株按钮] 执行异常【{ex.GetType().Name}】：{ex.Message}\n{ex.StackTrace}");
             }
         }
 
         /// <summary>
-        /// 拔除当前种植盆中的植株（原生流程）
+        /// 核心修复：只清空种植盆关联，不销毁植株本体
         /// </summary>
-        private void RemoveCurrentPlant()
+        private void ClearPlantablePlotWithoutDestroy()
         {
-            // 1. 获取当前植株
-            GameObject currentPlant = _targetPlantPlot.Occupant;
+            // 1. 获取当前植株（使用公开API，无反射）
+            GameObject currentPlant = _targetReceptacle.Occupant;
             if (currentPlant == null)
             {
-                PUtil.LogDebug("[第二株按钮] 种植盆无植株，无需拔除");
+                PUtil.LogDebug("[第二株按钮] 种植盆无植株，无需清空");
                 return;
             }
 
-            // 2. 调用原生拔除逻辑（触发完整回调）
-            Uprootable uprootable = currentPlant.GetComponent<Uprootable>();
-            if (uprootable != null)
+            try
             {
-                // 标记为拔除（触发原生事件）
-                uprootable.MarkForUproot(true);
-                // 立即执行拔除
-                uprootable.Uproot();
-                PUtil.LogDebug("[第二株按钮] 已调用原生Uproot方法拔除植株");
-                return; // 拔除成功，无需兜底
-            }
+                // 2. 优先使用公开API解除关联
+                if (currentPlant.TryGetComponent(out Assignable assignable))
+                {
+                    assignable.Unassign();
+                    PUtil.LogDebug("[第二株按钮] 已通过Assignable.Unassign解除植株关联");
+                }
 
-            // 兜底：通过反射调用无参数的ClearOccupant方法
-            InvokeProtectedMethodWithParams(_targetReceptacle, "ClearOccupant", null);
-            PUtil.LogDebug("[第二株按钮] 兜底清空植株（反射调用ClearOccupant）");
+                // 3. 解除PlantablePlot与植株的绑定
+                SetPrivateField(_targetPlantPlot, "plantRef", new Ref<KPrefabID>());
+                InvokeProtectedMethodWithParams(_targetReceptacle, "UnsubscribeFromOccupant", Type.EmptyTypes);
+
+                // 4. 清空SingleEntityReceptacle的核心字段
+                SetPrivateField(_targetReceptacle, "occupyingObject", null);
+                SetPrivateField(_targetReceptacle, "occupyObjectRef", new Ref<KSelectable>());
+
+                // 5. 取消植株销毁标记
+                Uprootable uprootable = currentPlant.GetComponent<Uprootable>();
+                if (uprootable != null)
+                {
+                    uprootable.ForceCancelUproot();
+                    SetPrivateField(uprootable, "isMarkedForUproot", false);
+                    SetPrivateField(uprootable, "chore", null);
+                    PUtil.LogDebug("[第二株按钮] 已取消Uprootable销毁标记和任务");
+                }
+
+                // 6. 解除植株父物体关联，保留植株本体
+                currentPlant.transform.SetParent(null);
+
+                PUtil.LogDebug("[第二株按钮] 已清空种植盆关联，保留植株本体");
+            }
+            catch (Exception ex)
+            {
+                PUtil.LogWarning($"[第二株按钮] 清空种植盆时警告：{ex.Message}");
+            }
         }
 
         /// <summary>
-        /// 重置种植盆状态（恢复到可选择种子的初始状态）
+        /// 关键修复：完全重置种植盆状态，恢复可种植能力
         /// </summary>
         private void ResetPlantablePlotState()
         {
             try
             {
-                // 1. 取消当前种植请求（公开方法，可直接调用）
+                // 1. 基础重置（原有逻辑）
                 _targetReceptacle.CancelActiveRequest();
-
-                // 2. 重置请求Tag（通过反射设置私有字段）
-                SetPrivateField(_targetPlantPlot, "requestedEntityTag", Tag.Invalid);
-                SetPrivateField(_targetPlantPlot, "requestedEntityAdditionalFilterTag", Tag.Invalid);
-
-                // 3. 清空预览（公开方法）
                 _targetPlantPlot.SetPreview(Tag.Invalid, false);
-
-                // 修复：调用无参数的UpdateStatusItem重载版本
-                // 优先调用无参数版本，避免歧义
                 InvokeUpdateStatusItemWithoutParams(_targetReceptacle);
 
-                PUtil.LogDebug("[第二株按钮] 种植盆状态已重置");
+                // 2. 关键修复1：重置requestedEntityTag为无效（允许重新选择种子）
+                SetPrivateField(_targetReceptacle, "requestedEntityTag", Tag.Invalid);
+                SetPrivateField(_targetReceptacle, "requestedEntityAdditionalFilterTag", Tag.Invalid);
+                // 在 ResetPlantablePlotState() 中添加：
+                SetPrivateField(_targetPlantPlot, "isRemoving", false);
+
+                // 3. 关键修复2：恢复种植盆运行状态为可操作
+                if (_plotOperational != null && !_plotOperational.IsOperational)
+                {
+                    _plotOperational.SetActive(true, false);
+                    //_plotOperational.SetFlag(Operational.Flag.Type.Active, true);
+                    PUtil.LogDebug("[第二株按钮] 已恢复种植盆Operational状态为激活");
+                }
+
+                // 4. 关键修复3：重置autoReplaceEntity为false（避免自动补种）
+                SetPrivateField(_targetReceptacle, "autoReplaceEntity", false);
+                SetPrivateField(_targetReceptacle, "activeRequest", null);
+                // 5. 关键修复4：更新种植盆激活状态
+                InvokeProtectedMethodWithParams(_targetReceptacle, "UpdateActive", Type.EmptyTypes);
+
+                // 在 ResetPlantablePlotState() 最后添加：
+                if (_targetPlantPlot != null)
+                {
+                    MethodInfo onSpawned = typeof(PlantablePlot).GetMethod("OnSpawned", BindingFlags.Instance | BindingFlags.NonPublic);
+                    onSpawned?.Invoke(_targetPlantPlot, null);
+                }
+
+                PUtil.LogDebug("[第二株按钮] 种植盆状态已完全重置，恢复可种植能力");
             }
             catch (Exception ex)
             {
                 PUtil.LogWarning($"[第二株按钮] 重置状态时警告：{ex.Message}");
-                // 重置失败不影响核心功能，继续执行
             }
         }
 
         /// <summary>
-        /// 刷新侧边屏，强制切回选择植株界面
+        /// 增强版UI刷新：修复种植按钮灰色问题（适配PlanterSideScreen源码）
         /// </summary>
-        private void RefreshSideScreen()
+        private void RefreshSideScreenFull()
         {
             try
             {
-                // 1. 触发DetailsScreen选中变更（模拟玩家重新点击种植盆）
+                // 1. 强制刷新DetailsScreen选中状态
                 MethodInfo onSelectionChanged = typeof(DetailsScreen).GetMethod(
                     "OnSelectionChanged",
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
@@ -279,16 +334,43 @@ namespace MutantFarmLab
 
                 if (onSelectionChanged != null)
                 {
-                    onSelectionChanged.Invoke(_detailsScreen, new object[] { _targetPlantPlot.gameObject });
-                    PUtil.LogDebug("[第二株按钮] 触发OnSelectionChanged刷新界面");
+                    onSelectionChanged.Invoke(_detailsScreen, new object[] { null }); // 先取消选中
+                    onSelectionChanged.Invoke(_detailsScreen, new object[] { _targetPlantPlot.gameObject }); // 重新选中
+                    PUtil.LogDebug("[第二株按钮] 强制刷新DetailsScreen选中状态");
                 }
 
-                // 2. 重新绑定PlanterSideScreen到种植盆
-                _planterSideScreen.SetTarget(_targetPlantPlot.gameObject);
+                // 2. 重新初始化PlanterSideScreen（关键修复：适配源码无Refresh方法）
+                if (_planterSideScreen != null)
+                {
+                    // 先清空原有目标
+                    SetPrivateField(_planterSideScreen, "targetReceptacle", null);
+                    // 重新绑定目标（调用公开的SetTarget方法）
+                    _planterSideScreen.SetTarget(_targetPlantPlot.gameObject);
+                    // 调用PlanterSideScreen的UpdateState方法刷新状态
+                    InvokeProtectedMethodWithParams(_planterSideScreen, "UpdateState", new[] { typeof(object) }, new object[] { null });
+                    // 调用RefreshSubspeciesToggles刷新变异种子列表
+                    InvokeProtectedMethodWithParams(_planterSideScreen, "RefreshSubspeciesToggles", Type.EmptyTypes);
+                    PUtil.LogDebug("[第二株按钮] 已重新初始化PlanterSideScreen");
+                }
 
                 // 3. 强制刷新UI布局
                 Canvas.ForceUpdateCanvases();
-                LayoutRebuilder.ForceRebuildLayoutImmediate(_planterSideScreen.GetComponent<RectTransform>());
+                if (_planterSideScreen != null)
+                {
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(_planterSideScreen.GetComponent<RectTransform>());
+                }
+
+                // 4. 延迟刷新（兜底方案，确保UI完全更新）
+                GameScheduler.Instance.Schedule("DualPlantRefresh", 0.1f, (_) =>
+                {
+                    if (_planterSideScreen != null)
+                    {
+                        // 延迟调用UpdateState确保状态同步
+                        InvokeProtectedMethodWithParams(_planterSideScreen, "UpdateState", new[] { typeof(object) }, new object[] { null });
+                    }
+                    PUtil.LogDebug("[第二株按钮] 延迟刷新UI完成");
+                });
+
             }
             catch (Exception ex)
             {
@@ -297,14 +379,7 @@ namespace MutantFarmLab
         }
         #endregion
 
-        #region 反射辅助方法（修复歧义匹配问题）
-        /// <summary>
-        /// 调用对象的受保护/私有方法（指定参数类型，避免歧义）
-        /// </summary>
-        /// <param name="obj">目标对象</param>
-        /// <param name="methodName">方法名</param>
-        /// <param name="paramTypes">参数类型数组（无参数传null）</param>
-        /// <param name="parameters">方法参数（无参数传null）</param>
+        #region 反射辅助方法
         private void InvokeProtectedMethodWithParams(object obj, string methodName, Type[] paramTypes, object[] parameters = null)
         {
             if (obj == null || string.IsNullOrEmpty(methodName))
@@ -312,7 +387,6 @@ namespace MutantFarmLab
 
             try
             {
-                // 指定参数类型查找方法，避免歧义
                 MethodInfo method = obj.GetType().GetMethod(
                     methodName,
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
@@ -324,32 +398,25 @@ namespace MutantFarmLab
                 if (method != null)
                 {
                     method.Invoke(obj, parameters ?? null);
+                    PUtil.LogDebug($"[反射] 成功调用方法：{obj.GetType().Name}.{methodName}");
                 }
                 else
                 {
-                    PUtil.LogError($"[反射] 未找到方法：{obj.GetType().Name}.{methodName} (参数类型：{(paramTypes == null ? "无参数" :  paramTypes)})");
+                    PUtil.LogWarning($"[反射] 未找到方法：{obj.GetType().Name}.{methodName}");
                 }
-            }
-            catch (AmbiguousMatchException)
-            {
-                PUtil.LogError($"[反射] 方法{methodName}存在多个重载，无法确定调用版本");
             }
             catch (Exception ex)
             {
-                PUtil.LogError($"[反射] 调用{methodName}失败：{ex.Message}");
+                PUtil.LogWarning($"[反射] 调用{methodName}失败：{ex.Message}");
             }
         }
 
-        /// <summary>
-        /// 调用无参数的UpdateStatusItem方法（专门处理歧义问题）
-        /// </summary>
         private void InvokeUpdateStatusItemWithoutParams(object obj)
         {
             if (obj == null) return;
 
             try
             {
-                // 方案1：优先查找无参数的UpdateStatusItem
                 MethodInfo method = obj.GetType().GetMethod(
                     "UpdateStatusItem",
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
@@ -361,10 +428,10 @@ namespace MutantFarmLab
                 if (method != null)
                 {
                     method.Invoke(obj, null);
+                    PUtil.LogDebug("[反射] 成功调用无参数UpdateStatusItem");
                     return;
                 }
 
-                // 方案2：查找带KSelectable参数的版本，传入当前对象的KSelectable
                 MethodInfo methodWithParam = obj.GetType().GetMethod(
                     "UpdateStatusItem",
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
@@ -377,10 +444,8 @@ namespace MutantFarmLab
                 {
                     KSelectable selectable = obj as KSelectable ?? ((Component)obj).GetComponent<KSelectable>();
                     methodWithParam.Invoke(obj, new object[] { selectable });
-                    return;
+                    PUtil.LogDebug("[反射] 成功调用带参数UpdateStatusItem");
                 }
-
-                PUtil.LogWarning("[反射] 未找到可用的UpdateStatusItem重载版本");
             }
             catch (Exception ex)
             {
@@ -388,9 +453,6 @@ namespace MutantFarmLab
             }
         }
 
-        /// <summary>
-        /// 设置对象的私有/受保护字段值
-        /// </summary>
         private void SetPrivateField(object obj, string fieldName, object value)
         {
             if (obj == null || string.IsNullOrEmpty(fieldName))
@@ -398,7 +460,8 @@ namespace MutantFarmLab
 
             try
             {
-                FieldInfo field = obj.GetType().GetField(
+                Type objType = obj.GetType();
+                FieldInfo field = objType.GetField(
                     fieldName,
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public
                 );
@@ -406,32 +469,29 @@ namespace MutantFarmLab
                 if (field != null)
                 {
                     field.SetValue(obj, value);
+                    PUtil.LogDebug($"[反射] 成功设置字段：{objType.Name}.{field.Name} = {value ?? "null"}");
                 }
                 else
                 {
-                    PUtil.LogError($"[反射] 未找到字段：{obj.GetType().Name}.{fieldName}");
+                    PUtil.LogWarning($"[反射] 未找到字段：{objType.Name}.{fieldName}");
                 }
             }
             catch (Exception ex)
             {
-                PUtil.LogError($"[反射] 设置字段{fieldName}失败：{ex.Message}");
+                PUtil.LogWarning($"[反射] 设置字段{fieldName}失败：{ex.Message}");
             }
         }
         #endregion
 
         #region 辅助方法：校验种植数量
-        /// <summary>
-        /// 检查是否达到双株种植上限（简化版）
-        /// </summary>
         private bool IsDualPlantLimitReached()
         {
             try
             {
                 int count = 0;
-                // 查找当前种植盆周围1格内的植株数量
                 foreach (PlantablePlot plot in FindObjectsOfType<PlantablePlot>())
                 {
-                    if (plot == null || plot.Occupant == null) continue;
+                    if (plot == null || plot.GetComponent<SingleEntityReceptacle>().Occupant == null) continue;
                     if (Vector3.Distance(plot.transform.position, _targetPlantPlot.transform.position) < 1f)
                     {
                         count++;
@@ -442,33 +502,27 @@ namespace MutantFarmLab
             catch (Exception ex)
             {
                 PUtil.LogWarning($"[第二株按钮] 计数检查失败：{ex.Message}");
-                return false; // 计数失败默认未达上限
+                return false;
             }
         }
 
-        /// <summary>
-        /// 刷新方法（兼容Patch调用）
-        /// </summary>
         public void Refresh()
         {
             RefreshButtonState();
         }
 
-        /// <summary>
-        /// 刷新按钮状态
-        /// </summary>
         public void RefreshButtonState()
         {
             if (_dualPlantButton == null) return;
             try
             {
-                _dualPlantButton.interactable = !IsDualPlantLimitReached() && _targetPlantPlot.Occupant != null;
+                _dualPlantButton.interactable = !IsDualPlantLimitReached() && _targetReceptacle.Occupant != null;
                 PUtil.LogDebug($"[第二株按钮] 状态刷新：{(IsDualPlantLimitReached() ? "禁用" : "启用")}");
             }
             catch (Exception ex)
             {
                 PUtil.LogWarning($"[第二株按钮] 刷新状态失败：{ex.Message}");
-                _dualPlantButton.interactable = true; // 兜底启用按钮
+                _dualPlantButton.interactable = true;
             }
         }
         #endregion
@@ -492,4 +546,50 @@ namespace MutantFarmLab
         #endregion
     }
 
+    #region Harmony补丁：仅保留核心拦截逻辑（移除无效补丁）
+    public static class DualPlantPatch
+    {
+        [HarmonyPatch(typeof(Uprootable), "Uproot")]
+        public static class Uprootable_Uproot_Patch
+        {
+            public static bool Prefix(Uprootable __instance)
+            {
+                if (DualHeadSideScreen.IsCustomPlantOperation)
+                {
+                    PUtil.LogDebug("[补丁] 拦截原生Uproot逻辑，避免销毁植株");
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(Uprootable), "MarkForUproot")]
+        public static class Uprootable_MarkForUproot_Patch
+        {
+            public static bool Prefix(Uprootable __instance)
+            {
+                if (DualHeadSideScreen.IsCustomPlantOperation)
+                {
+                    PUtil.LogDebug("[补丁] 拦截MarkForUproot，避免标记销毁");
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(PlantablePlot), "OrderRemoveOccupant")]
+        public static class PlantablePlot_OrderRemoveOccupant_Patch
+        {
+            public static bool Prefix(PlantablePlot __instance)
+            {
+                if (DualHeadSideScreen.IsCustomPlantOperation)
+                {
+                    PUtil.LogDebug("[补丁] 拦截OrderRemoveOccupant，避免原生拔除");
+                    return false;
+                }
+                return true;
+            }
+        }
+    }
+    #endregion
 }
