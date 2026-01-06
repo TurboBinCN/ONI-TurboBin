@@ -42,6 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="mutantplants\DualHeadPlantComponent.cs" />
+    <Compile Include="mutantplants\DualHeadPlotPatch.cs" />
+    <Compile Include="mutantplants\DualHeadSideScreen.cs" />
+    <Compile Include="mutantplants\DualHeadSideScreenPatch.cs" />
+    <Compile Include="mutantplants\DualPlant_CorePatch.cs" />
     <Compile Include="mutantplants\FoodEffectRegister.cs" />
     <Compile Include="mutantplants\PlantMutationRegister.cs" />
     <Compile Include="mutantplants\RadiationResistSeedConfig.cs" />

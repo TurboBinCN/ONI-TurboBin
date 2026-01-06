@@ -1,4 +1,5 @@
-﻿using TUNING;
+﻿using System.Collections.Generic;
+using TUNING;
 using UnityEngine;
 
 namespace MutantFarmLab
@@ -10,6 +11,7 @@ namespace MutantFarmLab
         public static float Deliverycapacity = 5f;
         public static float ParticleConsumeAmount = 100f;
         public static float MutationDuration = 40f;
+        public static string HEP_RQ_LOGIC_PORT_ID = "MUTANTFARMLAB_HEP_REQ_PORT";
         public override BuildingDef CreateBuildingDef()
         {
             int width = 4;
@@ -34,9 +36,15 @@ namespace MutantFarmLab
             buildingDef.HighEnergyParticleInputOffset = new CellOffset(0, 2);
 
 
-            
+            buildingDef.LogicOutputPorts = new List<LogicPorts.Port>
+            {
+                LogicPorts.Port.OutputPort(HEP_RQ_LOGIC_PORT_ID, new CellOffset(0, 1), STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE, STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE_ACTIVE, STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.LOGIC_PORT_STORAGE_INACTIVE, false, false)
+            };
+
             buildingDef.Deprecated = !DlcManager.FeaturePlantMutationsEnabled();
             buildingDef.RequiredSkillPerkID = Db.Get().SkillPerks.CanIdentifyMutantSeeds.Id;
+
+
             return buildingDef;
         }
 

@@ -59,6 +59,10 @@ namespace MutantFarmLab
         {
             public static class UISIDESCREENS
             {
+                public static class PLANTERSIDESCREEN
+                {
+                    public static LocString PLANT = "植株";
+                }
                 public static class MUTANTFARMLAB
                 {
                     public static LocString TITLE = "Seed Mutation";
@@ -114,6 +118,11 @@ namespace MutantFarmLab
             {
                 public static LocString NAME = "Rad Seed";
                 public static LocString DESC = "Radiation Resistence Seed, eating it can completely clear the body's radiation and gain radiation immunity for a period of time.";
+            }
+            public static class DULHEAD
+            {
+                public static LocString NAME = "Dual Head";
+                public static LocString DESC = "The plant has evolved a twin-stem structure, hosting two growth cores in a single tile. They share the same growing conditions yet mature independently; while the yield of a single head is slightly reduced, the overall space efficiency is drastically improved. At high quality, the dual cores will bear seeds separately.";
             }
         }
         #endregion

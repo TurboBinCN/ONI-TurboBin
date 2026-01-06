@@ -1,4 +1,5 @@
 ﻿using KSerialization;
+using PeterHan.PLib.Core;
 using STRINGS;
 using static LogicGateBase;
 
@@ -8,16 +9,22 @@ namespace MutantFarmLab
     {
         //建筑配置项
         public RadiationEmitter radiationEmitter;
-        public HighEnergyParticleStorage particleStorage;
         private LogicPorts _logicPorts;
-        public float lowParticleThreshold;
         public float consumerRate = 1;
-
+        private LogicPorts HEP_RQ_LogicPort
+        {
+            get => _logicPorts ??= GetComponent<LogicPorts>();
+        }
+        private bool _logicPort_holder = false;
+        public float lowParticleThreshold = 200f;
+        public HighEnergyParticleStorage _particleStorage;
+        private HighEnergyParticleStorage ParticleStorage
+        {
+            get => _particleStorage ??= GetComponent<HighEnergyParticleStorage>();
+        }
         //内部配置项
         [Serialize]
         public int RadiationLevel = 0;
-        private static readonly EventSystem.IntraObjectHandler<CustomRadiationLight> OnParticleChangedDelegate =
-    new EventSystem.IntraObjectHandler<CustomRadiationLight>((component, data) => component.OnParticleChanged(data));
         protected override void OnSpawn()
         {
             base.OnSpawn();
@@ -25,11 +32,10 @@ namespace MutantFarmLab
             {
                 this.radiationEmitter.SetEmitting(false);
             }
-            _logicPorts = GetComponent<LogicPorts>();
-            particleStorage = GetComponent<HighEnergyParticleStorage>();
-            Subscribe((int)GameHashes.OnParticleStorageChanged, OnParticleChangedDelegate);
+            Subscribe((int)GameHashes.OnParticleStorageChanged, OnParticleChanged);
+            Trigger((int)GameHashes.OnParticleStorageChanged);
 
-            radiationEmitter.emitRads = RadiationLevel * 300;
+            radiationEmitter.emitRads = RadiationRads();
             radiationEmitter.Refresh();
             Refresh();
         }
@@ -39,12 +45,20 @@ namespace MutantFarmLab
             base.OnCleanUp();
             Unsubscribe((int)GameHashes.OnParticleStorageChanged);
         }
+        private float ParticleConsumeAmount(float dt = 1)
+        {
+            return dt * RadiationLevel / 10 * consumerRate;
+        }
+        private float RadiationRads()
+        {
+            return RadiationLevel * 300;
+        }
         private bool IsRunningAvailable()
         {
-            if (particleStorage == null || radiationEmitter == null) return false;
+            if (ParticleStorage == null || radiationEmitter == null) return false;
             // 双核心条件：档位必须>0 + 粒子量必须高于阈值，缺一不可
             bool hasValidLevel = RadiationLevel > 0;
-            bool hasEnoughParticle = particleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) > lowParticleThreshold;
+            bool hasEnoughParticle = ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) > lowParticleThreshold;
             return hasValidLevel && hasEnoughParticle;
         }
         private void Refresh()
@@ -57,32 +71,53 @@ namespace MutantFarmLab
                 if (canRun && !(anim.GetCurrentFrameIndex() == 0) ) anim.Play("on", KAnim.PlayMode.Loop);
                 if (!canRun && !(anim.GetCurrentFrameIndex() == 1)) anim.Play("off", KAnim.PlayMode.Once);
             }
-            // 逻辑信号输出：粒子不足=1，充足=0
-            bool isParticleEnough = particleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) > lowParticleThreshold;
-            _logicPorts?.SendSignal(CustomRadiationLightConfig.LOGIC_PORT_ID, isParticleEnough ? 0 : 1);
         }
         private void OnParticleChanged(object data)
         {
+            updateLogicPortLogic();
             Refresh();
+        }
+        public void updateLogicPortLogic()
+        {
+            int highEnergyParticaleRQSignal = 0;
+            float particleAmount = ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle);
+            float stopThreshold = ParticleStorage.capacity - ParticleConsumeAmount();
+            const float floatTolerance = 1e-6f;
+
+            if (particleAmount <= lowParticleThreshold + floatTolerance)
+            {
+                highEnergyParticaleRQSignal = 1;
+                _logicPort_holder = true; 
+            }
+            else if (particleAmount >= stopThreshold - floatTolerance)
+            {
+                highEnergyParticaleRQSignal = 0;
+                _logicPort_holder = false;
+            }
+            else
+            {
+                highEnergyParticaleRQSignal = _logicPort_holder ? 1 : 0;
+            }
+
+            HEP_RQ_LogicPort.SendSignal(CustomRadiationLightConfig.LOGIC_PORT_ID, highEnergyParticaleRQSignal);
         }
         public void ConsumeParticlePerTick(float dt)
         {
-            if (particleStorage == null || radiationEmitter == null) return;
-            // ✅ 前置校验：档位0直接关闭，不消耗粒子
+            if (ParticleStorage == null || radiationEmitter == null) return;
             if (RadiationLevel <= 0)
             {
                 radiationEmitter.SetEmitting(false);
                 Refresh();
                 return;
             }
-            float particleAmount = particleStorage.GetAmountAvailable(GameTags.HighEnergyParticle);
+            float particleAmount = ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle);
             if (particleAmount <= lowParticleThreshold)
             {
                 radiationEmitter.SetEmitting(false);
                 Refresh();
                 return;
             }
-            particleStorage.ConsumeAndGet(dt * RadiationLevel/10 * consumerRate);
+            ParticleStorage.ConsumeAndGet(ParticleConsumeAmount(dt));
         }
         public string SliderTitleKey => STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.NAME;
 
@@ -102,7 +137,7 @@ namespace MutantFarmLab
         {
             if (RadiationLevel == value) return;
             RadiationLevel = (int)value;
-            radiationEmitter.emitRads = RadiationLevel * 300;
+            radiationEmitter.emitRads = RadiationRads();
             //不能设置,会引起辐射区域闪烁
             //radiationEmitter.emitRadiusX = (short)RadiationLevel;
             //radiationEmitter.emitRadiusY = (short)RadiationLevel;

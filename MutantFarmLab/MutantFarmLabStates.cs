@@ -4,13 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static STRINGS.UI;
 
 namespace MutantFarmLab
 {
     public class MutantFarmLabStates : GameStateMachine<MutantFarmLabStates, MutantFarmLabStates.StatesInstance, IStateMachineTarget, MutantFarmLabStates.Def>
     {
         #region ===== 配置项=====
-        public float ParticleConsumeAmount = 10f;
+        public static float _particleConsumeAmount = 100f;
         public float MutationDuration = 3f;
         #endregion
 
@@ -103,9 +104,12 @@ namespace MutantFarmLab
             [MyCmpReq] public Operational MachineOperational;
             [MyCmpReq] public FlatTagFilterable SeedFilter;
             [MyCmpReq] public TreeFilterable TreeSeedFilter;
+            private LogicPorts _logicPorts;
+            private bool _logicPort_holder = false;
 
             public MutantFarmLabController controller;
             private HighEnergyParticleStorage _particleStorage;
+            private float lowParticleThreshold = 100;
             private readonly Tag[] _forbiddenTags = { GameTags.MutatedSeed };
             public List<Tag> ValidSeedTags = new List<Tag>();
 
@@ -117,6 +121,10 @@ namespace MutantFarmLab
                 InitSeedDeliverySystem();
                 InitSeedFilterSystem();
 
+                Subscribe((int)GameHashes.OnParticleStorageChanged, updateLogicPortLogic);
+
+                Trigger((int)GameHashes.OnParticleStorageChanged);
+
                 SeedStorage.Subscribe((int)GameHashes.OnStorageChange, (obj) =>
                 {
                     if (SeedStorage.items.Count > 0)
@@ -125,7 +133,39 @@ namespace MutantFarmLab
                     }
                 });
             }
+            protected override void OnCleanUp()
+            {
+                base.OnCleanUp();
+                Unsubscribe((int)GameHashes.OnParticleStorageChanged);
+            }
+            private float ParticleConsumeAmount()
+            {
+                return _particleConsumeAmount;
+            }
+            public void updateLogicPortLogic(object data)
+            {
+                int highEnergyParticaleRQSignal = 0;
+                float particleAmount = ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle);
+                float stopThreshold = ParticleStorage.capacity - ParticleConsumeAmount();
+                const float floatTolerance = 1e-6f;
 
+                if (particleAmount <= lowParticleThreshold + floatTolerance)
+                {
+                    highEnergyParticaleRQSignal = 1;
+                    _logicPort_holder = true;
+                }
+                else if (particleAmount >= stopThreshold - floatTolerance)
+                {
+                    highEnergyParticaleRQSignal = 0;
+                    _logicPort_holder = false;
+                }
+                else
+                {
+                    highEnergyParticaleRQSignal = _logicPort_holder ? 1 : 0;
+                }
+
+                HEP_RQ_LogicPort.SendSignal(MutantFarmLabConfig.HEP_RQ_LOGIC_PORT_ID, highEnergyParticaleRQSignal);
+            }
             #region ===== 初始化子系统 =====
             private void InitSeedDeliverySystem()
             {
@@ -242,7 +282,10 @@ namespace MutantFarmLab
             {
                 get => _particleStorage ??= master.gameObject.GetComponent<HighEnergyParticleStorage>();
             }
-
+            private LogicPorts HEP_RQ_LogicPort
+            {
+                get =>_logicPorts??= master.gameObject.GetComponent<LogicPorts>();
+            }
             #endregion
 
             public void CreateMutationWorkChore()

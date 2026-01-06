@@ -14,9 +14,19 @@ namespace MutantFarmLab
     {
         // 绑定核心组件
         private HighEnergyParticleStorage _particleStorage;
+        private HighEnergyParticleStorage ParticleStorage
+        {
+            get => _particleStorage ??= GetComponent<HighEnergyParticleStorage>();
+        }
         private RadiationEmitter _radiationEmitter;
         private LogicPorts _logicPorts;
-        private bool _logicHolding = false;
+        private LogicPorts HEP_RQ_LogicPort
+        {
+            get => _logicPorts ??= GetComponent<LogicPorts>();
+        }
+        private bool _logicPort_holder = false;
+        public float lowParticleThreshold = 200f;
+
         private int _powerBase = 300;
         // 配置参数
         public float ParticleConsumeRate{set;get;} = 1.0f;
@@ -30,9 +40,6 @@ namespace MutantFarmLab
         private float UPDATE_INTERVAL;
         [Serialize]
         private int RadiationLevel = 1;
-
-        private static readonly HashedString PORT_ID = "HEPT_PORT_RP";
-
 
         public void OnSimTick(RadiationParticleAdapterStates.GameInstance smi,float dt)
         {
@@ -52,7 +59,6 @@ namespace MutantFarmLab
         protected override void OnSpawn()
         {
             base.OnSpawn();
-            _logicPorts = GetComponent<LogicPorts>();
             _isBindFarmTileValid = false;
 
             if (_radiationEmitter == null){
@@ -61,8 +67,6 @@ namespace MutantFarmLab
             }
 
             _radiationEmitter.SetEmitting(false);
-            if(_particleStorage  == null)
-                _particleStorage = GetComponent<HighEnergyParticleStorage>();
             
         }
         #endregion
@@ -155,37 +159,48 @@ namespace MutantFarmLab
         #region 粒子状态判定 + 联动控制
         private void JudgeParticleEnoughState()
         {
-            _isParticleEnough = _particleStorage != null && _particleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) > LowParticleThreshold;
+            _isParticleEnough = ParticleStorage != null && ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) > LowParticleThreshold;
         }
 
         private void ControlRadiation_Logic_ParticleConsume()
         {
             bool canEmitRadiation = _isBindFarmTileValid && _isParticleEnough;
-            if (canEmitRadiation && _particleStorage != null)
+            if (canEmitRadiation && ParticleStorage != null)
             {
-                float consumeNum = ParticleConsumeRate * UPDATE_INTERVAL * RadiationLevel;
-                _particleStorage.ConsumeAndGet(consumeNum);
+                ParticleStorage.ConsumeAndGet(ParticleConsumeAmount());
             }
             JudgeParticleEnoughState();
             _radiationEmitter.SetEmitting(_isParticleEnough);
 
-            // 逻辑信号输出：粒子不足=1，充足=0
-            int signal = 0;
-            if(_particleStorage != null)
+            updateLogicPortLogic();
+        }
+        private float ParticleConsumeAmount(float dt = 1)
+        {
+            return ParticleConsumeRate * UPDATE_INTERVAL * RadiationLevel * dt;
+        }
+        public void updateLogicPortLogic()
+        {
+            int highEnergyParticaleRQSignal = 0;
+            float particleAmount = ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle);
+            float stopThreshold = ParticleStorage.capacity - ParticleConsumeAmount();
+            const float floatTolerance = 1e-6f;
+
+            if (particleAmount <= lowParticleThreshold + floatTolerance)
             {
-                float particleAmount = _particleStorage.GetAmountAvailable(GameTags.HighEnergyParticle);
-                if (particleAmount < LowParticleThreshold) _logicHolding = true;
-                if(particleAmount < (_particleStorage.capacity - ParticleConsumeRate * UPDATE_INTERVAL * RadiationLevel) && _logicHolding)
-                {
-                    signal = 1;
-                }
-                else
-                {
-                    _logicHolding = false;
-                    signal = 0;
-                }
+                highEnergyParticaleRQSignal = 1;
+                _logicPort_holder = true;
             }
-            _logicPorts?.SendSignal(PORT_ID, signal);
+            else if (particleAmount >= stopThreshold - floatTolerance)
+            {
+                highEnergyParticaleRQSignal = 0;
+                _logicPort_holder = false;
+            }
+            else
+            {
+                highEnergyParticaleRQSignal = _logicPort_holder ? 1 : 0;
+            }
+
+            HEP_RQ_LogicPort.SendSignal(RadiationParticleAdapterConfig.HEP_RQ_LOGIC_PORT_ID, highEnergyParticaleRQSignal);
         }
         #endregion
 

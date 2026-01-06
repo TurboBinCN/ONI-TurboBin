@@ -47,6 +47,9 @@
     # ==============================================
     UI: {
       UISIDESCREENS: {
+        PLANTERSIDESCREEN: {
+          PLANT: 植株
+        }
         MUTANTFARMLAB: {
           TITLE: 种子变异面板
           NONE_DISCOVERED: 未解锁任何种子
@@ -92,6 +95,10 @@
       RADSEED: {
         NAME: 辐射籽
         DESC: 具备强辐射抗性的特殊种子，食用后可彻底清除体内辐射，并获得一段时间的辐射免疫能力。
+      }
+      DULHEAD: {
+        NAME: "双头株"
+        DESC: "植株进化出双生结构，单格容纳双生长核心，共享种植条件但独立成熟；单头产量略有下降，整体空间效率大幅提升，高品质时双芯分头结种。"
       }
     }
     # ✅ 新增：食物中文翻译（对应 ITEMS.FOOD.RADSEED）

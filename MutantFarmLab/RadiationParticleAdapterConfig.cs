@@ -12,6 +12,7 @@ namespace MutantFarmLab
     public class RadiationParticleAdapterConfig : IBuildingConfig
     {
         public const string ID = "RadiationParticleAdapter";
+        public static string HEP_RQ_LOGIC_PORT_ID = "HEPT_PORT_RP";
 
         // 可配置参数
         private const float PARTICLE_STORAGE_CAP = 2000f;
@@ -57,7 +58,7 @@ namespace MutantFarmLab
             def.LogicOutputPorts = new List<LogicPorts.Port>()
             {
                 LogicPorts.Port.OutputPort(
-                    "HEPT_PORT_RP", 
+                    HEP_RQ_LOGIC_PORT_ID, 
                     new CellOffset(0, 0),
                     STRINGS.BUILDINGS.PREFABS.RADIATIONPARTICLEADAPTER.LOGIC_PORT_NAME,
                     STRINGS.BUILDINGS.PREFABS.RADIATIONPARTICLEADAPTER.LOGIC_PORT_ACTIVE,

@@ -14,3 +14,9 @@
 辐射抗性属性（免疫核心）：Db.Get().Attributes.RadiationResistance.Id ✅（源码BaseMinionConfig第 729 行已验证）
 辐射恢复属性（防数值反弹）：Db.Get().Attributes.RadiationRecovery.Id ✅（源码BaseMinionConfig第 730 行已验证）
 实现逻辑：辐射清零 + 免疫 = RadiationBalance清零 + RadiationResistance拉满 + RadiationRecovery暂停，全程无需任何 Effect 免疫 → 彻底规避Could not find Effect报错！
+
+
+
+// 示例：为冰霜小麦/小吃芽预挂载组件（可根据需求添加其他作物）
+PrefabRegistry.RegisterPrefabPostInit("FrostWheat", go => go.AddOrGet<DualHeadPlantComponent>());
+PrefabRegistry.RegisterPrefabPostInit("SnackBud", go => go.AddOrGet<DualHeadPlantComponent>());
