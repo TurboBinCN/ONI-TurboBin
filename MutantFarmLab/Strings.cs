@@ -160,5 +160,16 @@ namespace MutantFarmLab
             }
         }
         #endregion
+        public static class MUTANTS
+        {
+            public static class EFFECTS
+            {
+                public static class DUAL_HEAD_SYMBIOSIS
+                {
+                    public static LocString NAME = "Dual Head Plant";
+                    public static LocString DESC = "Dual Head Plant DESC";
+                }
+            }
+        }
     }
 }

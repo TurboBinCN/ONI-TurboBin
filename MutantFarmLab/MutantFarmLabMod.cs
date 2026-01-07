@@ -54,6 +54,7 @@ namespace MutantFarmLab
             {
                 PlantMutationRegister.RegisterAllCustomMutations();
                 FoodEffectRegister.RegisterAllEffects();
+                MutantEffects.RegisterAllEffect();
 
                 PUtil.LogDebug("============== 自定义变异+物品 注册全部成功！===============");
             }

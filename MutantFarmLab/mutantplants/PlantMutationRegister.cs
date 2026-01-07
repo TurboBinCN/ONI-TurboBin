@@ -27,8 +27,7 @@ namespace MutantFarmLab.mutantplants
         private const float DUAL_FERTILIZER_COST_MOD = 1.5f;//养料消耗+50%
         private const float DUAL_GROWTH_CYCLE_MOD = 1.2f;//生长周期+20%
         private const int DUAL_MIN_LIGHT_ADD = 500;//光照需求+500勒克斯
-        private const string DUAL_MUT_NAME = "双头株";//变异显示名称
-        private const string DUAL_MUT_DESC = "植株进化出双生结构，单格容纳双生长核心，共享种植条件但独立成熟；单头产量略有下降，整体空间效率大幅提升，高品质时双芯分头结种";//变异描述
+        private const int HIGH_QUALITY_THRESHOLD = 80;
         private const string DUAL_SOUND_EVENT = "Plant_mutation_Leaf";//变异音效（复用原生绿叶变异）
 
 

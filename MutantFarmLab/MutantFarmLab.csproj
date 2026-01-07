@@ -45,9 +45,9 @@
     <Compile Include="mutantplants\DualHeadPlantComponent.cs" />
     <Compile Include="mutantplants\DualHeadPlotPatch.cs" />
     <Compile Include="mutantplants\DualHeadSideScreen.cs" />
-    <Compile Include="mutantplants\DualHeadSideScreenPatch.cs" />
-    <Compile Include="mutantplants\DualPlant_CorePatch.cs" />
+    <Compile Include="mutantplants\DualHeadSymbiosisEffectController.cs" />
     <Compile Include="mutantplants\FoodEffectRegister.cs" />
+    <Compile Include="mutantplants\MutantEffects.cs" />
     <Compile Include="mutantplants\PlantMutationRegister.cs" />
     <Compile Include="mutantplants\RadiationResistSeedConfig.cs" />
     <Compile Include="RadiationFarmTile.cs" />
