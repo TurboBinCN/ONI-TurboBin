@@ -67,13 +67,13 @@ namespace MutantFarmLab
         {
             if (plot == null || screen == null)
             {
-                PUtil.LogError("[DualHead] 初始化失败：目标对象为空");
+                PUtil.LogWarning("[DualHead] 初始化失败：目标对象为空");
                 return false;
             }
 
             if (_detailsScreen == null)
             {
-                PUtil.LogError("[DualHead] 未找到 DetailsScreen");
+                PUtil.LogWarning("[DualHead] 未找到 DetailsScreen");
                 return false;
             }
 

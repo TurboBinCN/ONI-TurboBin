@@ -1,12 +1,10 @@
-﻿using MutantFarmLab.tbbLibs;
-using PeterHan.PLib.Core;
+﻿using PeterHan.PLib.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TUNING;
 using UnityEngine;
-using UnityEngine.UI;
-using static STRINGS.UI.SCHEDULEGROUPS;
+using static MutantFarmLab.MutantFarmLabStates;
 
 namespace MutantFarmLab
 {
@@ -45,6 +43,7 @@ namespace MutantFarmLab
         {
             base.OnSpawn();
             _particleStorage ??= gameObject.GetComponent<HighEnergyParticleStorage>();
+            _controller ??= gameObject.GetComponent<MutantFarmLabController>();
 
         }
         protected override void OnStartWork(WorkerBase worker)
@@ -61,8 +60,9 @@ namespace MutantFarmLab
             if (validSeed != null)
                 base.GetComponent<KSelectable>().AddStatusItem(Db.Get().BuildingStatusItems.ComplexFabricatorResearching, validSeed);
             ParticleStorage.ConsumeAndGet(MutantFarmLabConfig.ParticleConsumeAmount);
+            _controller.updateLogicPortLogic();
         }
-
+        
         protected override void OnStopWork(WorkerBase worker)
         {
             base.OnStopWork(worker);
@@ -142,6 +142,7 @@ namespace MutantFarmLab
         }
 
         private HighEnergyParticleStorage _particleStorage;
+        private MutantFarmLabController _controller;
 
         private HighEnergyParticleStorage ParticleStorage
         {

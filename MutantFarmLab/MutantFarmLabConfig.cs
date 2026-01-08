@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TUNING;
 using UnityEngine;
+using static MutantFarmLab.MutantFarmLabStates;
 
 namespace MutantFarmLab
 {
@@ -10,13 +11,13 @@ namespace MutantFarmLab
         public static string TagName = "MutantFarmLab";
         public static float Deliverycapacity = 5f;
         public static float ParticleConsumeAmount = 100f;
+        public static float lowParticleThreshold = 100f;
         public static float MutationDuration = 40f;
         public static string HEP_RQ_LOGIC_PORT_ID = "MUTANTFARMLAB_HEP_REQ_PORT";
         public override BuildingDef CreateBuildingDef()
         {
             int width = 4;
             int height = 3;
-            //string anim = "genetic_analysisstation_kanim";
             string anim = "mutant_farm_lab_kanim";
             int hitpoints = 30;
             float construction_time = 30f;
@@ -51,10 +52,11 @@ namespace MutantFarmLab
         public override void ConfigureBuildingTemplate(GameObject go, Tag prefab_tag)
         {
             go.GetComponent<KPrefabID>().AddTag(RoomConstraints.ConstraintTags.ScienceBuilding, false);
+            go.GetComponent<KPrefabID>().AddTag(TagManager.Create(TagName));
+
             go.AddOrGet<BuildingComplete>().isManuallyOperated = true;
             go.AddOrGetDef<MutantFarmLabStates.Def>();
             go.AddOrGet<MutantFarmLabWorkable>();
-            Prioritizable.AddRef(go);
             go.AddOrGet<DropAllWorkable>();
             go.AddOrGetDef<PoweredActiveController.Def>();
 
@@ -62,14 +64,8 @@ namespace MutantFarmLab
             highEnergyParticleStorage.capacity = 2000f;
             highEnergyParticleStorage.autoStore = true;
             highEnergyParticleStorage.PORT_ID = "HEP_STORAGE_MUTANTFARM_LAB";
-            //highEnergyParticleStorage.showCapacityStatusItem = true;
+            highEnergyParticleStorage.showCapacityStatusItem = true;
 
-            KPrefabID kPrefabID = go.GetComponent<KPrefabID>();
-            if (kPrefabID == null)
-                kPrefabID = go.AddComponent<KPrefabID>();
-            kPrefabID.AddTag(TagManager.Create(TagName));
-
-            // 你的原有FlatTagFilterable代码（保留不变）
             var filterable = go.AddOrGet<FlatTagFilterable>();
             filterable.headerText = STRINGS.UI.UISIDESCREENS.MUTANTFARMLAB.FILTER_CATEGORY;
             filterable.displayOnlyDiscoveredTags = true;
@@ -85,6 +81,9 @@ namespace MutantFarmLab
             storage.SetDefaultStoredItemModifiers(Storage.StandardSealedStorage);
             storage.storageID = GameTags.Seed;
 
+            go.AddOrGet<MutantFarmLabController>();
+
+            Prioritizable.AddRef(go);
         }
 
         public override void DoPostConfigureComplete(GameObject go)

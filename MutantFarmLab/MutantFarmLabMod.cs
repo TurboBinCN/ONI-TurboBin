@@ -13,6 +13,9 @@ namespace MutantFarmLab
         {
             base.OnLoad(harmony);
 
+            // 确保 KPrefabID 从 1 开始分配
+            if (KPrefabID.NextUniqueID <= 0)
+                KPrefabID.NextUniqueID = 1;
             PUtil.InitLibrary();
             new PPatchManager(harmony).RegisterPatchClass(typeof(MutantFarmLabMod));
 

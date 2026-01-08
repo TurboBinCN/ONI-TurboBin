@@ -1,4 +1,5 @@
-﻿using MutantFarmLab.tbbLibs;
+﻿using KSerialization;
+using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using static STRINGS.UI;
 
 namespace MutantFarmLab
 {
+    [SerializationConfig(MemberSerialization.OptIn)]
     public class MutantFarmLabStates : GameStateMachine<MutantFarmLabStates, MutantFarmLabStates.StatesInstance, IStateMachineTarget, MutantFarmLabStates.Def>
     {
         #region ===== 配置项=====
@@ -28,7 +30,7 @@ namespace MutantFarmLab
 
             root
                 .Update("MutationTimerTick", UpdateMutationTimer, UpdateRate.SIM_1000ms)
-                .Update("UnifiedStateCheck", (smi, dt) => smi.UnifiedStateManager(true), UpdateRate.SIM_1000ms)
+                .Update("UnifiedStateCheck", (smi, dt) =>smi.UnifiedStateManager(true), UpdateRate.SIM_1000ms)
                 .EventTransition(GameHashes.OperationalChanged, idle, smi => !smi.IsMachineOperational)
                 .EventTransition(GameHashes.OperationalChanged, ready, smi => smi.IsMachineOperational && smi.HasValidSeed && smi.HasEnoughParticles)
                 .Enter(OnInitRoot)
@@ -61,13 +63,7 @@ namespace MutantFarmLab
         #region ===== 全局通用方法 =====
         private void OnInitRoot(StatesInstance smi)
         {
-            if (smi.master.gameObject.GetComponent<HighEnergyParticleStorage>() == null)
-                smi.master.gameObject.AddComponent<HighEnergyParticleStorage>();
-
-            if (smi.master.gameObject.GetComponent<MutantFarmLabController>() == null)
-                smi.controller = smi.master.gameObject.AddComponent<MutantFarmLabController>();
-            else
-                smi.controller = smi.master.gameObject.GetComponent<MutantFarmLabController>();
+            smi.controller = smi.master.gameObject.GetComponent<MutantFarmLabController>();
 
             smi.controller.ResetMutationTimer();
         }
@@ -104,12 +100,9 @@ namespace MutantFarmLab
             [MyCmpReq] public Operational MachineOperational;
             [MyCmpReq] public FlatTagFilterable SeedFilter;
             [MyCmpReq] public TreeFilterable TreeSeedFilter;
-            private LogicPorts _logicPorts;
-            private bool _logicPort_holder = false;
 
             public MutantFarmLabController controller;
             private HighEnergyParticleStorage _particleStorage;
-            private float lowParticleThreshold = 100;
             private readonly Tag[] _forbiddenTags = { GameTags.MutatedSeed };
             public List<Tag> ValidSeedTags = new List<Tag>();
 
@@ -120,11 +113,6 @@ namespace MutantFarmLab
             {
                 InitSeedDeliverySystem();
                 InitSeedFilterSystem();
-
-                Subscribe((int)GameHashes.OnParticleStorageChanged, updateLogicPortLogic);
-
-                Trigger((int)GameHashes.OnParticleStorageChanged);
-
                 SeedStorage.Subscribe((int)GameHashes.OnStorageChange, (obj) =>
                 {
                     if (SeedStorage.items.Count > 0)
@@ -132,40 +120,14 @@ namespace MutantFarmLab
                         PUtil.LogDebug($"仓储种子数变更：{SeedStorage.items.Count}");
                     }
                 });
+                controller = gameObject.GetComponent<MutantFarmLabController>();
+
             }
             protected override void OnCleanUp()
             {
                 base.OnCleanUp();
-                Unsubscribe((int)GameHashes.OnParticleStorageChanged);
             }
-            private float ParticleConsumeAmount()
-            {
-                return _particleConsumeAmount;
-            }
-            public void updateLogicPortLogic(object data)
-            {
-                int highEnergyParticaleRQSignal = 0;
-                float particleAmount = ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle);
-                float stopThreshold = ParticleStorage.capacity - ParticleConsumeAmount();
-                const float floatTolerance = 1e-6f;
-
-                if (particleAmount <= lowParticleThreshold + floatTolerance)
-                {
-                    highEnergyParticaleRQSignal = 1;
-                    _logicPort_holder = true;
-                }
-                else if (particleAmount >= stopThreshold - floatTolerance)
-                {
-                    highEnergyParticaleRQSignal = 0;
-                    _logicPort_holder = false;
-                }
-                else
-                {
-                    highEnergyParticaleRQSignal = _logicPort_holder ? 1 : 0;
-                }
-
-                HEP_RQ_LogicPort.SendSignal(MutantFarmLabConfig.HEP_RQ_LOGIC_PORT_ID, highEnergyParticaleRQSignal);
-            }
+            
             #region ===== 初始化子系统 =====
             private void InitSeedDeliverySystem()
             {
@@ -271,7 +233,7 @@ namespace MutantFarmLab
                 get
                 {
                     if (!IsMachineOperational) return false;
-                    return ParticleStorage != null && ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) >= MutantFarmLabConfig.ParticleConsumeAmount;
+                    return ParticleStorage != null && ParticleStorage.Particles >= MutantFarmLabConfig.ParticleConsumeAmount;
                 }
             }
 
@@ -281,10 +243,6 @@ namespace MutantFarmLab
             private HighEnergyParticleStorage ParticleStorage
             {
                 get => _particleStorage ??= master.gameObject.GetComponent<HighEnergyParticleStorage>();
-            }
-            private LogicPorts HEP_RQ_LogicPort
-            {
-                get =>_logicPorts??= master.gameObject.GetComponent<LogicPorts>();
             }
             #endregion
 
@@ -398,12 +356,62 @@ namespace MutantFarmLab
         }
         #endregion
 
-        #region ===== 计时器控制器 =====
         public class MutantFarmLabController : KMonoBehaviour
         {
             public float currentMutationTime = 0f;
+            private HighEnergyParticleStorage _particleStorage;
+            private MutantFarmLabController _controller;
+
+            private HighEnergyParticleStorage ParticleStorage
+            {
+                get => _particleStorage ??= gameObject.GetComponent<HighEnergyParticleStorage>();
+            }
             public void ResetMutationTimer() => currentMutationTime = 0f;
+
+            
+            private bool _logicPort_holder = false;
+            private LogicPorts _logicPorts;
+            private LogicPorts HEP_RQ_LogicPort
+            {
+                get => _logicPorts ??= gameObject.GetComponent<LogicPorts>();
+            }
+            private float ParticleConsumeAmount() => MutantFarmLabConfig.ParticleConsumeAmount;
+            private float lowParticleThreshold => MutantFarmLabConfig.lowParticleThreshold;
+            public void updateLogicPortLogic()
+            {
+                float particleAmount = ParticleStorage.Particles;
+                int highEnergyParticaleRQSignal = 0;
+                float stopThreshold = ParticleStorage.capacity - ParticleConsumeAmount();
+                const float floatTolerance = 1e-6f;
+
+                if (particleAmount <= lowParticleThreshold + floatTolerance)
+                {
+                    highEnergyParticaleRQSignal = 1;
+                    _logicPort_holder = true;
+                }
+                else if (particleAmount >= stopThreshold - floatTolerance)
+                {
+                    highEnergyParticaleRQSignal = 0;
+                    _logicPort_holder = false;
+                }
+                else
+                {
+                    highEnergyParticaleRQSignal = _logicPort_holder ? 1 : 0;
+                }
+                HEP_RQ_LogicPort.SendSignal(MutantFarmLabConfig.HEP_RQ_LOGIC_PORT_ID, highEnergyParticaleRQSignal);
+            }
+            protected override void OnSpawn()
+            {
+                base.OnSpawn();
+                Subscribe((int)GameHashes.OnParticleStorageChanged, (data) => updateLogicPortLogic());
+
+                updateLogicPortLogic();
+            }
+            protected override void OnCleanUp()
+            {
+                base.OnCleanUp();
+                Unsubscribe((int)GameHashes.OnParticleStorageChanged);
+            }
         }
-        #endregion
     }
 }
