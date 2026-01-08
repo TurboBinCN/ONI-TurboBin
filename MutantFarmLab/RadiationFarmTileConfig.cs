@@ -1,4 +1,6 @@
-﻿using KSerialization;
+﻿using Klei.AI;
+using KSerialization;
+using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
 using STRINGS;
 using System.Collections.Generic;
@@ -175,45 +177,63 @@ namespace MutantFarmLab
     public class RadiationPlotStorageSaver : KMonoBehaviour, ISaveLoadable
     {
         // 只保存物品的 prefab tag（字符串），这是 ONI 存档的标准做法
+        public class ItemElement
+        {
+            public SimHashes id;
+            public float Mass;
+            public float Temperature;
+        }
         [Serialize]
-        private List<GameObject> savedItems = new();
+        private List<ItemElement> savedItems = new();
 
         private Storage uraniumStorage;
 
         protected override void OnSpawn()
         {
             base.OnSpawn();
-            PUtil.LogDebug($"RadiationPlotStorageSaver OnSpawn");
-            // 在 OnSpawn 中绑定子对象的 Storage
             var plot = transform.Find(RadiationFarmTileConfig.RadiationStorageName);
             if (plot != null)
             {
                 uraniumStorage = plot.GetComponent<Storage>();
             }
         }
-
-        public void Serialize(BinaryWriter writer)
+        [OnSerializing]
+        public void Serialize()
         {
-            PUtil.LogDebug($"RadiationPlotStorageSaver Serialize");
             // 清空旧数据（防止重复）
             savedItems.Clear();
-            savedItems.AddRange(uraniumStorage.items);
+            if (uraniumStorage.items.Count <= 0) return;
+            foreach (var item in uraniumStorage.items)
+            {
+                TbbDebuger.PrintGameObjectFullInfo(item);
+                PrimaryElement primary = item.GetComponent<PrimaryElement>();
+                if (primary != null)
+                {
+                    savedItems.Add(new ItemElement
+                    {
+                        id = primary.Element.id,
+                        Mass = primary.Mass,
+                        Temperature = primary.Temperature
+                    });
+                }
+            }
 
         }
-
-        public void Deserialize(IReader reader)
+        [OnDeserialized]
+        public void Deserialize()
         {
-            // 延迟到下一帧恢复（确保 RadiationPlot 已存在）
-            //GameScheduler.Instance.Schedule("RestoreRadiationItems", 1f, RestoreItems, null);
+            //不能延迟执行，会造成小人任务冲突导致崩溃
+            //GameScheduler.Instance.Schedule("RestoreRadiationItems", 1f, (data)=>RestoreItems(), null);
             RestoreItems();
         }
 
         private void RestoreItems()
         {
-            PUtil.LogDebug($"RadiationPlotStorageSaver RestoreItems");
+            PUtil.LogDebug($"RadiationPlotStorageSaver RestoreItems savedItems:{savedItems.Count}");
+
+            if (savedItems.Count <= 0) return;
             if (uraniumStorage == null)
             {
-                // 如果 OnSpawn 还没跑，尝试再找一次
                 var plot = transform.Find(RadiationFarmTileConfig.RadiationStorageName);
                 if (plot != null)
                 {
@@ -225,7 +245,10 @@ namespace MutantFarmLab
 
             foreach (var item in savedItems)
             {
-                uraniumStorage.Store(item);
+                GameObject itemGo = Util.KInstantiate(Assets.GetPrefab(item.id.CreateTag()));
+                itemGo.SetActive(true);
+                uraniumStorage.Store(itemGo);
+                uraniumStorage.AddToPrimaryElement(item.id, item.Mass, item.Temperature);
             }
             savedItems.Clear(); // 可选：清空以节省内存
         }
