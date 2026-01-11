@@ -46,8 +46,12 @@
     <Compile Include="mutantplants\DualHeadPlotPatch.cs" />
     <Compile Include="mutantplants\DualHeadSideScreen.cs" />
     <Compile Include="mutantplants\DualHeadSymbiosisEffectController.cs" />
+    <Compile Include="mutantplants\FertilizationMonitorDebugPatch.cs" />
+    <Compile Include="mutantplants\FertilizationMonitor_AcceptsFertilizer.cs" />
     <Compile Include="mutantplants\FoodEffectRegister.cs" />
+    <Compile Include="mutantplants\ManualDeliveryKGDebugPatch.cs" />
     <Compile Include="mutantplants\MutantEffects.cs" />
+    <Compile Include="mutantplants\PlantMigrationHelper.cs" />
     <Compile Include="mutantplants\PlantMutationRegister.cs" />
     <Compile Include="mutantplants\RadiationResistSeedConfig.cs" />
     <Compile Include="RadiationFarmTile.cs" />
@@ -64,6 +68,7 @@
     <Compile Include="StaticRadiationField.cs" />
     <Compile Include="StringInjectorPatch.cs" />
     <Compile Include="Strings.cs" />
+    <Compile Include="mutantplants\PlantablePlotGameObject.cs" />
     <Compile Include="tbbLibs\TbbDebuger.cs" />
     <Compile Include="tbbLibs\TbbSideScreenContent.cs" />
     <Compile Include="tbbLibs\TbbSideScreen.cs" />

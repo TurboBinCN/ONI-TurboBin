@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-using Klei.AI;
-using PeterHan.PLib.Core;
+﻿using PeterHan.PLib.Core;
 using System;
 using System.Reflection;
 using UnityEngine;
@@ -27,71 +25,56 @@ namespace MutantFarmLab.mutantplants
             ReceptacleMonitor receptacleMonitor = plant.GetComponent<ReceptacleMonitor>();
             if (receptacleMonitor == null)
             {
-                PUtil.LogWarning("The plant does not have a ReceptacleMonitor component.");
+                PUtil.LogWarning($"[双头株]植株[{plant.name}] 缺失ReceptacleMonitor组件.");
                 return false;
             }
 
             // 2. 获取当前关联的旧 Plot
-            SingleEntityReceptacle oldReceptacle = receptacleMonitor.GetReceptacle();
-            if (oldReceptacle == null) PUtil.LogDebug("The plant is not currently associated with any plot. ");
-
-            // 3. 确保旧的 receptacle 是一个 PlantablePlot
-            PlantablePlot oldPlot = oldReceptacle as PlantablePlot;
-            if (oldPlot == null)PUtil.LogWarning("The plant's current receptacle is not a PlantablePlot.");
+            PlantablePlot oldReceptacle = receptacleMonitor.GetReceptacle();
+            if (oldReceptacle == null) PUtil.LogDebug($"[双头株] 植株[{plant.name}]已经没有PlantablePlot");
 
             // 4. 开始迁移流程
             try
             {
                 // --- 解除与旧 Plot 的关系 ---
-                if(oldReceptacle != null || oldPlot != null){
+                if(oldReceptacle != null ){
                     //因为已经移除，所以这里先不执行
-                    //ClearPlotWithoutDestroyingPlant(oldPlot); // 这会将 oldPlot.occupyingObject 设为 null
+                    //ClearPlotWithoutDestroyingPlant(oldPlot);
                 }
                 // --- 建立与新 Plot 的关系 ---
-                // c. 调用新 Plot 的 ReplacePlant 方法，这是最安全的方式
-                //    ReplacePlant 内部会调用 ForceDeposit -> OnDepositObject -> ConfigureOccupyingObject
-                //    这个流程会完整地重建植株与新 Plot 的双向绑定
                 InvokeMethod(newPlot, "RegisterWithPlant",new object[] { plant });
 
-
-                PUtil.LogDebug($"[双头株] NewPlot active[{newPlot.gameObject.activeSelf}].");
-                var fertilizationSMI = plant.GetSMI<FertilizationMonitor.Instance>();
                 //肥料SMI
-                //TODO 灌溉SMI
-                if (fertilizationSMI == null)
+                var fertilizationSMI = plant.GetSMI<FertilizationMonitor.Instance>();
+                if (fertilizationSMI != null)
+                {
+                    fertilizationSMI.SetStorage(newPlot.gameObject.GetComponent<Storage>());
+                    PUtil.LogDebug($"[双头株] 迁移 [{plant?.name}] 肥料Storage ");
+                }
+                else
                 {
                     ScheduleParams parameters = new();
                     parameters.PlantObj = plant;
                     parameters.NewPlotObj = newPlot.gameObject;
                     GameScheduler.Instance.Schedule("RecoverIPlot", 0.02f, delayCall, parameters);
                     PUtil.LogWarning($"[双头株] [{plant.name}] FertilizationMonitor.Instance 还没有实例化");
-                    return false;
                 }
-                fertilizationSMI.SetStorage(newPlot.gameObject.GetComponent<Storage>());
-
-                // d. 手动重置 ManualDeliveryKG 的状态 (保险起见)
-                //    确保任何灌溉或施肥相关的 ManualDeliveryKG 都处于活跃状态
-                var manualDeliveryKgs = plant.GetComponents<ManualDeliveryKG>();
-                foreach (var deliveryKG in manualDeliveryKgs)
+                    
+                // 灌溉SMI
+                var irrigationSMI = plant.GetSMI<IrrigationMonitor.Instance>();
+                if(irrigationSMI != null)
                 {
-                    if (deliveryKG != null)
-                    {
-                        // 使用反射设置 pauseManaging 为 false
-                        deliveryKG.SetStorage(newPlot.gameObject.GetComponent<Storage>());
-                        deliveryKG.allowPause = true;
-                        deliveryKG.Pause(false, "Restart");
-                        deliveryKG.enabled = true;
-                        PUtil.LogDebug($"[双头株] 重启 ManualDeliveryKG for {deliveryKG.RequestedItemTag} on plant:[{plant.name}].");
-                    }
+                    irrigationSMI.SetStorage(newPlot.gameObject.GetComponent<Storage>());
+                    PUtil.LogDebug($"[双头株] 迁移 [{plant?.name}] 灌溉Storage ");
                 }
-                plant.Trigger(1309017699, newPlot.gameObject.GetComponent<Storage>());
-                PUtil.LogDebug($"[双头株] 植株:[{plant.name}] 完成迁移[{oldPlot?.name}]TO[{newPlot.name}].");
+
+                PUtil.LogDebug($"[双头株] 植株:[{plant.name}] 完成迁移[{oldReceptacle?.name}]TO[{newPlot.name}].");
 
                 return true;
             }
             catch (Exception e)
             {
-                PUtil.LogError($"Failed to migrate plant: {e.Message}\n{e.StackTrace}");
+                PUtil.LogError($"[双头株] 迁移失败: {e.Message}\n{e.StackTrace}");
                 return false;
             }
         }
@@ -115,8 +98,7 @@ namespace MutantFarmLab.mutantplants
                 PUtil.LogDebug($"[双头株] 延迟迁移 设置[{paramsObj.PlantObj?.name}] Storage ");
             }
         }
-
-        private static void ClearPlotWithoutDestroyingPlant(SingleEntityReceptacle targetReceptacle)
+        public static void ClearPlotWithoutDestroyingPlant(PlantablePlot targetReceptacle)
         {
             var currentPlant = targetReceptacle?.Occupant;
             if (currentPlant == null)
@@ -140,7 +122,6 @@ namespace MutantFarmLab.mutantplants
             // 3. 移出植株（不销毁）
             //currentPlant.transform.SetParent(null);
 
-
             // 4. 清空 receptacle 内部状态
             var receptacle = targetReceptacle;
             SetField(receptacle, "occupyingObject", null);
@@ -151,7 +132,7 @@ namespace MutantFarmLab.mutantplants
             SetField(receptacle, "requestedEntityAdditionalFilterTag", Tag.Invalid);
 
             // 5. 清空 PlantablePlot 的 plantRef
-            ClearPlantRef(targetReceptacle as PlantablePlot);
+            ClearPlantRef(targetReceptacle);
 
             // 6. 调用内部清理方法
             InvokeMethod(receptacle, "UnsubscribeFromOccupant");
@@ -159,19 +140,47 @@ namespace MutantFarmLab.mutantplants
 
             PUtil.LogDebug($"[DualHead] 已移出植株 '{currentPlant.name}' 并清空 receptacle");
         }
-        private static void ClearPlantRef(PlantablePlot _targetPlot)
+        private static void ClearPlantRef(PlantablePlot targetPlot)
         {
             var field = typeof(PlantablePlot).GetField("plantRef", BindingFlags.NonPublic | BindingFlags.Instance);
             if (field != null)
             {
-                var plantRef = (Ref<KPrefabID>)field.GetValue(_targetPlot);
+                var plantRef = (Ref<KPrefabID>)field.GetValue(targetPlot);
                 if (plantRef == null)
                 {
                     plantRef = new Ref<KPrefabID>();
-                    field.SetValue(_targetPlot, plantRef);
+                    field.SetValue(targetPlot, plantRef);
                 }
                 plantRef.Set(null);
                 PUtil.LogDebug("[DualHead] plantRef 已设为 null");
+            }
+        }
+        public static void ResetPlotToPlantableState(PlantablePlot targetPlot, Operational plotOperational)
+        {
+            targetPlot?.SetPreview(Tag.Invalid, false);
+
+            if (plotOperational != null && !plotOperational.IsOperational)
+                plotOperational.SetActive(true, false);
+
+            InvokeMethod(targetPlot, "UpdateActive");
+            InvokeUpdateStatusItem(targetPlot);
+        }
+        private static void InvokeUpdateStatusItem(object obj)
+        {
+            if (obj == null) return;
+
+            var noParam = obj.GetType().GetMethod("UpdateStatusItem", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, Type.EmptyTypes, null);
+            if (noParam != null)
+            {
+                noParam.Invoke(obj, null);
+                return;
+            }
+
+            var withParam = obj.GetType().GetMethod("UpdateStatusItem", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, new[] { typeof(KSelectable) }, null);
+            if (withParam != null)
+            {
+                var selectable = obj as KSelectable ?? ((Component)obj).GetComponent<KSelectable>();
+                withParam.Invoke(obj, new object[] { selectable });
             }
         }
         private static void SetField(object obj, string name, object value)

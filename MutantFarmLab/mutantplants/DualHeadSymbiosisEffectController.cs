@@ -1,11 +1,6 @@
 ﻿using Klei.AI;
-using KSerialization;
 using PeterHan.PLib.Core;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace MutantFarmLab.mutantplants
@@ -62,23 +57,25 @@ namespace MutantFarmLab.mutantplants
             bool sharedDark = _originalState.prefersDarkness ||
                              (partnerIllum?.prefersDarkness ?? false);
             if (myIllum != null) {
-                PUtil.LogDebug($"[双头株] 增益 黑暗 {gameObject.name}  ");
+                PUtil.LogDebug($"[双头株] 设置[{gameObject.name}]修改项-黑暗 ");
                 myIllum.prefersDarkness = sharedDark; 
             }
 
-            // 同步 MinLightLux：取最大值（最严苛的需求）
-            float partnerMinLux = partnerIllum.LightIntensityThreshold;
-            float targetMinLux = Mathf.Max(_originalState.minLightLux, partnerMinLux);
+            if(!sharedDark){
+                // 同步 MinLightLux：取最大值（最严苛的需求）
+                float partnerMinLux = partnerIllum.LightIntensityThreshold;
+                float targetMinLux = Mathf.Max(_originalState.minLightLux, partnerMinLux);
 
-            // 应用差值 modifier
-            float delta = targetMinLux - _originalState.minLightLux;
-            if (delta != 0)
-            {
-                _originalState.attributeModifier.Add(new AttributeModifier(
-                    Db.Get().PlantAttributes.MinLightLux.Id,
-                    delta,
-                    "Dual-Head Symbiosis"
-                ));
+                // 应用差值 modifier
+                float delta = targetMinLux - _originalState.minLightLux;
+                if (delta != 0)
+                {
+                    _originalState.attributeModifier.Add(new AttributeModifier(
+                        Db.Get().PlantAttributes.MinLightLux.Id,
+                        delta,
+                        "Dual-Head Symbiosis"
+                    ));
+                }
             }
             // 肥料减半
             _originalState.attributeModifier.Add(new AttributeModifier(
@@ -90,7 +87,7 @@ namespace MutantFarmLab.mutantplants
             {
                 gameObject.GetComponent<Modifiers>().attributes.Add( attr );
                 // 注意：这里我们仍依赖 attribute 查询是否实时生效
-                PUtil.LogDebug($"[双头株] 增益 Add AttrModifier [{attr.AttributeId}] totalValue:[{gameObject.GetComponent<Modifiers>().attributes.Get(attr.AttributeId).GetTotalValue()}]");
+                PUtil.LogDebug($"[双头株] 设置[{gameObject.name}] 修改项 [{attr.AttributeId}] 最终值:[{gameObject.GetComponent<Modifiers>().attributes.Get(attr.AttributeId).GetTotalValue()}]");
             }
         }
 

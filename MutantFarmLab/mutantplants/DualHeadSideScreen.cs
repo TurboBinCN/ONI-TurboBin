@@ -17,10 +17,11 @@ namespace MutantFarmLab
     public class DualHeadSideScreen : MonoBehaviour
     {
         // === 配置常量 ===
-        private const string BUTTON_TEXT = "第二株";
-        private static readonly Color BUTTON_BG_COLOR = new Color32(71, 139, 202, 255);
-        private static readonly Color BUTTON_TEXT_COLOR = Color.black;
-        private const int BUTTON_FONT_SIZE = 14;
+        //private const string BUTTON_TEXT = "第二株";
+
+        private static readonly Color BUTTON_BG_COLOR = new Color32(62, 67, 87, 255);
+        private static readonly Color BUTTON_TEXT_COLOR = Color.white;
+        private const int BUTTON_FONT_SIZE = 12;
 
         // === 组件引用 ===
         private Button _dualPlantButton;
@@ -62,32 +63,20 @@ namespace MutantFarmLab
             CacheComponents(plotObject, sideScreenRoot);
             CreateOrShowButton(sideScreenRoot);
             
-            PUtil.LogDebug("[DualHead] UI 初始化完成");
-            PUtil.LogDebug("[双头株] Init 调试块开始");
-            TbbDebuger.PrintGameObjectFullInfo(plotObject);
-
-            var plant = plotObject.GetComponent<PlantablePlot>().Occupant;
-            if(plant != null){
-            TbbDebuger.PrintGameObjectFullInfo(plant);
-
-            var mdk = plant.GetComponent<Storage>();
-
-                PUtil.LogDebug($"[双头株] plant Name :[{plant.name}] Storagename:[{plant.GetComponent<Storage>().name}] mkd name:[{mdk.name} mdk storage name:[{mdk.storageNetworkID}]filters:[{mdk.storageFilters}]]");
-            }
-            PUtil.LogDebug("[双头株] Init 调试块结束");
+            PUtil.LogDebug("[双头株] UI 初始化完成");
         }
 
         private bool ValidateInitialization(GameObject plot, GameObject screen)
         {
             if (plot == null || screen == null)
             {
-                PUtil.LogWarning("[DualHead] 初始化失败：目标对象为空");
+                PUtil.LogWarning("[双头株] 初始化失败：目标对象为空");
                 return false;
             }
 
             if (_detailsScreen == null)
             {
-                PUtil.LogWarning("[DualHead] 未找到 DetailsScreen");
+                PUtil.LogWarning("[双头株] 未找到 DetailsScreen");
                 return false;
             }
 
@@ -102,10 +91,10 @@ namespace MutantFarmLab
             _plotOperational = plot.GetComponent<Operational>();
 
             if (_targetPlot == null || _targetReceptacle == null)
-                PUtil.LogError("[DualHead] 缺少 PlantablePlot 或 SingleEntityReceptacle");
+                PUtil.LogError("[双头株] 缺少 PlantablePlot 或 SingleEntityReceptacle");
 
             if (_planterSideScreen == null)
-                PUtil.LogError("[DualHead] 未找到 PlanterSideScreen");
+                PUtil.LogError("[双头株] 未找到 PlanterSideScreen");
         }
 
         private void CreateOrShowButton(GameObject sideScreenRoot)
@@ -113,14 +102,14 @@ namespace MutantFarmLab
             var buttonArea = FindButtonArea(sideScreenRoot);
             if (buttonArea == null)
             {
-                PUtil.LogWarning("[DualHead] 未找到 ButtonArea 容器");
+                PUtil.LogWarning("[双头株] 未找到 ButtonArea 容器");
                 return;
             }
             if (_dualPlantButton == null)
                 _dualPlantButton = CreateButton(buttonArea);
 
             _dualPlantButton.gameObject.SetActive(false);
-            _dualPlantButton.interactable = false;
+            _dualPlantButton.interactable = true;
             _dualPlantButton.transform.SetAsLastSibling();
             RefreshButtonState();
         }
@@ -153,8 +142,8 @@ namespace MutantFarmLab
             btnObj.transform.SetParent(parent, false);
 
             var rect = btnObj.AddComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.1f, 0f);
-            rect.anchorMax = new Vector2(0.4f, 0f);
+            rect.anchorMin = new Vector2(0.03f, 0f);
+            rect.anchorMax = new Vector2(0.3f, 0f);
             rect.pivot = new Vector2(0.5f, 0f);
             rect.sizeDelta = new Vector2(0, 35);
             rect.anchoredPosition = new Vector2(0, 8);
@@ -178,7 +167,8 @@ namespace MutantFarmLab
             textObj.transform.SetParent(parent.transform, false);
 
             var text = textObj.AddComponent<Text>();
-            text.text = BUTTON_TEXT;
+            //text.text = BUTTON_TEXT;
+            text.text = STRINGS.UI.UISIDESCREENS.SLIDERCONTROL.ANOTHER_PLANT;
             text.color = BUTTON_TEXT_COLOR;
             text.fontSize = BUTTON_FONT_SIZE;
             text.alignment = TextAnchor.MiddleCenter;
@@ -199,96 +189,26 @@ namespace MutantFarmLab
 
         private void HandleButtonClick()
         {
-            PUtil.LogDebug("[DualHead] 按钮点击，开始清空种植盆（保留植株）");
+            PUtil.LogDebug("[双头株] 按钮点击，开始清空种植盆（保留植株）");
 
             try
             {
                 IsCustomPlantOperation = true;
 
-                ClearPlotWithoutDestroyingPlant();
-                ResetPlotToPlantableState();
+                PlantMigrationHelper.ClearPlotWithoutDestroyingPlant(_targetPlot);
+                PlantMigrationHelper.ResetPlotToPlantableState(_targetPlot,_plotOperational);
                 RefreshUIAfterDelay();
 
-                PUtil.LogDebug("[DualHead] 操作完成，等待 UI 刷新");
+                PUtil.LogDebug("[双头株] 操作完成，等待 UI 刷新");
             }
             catch (Exception ex)
             {
-                PUtil.LogError($"[DualHead] 操作异常: {ex}");
+                PUtil.LogError($"[双头株] 操作异常: {ex}");
             }
             finally
             {
                 IsCustomPlantOperation = false;
             }
-        }
-
-        private void ClearPlotWithoutDestroyingPlant()
-        {
-            var currentPlant = _targetReceptacle?.Occupant;
-            if (currentPlant == null)
-            {
-                PUtil.LogDebug("[DualHead] 种植盆已为空");
-                return;
-            }
-
-            // 1. 解绑 Assignable
-            if (currentPlant.TryGetComponent<Assignable>(out var assignable))
-                assignable.Unassign();
-
-            // 2. 取消 Uproot 标记
-            if (currentPlant.TryGetComponent<Uprootable>(out var uprootable))
-            {
-                uprootable.ForceCancelUproot();
-                SetField(uprootable, "isMarkedForUproot", false);
-                SetField(uprootable, "chore", null);
-            }
-
-            // 3. 移出植株（不销毁）
-            //currentPlant.transform.SetParent(null);
-
-            // 4. 清空 receptacle 内部状态
-            var receptacle = _targetReceptacle;
-            SetField(receptacle, "occupyingObject", null);
-            SetField(receptacle, "occupyObjectRef", new Ref<KSelectable>());
-            SetField(receptacle, "activeRequest", null);
-            SetField(receptacle, "autoReplaceEntity", false);
-            SetField(receptacle, "requestedEntityTag", Tag.Invalid);
-            SetField(receptacle, "requestedEntityAdditionalFilterTag", Tag.Invalid);
-
-            // 5. 清空 PlantablePlot 的 plantRef
-            ClearPlantRef();
-
-            // 6. 调用内部清理方法
-            InvokeMethod(receptacle, "UnsubscribeFromOccupant");
-            InvokeMethod(receptacle, "UpdateActive");
-
-            PUtil.LogDebug($"[DualHead] 已移出植株 '{currentPlant.name}' 并清空 receptacle");
-        }
-
-        private void ClearPlantRef()
-        {
-            var field = typeof(PlantablePlot).GetField("plantRef", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (field != null)
-            {
-                var plantRef = (Ref<KPrefabID>)field.GetValue(_targetPlot);
-                if (plantRef == null)
-                {
-                    plantRef = new Ref<KPrefabID>();
-                    field.SetValue(_targetPlot, plantRef);
-                }
-                plantRef.Set(null);
-                PUtil.LogDebug("[DualHead] plantRef 已设为 null");
-            }
-        }
-
-        private void ResetPlotToPlantableState()
-        {
-            _targetPlot?.SetPreview(Tag.Invalid, false);
-
-            if (_plotOperational != null && !_plotOperational.IsOperational)
-                _plotOperational.SetActive(true, false);
-
-            InvokeMethod(_targetReceptacle, "UpdateActive");
-            InvokeUpdateStatusItem(_targetReceptacle);
         }
 
         private void RefreshUIAfterDelay()
@@ -310,30 +230,14 @@ namespace MutantFarmLab
                     LayoutRebuilder.ForceRebuildLayoutImmediate(
                         _planterSideScreen.GetComponent<RectTransform>()
                     );
-                    PUtil.LogDebug("[DualHead] UI 刷新完成");
+                    PUtil.LogDebug("[双头株] UI 刷新完成");
                 }
             });
         }
 
         #endregion
 
-        #region 反射工具方法
 
-        private void SetField(object obj, string name, object value)
-        {
-            if (obj == null) return;
-            var field = obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            if (field != null)
-                field.SetValue(obj, value);
-        }
-        private static object GetField(object obj, string name)
-        {
-            if (obj == null) return null;
-            var field = obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            if (field != null)
-                return field.GetValue(obj);
-            return null;
-        }
         private void InvokeMethod(object obj, string name, params object[] args)
         {
             if (obj == null) return;
@@ -341,51 +245,23 @@ namespace MutantFarmLab
             var method = obj.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, types, null);
             method?.Invoke(obj, args);
         }
-
-        private void InvokeUpdateStatusItem(object obj)
-        {
-            if (obj == null) return;
-
-            var noParam = obj.GetType().GetMethod("UpdateStatusItem", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, Type.EmptyTypes, null);
-            if (noParam != null)
-            {
-                noParam.Invoke(obj, null);
-                return;
-            }
-
-            var withParam = obj.GetType().GetMethod("UpdateStatusItem", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, new[] { typeof(KSelectable) }, null);
-            if (withParam != null)
-            {
-                var selectable = obj as KSelectable ?? ((Component)obj).GetComponent<KSelectable>();
-                withParam.Invoke(obj, new object[] { selectable });
-            }
-        }
-
-        #endregion
-
-        #region 公共接口与清理
-
-        //public void RefreshButtonState()
-        //{
-        //    if (_dualPlantButton != null && _targetReceptacle != null)
-        //    {
-        //        // ⚠️ 注意：原“双植株计数”逻辑不可靠（依赖距离），建议由 Mod 主逻辑控制
-        //        // 此处仅根据当前是否已有植株决定按钮是否可用
-        //        _dualPlantButton.interactable = _targetReceptacle.Occupant != null;
-        //    }
-        //}
         public void RefreshButtonState()
         {
+            bool active = true;
             if (_dualPlantButton == null || _targetReceptacle == null) return;
 
             //双株变异植株
             var marker = _targetPlot.GetComponent<DualHeadReceptacleMarker>();
-            if (marker == null || marker.primaryPlant == null) return;
+            if (marker == null || marker.primaryPlant == null){
+                active = false;
+            }
             //双株已配对
-            if (marker.primaryPlant.GetComponent<DualHeadPlantComponent>().twin != null) return;
+            else if (marker.primaryPlant.GetComponent<DualHeadPlantComponent>().twin != null)
+            {
+                active = false;
+            }
 
-            _dualPlantButton.interactable = true;
-            _dualPlantButton.gameObject.SetActive(true); // 或者隐藏按钮
+            _dualPlantButton.gameObject.SetActive(active); // 或者隐藏按钮
         }
         private void OnDestroy()
         {
@@ -395,7 +271,6 @@ namespace MutantFarmLab
             Instance = null;
         }
 
-        #endregion
     }
 
     #region Harmony 补丁：防止自定义操作时触发原生销毁逻辑
@@ -409,7 +284,7 @@ namespace MutantFarmLab
         {
             if (DualHeadSideScreen.IsCustomPlantOperation)
             {
-                PUtil.LogDebug("[Harmony] 拦截 Uproot");
+                PUtil.LogDebug("[双头株] 拦截 Uproot");
                 return false;
             }
             return true;
@@ -421,7 +296,7 @@ namespace MutantFarmLab
         {
             if (DualHeadSideScreen.IsCustomPlantOperation)
             {
-                PUtil.LogDebug("[Harmony] 拦截 MarkForUproot");
+                PUtil.LogDebug("[双头株] 拦截 MarkForUproot");
                 return false;
             }
             return true;
@@ -433,7 +308,7 @@ namespace MutantFarmLab
         {
             if (DualHeadSideScreen.IsCustomPlantOperation)
             {
-                PUtil.LogDebug("[Harmony] 拦截 OrderRemoveOccupant");
+                PUtil.LogDebug("[双头株] 拦截 OrderRemoveOccupant");
                 return false;
             }
             return true;

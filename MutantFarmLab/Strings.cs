@@ -79,6 +79,7 @@ namespace MutantFarmLab
                     public static LocString TITLE = "Radiation Power Setting";
                     public static LocString DESC = "Adjust power level and particle consumption rate";
                     public static LocString TOOLTIP = "Higher power = stronger radiation = faster particle consumption";
+                    public static LocString ANOTHER_PLANT = "Another";
                 }
             }
 
@@ -166,8 +167,8 @@ namespace MutantFarmLab
             {
                 public static class DUAL_HEAD_SYMBIOSIS
                 {
-                    public static LocString NAME = "Dual Head Plant";
-                    public static LocString DESC = "Dual Head Plant DESC";
+                    public static LocString NAME = "Dual-Head Symbiosis";
+                    public static LocString DESC = "The two plant cores of the Dual-Head share growing conditions; individual head yield is slightly reduced. Under Dual-Head Symbiosis, benefits include: 50% reduction in additional fertilizer required, and weighted average growth cycle.";
                 }
             }
         }

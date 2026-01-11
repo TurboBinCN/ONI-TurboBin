@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using MutantFarmLab.mutantplants;
-using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
 using System;
 using UnityEngine;
@@ -21,7 +20,7 @@ namespace MutantFarmLab.patches
         {
             if (__instance == null || newPlant == null) return;
             var receptacleGo = __instance.gameObject;
-            var marker = receptacleGo.GetComponent<DualHeadReceptacleMarker>();
+            var marker = receptacleGo.AddOrGet<DualHeadReceptacleMarker>();
 
             // 情况1：新植物是双头变异株 → 成为第一株
             if (newPlant.TryGetComponent(out MutantPlant mutant)
@@ -29,12 +28,7 @@ namespace MutantFarmLab.patches
             {
                 var dualHeadPlantCom = newPlant.AddOrGet<DualHeadPlantComponent>();
                 dualHeadPlantCom.RootPlotGameObject = __instance.gameObject;
-                dualHeadPlantCom.StartDualHead();
 
-                if (marker == null)
-                {
-                    marker = receptacleGo.AddComponent<DualHeadReceptacleMarker>();
-                }
                 marker.primaryPlant = newPlant;
                 PUtil.LogDebug($"[双头株] 母株挂载 DualHeadPlantComponent marker: [{marker.primaryPlant.name}]");
                 // 锁定 receptacle
@@ -77,7 +71,6 @@ namespace MutantFarmLab.patches
                 GameObject existPlant = __instance?.Occupant;
                 if (existPlant == null) return true; // ✅ 放行原生逻辑，不干预空地块种植
                                                      // 3. 检查当前已种是否是双头突变植物
-                TbbDebuger.PrintGameObjectFullInfo(existPlant);
                 var mutantComp = existPlant.GetComponent<MutantPlant>();
                 if (mutantComp == null || !mutantComp.MutationIDs.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID))
                     return true; // 不是双头突变，走默认逻辑（拒绝第二株）
@@ -85,7 +78,7 @@ namespace MutantFarmLab.patches
                 // 4.检查当前已种植物是否挂载DHP组件 没有即挂载=====
                 existPlant.AddOrGet<DualHeadPlantComponent>();
 
-                PUtil.LogDebug($"[双头株] 所有 IsValidEntity 检查已完成 -> 允许种植第二株");
+                //PUtil.LogDebug($"[双头株] 所有 IsValidEntity 检查已完成 -> 允许种植第二株");
                 __result = true; // ✅ 强制判定「合法可种植」
                 return false;    // ✅ 终止原生逻辑，直接生效我们的判定结果
             }

@@ -58,13 +58,28 @@ namespace MutantFarmLab
 
             PUtil.LogDebug($"[SubGO] Activating...");
 
-            SubGameObject.SetActive(true);
+            //SubGameObject.SetActive(true);
             KPrefabIDTracker.Get().Register(SubGameObject.AddOrGet<KPrefabID>());
 
             if (parentGo != null)
                 PUtil.LogDebug($"[SubGO] transfromGOName:[{parentGo.name}] transfromGOID：[{parentGo.GetMyWorldId()}] transform localPosition:[{parentGo.transform.localPosition.ToString()}] transform postion:[{parentGo.transform.position}] SubGameObject worldID:[{SubGameObject.GetMyWorldId()}] SubGameObjectl localPosition:[{SubGameObject.transform.localPosition.ToString()} subGameObject postion: [{SubGameObject.transform.position}]");
 
             return SubGameObject;
+        }
+        public static GameObject GetGameObject(GameObject farmtileObj)
+        {
+            if (farmtileObj != null)
+            {
+                return farmtileObj.transform.Find(storageName)?.gameObject;
+            }
+            return null;
+        }
+        public static void setActive(GameObject farmtileObj, bool active)
+        {
+            if (farmtileObj != null)
+            {
+                farmtileObj.transform.Find(storageName)?.gameObject?.SetActive(active);
+            }
         }
 
     }
