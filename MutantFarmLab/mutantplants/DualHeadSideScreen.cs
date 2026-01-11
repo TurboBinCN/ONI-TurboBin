@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using MutantFarmLab.mutantplants;
+using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
 using STRINGS;
 using System;
@@ -16,9 +17,9 @@ namespace MutantFarmLab
     public class DualHeadSideScreen : MonoBehaviour
     {
         // === 配置常量 ===
-        private const string BUTTON_TEXT = "种植第二株";
+        private const string BUTTON_TEXT = "第二株";
         private static readonly Color BUTTON_BG_COLOR = new Color32(71, 139, 202, 255);
-        private static readonly Color BUTTON_TEXT_COLOR = Color.white;
+        private static readonly Color BUTTON_TEXT_COLOR = Color.black;
         private const int BUTTON_FONT_SIZE = 14;
 
         // === 组件引用 ===
@@ -60,7 +61,20 @@ namespace MutantFarmLab
 
             CacheComponents(plotObject, sideScreenRoot);
             CreateOrShowButton(sideScreenRoot);
+            
             PUtil.LogDebug("[DualHead] UI 初始化完成");
+            PUtil.LogDebug("[双头株] Init 调试块开始");
+            TbbDebuger.PrintGameObjectFullInfo(plotObject);
+
+            var plant = plotObject.GetComponent<PlantablePlot>().Occupant;
+            if(plant != null){
+            TbbDebuger.PrintGameObjectFullInfo(plant);
+
+            var mdk = plant.GetComponent<Storage>();
+
+                PUtil.LogDebug($"[双头株] plant Name :[{plant.name}] Storagename:[{plant.GetComponent<Storage>().name}] mkd name:[{mdk.name} mdk storage name:[{mdk.storageNetworkID}]filters:[{mdk.storageFilters}]]");
+            }
+            PUtil.LogDebug("[双头株] Init 调试块结束");
         }
 
         private bool ValidateInitialization(GameObject plot, GameObject screen)
@@ -99,15 +113,16 @@ namespace MutantFarmLab
             var buttonArea = FindButtonArea(sideScreenRoot);
             if (buttonArea == null)
             {
-                PUtil.LogError("[DualHead] 未找到 ButtonArea 容器");
+                PUtil.LogWarning("[DualHead] 未找到 ButtonArea 容器");
                 return;
             }
             if (_dualPlantButton == null)
                 _dualPlantButton = CreateButton(buttonArea);
 
-            _dualPlantButton.gameObject.SetActive(true);
-            _dualPlantButton.interactable = true;
+            _dualPlantButton.gameObject.SetActive(false);
+            _dualPlantButton.interactable = false;
             _dualPlantButton.transform.SetAsLastSibling();
+            RefreshButtonState();
         }
 
         #endregion
@@ -138,8 +153,8 @@ namespace MutantFarmLab
             btnObj.transform.SetParent(parent, false);
 
             var rect = btnObj.AddComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.5f, 0f);
-            rect.anchorMax = new Vector2(0.8f, 0f);
+            rect.anchorMin = new Vector2(0.1f, 0f);
+            rect.anchorMax = new Vector2(0.4f, 0f);
             rect.pivot = new Vector2(0.5f, 0f);
             rect.sizeDelta = new Vector2(0, 35);
             rect.anchoredPosition = new Vector2(0, 8);
@@ -168,6 +183,8 @@ namespace MutantFarmLab
             text.fontSize = BUTTON_FONT_SIZE;
             text.alignment = TextAnchor.MiddleCenter;
             text.raycastTarget = false;
+
+            text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
 
             var rect = textObj.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
@@ -309,7 +326,14 @@ namespace MutantFarmLab
             if (field != null)
                 field.SetValue(obj, value);
         }
-
+        private static object GetField(object obj, string name)
+        {
+            if (obj == null) return null;
+            var field = obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            if (field != null)
+                return field.GetValue(obj);
+            return null;
+        }
         private void InvokeMethod(object obj, string name, params object[] args)
         {
             if (obj == null) return;
@@ -341,31 +365,28 @@ namespace MutantFarmLab
 
         #region 公共接口与清理
 
-        public void RefreshButtonState()
-        {
-            if (_dualPlantButton != null && _targetReceptacle != null)
-            {
-                // ⚠️ 注意：原“双植株计数”逻辑不可靠（依赖距离），建议由 Mod 主逻辑控制
-                // 此处仅根据当前是否已有植株决定按钮是否可用
-                _dualPlantButton.interactable = _targetReceptacle.Occupant != null;
-            }
-        }
         //public void RefreshButtonState()
         //{
-        //    if (_dualPlantButton == null || _targetReceptacle == null) return;
-
-        //    bool canPlantSecond = false;
-        //    var occupant = _targetReceptacle.Occupant;
-        //    if (occupant != null)
+        //    if (_dualPlantButton != null && _targetReceptacle != null)
         //    {
-        //        // 仅当已有植株是双头变异株时，才允许种第二株
-        //        canPlantSecond = occupant.TryGetComponent(out MutantPlant mp)
-        //                         && mp.MutationIDs.Contains(DualHeadPlantComponent.DUAL_HEAD_MUT_ID);
+        //        // ⚠️ 注意：原“双植株计数”逻辑不可靠（依赖距离），建议由 Mod 主逻辑控制
+        //        // 此处仅根据当前是否已有植株决定按钮是否可用
+        //        _dualPlantButton.interactable = _targetReceptacle.Occupant != null;
         //    }
-
-        //    _dualPlantButton.interactable = canPlantSecond;
-        //    _dualPlantButton.gameObject.SetActive(canPlantSecond); // 或者隐藏按钮
         //}
+        public void RefreshButtonState()
+        {
+            if (_dualPlantButton == null || _targetReceptacle == null) return;
+
+            //双株变异植株
+            var marker = _targetPlot.GetComponent<DualHeadReceptacleMarker>();
+            if (marker == null || marker.primaryPlant == null) return;
+            //双株已配对
+            if (marker.primaryPlant.GetComponent<DualHeadPlantComponent>().twin != null) return;
+
+            _dualPlantButton.interactable = true;
+            _dualPlantButton.gameObject.SetActive(true); // 或者隐藏按钮
+        }
         private void OnDestroy()
         {
             if (_dualPlantButton != null)

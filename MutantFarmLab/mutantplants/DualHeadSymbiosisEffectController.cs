@@ -19,11 +19,8 @@ namespace MutantFarmLab.mutantplants
     }
     public class DualHeadSymbiosisEffectController : KMonoBehaviour
     {
-        [Serialize] 
         public GameObject twin; // 配对的另一株
-        [Serialize]
         private PlantStateSnapshot _originalState;
-        private AttributeModifier _fertilizerMod;
         private bool _applied = false;
 
         public void ApplyEffect()
@@ -64,7 +61,10 @@ namespace MutantFarmLab.mutantplants
             // 同步 prefersDarkness（只要一方喜暗，双方都喜暗）
             bool sharedDark = _originalState.prefersDarkness ||
                              (partnerIllum?.prefersDarkness ?? false);
-            if (myIllum != null) myIllum.prefersDarkness = sharedDark;
+            if (myIllum != null) {
+                PUtil.LogDebug($"[双头株] 增益 黑暗 {gameObject.name}  ");
+                myIllum.prefersDarkness = sharedDark; 
+            }
 
             // 同步 MinLightLux：取最大值（最严苛的需求）
             float partnerMinLux = partnerIllum.LightIntensityThreshold;
@@ -90,7 +90,7 @@ namespace MutantFarmLab.mutantplants
             {
                 gameObject.GetComponent<Modifiers>().attributes.Add( attr );
                 // 注意：这里我们仍依赖 attribute 查询是否实时生效
-                PUtil.LogDebug($"Add AttrModifier [{attr.AttributeId}] totalValue:[{gameObject.GetComponent<Modifiers>().attributes.Get(attr.AttributeId).GetTotalValue()}]");
+                PUtil.LogDebug($"[双头株] 增益 Add AttrModifier [{attr.AttributeId}] totalValue:[{gameObject.GetComponent<Modifiers>().attributes.Get(attr.AttributeId).GetTotalValue()}]");
             }
         }
 

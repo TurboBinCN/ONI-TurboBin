@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
-using UnityEngine;
 using MutantFarmLab.mutantplants;
+using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
+using System;
+using UnityEngine;
 
 namespace MutantFarmLab.patches
 {
@@ -25,7 +27,10 @@ namespace MutantFarmLab.patches
             if (newPlant.TryGetComponent(out MutantPlant mutant)
                 && mutant.MutationIDs?.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID) == true)
             {
-                newPlant.AddOrGet<DualHeadPlantComponent>().plot = __instance;
+                var dualHeadPlantCom = newPlant.AddOrGet<DualHeadPlantComponent>();
+                dualHeadPlantCom.RootPlotGameObject = __instance.gameObject;
+                dualHeadPlantCom.StartDualHead();
+
                 if (marker == null)
                 {
                     marker = receptacleGo.AddComponent<DualHeadReceptacleMarker>();
@@ -39,7 +44,8 @@ namespace MutantFarmLab.patches
             else if (marker != null && marker.primaryPlant != null)
             {
                 var secondDHP = newPlant.AddOrGet<DualHeadPlantComponent>();
-                secondDHP.plot = __instance;
+                secondDHP.RootPlotGameObject = __instance.gameObject;
+                secondDHP.StartDualHead();
                 var firstDHP = marker.primaryPlant.GetComponent<DualHeadPlantComponent>();
 
                 if (firstDHP != null && secondDHP != null)
@@ -61,24 +67,41 @@ namespace MutantFarmLab.patches
     {
         public static bool Prefix(SingleEntityReceptacle __instance, GameObject candidate, ref bool __result)
         {
-            // 1. 确保这个 receptacle 属于可耕种地块
-            var plot = __instance.GetComponent<PlantablePlot>();
-            if (plot == null) return true; // 不是种植地块，走默认逻辑
+            try
+            {
+                // 1. 确保这个 receptacle 属于可耕种地块
+                var plot = __instance.GetComponent<PlantablePlot>();
+                if (plot == null) return true; // 不是种植地块，走默认逻辑
 
-            // 2. 获取当前已种的植物（如果有的话）
-            GameObject existPlant = __instance.Occupant;
-            if (existPlant == null)  return true; // ✅ 放行原生逻辑，不干预空地块种植
-            // 3. 检查当前已种是否是双头突变植物
-            var mutantComp = existPlant.GetComponent<MutantPlant>();
-            if (mutantComp == null || !mutantComp.MutationIDs.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID))
-                return true; // 不是双头突变，走默认逻辑（拒绝第二株）
+                // 2. 获取当前已种的植物（如果有的话）
+                GameObject existPlant = __instance?.Occupant;
+                if (existPlant == null) return true; // ✅ 放行原生逻辑，不干预空地块种植
+                                                     // 3. 检查当前已种是否是双头突变植物
+                TbbDebuger.PrintGameObjectFullInfo(existPlant);
+                var mutantComp = existPlant.GetComponent<MutantPlant>();
+                if (mutantComp == null || !mutantComp.MutationIDs.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID))
+                    return true; // 不是双头突变，走默认逻辑（拒绝第二株）
 
-            // 4.检查当前已种植物是否挂载DHP组件 没有即挂载=====
-            existPlant.AddOrGet<DualHeadPlantComponent>();
+                // 4.检查当前已种植物是否挂载DHP组件 没有即挂载=====
+                existPlant.AddOrGet<DualHeadPlantComponent>();
 
-            PUtil.LogDebug($"[双头株] 所有 IsValidEntity 检查已完成 -> 允许种植第二株");
-            __result = true; // ✅ 强制判定「合法可种植」
-            return false;    // ✅ 终止原生逻辑，直接生效我们的判定结果
+                PUtil.LogDebug($"[双头株] 所有 IsValidEntity 检查已完成 -> 允许种植第二株");
+                __result = true; // ✅ 强制判定「合法可种植」
+                return false;    // ✅ 终止原生逻辑，直接生效我们的判定结果
+            }
+            catch (Exception ex)
+            {
+                PUtil.LogError($"[双头株] 操作异常: {ex}");
+                return true;
+            }
+            finally
+            {
+                __result = true;
+            }
+
         }
     }
+
+
+
 }
