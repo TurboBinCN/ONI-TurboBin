@@ -51,9 +51,12 @@
     <Compile Include="mutantplants\FoodEffectRegister.cs" />
     <Compile Include="mutantplants\ManualDeliveryKGDebugPatch.cs" />
     <Compile Include="mutantplants\MutantEffects.cs" />
+    <Compile Include="mutantplants\PlanterSideScreenPatch.cs" />
     <Compile Include="mutantplants\PlantMigrationHelper.cs" />
     <Compile Include="mutantplants\PlantMutationRegister.cs" />
+    <Compile Include="mutantplants\RadSeedEatChore.cs" />
     <Compile Include="mutantplants\RadiationResistSeedConfig.cs" />
+    <Compile Include="mutantplants\RadSeedEatWorkable.cs" />
     <Compile Include="RadiationFarmTile.cs" />
     <Compile Include="RadiationFarmTileConfig.cs" />
     <Compile Include="ManualDeliveryKGPatch.cs" />

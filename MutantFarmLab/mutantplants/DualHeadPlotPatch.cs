@@ -30,7 +30,7 @@ namespace MutantFarmLab.patches
                 dualHeadPlantCom.RootPlotGameObject = __instance.gameObject;
 
                 marker.primaryPlant = newPlant;
-                PUtil.LogDebug($"[双头株] 母株挂载 DualHeadPlantComponent marker: [{marker.primaryPlant.name}]");
+                PUtil.LogDebug($"[双头株] 母株[{marker.primaryPlant.name}]种植配置");
                 // 锁定 receptacle
                 __instance.autoReplaceEntity = false;
             }
@@ -39,7 +39,6 @@ namespace MutantFarmLab.patches
             {
                 var secondDHP = newPlant.AddOrGet<DualHeadPlantComponent>();
                 secondDHP.RootPlotGameObject = __instance.gameObject;
-                secondDHP.StartDualHead();
                 var firstDHP = marker.primaryPlant.GetComponent<DualHeadPlantComponent>();
 
                 if (firstDHP != null && secondDHP != null)
@@ -47,7 +46,7 @@ namespace MutantFarmLab.patches
                     firstDHP.SetTwin(secondDHP);
                     // secondDHP.SetPartner(firstDHP); // SetPartner 内部会处理双向
                 }
-                PUtil.LogDebug($"[双头株] 子株挂载 DualHeadPlantComponent Partner: [子:{secondDHP.name} 母:{marker.primaryPlant.name}]");
+                PUtil.LogDebug($"[双头株] 子株种植配置 [子:{secondDHP.name} 母:{marker.primaryPlant.name}]");
             }
         }
     }

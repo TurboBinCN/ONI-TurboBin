@@ -116,15 +116,10 @@
 	<Target Name="UniversalDebugVariables"
         BeforeTargets="BeforeBuild;PrepareForBuild;InitializeBuildStatus"
 		Condition=" '$(EnableBuildDebug)' != 'false' "> <!-- 可通过开关关闭调试 -->
-		<Message Importance="high" Text="====$(GameFolder)/0Harmony.dll===" />
-		<Message Importance="high" Text="====GameFolderSteam:$(GameFolderSteam)===" />
-		<Message Importance="high" Text="====Platform:$(Platform)===" />
-		<Message Importance="high" Text="====PlatformTarget:$(PlatformTarget)===" />
-		<Message Importance="high" Text="====GamePlatform:$(GamePlatform)===" />
-		<Message Importance="high" Text="====MSBuildTasksHelperDLL:$(MSBuildTasksHelperDLL)===" />
-		<Message Importance="high" Text="====UsesPublicise:$(UsesPublicise)===" />
-		<Message Importance="high" Text="====Title:$(Title)===" />
-		<Message Importance="high" Text="====PLibFolder)/PLibCore.dll:$(PLibFolder)/PLibCore.dll UsesPLib:$(UsesPLib)===" />
+		<Message Importance="high" Text="====ModName:$(Title)===" />
+		<Message Importance="high" Text="====Platform:$(Platform)" />
+		<Message Importance="high" Text="====GameFolderSteam:$(GameFolderSteam)" />
+		<Message Importance="high" Text="====ModOutPutFolder:$(ModOutputFolderDebug)" />
 	</Target>
 	<!-- 署名 -->
 	<PropertyGroup>

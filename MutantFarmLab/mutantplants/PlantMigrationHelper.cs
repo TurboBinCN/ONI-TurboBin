@@ -41,9 +41,14 @@ namespace MutantFarmLab.mutantplants
                     //因为已经移除，所以这里先不执行
                     //ClearPlotWithoutDestroyingPlant(oldPlot);
                 }
+                //清理plant的旧的订阅
+                
+
                 // --- 建立与新 Plot 的关系 ---
                 InvokeMethod(newPlot, "RegisterWithPlant",new object[] { plant });
-
+                PUtil.LogDebug($"[双头株] 迁移 [{plant?.name}] 注册新Plot[{newPlot?.name}] ");
+                newPlot.gameObject.Trigger(-1820564715);//OccupantValidChanged
+                //plant.Unsubscribe(1969584890);//ObjectDestroyed 
                 //肥料SMI
                 var fertilizationSMI = plant.GetSMI<FertilizationMonitor.Instance>();
                 if (fertilizationSMI != null)
@@ -103,7 +108,7 @@ namespace MutantFarmLab.mutantplants
             var currentPlant = targetReceptacle?.Occupant;
             if (currentPlant == null)
             {
-                PUtil.LogDebug("[DualHead] 种植盆已为空");
+                PUtil.LogDebug("[双头株] 种植盆已为空");
                 return;
             }
 
@@ -138,7 +143,7 @@ namespace MutantFarmLab.mutantplants
             InvokeMethod(receptacle, "UnsubscribeFromOccupant");
             InvokeMethod(receptacle, "UpdateActive");
 
-            PUtil.LogDebug($"[DualHead] 已移出植株 '{currentPlant.name}' 并清空 receptacle");
+            PUtil.LogDebug($"[双头株] 已移出植株 '{currentPlant.name}' 并清空 receptacle");
         }
         private static void ClearPlantRef(PlantablePlot targetPlot)
         {
@@ -152,7 +157,7 @@ namespace MutantFarmLab.mutantplants
                     field.SetValue(targetPlot, plantRef);
                 }
                 plantRef.Set(null);
-                PUtil.LogDebug("[DualHead] plantRef 已设为 null");
+                PUtil.LogDebug("[双头株] plantRef 已设为 null");
             }
         }
         public static void ResetPlotToPlantableState(PlantablePlot targetPlot, Operational plotOperational)
@@ -164,6 +169,10 @@ namespace MutantFarmLab.mutantplants
 
             InvokeMethod(targetPlot, "UpdateActive");
             InvokeUpdateStatusItem(targetPlot);
+
+            targetPlot.gameObject.Trigger(-1820564715);//OccupantValidChanged
+            //targetPlot.gameObject.Unsubscribe(-1697596308);//OnStorageChange
+            //targetPlot.gameObject.Unsubscribe(-1820564715);//OccupantValidChanged
         }
         private static void InvokeUpdateStatusItem(object obj)
         {

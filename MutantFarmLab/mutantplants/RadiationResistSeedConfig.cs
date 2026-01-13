@@ -6,13 +6,10 @@ namespace MutantFarmLab.mutantplants
 {
     public class RadiationResistSeedConfig : IEntityConfig
     {
-        // ✅ 全局唯一ID（核心·全项目统一）
         public const string ID = "RADSEED";
-        // ✅ 文本对齐Strings.cs → ELEMENT.RADSEED，支持翻译生效
         public static string Name = UI.FormatAsLink(STRINGS.ELEMENT.RADSEED.NAME, ID.ToUpper());
         public static string Description = STRINGS.ELEMENT.RADSEED.DESC;
 
-        // ✅ 完整保留原有逻辑，零改动
         public GameObject CreatePrefab()
         {
             GameObject looseEntity = EntityTemplates.CreateLooseEntity(
@@ -51,6 +48,8 @@ namespace MutantFarmLab.mutantplants
             });
 
             GameObject foodEntity = EntityTemplates.ExtendEntityToFood(looseEntity, foodInfo);
+
+            foodEntity.AddOrGet<RadSeedEatWorkable>();
 
             return foodEntity;
         }

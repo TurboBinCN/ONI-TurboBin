@@ -13,7 +13,7 @@ namespace MutantFarmLab.mutantplants
     }
     public class DualHeadPlantComponent : KMonoBehaviour, ISaveLoadable
     {
-        //双头株状态 下相关属性
+        //双头株状态下相关属性
         public bool dualHead = false;
         public DualHeadPlantComponent twin;
         private DualHeadReceptacleMarker _marker;
@@ -30,7 +30,7 @@ namespace MutantFarmLab.mutantplants
             if (targetObj.name.Contains("FarmTile")) return true;
             return targetObj.name.Contains("Hydroponic");
         }
-        private bool isDulHeadMutantPlant(GameObject plant)
+        private bool isDulHeadMutantPlant()
         {
             return TryGetComponent(out MutantPlant mp) &&
                              mp.MutationIDs?.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID) == true;
@@ -40,47 +40,58 @@ namespace MutantFarmLab.mutantplants
             base.OnSpawn();
 
             _PlantI = gameObject;
+
             //读档重建数据
-            if(!isDulHeadMutantPlant(_PlantI)) return;
+            if (RootPlotGameObject == null && isDulHeadMutantPlant()){
 
-            //TODO 子株也是双头株变异需要判断
-            //母株逻辑
-            int centerCell = Grid.PosToCell(_PlantI); // 自身中心格子（判定基准）
-            if (!Grid.IsValidCell(centerCell)) return;
+                //TODO 子株也是双头株变异需要判断
+                //母株逻辑
+                int centerCell = Grid.PosToCell(_PlantI); // 自身中心格子（判定基准）
+                if (!Grid.IsValidCell(centerCell)) return;
 
-            CellOffset[] checkOffsets = new[]
-            {
-                CellOffset.none,   // 自身
-                new CellOffset(0, 1),   // 上格
-                new CellOffset(0, -1) // 下格
-            };
-
-            foreach (var offset in checkOffsets)
-            {
-                //计算「自身中心±上下左右1格」的目标格子ID
-                int targetCell = Grid.OffsetCell(centerCell, offset);
-
-                //目标格子无效 → 直接跳过
-                if (!Grid.IsValidCell(targetCell)) continue;
-
-                //TODO 需要判断是否是自己占据的FarmTile格子
-
-                // 自身中心±1格 + 是自己占据的格子 → 检测种植砖
-                GameObject farmTileObj = Grid.Objects[targetCell, (int)ObjectLayer.FoundationTile];
-                if (farmTileObj == null) continue;
-
-                if (IsTargetFarmTile(farmTileObj))
+                CellOffset[] checkOffsets = new[]
                 {
-                    RootPlotGameObject = farmTileObj;
-                    PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}] cell:[{targetCell}] | 种植砖={farmTileObj.name}");
-                    break;
+                    CellOffset.none,   // 自身
+                    new CellOffset(0, 1),   // 上格
+                    new CellOffset(0, -1) // 下格
+                };
+
+                foreach (var offset in checkOffsets)
+                {
+                    //计算「自身中心±上下左右1格」的目标格子ID
+                    int targetCell = Grid.OffsetCell(centerCell, offset);
+
+                    //目标格子无效 → 直接跳过
+                    if (!Grid.IsValidCell(targetCell)) continue;
+
+                    //TODO 需要判断是否是自己占据的FarmTile格子
+
+                    // 自身中心±1格 + 是自己占据的格子 → 检测种植砖
+                    GameObject farmTileObj = Grid.Objects[targetCell, (int)ObjectLayer.FoundationTile];
+                    if (farmTileObj == null) continue;
+
+                    if (IsTargetFarmTile(farmTileObj))
+                    {
+                        RootPlotGameObject = farmTileObj;
+                        PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}] cell:[{targetCell}] | 种植砖={farmTileObj.name}");
+                        break;
+                    }
                 }
             }
+
             if (RootPlotGameObject == null) return;
             _marker = RootPlotGameObject?.GetComponent<DualHeadReceptacleMarker>();
-            _marker.primaryPlant = _PlantI;
+            
+            if(_marker?.primaryPlant == null)
+            {
+                _marker.primaryPlant = _PlantI;
+            }
 
-            //母株迁移Plot
+            var twinPlant = RootPlotGameObject.GetComponent<PlantablePlot>().Occupant;
+            //没有子株或子株是自己-->结束
+            if (twinPlant == null || twinPlant == _PlantI) return;
+
+            //确定有两株植物-->母株迁移Plot
             var plantablePlotGO = PlantablePlotGameObject.GetGameObject(RootPlotGameObject);
             if (plantablePlotGO != null)
             {
@@ -92,17 +103,14 @@ namespace MutantFarmLab.mutantplants
                 _PlantI.transform.SetParent(plot.transform);
                 PlantMigrationHelper.MigratePlantToPlot(_PlantI, plot);
 
-                PUtil.LogDebug($"[双头株] 读档重建 母株迁移Plot :[{plot.gameObject.name}]");
+                PUtil.LogDebug($"[双头株] 完成母株[{_PlantI.name}]迁移Plot:[{plot.gameObject.name}]");
             }
 
-            //重建子株并绑定
-            var twinPlant = RootPlotGameObject.GetComponent<PlantablePlot>().Occupant;
-            if (twinPlant == null) return;
-            var twinPlantCom = twinPlant.GetComponent<DualHeadPlantComponent>();
+            //确定有两株植物-->重建子株并绑定
+            var twinPlantCom = twinPlant.AddOrGet<DualHeadPlantComponent>();
             twinPlantCom.RootPlotGameObject = RootPlotGameObject;
             twinPlantCom.iPlotGameObject = RootPlotGameObject;
             twinPlantCom._marker = _marker;
-            //更好的方案effect
 
             SetTwin(twinPlant.GetComponent<DualHeadPlantComponent>());
             
@@ -111,49 +119,7 @@ namespace MutantFarmLab.mutantplants
             //重建Effect
             ApplyDualHeadBonuses(_PlantI, twinPlant);
 
-            if (_marker == null || !dualHead) PUtil.LogDebug($"[双头株] 重建完成 Plant [{_PlantI.name}] twin:[{twin.gameObject.name}] _markerPrimary:[{_marker.primaryPlant.name}] dualHead:[{dualHead}]");
-        }
-        public void StartDualHead()
-        {
-            PUtil.LogDebug($"[双头株] StartDualHead");
-            if (RootPlotGameObject == null) return;
-            //母株 设定
-            if (TryGetComponent(out MutantPlant mp) &&
-                             mp.MutationIDs?.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID) == true)
-            {
-                // === 主株逻辑 ===
-                if (_marker.primaryPlant == null) _marker.primaryPlant = gameObject;//为何丢失主株信息?
-            }
-            //子株 设定
-            if (_marker != null && _marker.primaryPlant != _PlantI)
-            {
-                //子株创建，为母株创建PlantablePlot
-                var plantablePlotGO = PlantablePlotGameObject.GetGameObject(RootPlotGameObject);
-                if (plantablePlotGO != null)
-                {
-                    plantablePlotGO.SetActive(true);
-                    var plot = plantablePlotGO.AddOrGet<PlantablePlot>();
-                    iPlotGameObject = plot.gameObject;
-                    plot.InitializeComponent();
-
-                    _marker.primaryPlant.transform.SetParent(plot.transform);
-                    PlantMigrationHelper.MigratePlantToPlot(_marker.primaryPlant, plot);
-                }
-                // === 子株逻辑 ===
-                // 找到主株，尝试配对
-                var primaryComp = _marker.primaryPlant.GetComponent<DualHeadPlantComponent>();
-                if (primaryComp != null)
-                {
-                    PUtil.LogDebug($"[双头株] 开始双向配对与应用双头增益");
-                    // 双向配对
-                    SetTwin(primaryComp);
-
-                    // 应用双头增益（由子株触发）
-                    ApplyDualHeadBonuses(_marker.primaryPlant, gameObject);
-                        
-                    SetDualHead(true);
-                }
-            }
+            PUtil.LogDebug($"[双头株] 完成绑定与Effect 母株[{_PlantI.name}] 子株:[{twin.gameObject.name}] 标记:[{_marker.primaryPlant.name}] dualHead:[{dualHead}]");
         }
         private void ApplyDualHeadBonuses(GameObject primary, GameObject secondary)
         {
@@ -264,13 +230,13 @@ namespace MutantFarmLab.mutantplants
             }
         }
     }
-    [HarmonyPatch(typeof(KPrefabID), "OnSpawn")]
+    [HarmonyPatch(typeof(MutantPlant), "OnSpawn")]
     public static class EnsureComponentOnSpawn
     {
         [HarmonyPostfix]
-        public static void Postfix(KPrefabID __instance)
+        public static void Postfix(MutantPlant __instance)
         {
-            if (__instance.HasTag(GameTags.Plant))
+            if (__instance.gameObject.HasTag(GameTags.Plant) && __instance.MutationIDs?.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID) == true)
             {
                 __instance.gameObject.AddOrGet<DualHeadPlantComponent>();
             }
