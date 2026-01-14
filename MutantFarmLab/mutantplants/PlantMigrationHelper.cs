@@ -46,8 +46,10 @@ namespace MutantFarmLab.mutantplants
 
                 // --- 建立与新 Plot 的关系 ---
                 InvokeMethod(newPlot, "RegisterWithPlant",new object[] { plant });
+
+                Components.PlantablePlots.Add(newPlot.gameObject.GetMyWorldId(), newPlot);
                 PUtil.LogDebug($"[双头株] 迁移 [{plant?.name}] 注册新Plot[{newPlot?.name}] ");
-                newPlot.gameObject.Trigger(-1820564715);//OccupantValidChanged
+                //newPlot.gameObject.Trigger(-1820564715);//OccupantValidChanged
                 //plant.Unsubscribe(1969584890);//ObjectDestroyed 
                 //肥料SMI
                 var fertilizationSMI = plant.GetSMI<FertilizationMonitor.Instance>();
@@ -170,7 +172,7 @@ namespace MutantFarmLab.mutantplants
             InvokeMethod(targetPlot, "UpdateActive");
             InvokeUpdateStatusItem(targetPlot);
 
-            targetPlot.gameObject.Trigger(-1820564715);//OccupantValidChanged
+            //targetPlot.gameObject.Trigger(-1820564715);//OccupantValidChanged
             //targetPlot.gameObject.Unsubscribe(-1697596308);//OnStorageChange
             //targetPlot.gameObject.Unsubscribe(-1820564715);//OccupantValidChanged
         }

@@ -22,7 +22,7 @@ namespace MutantFarmLab
 
         private static readonly Color BUTTON_BG_COLOR = new Color32(62, 67, 87, 255);
         private static readonly Color BUTTON_TEXT_COLOR = Color.white;
-        private const int BUTTON_FONT_SIZE = 12;
+        private const int BUTTON_FONT_SIZE = 10;
 
         // === 组件引用 ===
         private Button _dualPlantButton;
@@ -196,8 +196,11 @@ namespace MutantFarmLab
             {
                 IsCustomPlantOperation = true;
 
-                PlantMigrationHelper.ClearPlotWithoutDestroyingPlant(_targetPlot);
-                PlantMigrationHelper.ResetPlotToPlantableState(_targetPlot,_plotOperational);
+                //PlantMigrationHelper.ClearPlotWithoutDestroyingPlant(_targetPlot);
+                //PlantMigrationHelper.ResetPlotToPlantableState(_targetPlot,_plotOperational);
+                //PlantMigrationHelper2.MigratePlant(_targetPlot, PlantablePlotGameObject.GetGameObject(_targetPlot.gameObject).GetComponent<PlantablePlot>());
+                var helper2 = _targetPlot.gameObject.AddOrGet<PlantMigrationHelper2>();
+                helper2.MigratePlant(_targetPlot, PlantablePlotGameObject.GetGameObject(_targetPlot.gameObject).GetComponent<PlantablePlot>());
                 RefreshUIAfterDelay();
 
                 PUtil.LogDebug("[双头株] 操作完成，等待 UI 刷新");

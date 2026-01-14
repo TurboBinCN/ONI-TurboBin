@@ -44,6 +44,7 @@ namespace MutantFarmLab.mutantplants
             //读档重建数据
             if (RootPlotGameObject == null && isDulHeadMutantPlant()){
 
+                PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}] 开始数据重建.");
                 //TODO 子株也是双头株变异需要判断
                 //母株逻辑
                 int centerCell = Grid.PosToCell(_PlantI); // 自身中心格子（判定基准）
@@ -79,7 +80,11 @@ namespace MutantFarmLab.mutantplants
                 }
             }
 
-            if (RootPlotGameObject == null) return;
+            if (RootPlotGameObject == null)
+            {
+                PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}] 未找到种植砖，结束");
+                return;
+            }
             _marker = RootPlotGameObject?.GetComponent<DualHeadReceptacleMarker>();
             
             if(_marker?.primaryPlant == null)
@@ -88,8 +93,8 @@ namespace MutantFarmLab.mutantplants
             }
 
             var twinPlant = RootPlotGameObject.GetComponent<PlantablePlot>().Occupant;
-            //没有子株或子株是自己-->结束
-            if (twinPlant == null || twinPlant == _PlantI) return;
+            //占据格子空或者的是自己 并且 标记的母株是自己 -->结束
+            if ((twinPlant == null || twinPlant == _PlantI) && _marker.primaryPlant == _PlantI) return;
 
             //确定有两株植物-->母株迁移Plot
             var plantablePlotGO = PlantablePlotGameObject.GetGameObject(RootPlotGameObject);
@@ -111,8 +116,9 @@ namespace MutantFarmLab.mutantplants
             twinPlantCom.RootPlotGameObject = RootPlotGameObject;
             twinPlantCom.iPlotGameObject = RootPlotGameObject;
             twinPlantCom._marker = _marker;
+            twinPlantCom.SetTwin(this);
 
-            SetTwin(twinPlant.GetComponent<DualHeadPlantComponent>());
+            SetTwin(twinPlantCom);
             
             SetDualHead(true);
 
@@ -136,45 +142,30 @@ namespace MutantFarmLab.mutantplants
                 PlantablePlotGameObject.setActive(RootPlotGameObject, false);
             }
             if (dualHead) {
-
                 //清理关联引用与增益
-                var dulHeadPlantCom = _PlantI.GetComponent<DualHeadPlantComponent>();
-                BreakSymbiosis(dulHeadPlantCom?.twin.gameObject);
-                dulHeadPlantCom.twin = null;
+                //var dulHeadPlantCom = _PlantI.GetComponent<DualHeadPlantComponent>();
+                //PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}]CleanUP 开始清理[{dulHeadPlantCom?.twin.gameObject.name}]共生状态.");
+                //BreakSymbiosis(dulHeadPlantCom?.twin.gameObject);
 
                 //断开配对
-                Unpair();
                 SetDualHead(false);
+                Unpair();
             }
             base.OnCleanUp();
         }
         private bool SetDualHead(bool flag = false)
         {
             // 检查 twin 是否有效
-            if (twin == null)
-            {
-                dualHead = false;
-                return false;
-            }
+            if (twin == null)dualHead = false;
 
-            // 获取标记组件
-            if (_marker == null || _marker.primaryPlant == null)
-            {
-                dualHead = false;
-                return false;
-            }
 
-            // 获取主植物的 DualHead 组件
-            var primaryPlantDualHeadCom = _marker.primaryPlant.GetComponent<DualHeadPlantComponent>();
-            if (primaryPlantDualHeadCom == null)
-            {
-                dualHead = false;
-                return false;
-            }
+            var twinPlantDualHeadCom = twin?.GetComponent<DualHeadPlantComponent>();
 
             // 同步设置 dualHead 状态
-            dualHead = flag;
-            primaryPlantDualHeadCom.dualHead = flag;
+            if(twinPlantDualHeadCom!= null){
+                dualHead = flag;
+                twinPlantDualHeadCom.dualHead = flag;
+            }
 
             return true;
         }
@@ -230,16 +221,17 @@ namespace MutantFarmLab.mutantplants
             }
         }
     }
-    [HarmonyPatch(typeof(MutantPlant), "OnSpawn")]
-    public static class EnsureComponentOnSpawn
-    {
-        [HarmonyPostfix]
-        public static void Postfix(MutantPlant __instance)
-        {
-            if (__instance.gameObject.HasTag(GameTags.Plant) && __instance.MutationIDs?.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID) == true)
-            {
-                __instance.gameObject.AddOrGet<DualHeadPlantComponent>();
-            }
-        }
-    }
+    //给每个变异株生成时确保挂载组件【暂时停掉，因为双株编译主要问题没解决】
+    //[HarmonyPatch(typeof(MutantPlant), "OnSpawn")]
+    //public static class EnsureComponentOnSpawn
+    //{
+    //    [HarmonyPostfix]
+    //    public static void Postfix(MutantPlant __instance)
+    //    {
+    //        if (__instance.gameObject.HasTag(GameTags.Plant) && __instance.MutationIDs?.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID) == true)
+    //        {
+    //            __instance.gameObject.AddOrGet<DualHeadPlantComponent>();
+    //        }
+    //    }
+    //}
 }

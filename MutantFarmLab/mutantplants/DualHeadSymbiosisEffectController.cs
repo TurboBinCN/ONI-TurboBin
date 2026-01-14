@@ -108,6 +108,7 @@ namespace MutantFarmLab.mutantplants
                     PUtil.LogDebug($"Remove AttrModifier [{modifier.AttributeId}] totalValue:[{gameObject.GetComponent<Modifiers>().attributes.Get(modifier.AttributeId).GetTotalValue()}]");
                 }
             }
+            PUtil.LogDebug($"[双头株] 恢复[{gameObject.name}]为原始状态。");
         }
     }
 }

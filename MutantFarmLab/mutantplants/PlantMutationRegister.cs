@@ -38,7 +38,7 @@ namespace MutantFarmLab.mutantplants
         {
             Debug.Log("[原生挂载] 开始注册自定义变异到原生系统...");
             RegisterRadiationResistMutation();
-            RegisterDualHeadMutation();
+            //RegisterDualHeadMutation();
             Debug.Log("[原生挂载] 所有自定义变异注册完成！");
         }
 
