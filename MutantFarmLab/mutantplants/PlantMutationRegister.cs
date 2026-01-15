@@ -3,6 +3,7 @@ using Database;
 using UnityEngine;
 using TUNING;
 using STRINGS;
+using PeterHan.PLib.Core;
 
 namespace MutantFarmLab.mutantplants
 {
@@ -12,7 +13,7 @@ namespace MutantFarmLab.mutantplants
     /// </summary>
     public static class PlantMutationRegister
     {
-        // ========== 抗辐籽变异常量（从MutantDefs内联，完全保留原值，零改动） ==========
+        // ========== 抗辐籽变异 ==========
         private const string RAD_RESIST_MUT_ID = "RadiationResistSeedMutation";
         private const float MIN_RADIATION_REQ = 250f;
         private const float FERTILIZER_COST_MOD = 1.25f;
@@ -20,7 +21,7 @@ namespace MutantFarmLab.mutantplants
         private const float YIELD_MOD = -0.2f;
         private const int MIN_LIGHT_REQ = 800;
 
-        // ========== 双头株变异常量【新增】严格对齐核心玩法设计 ==========
+        // ========== 双头株变异 ==========
         public static string DUAL_HEAD_MUT_ID = "DualHeadPlantMutation";
         public static float DUAL_SINGLE_HEAD_YIELD_MOD = -0.3f;
         private const float DUAL_MIN_RADIATION_ADD = 250f;//辐射门槛+250（原生变异标配）
@@ -30,16 +31,26 @@ namespace MutantFarmLab.mutantplants
         private const int HIGH_QUALITY_THRESHOLD = 80;
         private const string DUAL_SOUND_EVENT = "Plant_mutation_Leaf";//变异音效（复用原生绿叶变异）
 
+        //== 辐光菌==
+        public static string ACTINO_MUT_ID = "ActinobacteriaMutation";
+        public static float ACTINO_FERTILIZER_COST_MOD = -0.6f; //养料消耗-60%
+        public static float ACTINO_IRRAGATION_COST = -0.6f; //灌溉消耗-60%
+        public static float ACTINO_GROWTH_CYCLE_MOD = 4.0f; //生长周期+400%
+        public static int ACTINO_LIGHT_LUX = 1800; //光照强度1800lux
+        public static int ACTINO_MIN_RADIATION = 60; //辐射强度
+        public static float ACTINO_TEMP_RANGE_MOD = 0.6f;//生存温度范围+60%
+        //public static float ACTINO_PRESSURE
 
         /// <summary>
         /// 注册所有自定义变异（入口方法）
         /// </summary>
         public static void RegisterAllCustomMutations()
         {
-            Debug.Log("[原生挂载] 开始注册自定义变异到原生系统...");
+            PUtil.LogDebug("[原生挂载] 开始注册自定义变异到原生系统...");
             RegisterRadiationResistMutation();
-            //RegisterDualHeadMutation();
-            Debug.Log("[原生挂载] 所有自定义变异注册完成！");
+            RegisterDualHeadMutation();
+            RegisterActinobacteriaMutation();
+            PUtil.LogDebug("[原生挂载] 所有自定义变异注册完成！");
         }
 
         /// <summary>
@@ -61,7 +72,7 @@ namespace MutantFarmLab.mutantplants
                 .AddSoundEvent("Plant_mutation_Leaf");
 
             Db.Get().PlantMutations.Add(radMut);
-            Debug.Log($"[原生挂载] 变异「{RAD_RESIST_MUT_ID}」已存入原生PlantMutations仓库");
+            PUtil.LogDebug($"[原生挂载] 变异「{RAD_RESIST_MUT_ID}」已存入原生PlantMutations仓库");
         }
 
         /// <summary>
@@ -93,7 +104,22 @@ namespace MutantFarmLab.mutantplants
 
             // 2. 关键：将双头株变异存入原生PlantMutations仓库（与你的抗辐籽逻辑完全一致）
             Db.Get().PlantMutations.Add(dualHeadMut);
-            Debug.Log($"[原生挂载] 变异「{DUAL_HEAD_MUT_ID}」已存入原生PlantMutations仓库，数值配置生效！");
+            PUtil.LogDebug($"[原生挂载] 变异「{DUAL_HEAD_MUT_ID}」已存入原生PlantMutations仓库，数值配置生效！");
+        }
+        private static void RegisterActinobacteriaMutation()
+        {
+            PlantMutation actinoMut = new PlantMutation(
+                id: ACTINO_MUT_ID,
+                name: STRINGS.ELEMENT.ACTINO.NAME,
+                desc: "A mutation that allows plants to thrive in low light and nutrient conditions.")
+                .AttributeModifier(Db.Get().PlantAttributes.FertilizerUsageMod, ACTINO_FERTILIZER_COST_MOD, true)
+                .AttributeModifier(Db.Get().Amounts.Irrigation.maxAttribute, ACTINO_IRRAGATION_COST, true)
+                .AttributeModifier(Db.Get().PlantAttributes.WiltTempRangeMod, ACTINO_TEMP_RANGE_MOD,true)
+                .AttributeModifier(Db.Get().Amounts.Maturity.maxAttribute, ACTINO_GROWTH_CYCLE_MOD - 1f, true)
+                .VisualSymbolOverride("snapTo_mutate1", "mutantfarmlab_mutant_snaps_kanim", "light1")
+                .VisualSymbolOverride("snapTo_mutate2", "mutantfarmlab_mutant_snaps_kanim", "light");
+            Db.Get().PlantMutations.Add(actinoMut);
+            PUtil.LogDebug($"[原生挂载] 变异「{ACTINO_MUT_ID}」已存入原生PlantMutations仓库");
         }
         /// <summary>
         /// 工具方法：获取基础种子预制体

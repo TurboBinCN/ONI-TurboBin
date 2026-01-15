@@ -125,6 +125,11 @@ namespace MutantFarmLab
                 public static LocString NAME = "Dual Head";
                 public static LocString DESC = "The plant has evolved a twin-stem structure, hosting two growth cores in a single tile. They share the same growing conditions yet mature independently; while the yield of a single head is slightly reduced, the overall space efficiency is drastically improved. At high quality, the dual cores will bear seeds separately.";
             }
+            public static class ACTINO
+            {
+                public static LocString NAME = "Actinobacteria";
+                public static LocString DESC = "A special fungal mutant nourished by radiation, with three core values of \"sterilization, fluorescence, and energy saving\". It can use radiation energy to eliminate germs on itself and around it, emit soft fluorescence to meet the lighting needs of planting, and significantly reduce water and fertilizer consumption, serving as the \"environmental steward\" of the radiation farm; the cost is an extremely long growth cycle and the release of a small amount of radiation outward.";
+            }
         }
         #endregion
         #region ✅ 新增：食物文本节点（解决 ITEMS.FOOD 缺失）
