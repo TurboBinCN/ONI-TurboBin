@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PeterHan.PLib.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,8 +53,10 @@ namespace MutantFarmLab
             radiationEmitter.emitRadiusY = 5;
             radiationEmitter.emitRads = 300;
             radiationEmitter.emitAngle = 180f; // 向下90度扇形辐射
-            radiationEmitter.emitDirection = 270f; // 辐射方向：向下（0=右，270=下）
-            radiationEmitter.emissionOffset = new Vector3(1f, -0.5f, 0f); // 辐射偏移（长条中心向下）
+            //radiationEmitter.emitDirection = 270f; // 辐射方向：向下（0=右，270=下）
+            //radiationEmitter.emissionOffset = new Vector3(1f, -0.5f, 0f); // 辐射偏移（长条中心向下）
+            //radiationEmitter.emitDirection = 90f; // 辐射方向：向下（0=右，270=下）
+            //radiationEmitter.emissionOffset = new Vector3(1f, 0.5f, 0f); // 辐射偏移（长条中心向下）
 
             // 添加粒子存储组件（容量2000单位，参考HighEnergyParticleStorage逻辑）
             HighEnergyParticleStorage particleStorage = go.AddOrGet<HighEnergyParticleStorage>();
@@ -70,7 +73,6 @@ namespace MutantFarmLab
             controller.lowParticleThreshold = 200f; // 低粒子阈值（200单位触发信号）
 
             go.AddOrGetDef<CustomRadiationLightSM.Def>();
-
         }
 
         public override void DoPostConfigureComplete(GameObject go)

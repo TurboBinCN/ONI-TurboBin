@@ -1,6 +1,7 @@
 ﻿using KSerialization;
 using PeterHan.PLib.Core;
 using STRINGS;
+using UnityEngine;
 using static LogicGateBase;
 
 namespace MutantFarmLab
@@ -35,6 +36,29 @@ namespace MutantFarmLab
             Subscribe((int)GameHashes.OnParticleStorageChanged, OnParticleChanged);
             Trigger((int)GameHashes.OnParticleStorageChanged);
 
+
+            Rotatable component = GetComponent<Rotatable>();
+            bool flag = component != null && radiationEmitter != null;
+            if (flag)
+            {
+                switch (component.GetOrientation())
+                {
+                    case Orientation.FlipH:
+                    case Orientation.R90:
+                    case Orientation.R180:
+                    case Orientation.FlipV:
+                    case Orientation.R270:
+                        radiationEmitter.emitDirection = 90f;
+                        radiationEmitter.emissionOffset = new Vector3(1f, 1f, 0f);
+                        break;
+
+                    case Orientation.Neutral:
+                        radiationEmitter.emitDirection = 270f;
+                        radiationEmitter.emissionOffset = new Vector3(1f, -1f, 0f);
+                        break;
+                }
+                radiationEmitter.Refresh();
+            }
             radiationEmitter.emitRads = RadiationRads();
             radiationEmitter.Refresh();
             Refresh();
@@ -58,7 +82,7 @@ namespace MutantFarmLab
             if (ParticleStorage == null || radiationEmitter == null) return false;
             // 双核心条件：档位必须>0 + 粒子量必须高于阈值，缺一不可
             bool hasValidLevel = RadiationLevel > 0;
-            bool hasEnoughParticle = ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) > lowParticleThreshold;
+            bool hasEnoughParticle = ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) > ParticleConsumeAmount();
             return hasValidLevel && hasEnoughParticle;
         }
         private void Refresh()

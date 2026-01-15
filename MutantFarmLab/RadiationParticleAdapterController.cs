@@ -66,6 +66,28 @@ namespace MutantFarmLab
                 _radiationEmitter.emitRads = RadiationLevel * _powerBase;
             }
 
+            Rotatable component = GetComponent<Rotatable>();
+            bool flag = component != null && _radiationEmitter != null;
+            if (flag)
+            {
+                switch (component.GetOrientation())
+                {
+                    case Orientation.FlipH:
+                    case Orientation.R90:
+                    case Orientation.R180:
+                    case Orientation.FlipV:
+                    case Orientation.R270:
+                        _radiationEmitter.emitDirection = 270f;
+                        _radiationEmitter.emissionOffset = new Vector3(0f, -2f, 0);
+                        break;
+
+                    case Orientation.Neutral:
+                        _radiationEmitter.emitDirection = 90f;
+                        _radiationEmitter.emissionOffset = new Vector3(0f, 2f, 0);
+                        break;
+                }
+                _radiationEmitter.Refresh();
+            }
             _radiationEmitter.SetEmitting(false);
             
         }

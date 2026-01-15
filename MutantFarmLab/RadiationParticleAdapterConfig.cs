@@ -99,14 +99,15 @@ namespace MutantFarmLab
             radiationEmitter.emitRadiusY = 1;
             radiationEmitter.emitRads = RADIATION_EMIT_VALUE;
             radiationEmitter.emitAngle = 90f;
-            radiationEmitter.emitDirection = 90f;
-            radiationEmitter.emissionOffset = new Vector3(0f, 2f, 0);
+            //radiationEmitter.emitDirection = 90f;
+            //radiationEmitter.emissionOffset = new Vector3(0f, 2f, 0);
 
             RadiationParticleAdapterController controller = go.AddOrGet<RadiationParticleAdapterController>();
             controller.ParticleConsumeRate = 1f;
             controller.LowParticleThreshold = 200f;
 
             go.AddOrGetDef<RadiationParticleAdapterStates.Def>();
+
         }
 
         public override void DoPostConfigureComplete(GameObject go)
