@@ -287,6 +287,7 @@ namespace MutantFarmLab
         [HarmonyPrefix]
         public static bool PreventUprootDuringCustomOperation(Uprootable __instance)
         {
+            if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return true;
             if (DualHeadSideScreen.IsCustomPlantOperation)
             {
                 PUtil.LogDebug("[双头株] 拦截 Uproot");
@@ -299,6 +300,7 @@ namespace MutantFarmLab
         [HarmonyPrefix]
         public static bool PreventMarkForUprootDuringCustomOperation(Uprootable __instance)
         {
+            if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return true;
             if (DualHeadSideScreen.IsCustomPlantOperation)
             {
                 PUtil.LogDebug("[双头株] 拦截 MarkForUproot");
@@ -311,6 +313,7 @@ namespace MutantFarmLab
         [HarmonyPrefix]
         public static bool PreventOrderRemoveDuringCustomOperation(PlantablePlot __instance)
         {
+            if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return true;
             if (DualHeadSideScreen.IsCustomPlantOperation)
             {
                 PUtil.LogDebug("[双头株] 拦截 OrderRemoveOccupant");
@@ -323,6 +326,7 @@ namespace MutantFarmLab
         {
             public static bool Prefix(PlantablePlot __instance, ref bool __result)
             {
+                if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return true;
                 var existing = __instance.Occupant;
                 if (existing == null)
                 {
@@ -353,6 +357,7 @@ namespace MutantFarmLab
             [HarmonyPostfix]
             public static void OnPlanterSideScreenOpen(PlanterSideScreen __instance, GameObject target)
             {
+                if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
                 if (_sideScreen == null)
                 {
                     GameObject extObj = new GameObject("DualHeadSideScreen_Instance");

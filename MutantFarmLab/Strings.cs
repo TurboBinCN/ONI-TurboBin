@@ -130,6 +130,10 @@ namespace MutantFarmLab
                 public static LocString NAME = "Actinobacteria";
                 public static LocString DESC = "A special fungal mutant nourished by radiation, with three core values of \"sterilization, fluorescence, and energy saving\". It can use radiation energy to eliminate germs on itself and around it, emit soft fluorescence to meet the lighting needs of planting, and significantly reduce water and fertilizer consumption, serving as the \"environmental steward\" of the radiation farm; the cost is an extremely long growth cycle and the release of a small amount of radiation outward.";
             }
+            public static class OILENRICH{
+                public static LocString NAME = "Oil-Enriched";
+                public static LocString DESC = "An industrial-grade mutant plant exclusive to radiation farms, whose core function is to efficiently absorb carbon dioxide and convert it into high-value crude oil, serving as the core hub of the \"carbon-oil-energy\" cycle in late-game bases. It relies on a radiation environment to activate the conversion mechanism; when paired with Actinobacteria, it can achieve self-sufficiency in lighting and germ purification. The cost is increased nutrient consumption and extended growth cycle, suitable for the resource cycle needs of large-scale industrial bases.";
+            }
         }
         #endregion
         #region ✅ 新增：食物文本节点（解决 ITEMS.FOOD 缺失）

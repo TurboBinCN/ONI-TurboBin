@@ -3,6 +3,7 @@ using Epic.OnlineServices.Stats;
 using FMOD;
 using HarmonyLib;
 using Klei.AI;
+using MutantFarmLab.mutantplants;
 using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
 using STRINGS;
@@ -287,7 +288,9 @@ namespace MutantFarmLab
                     break;
                 }
 
-                string mutationID = randomMutation.Id;
+                //string mutationID = randomMutation.Id;
+                string mutationID = PlantMutationRegister.ACTINO_MUT_ID; // 临时硬编码测试Actino变异
+                //string mutationID = PlantMutationRegister.OIL_ENRICH_MUT_ID;
                 // 去重：避免同一植物重复抽取同一变异
                 if (!randomMutationIDs.Contains(mutationID))
                 {

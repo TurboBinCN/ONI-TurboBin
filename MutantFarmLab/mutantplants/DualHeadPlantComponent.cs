@@ -221,17 +221,4 @@ namespace MutantFarmLab.mutantplants
             }
         }
     }
-    //给每个变异株生成时确保挂载组件【暂时停掉，因为双株编译主要问题没解决】
-    //[HarmonyPatch(typeof(MutantPlant), "OnSpawn")]
-    //public static class EnsureComponentOnSpawn
-    //{
-    //    [HarmonyPostfix]
-    //    public static void Postfix(MutantPlant __instance)
-    //    {
-    //        if (__instance.gameObject.HasTag(GameTags.Plant) && __instance.MutationIDs?.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID) == true)
-    //        {
-    //            __instance.gameObject.AddOrGet<DualHeadPlantComponent>();
-    //        }
-    //    }
-    //}
 }

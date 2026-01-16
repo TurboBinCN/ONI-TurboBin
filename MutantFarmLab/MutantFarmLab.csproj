@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="mutantplants\ActinoMutantionComponent.cs" />
     <Compile Include="mutantplants\DualHeadPlantComponent.cs" />
     <Compile Include="mutantplants\DualHeadPlotPatch.cs" />
     <Compile Include="mutantplants\DualHeadSideScreen.cs" />
@@ -51,6 +52,9 @@
     <Compile Include="mutantplants\FoodEffectRegister.cs" />
     <Compile Include="mutantplants\ManualDeliveryKGDebugPatch.cs" />
     <Compile Include="mutantplants\MutantEffects.cs" />
+    <Compile Include="mutantplants\OilEnriched.cs" />
+    <Compile Include="mutantplants\OilEnrichedMutantComponent.cs" />
+    <Compile Include="mutantplants\OilEnrichedStates.cs" />
     <Compile Include="mutantplants\PlantMigrationHelper.cs" />
     <Compile Include="mutantplants\PlantMigrationHelper2.cs" />
     <Compile Include="mutantplants\PlantMutationRegister.cs" />
@@ -87,6 +91,7 @@
     <Compile Include="BuildLocationPatch.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="anim\assets\mutantfarmlab_mutant_snaps\mutantfarmlab_mutant_snaps.png" />
     <Content Include="anim\assets\mutant_farm_lab\mutant_farm_lab.png" />
     <Content Include="anim\assets\radiation_farm_tile\radiation_farm_tile.png" />
     <Content Include="anim\assets\radiation_lamp_line\radiation_lamp_line.png" />
@@ -97,6 +102,8 @@
     <Content Include="mutantplants\test.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="anim\assets\mutantfarmlab_mutant_snaps\mutantfarmlab_mutant_snaps_anim.bytes" />
+    <None Include="anim\assets\mutantfarmlab_mutant_snaps\mutantfarmlab_mutant_snaps_build.bytes" />
     <None Include="anim\assets\mutant_farm_lab\mutant_farm_lab_anim.bytes" />
     <None Include="anim\assets\mutant_farm_lab\mutant_farm_lab_build.bytes" />
     <None Include="anim\assets\radiation_farm_tile\radiation_farm_tile_anim.bytes" />

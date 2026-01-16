@@ -12,38 +12,39 @@ namespace MutantFarmLab.patches
      * 核心作用：1.关闭autoReplaceEntity，允许双株共存 2.给双头株挂载DHP组件 
      * 3.给第二株挂载DHCom组件
      *****************************************************************************/
-    //[HarmonyPatch(typeof(PlantablePlot), "ConfigureOccupyingObject")]
-    //public static class DualHeadPlotConfigPatch
-    //{
-    //    [HarmonyPostfix]
-    //    public static void Postfix(PlantablePlot __instance, GameObject newPlant)
-    //    {
-    //        if (__instance == null || newPlant == null) return;
-    //        var receptacleGo = __instance.gameObject;
-    //        var marker = receptacleGo.AddOrGet<DualHeadReceptacleMarker>();
+    [HarmonyPatch(typeof(PlantablePlot), "ConfigureOccupyingObject")]
+    public static class DualHeadPlotConfigPatch
+    {
+        [HarmonyPostfix]
+        public static void Postfix(PlantablePlot __instance, GameObject newPlant)
+        {
+            if(!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
+            if (__instance == null || newPlant == null) return;
+            var receptacleGo = __instance.gameObject;
+            var marker = receptacleGo.AddOrGet<DualHeadReceptacleMarker>();
 
-    //        // 情况1：新植物是双头变异株 → 成为第一株
-    //        if (newPlant.TryGetComponent(out MutantPlant mutant)
-    //            && mutant.MutationIDs?.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID) == true)
-    //        {
-    //            var dualHeadPlantCom = newPlant.AddOrGet<DualHeadPlantComponent>();
-    //            dualHeadPlantCom.RootPlotGameObject = __instance.gameObject;
+            // 情况1：新植物是双头变异株 → 成为第一株
+            if (newPlant.TryGetComponent(out MutantPlant mutant)
+                && mutant.MutationIDs?.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID) == true)
+            {
+                var dualHeadPlantCom = newPlant.AddOrGet<DualHeadPlantComponent>();
+                dualHeadPlantCom.RootPlotGameObject = __instance.gameObject;
 
-    //            marker.primaryPlant = newPlant;
-    //            PUtil.LogDebug($"[双头株] 母株[{marker.primaryPlant.name}]种植配置");
-    //            // 锁定 receptacle
-    //            __instance.autoReplaceEntity = false;
-    //        }
-    //        // 情况2：receptacle 已有 Marker → 此次是第二株
-    //        else if (marker != null && marker.primaryPlant != null)
-    //        {
-    //            var secondDHP = newPlant.AddOrGet<DualHeadPlantComponent>();
-    //            secondDHP.RootPlotGameObject = __instance.gameObject;
+                marker.primaryPlant = newPlant;
+                PUtil.LogDebug($"[双头株] 母株[{marker.primaryPlant.name}]种植配置");
+                // 锁定 receptacle
+                __instance.autoReplaceEntity = false;
+            }
+            // 情况2：receptacle 已有 Marker → 此次是第二株
+            else if (marker != null && marker.primaryPlant != null)
+            {
+                var secondDHP = newPlant.AddOrGet<DualHeadPlantComponent>();
+                secondDHP.RootPlotGameObject = __instance.gameObject;
 
-    //            PUtil.LogDebug($"[双头株] 子株种植配置 [子:{secondDHP.name} 母:{marker.primaryPlant.name}]");
-    //        }
-    //    }
-    //}
+                PUtil.LogDebug($"[双头株] 子株种植配置 [子:{secondDHP.name} 母:{marker.primaryPlant.name}]");
+            }
+        }
+    }
     /******************************************************************************
      * 补丁2：种植前判定执行【100%匹配源码】
      * 目标方法：SingleEntityReceptacle.IsValidEntity(GameObject candidate)
@@ -54,6 +55,7 @@ namespace MutantFarmLab.patches
     {
         public static bool Prefix(SingleEntityReceptacle __instance, GameObject candidate, ref bool __result)
         {
+            if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return true;
             try
             {
                 // 1. 确保这个 receptacle 属于可耕种地块
@@ -87,19 +89,19 @@ namespace MutantFarmLab.patches
 
         }
     }
-    //双头株修补PlanterSideScreen的UpdateState方法，防止因targetReceptacle为null报错
-    [HarmonyPatch(typeof(PlanterSideScreen), "UpdateState", new Type[] { typeof(object) })]
-    public class PlanterSideScreenUpdateStatePatch
-    {
-        public static bool Prefix(PlanterSideScreen __instance, object data)
-        {
-            if (PlantMigrationHelper.GetField(__instance, "targetReceptacle") == null)
-            {
-                return false;
-            }
-            return true;
-        }
-    }
+    ////双头株修补PlanterSideScreen的UpdateState方法，防止因targetReceptacle为null报错
+    //[HarmonyPatch(typeof(PlanterSideScreen), "UpdateState", new Type[] { typeof(object) })]
+    //public class PlanterSideScreenUpdateStatePatch
+    //{
+    //    public static bool Prefix(PlanterSideScreen __instance, object data)
+    //    {
+    //        if (PlantMigrationHelper.GetField(__instance, "targetReceptacle") == null)
+    //        {
+    //            return false;
+    //        }
+    //        return true;
+    //    }
+    //}
     //[HarmonyPatch(typeof(FertilizationMonitor.Instance), "UpdateFertilization", new Type[] { typeof(float) })]
     //public class FertilizationMonitor_Instance_UpdateFertilizationPatch
     //{

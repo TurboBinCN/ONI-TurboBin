@@ -9,6 +9,8 @@ namespace MutantFarmLab.mutantplants
     public class ActinoMutantionComponent: KMonoBehaviour
     {
         public Color lightColor = Color.green;
+        //public readonly EffectorValues POSITIVE_DECOR_EFFECT = DECOR.BONUS.TIER3;
+        //public readonly EffectorValues NEGATIVE_DECOR_EFFECT = DECOR.PENALTY.TIER3;
         protected override void OnSpawn()
         {
             base.OnSpawn();
@@ -52,19 +54,15 @@ namespace MutantFarmLab.mutantplants
                 light2D.Lux = PlantMutationRegister.ACTINO_LIGHT_LUX;
                 //gameObject.AddOrGet<LightSymbolTracker>().targetSymbol = "snapTo_light_locator";
             }
+
+            //DecorProvider decorProvider = gameObject.AddOrGet<DecorProvider>();
+            //decorProvider.SetValues(POSITIVE_DECOR_EFFECT);
+            //decorProvider.overrideName = name;
+
+            //gameObject.AddOrGetDef<DecorPlantMonitor.Def>();
+            //prickleGrass.positive_decor_effect = this.POSITIVE_DECOR_EFFECT;
+            //prickleGrass.negative_decor_effect = this.NEGATIVE_DECOR_EFFECT;
         }
     }
-    //给每个变异株生成时确保挂载组件
-    [HarmonyPatch(typeof(MutantPlant), "OnSpawn")]
-    public static class EnsureComponentOnSpawn
-    {
-        [HarmonyPostfix]
-        public static void Postfix(MutantPlant __instance)
-        {
-            if (__instance.gameObject.HasTag(GameTags.Plant) && __instance.MutationIDs?.Contains(PlantMutationRegister.ACTINO_MUT_ID) == true)
-            {
-                __instance.gameObject.AddOrGet<ActinoMutantionComponent>();
-            }
-        }
-    }
+
 }

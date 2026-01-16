@@ -1,9 +1,10 @@
-﻿using Klei.AI;
-using Database;
-using UnityEngine;
-using TUNING;
-using STRINGS;
+﻿using Database;
+using HarmonyLib;
+using Klei.AI;
 using PeterHan.PLib.Core;
+using STRINGS;
+using TUNING;
+using UnityEngine;
 
 namespace MutantFarmLab.mutantplants
 {
@@ -22,13 +23,13 @@ namespace MutantFarmLab.mutantplants
         private const int MIN_LIGHT_REQ = 800;
 
         // ========== 双头株变异 ==========
+        public static bool DUAL_HEAD_ENABLED = false; //双头株变异开关
         public static string DUAL_HEAD_MUT_ID = "DualHeadPlantMutation";
         public static float DUAL_SINGLE_HEAD_YIELD_MOD = -0.3f;
         private const float DUAL_MIN_RADIATION_ADD = 250f;//辐射门槛+250（原生变异标配）
         private const float DUAL_FERTILIZER_COST_MOD = 1.5f;//养料消耗+50%
         private const float DUAL_GROWTH_CYCLE_MOD = 1.2f;//生长周期+20%
         private const int DUAL_MIN_LIGHT_ADD = 500;//光照需求+500勒克斯
-        private const int HIGH_QUALITY_THRESHOLD = 80;
         private const string DUAL_SOUND_EVENT = "Plant_mutation_Leaf";//变异音效（复用原生绿叶变异）
 
         //== 辐光菌==
@@ -39,8 +40,13 @@ namespace MutantFarmLab.mutantplants
         public static int ACTINO_LIGHT_LUX = 1800; //光照强度1800lux
         public static int ACTINO_MIN_RADIATION = 60; //辐射强度
         public static float ACTINO_TEMP_RANGE_MOD = 0.6f;//生存温度范围+60%
-        //public static float ACTINO_PRESSURE
 
+        //==原油富集==
+        public static string OIL_ENRICH_MUT_ID = "OilEnrichMutation";
+        public static float OIL_ENRICH_CARBONGAS_MOD = 0.6667f; //二氧化碳消耗100kg/600s = 0.6667kg/s
+        public static float OIL_ENRICH_YIELD_MOD = -0.5f; //产量-50%
+        public static float OIL_ENRICH_GROWTH_CYCLE_MOD = 2f; //生长周期+200%
+        private const float OIL_ENRICH_MIN_RADIATION_ADD = 250f;//辐射门槛+250
         /// <summary>
         /// 注册所有自定义变异（入口方法）
         /// </summary>
@@ -48,8 +54,9 @@ namespace MutantFarmLab.mutantplants
         {
             PUtil.LogDebug("[原生挂载] 开始注册自定义变异到原生系统...");
             RegisterRadiationResistMutation();
-            RegisterDualHeadMutation();
+            if(DUAL_HEAD_ENABLED) RegisterDualHeadMutation();
             RegisterActinobacteriaMutation();
+            RegisterOilEnrichMutation();
             PUtil.LogDebug("[原生挂载] 所有自定义变异注册完成！");
         }
 
@@ -115,11 +122,26 @@ namespace MutantFarmLab.mutantplants
                 .AttributeModifier(Db.Get().PlantAttributes.FertilizerUsageMod, ACTINO_FERTILIZER_COST_MOD, true)
                 .AttributeModifier(Db.Get().Amounts.Irrigation.maxAttribute, ACTINO_IRRAGATION_COST, true)
                 .AttributeModifier(Db.Get().PlantAttributes.WiltTempRangeMod, ACTINO_TEMP_RANGE_MOD,true)
-                .AttributeModifier(Db.Get().Amounts.Maturity.maxAttribute, ACTINO_GROWTH_CYCLE_MOD - 1f, true)
+                .AttributeModifier(Db.Get().Amounts.Maturity.maxAttribute, ACTINO_GROWTH_CYCLE_MOD, true)
                 .VisualSymbolOverride("snapTo_mutate1", "mutantfarmlab_mutant_snaps_kanim", "light1")
                 .VisualSymbolOverride("snapTo_mutate2", "mutantfarmlab_mutant_snaps_kanim", "light");
             Db.Get().PlantMutations.Add(actinoMut);
             PUtil.LogDebug($"[原生挂载] 变异「{ACTINO_MUT_ID}」已存入原生PlantMutations仓库");
+        }
+        private static void RegisterOilEnrichMutation()
+        {
+            PlantMutation oilEnrichMut = new PlantMutation(
+                id: OIL_ENRICH_MUT_ID,
+                name: STRINGS.ELEMENT.OILENRICH.NAME,
+                desc: STRINGS.ELEMENT.OILENRICH.DESC)
+                .AttributeModifier(Db.Get().PlantAttributes.MinRadiationThreshold, OIL_ENRICH_MIN_RADIATION_ADD, false)
+                .AttributeModifier(Db.Get().PlantAttributes.YieldAmount, OIL_ENRICH_YIELD_MOD, true)
+                .AttributeModifier(Db.Get().Amounts.Maturity.maxAttribute, OIL_ENRICH_GROWTH_CYCLE_MOD, true)
+                .VisualTint(0f, 0f, 0.0f)
+                .AddSoundEvent("Plant_mutation_Leaf");
+            Db.Get().PlantMutations.Add(oilEnrichMut);
+
+            PUtil.LogDebug($"[原生挂载] 变异「{OIL_ENRICH_MUT_ID}」已存入原生PlantMutations仓库");
         }
         /// <summary>
         /// 工具方法：获取基础种子预制体
@@ -127,6 +149,27 @@ namespace MutantFarmLab.mutantplants
         private static GameObject GetBaseSeedPrefab()
         {
             return Assets.GetPrefab("BasicSeed");
+        }
+        //给每个变异株生成时确保挂载组件
+        [HarmonyPatch(typeof(MutantPlant), "OnSpawn")]
+        public static class EnsureComponentOnSpawn
+        {
+            [HarmonyPostfix]
+            public static void Postfix(MutantPlant __instance)
+            {
+                if (__instance.gameObject.HasTag(GameTags.Plant))
+                {
+                    if(__instance.MutationIDs?.Contains(PlantMutationRegister.ACTINO_MUT_ID) == true)
+                        __instance.gameObject.AddOrGet<ActinoMutantionComponent>();
+                    else if (DUAL_HEAD_ENABLED && __instance.MutationIDs?.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID) == true){
+                        //功能暂时关掉，严重问题没解决
+                        __instance.gameObject.AddOrGet<DualHeadPlantComponent>();
+                    }
+                    else if (__instance.MutationIDs?.Contains(PlantMutationRegister.OIL_ENRICH_MUT_ID) == true)
+                        __instance.gameObject.AddOrGet<OilEnrichedMutantComponent>();
+
+                }
+            }
         }
     }
 }

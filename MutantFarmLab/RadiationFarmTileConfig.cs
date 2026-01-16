@@ -205,7 +205,6 @@ namespace MutantFarmLab
             if (uraniumStorage.items.Count <= 0) return;
             foreach (var item in uraniumStorage.items)
             {
-                TbbDebuger.PrintGameObjectFullInfo(item);
                 PrimaryElement primary = item.GetComponent<PrimaryElement>();
                 if (primary != null)
                 {

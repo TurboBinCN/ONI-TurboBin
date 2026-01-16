@@ -159,87 +159,87 @@ namespace MutantFarmLab.mutantplants
             public float OriginalGrowth;
         }
     }
-    [HarmonyPatch(typeof(PlantablePlot), "SpawnOccupyingObject")]
-    public class PlantablePlot_SpawnOccupyingObject_Patch
-    {
-        public static void Postfix(PlantablePlot __instance, GameObject depositedEntity, ref GameObject __result)
-        {
-            //PUtil.LogDebug($"----SpawnOccupyingObject Start----");
-            //TbbDebuger.PrintGameObjectFullInfo(depositedEntity);
-            //PUtil.LogDebug($"----__result----");
-            //TbbDebuger.PrintGameObjectFullInfo(__result);
-            //PUtil.LogDebug($"----SpawnOccupyingObject End----");
-            try
-            {
-                KPrefabID component = __result.GetComponent<KPrefabID>();
+    //[HarmonyPatch(typeof(PlantablePlot), "SpawnOccupyingObject")]
+    //public class PlantablePlot_SpawnOccupyingObject_Patch
+    //{
+    //    public static void Postfix(PlantablePlot __instance, GameObject depositedEntity, ref GameObject __result)
+    //    {
+    //        //PUtil.LogDebug($"----SpawnOccupyingObject Start----");
+    //        //TbbDebuger.PrintGameObjectFullInfo(depositedEntity);
+    //        //PUtil.LogDebug($"----__result----");
+    //        //TbbDebuger.PrintGameObjectFullInfo(__result);
+    //        //PUtil.LogDebug($"----SpawnOccupyingObject End----");
+    //        try
+    //        {
+    //            KPrefabID component = __result.GetComponent<KPrefabID>();
 
-                if (component == null)
-                {
-                    PUtil.LogWarning($"PlantablePlot_SpawnOccupyingObject_Patch POST:name:[{__result.name}] & KPrefabID NULL");
-                }
-                else
-                {
+    //            if (component == null)
+    //            {
+    //                PUtil.LogWarning($"PlantablePlot_SpawnOccupyingObject_Patch POST:name:[{__result.name}] & KPrefabID NULL");
+    //            }
+    //            else
+    //            {
                     
-                    PUtil.LogDebug($"PlantablePlot_SpawnOccupyingObject_Patch POST: depositedEntity name:[{depositedEntity.name}] & ID:[{depositedEntity.GetComponent<KPrefabID>()?.InstanceID}]");
-                    PUtil.LogDebug($"PlantablePlot_SpawnOccupyingObject_Patch POST:name:[{__result.name}] & ID:[{component.InstanceID}]");
-                    PUtil.LogDebug($"PlantablePlot_SpawnOccupyingObject_Patch POST:name:[{component.GetComponent<KPrefabID>()?.InstanceID}]");
-                }
-            }
-            catch (Exception e)
-            {
-                PUtil.LogWarning($"Error in PlantablePlot_SpawnOccupyingObject_Patch: {e.Message}\n{e.StackTrace}");
-            }
-            return;
-        }
-    }
-    [HarmonyPatch(typeof(PlantablePlot), "SpawnOccupyingObject")] // Corrected class name
-    public class PlantablePlot_SpawnOccupyingObject_ApplyState_Patch
-    {
-        // Postfix runs *after* the original method returns
-        public static void Postfix(PlantablePlot __instance, GameObject depositedEntity, ref GameObject __result) // Access private field 'depositedObject' using ___ prefix
-        {
-            // 获取当前 Plot 的 InstanceID
-            int plotInstanceId = __instance.GetInstanceID();
-            PUtil.LogDebug($"Postfix: Checking migration data for plot instance ID: {plotInstanceId}");
-            //TbbDebuger.PrintGameObjectFullInfo(depositedEntity);
-            //TbbDebuger.PrintGameObjectFullInfo(__result);
-            // 尝试从 MutantFarmLab 单例中获取存储的数据
-            var migrationData = PlantMigrationHelper2.Instance?.RetrieveAndRemoveMigrationData(plotInstanceId);
-            if (migrationData.HasValue)
-            {
-                var data = migrationData.Value;
-                PUtil.LogDebug($"Found migration data for this plot: SubSpecies: {data.OriginalSubSpeciesId}, Growth: {data.OriginalGrowth:P2}");
+    //                PUtil.LogDebug($"PlantablePlot_SpawnOccupyingObject_Patch POST: depositedEntity name:[{depositedEntity.name}] & ID:[{depositedEntity.GetComponent<KPrefabID>()?.InstanceID}]");
+    //                PUtil.LogDebug($"PlantablePlot_SpawnOccupyingObject_Patch POST:name:[{__result.name}] & ID:[{component.InstanceID}]");
+    //                PUtil.LogDebug($"PlantablePlot_SpawnOccupyingObject_Patch POST:name:[{component.GetComponent<KPrefabID>()?.InstanceID}]");
+    //            }
+    //        }
+    //        catch (Exception e)
+    //        {
+    //            PUtil.LogWarning($"Error in PlantablePlot_SpawnOccupyingObject_Patch: {e.Message}\n{e.StackTrace}");
+    //        }
+    //        return;
+    //    }
+    //}
+    //[HarmonyPatch(typeof(PlantablePlot), "SpawnOccupyingObject")] // Corrected class name
+    //public class PlantablePlot_SpawnOccupyingObject_ApplyState_Patch
+    //{
+    //    // Postfix runs *after* the original method returns
+    //    public static void Postfix(PlantablePlot __instance, GameObject depositedEntity, ref GameObject __result) // Access private field 'depositedObject' using ___ prefix
+    //    {
+    //        // 获取当前 Plot 的 InstanceID
+    //        int plotInstanceId = __instance.GetInstanceID();
+    //        PUtil.LogDebug($"Postfix: Checking migration data for plot instance ID: {plotInstanceId}");
+    //        //TbbDebuger.PrintGameObjectFullInfo(depositedEntity);
+    //        //TbbDebuger.PrintGameObjectFullInfo(__result);
+    //        // 尝试从 MutantFarmLab 单例中获取存储的数据
+    //        var migrationData = PlantMigrationHelper2.Instance?.RetrieveAndRemoveMigrationData(plotInstanceId);
+    //        if (migrationData.HasValue)
+    //        {
+    //            var data = migrationData.Value;
+    //            PUtil.LogDebug($"Found migration data for this plot: SubSpecies: {data.OriginalSubSpeciesId}, Growth: {data.OriginalGrowth:P2}");
 
-                // 新实例化的植物对象
-                GameObject newPlantedObject = __result; // __result 是 SpawnOccupyingObject 返回的新植物
+    //            // 新实例化的植物对象
+    //            GameObject newPlantedObject = __result; // __result 是 SpawnOccupyingObject 返回的新植物
 
-                if (newPlantedObject != null)
-                {
-                    // 应用生长阶段
-                    if (data.OriginalGrowth > 0f)
-                    {
-                        Growing newGrowingComponent = newPlantedObject.GetComponent<Growing>();
-                        if (newGrowingComponent != null)
-                        {
-                            newGrowingComponent.OverrideMaturityLevel(data.OriginalGrowth);
-                            PUtil.LogDebug($"Applied growth level '{data.OriginalGrowth:P2}' to new plant '{newPlantedObject.name}'.");
-                        }
-                        else
-                        {
-                            PUtil.LogWarning($"New plant '{newPlantedObject.name}' does not have Growing component. Cannot apply growth level.");
-                        }
-                    }
-                }
-                else
-                {
-                    PUtil.LogWarning("New planted object returned by SpawnOccupyingObject is null.");
-                }
-            }
-            else
-            {
-                // PUtil.LogInfo($"No migration data found for plot instance ID: {plotInstanceId}. This is normal for non-migrated plants.");
-                // 注释掉这条日志，因为对于非迁移的常规种植，这会很频繁。
-            }
-        }
-    }
+    //            if (newPlantedObject != null)
+    //            {
+    //                // 应用生长阶段
+    //                if (data.OriginalGrowth > 0f)
+    //                {
+    //                    Growing newGrowingComponent = newPlantedObject.GetComponent<Growing>();
+    //                    if (newGrowingComponent != null)
+    //                    {
+    //                        newGrowingComponent.OverrideMaturityLevel(data.OriginalGrowth);
+    //                        PUtil.LogDebug($"Applied growth level '{data.OriginalGrowth:P2}' to new plant '{newPlantedObject.name}'.");
+    //                    }
+    //                    else
+    //                    {
+    //                        PUtil.LogWarning($"New plant '{newPlantedObject.name}' does not have Growing component. Cannot apply growth level.");
+    //                    }
+    //                }
+    //            }
+    //            else
+    //            {
+    //                PUtil.LogWarning("New planted object returned by SpawnOccupyingObject is null.");
+    //            }
+    //        }
+    //        else
+    //        {
+    //            // PUtil.LogInfo($"No migration data found for plot instance ID: {plotInstanceId}. This is normal for non-migrated plants.");
+    //            // 注释掉这条日志，因为对于非迁移的常规种植，这会很频繁。
+    //        }
+    //    }
+    //}
 }

@@ -162,6 +162,7 @@ namespace MutantFarmLab
         [HarmonyPostfix]
         public static void Postfix(ref GameObject go)
         {
+            if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
             var sub = PlantablePlotGameObject.Init(go);
             var plantablePlot = sub.AddOrGet<PlantablePlot>();
             plantablePlot.occupyingObjectRelativePosition.y = 1f;
@@ -177,10 +178,11 @@ namespace MutantFarmLab
         [HarmonyPostfix]
         public static void Postfix(ref GameObject go)
         {
+            if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
             var sub = PlantablePlotGameObject.Init(go);
             PlantablePlot plantablePlot = sub.AddOrGet<PlantablePlot>();
             plantablePlot.occupyingObjectRelativePosition = new Vector3(0f, 1f, 0f);
-            
+
             plantablePlot.SetFertilizationFlags(true, false);
 
             go.AddOrGet<DualHeadReceptacleMarker>();
