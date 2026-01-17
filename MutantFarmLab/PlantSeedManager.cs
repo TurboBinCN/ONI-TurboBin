@@ -288,8 +288,8 @@ namespace MutantFarmLab
                     break;
                 }
 
-                //string mutationID = randomMutation.Id;
-                string mutationID = PlantMutationRegister.ACTINO_MUT_ID; // 临时硬编码测试Actino变异
+                string mutationID = randomMutation.Id;
+                //string mutationID = PlantMutationRegister.ACTINO_MUT_ID; // 临时硬编码测试Actino变异
                 //string mutationID = PlantMutationRegister.OIL_ENRICH_MUT_ID;
                 // 去重：避免同一植物重复抽取同一变异
                 if (!randomMutationIDs.Contains(mutationID))
@@ -346,7 +346,7 @@ namespace MutantFarmLab
             seed.transform.SetParent(null);
 
             TbbDebuger.PrintGameObjectFullInfo(seed);
-            if (dropByStorage && storage != null)
+            if (storage != null)
             {
                 var seedPickable = seed.GetComponent<Pickupable>();
                 if (seedPickable != null)
@@ -364,10 +364,6 @@ namespace MutantFarmLab
                         droppedSeed.transform.SetPosition(spawnPos);
                     }
                 }
-            }
-            else
-            {
-                seed.transform.SetPosition(spawnPos);
             }
 
             seed.Trigger(1623392196, null);
@@ -394,7 +390,6 @@ namespace MutantFarmLab
             Tag plantSpeciesTag = mutantPlantComp.SpeciesID;
             // 3. 核心判定：缓存中存在该植物Tag → 即为有效可变异种子
             bool isInCache = ContainsTag(plantSpeciesTag);
-            PUtil.LogDebug($"[PlantSeedManager] 种子校验结果：物种[{plantSpeciesTag}] → 缓存存在={isInCache}");
             return isInCache;
         }
 

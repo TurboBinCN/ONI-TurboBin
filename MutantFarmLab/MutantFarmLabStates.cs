@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static StatusItem;
+using static STRINGS.BUILDINGS.PREFABS.EXTERIORWALL.FACADES;
 using static STRINGS.UI;
 
 namespace MutantFarmLab
@@ -27,27 +29,47 @@ namespace MutantFarmLab
         public override void InitializeStates(out BaseState default_state)
         {
             default_state = idle;
-
+            
             root
                 .Update("MutationTimerTick", UpdateMutationTimer, UpdateRate.SIM_1000ms)
-                .Update("UnifiedStateCheck", (smi, dt) =>smi.UnifiedStateManager(true), UpdateRate.SIM_1000ms)
+                .Update("UnifiedStateCheck", (smi, dt) =>smi.UnifiedStateManager(false), UpdateRate.SIM_1000ms)
                 .EventTransition(GameHashes.OperationalChanged, idle, smi => !smi.IsMachineOperational)
                 .EventTransition(GameHashes.OperationalChanged, ready, smi => smi.IsMachineOperational && smi.HasValidSeed && smi.HasEnoughParticles)
                 .Enter(OnInitRoot)
                 .Exit(smi => { if (smi.controller != null) smi.controller.ResetMutationTimer(); });
 
             idle
-                .Enter(smi => smi.ClearMutantSeedOutput())
+                .Enter(smi => { PUtil.LogDebug("[变异农场试验台]State:Idle"); smi.ClearMutantSeedOutput(); })
+                .Update("CheckStorage", (smi, dt) => {
+                    if (smi.IsMachineOperational)
+                    {
+                        if (smi?.HasEnoughParticles != true)
+                        {
+                            PUtil.LogDebug("[变异农场试验台]状态机检测到能量粒子不足，切换至无粒子状态");
+                            smi.GoTo(noParticles);
+                        }
+                        else if (smi?.HasValidSeed == true && smi?.HasEnoughParticles == true)
+                        {
+                            smi.GoTo(ready);
+                        }
+                    }
+                },UpdateRate.SIM_1000ms)
                 .EventTransition(GameHashes.OnStorageChange, noParticles, smi => smi.HasValidSeed && !smi.HasEnoughParticles && smi.IsMachineOperational)
                 .EventTransition(GameHashes.OnStorageChange, ready, smi => smi.HasValidSeed && smi.HasEnoughParticles && smi.IsMachineOperational);
 
             noParticles
+                .Enter((smi)=> PUtil.LogDebug("[变异农场试验台]State:noParticles"))
+                .ToggleStatusItem(
+                STRINGS.UI.STATUSITEMS.NEEDPARTICLES.NAME,
+                string.Format(STRINGS.UI.STATUSITEMS.NEEDPARTICLES.TOOLTIP, Mathf.RoundToInt(_particleConsumeAmount)), "", StatusItem.IconType.Info, NotificationType.BadMinor, allow_multiples: false, default(HashedString), 129022, null, null, Db.Get().StatusItemCategories.Main)
                 .EventTransition(GameHashes.OnStorageChange, ready, smi => smi.HasEnoughParticles && smi.IsMachineOperational && smi.HasValidSeed)
-                .EventTransition(GameHashes.OnStorageChange, idle, smi => !smi.HasValidSeed || !smi.IsMachineOperational);
+                .EventTransition(GameHashes.OnStorageChange, idle, smi => !smi.HasValidSeed || !smi.IsMachineOperational)
+                .EventTransition(GameHashes.OnParticleStorageChanged,ready,smi=>smi.HasEnoughParticles&&smi.HasValidSeed);
 
             ready
                 .Enter(OnReadyStateEnter)
-                .Exit(smi => smi.CancelMutationWorkChore())
+                .Exit(smi =>{ PUtil.LogDebug("[变异农场试验台]State:ready"); smi.CancelMutationWorkChore(); })
+                .EventTransition(GameHashes.OnParticleStorageChanged, idle, smi => !smi.HasEnoughParticles)
                 .Update("CheckChoreStatus", (smi, dt) => {
                     if (smi.IsMachineOperational && smi.HasValidSeed && smi.HasEnoughParticles)
                     {
@@ -63,12 +85,14 @@ namespace MutantFarmLab
         #region ===== 全局通用方法 =====
         private void OnInitRoot(StatesInstance smi)
         {
+            PUtil.LogDebug("[变异农场试验台]State:OnInitRoot");
             smi.controller = smi.master.gameObject.GetComponent<MutantFarmLabController>();
 
             smi.controller.ResetMutationTimer();
         }
         private void OnReadyStateEnter(StatesInstance smi)
         {
+            PUtil.LogDebug("[变异农场试验台]State:ready");
             var workable = smi.gameObject.GetComponent<MutantFarmLabWorkable>();
             if (!smi.IsMachineOperational || !smi.HasValidSeed || !smi.HasEnoughParticles)
             {
@@ -111,17 +135,9 @@ namespace MutantFarmLab
 
             public StatesInstance(IStateMachineTarget master, Def def) : base(master, def)
             {
-                InitSeedDeliverySystem();
+                InitSeedDeliverySystem(); 
                 InitSeedFilterSystem();
-                SeedStorage.Subscribe((int)GameHashes.OnStorageChange, (obj) =>
-                {
-                    if (SeedStorage.items.Count > 0)
-                    {
-                        PUtil.LogDebug($"仓储种子数变更：{SeedStorage.items.Count}");
-                    }
-                });
                 controller = gameObject.GetComponent<MutantFarmLabController>();
-
             }
             protected override void OnCleanUp()
             {
@@ -154,12 +170,12 @@ namespace MutantFarmLab
                     SeedFilter.selectedTags.Clear();
                 }
                 SeedFilter.currentlyUserAssignable = true;
-                TreeSeedFilter.OnFilterChanged += _ => UnifiedStateManager();
+                TreeSeedFilter.OnFilterChanged += _ => UnifiedStateManager(true);
             }
             #endregion
 
             #region ===== 核心业务方法 =====
-            private void SyncMDKGWithFilter(bool OperationalOPT = false)
+            private void SyncMDKGWithFilter(bool filterChanged = false)
             {
                 foreach (var mdkg in master.gameObject.GetComponents<ManualDeliveryKG>())
                 {
@@ -174,27 +190,30 @@ namespace MutantFarmLab
                         mdkg.Pause(false, "设备通电");
                     }
 
-                    if (!canDelivery && !_isTaskExecuting && !OperationalOPT)
-                    {
-                        if (mdkg == null || string.IsNullOrEmpty(mdkg.RequestedItemTag.Name) || !mdkg.RequestedItemTag.IsValid)
-                        {
-                            continue;
-                        }
-                        if (SeedStorage == null || SeedStorage.items.Count == 0) continue;
+                    if(Game.Instance != null && Game.Instance.IsLoading()){
 
-                        Tag targetGameTag = mdkg.RequestedItemTag;
-                        List<GameObject> needDropItems = new List<GameObject>();
-                        foreach (var item in SeedStorage.items)
+                        if (!canDelivery && !_isTaskExecuting && filterChanged)
                         {
-                            if (item == null || !item.activeInHierarchy) continue;
-                            var kprefab = item.GetComponent<KPrefabID>();
-                            if (kprefab == null || !kprefab.PrefabTag.IsValid) continue;
-                            if (kprefab.PrefabTag.Name == targetGameTag.Name) needDropItems.Add(item);
-                        }
+                            if (mdkg == null || string.IsNullOrEmpty(mdkg.RequestedItemTag.Name) || !mdkg.RequestedItemTag.IsValid)
+                            {
+                                continue;
+                            }
+                            if (SeedStorage == null || SeedStorage.items.Count == 0) continue;
 
-                        foreach (var dropItem in needDropItems)
-                        {
-                            SeedStorage.Drop(dropItem);
+                            Tag targetGameTag = mdkg.RequestedItemTag;
+                            List<GameObject> needDropItems = new List<GameObject>();
+                            foreach (var item in SeedStorage.items)
+                            {
+                                if (item == null || !item.activeInHierarchy) continue;
+                                var kprefab = item.GetComponent<KPrefabID>();
+                                if (kprefab == null || !kprefab.PrefabTag.IsValid) continue;
+                                if (kprefab.PrefabTag.Name == targetGameTag.Name) needDropItems.Add(item);
+                            }
+
+                            foreach (var dropItem in needDropItems)
+                            {
+                                SeedStorage.Drop(dropItem);
+                            }
                         }
                     }
                 }
@@ -240,7 +259,7 @@ namespace MutantFarmLab
             #endregion
 
             #region ===== 辅助工具方法 =====
-            private HighEnergyParticleStorage ParticleStorage
+            public HighEnergyParticleStorage ParticleStorage
             {
                 get => _particleStorage ??= master.gameObject.GetComponent<HighEnergyParticleStorage>();
             }
@@ -295,11 +314,11 @@ namespace MutantFarmLab
                 workable.enabled = isAllReady;
             }
 
-            public void UnifiedStateManager(bool IsMachineOperationalOPT = false)
+            public void UnifiedStateManager(bool filterChanged = false)
             {
                 if (SeedStorage == null || MachineOperational == null) return;
 
-                SyncMDKGWithFilter(IsMachineOperationalOPT);
+                SyncMDKGWithFilter(filterChanged);
                 AutoCheckWorkableStatus();
                 ProcessMutationTaskQueue();
                 SeedStorage.Trigger((int)GameHashes.OnStorageChange, SeedStorage);
