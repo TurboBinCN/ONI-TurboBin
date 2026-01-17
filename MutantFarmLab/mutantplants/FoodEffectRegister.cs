@@ -1,5 +1,8 @@
-﻿using Klei.AI;
+﻿using HarmonyLib;
+using Klei.AI;
+using PeterHan.PLib.Core;
 using UnityEngine;
+using static STRINGS.DUPLICANTS.DISEASES;
 
 namespace MutantFarmLab.mutantplants
 {
@@ -68,32 +71,46 @@ namespace MutantFarmLab.mutantplants
         }
     }
 
-    // Patch已废弃，改为在RadSeedEatWorkable的OnCompleteWork中直接调用
-    //[HarmonyPatch(typeof(Edible), "StopConsuming")]
-    //public static class Edible_StopConsuming_Patch
-    //{
-    //    /// <summary>
-    //    /// Postfix = 原生方法执行完毕后，再执行我们的逻辑（完美不冲突）
-    //    /// </summary>
-    //    public static void Postfix(Edible __instance, WorkerBase worker)
-    //    {
-    //        if (__instance == null || worker == null || worker.gameObject == null) return;
+    /// <summary>
+    /// 辐射籽生效分类两种情况
+    /// 1. 以下Patch中 直接附加effect，触发在小人吃完辐射籽后
+    /// 2. RadSeedEatWorkable中，由Workable创建Chore强制小人服用后，附加Effect
+    /// </summary>
+    [HarmonyPatch(typeof(Edible), "StopConsuming")]
+    public static class Edible_StopConsuming_Patch
+    {
+        /// <summary>
+        /// Postfix = 原生方法执行完毕后，再执行我们的逻辑（完美不冲突）
+        /// </summary>
+        public static void Postfix(Edible __instance, WorkerBase worker)
+        {
+            if (__instance == null || worker == null || worker.gameObject == null) return;
 
-    //        if (__instance.gameObject.name != RadiationResistSeedConfig.ID)
-    //            return;
+            if (__instance.gameObject.name != RadiationResistSeedConfig.ID)
+                return;
 
+            PUtil.LogDebug($"Edible topConsuming [{worker.name}]");
+            Effects effects = worker.GetComponent<Effects>();
+            EffectInstance effectInstance = effects?.Get(FoodEffectRegister.RAD_IMMUNE_ID);
+            if (effectInstance != null)
+            {
+                effectInstance.timeRemaining = effectInstance.effect.duration;
+            }
+            else
+            {
+                effects.Add(FoodEffectRegister.RAD_IMMUNE_ID, true);
+            }
+            RadiationHelper.ClearMinionRadiation(worker.gameObject);
 
-    //        //执行辐射清零
-    //        RadiationHelper.ClearMinionRadiation(worker.gameObject);
-
-    //        //附加辐射抗性Effect
-    //        Effects effectsComp = worker.gameObject.GetComponent<Effects>();
-    //        if (effectsComp != null && !effectsComp.HasEffect(FoodEffectRegister.RAD_IMMUNE_ID))
-    //        {
-    //            effectsComp.Add(FoodEffectRegister.RAD_IMMUNE_ID, true);
-    //        }
-    //    }
-    //}
+            Sicknesses sicknesses = worker.GetSicknesses();
+            SicknessInstance sicknessInstance = sicknesses.Get(Db.Get().Sicknesses.RadiationSickness);
+            if (sicknessInstance != null)
+            {
+                Game.Instance.savedInfo.curedDisease = true;
+                sicknessInstance.Cure();
+            }
+        }
+    }
     /// <summary>
     /// 辐射操作工具类（无回调、无依赖，直接调用生效）
     /// </summary>

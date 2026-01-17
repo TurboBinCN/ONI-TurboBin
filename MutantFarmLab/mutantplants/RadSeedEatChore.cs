@@ -11,7 +11,7 @@ namespace MutantFarmLab.mutantplants
         private RadSeedEatWorkable radSeedEat;
         private Pickupable pickupable;
 
-        public RadSeedEatChore(RadSeedEatWorkable master) : base(Db.Get().ChoreTypes.Eat, master, null, false, null, null, null, PriorityScreen.PriorityClass.personalNeeds, 5, false, true, 0, false, ReportManager.ReportType.WorkTime)
+        public RadSeedEatChore(RadSeedEatWorkable master) : base(Db.Get().ChoreTypes.Eat, master, null, false, null, null, null, PriorityScreen.PriorityClass.personalNeeds, 9, false, true, 0, false, ReportManager.ReportType.WorkTime)
         {
             radSeedEat = master;
             pickupable = radSeedEat.GetComponent<Pickupable>();
@@ -82,7 +82,7 @@ namespace MutantFarmLab.mutantplants
                 {
                     RadSeedEatWorkable workable = chunk.Get<RadSeedEatWorkable>(smi);
                     eater.Get<WorkerBase>(smi).StartWork(new WorkerBase.StartWorkInfo(workable));
-                }, (StatesInstance smi) => chunk.Get<MedicinalPill>(smi) != null, null, null);
+                }, (smi) => true, null, null);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Klei.AI;
+using PeterHan.PLib.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace MutantFarmLab.mutantplants
         }
         protected override void OnCompleteWork(WorkerBase worker)
         {
+            PUtil.LogDebug($"RadSeedEatWorkable OnCompleteWork [{worker.name}]");
             Effects effects = worker.GetComponent<Effects>();
             EffectInstance effectInstance = effects.Get(FoodEffectRegister.RAD_IMMUNE_ID);
             if (effectInstance != null)
@@ -52,7 +54,7 @@ namespace MutantFarmLab.mutantplants
         public bool CanBeTakenBy(GameObject consumer)
         {
             AmountInstance radiationAmount = consumer.gameObject.GetAmounts().Get(Db.Get().Amounts.RadiationBalance.Id);
-            if (radiationAmount != null && radiationAmount.value > 0f)
+            if (radiationAmount != null && radiationAmount.value > 80f)
             {
                 return true;
             }
