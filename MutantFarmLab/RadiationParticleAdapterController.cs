@@ -30,7 +30,7 @@ namespace MutantFarmLab
 
         private int _powerBase = 300;
         // 配置参数
-        public float ParticleConsumeRate{set;get;} = 1.0f;
+        public float ParticleConsumeRate{set;get;} = 0.1f;
         public float LowParticleThreshold { set; get; } = 200f;
 
         // 状态缓存
@@ -209,7 +209,7 @@ namespace MutantFarmLab
         }
         private float ParticleConsumeAmount(float dt = 1)
         {
-            return ParticleConsumeRate * UPDATE_INTERVAL * RadiationLevel * dt;
+            return ParticleConsumeRate * RadiationLevel * dt;
         }
         public void updateLogicPortLogic()
         {

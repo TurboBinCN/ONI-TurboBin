@@ -118,8 +118,8 @@ namespace MutantFarmLab
                 }
                 public static class CONSUMERATEURANIUMORE
                 {
-                    public static LocString NAME = "Uranium Ore Consume Rate: {0}/s";
-                    public static LocString TOOLTIP = "The Radaition Farmtile requires Uranium Ore {0}/s.";
+                    public static LocString NAME = "Uranium Ore Consume Rate: {0}g/s";
+                    public static LocString TOOLTIP = "The Radaition Farmtile requires Uranium Ore {0}g/s.";
                 }
                 public static class CONSUMERATEPARTICLES
                 {

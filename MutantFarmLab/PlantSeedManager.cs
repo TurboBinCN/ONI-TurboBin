@@ -1,18 +1,11 @@
 ﻿using Database;
-using Epic.OnlineServices.Stats;
-using FMOD;
 using HarmonyLib;
 using Klei.AI;
-using MutantFarmLab.mutantplants;
-using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
-using STRINGS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
-using static STRINGS.BUILDING.STATUSITEMS;
 
 namespace MutantFarmLab
 {
@@ -345,7 +338,6 @@ namespace MutantFarmLab
             seed.layer = (int)Grid.SceneLayer.Front;
             seed.transform.SetParent(null);
 
-            TbbDebuger.PrintGameObjectFullInfo(seed);
             if (storage != null)
             {
                 var seedPickable = seed.GetComponent<Pickupable>();

@@ -37,8 +37,12 @@ namespace MutantFarmLab
             }
             
             _radiationEmitter = GetComponent<RadiationEmitter>();
-            _radiationEmitter.emitRads = _powerLevel * _powerBase;
+            _radiationEmitter.emitRads = EmittedRads();
             _radiationEmitter.SetEmitting(false);
+        }
+        private float EmittedRads()
+        {
+            return _powerLevel * _powerBase;
         }
         protected override void OnCleanUp()
         {
@@ -47,7 +51,7 @@ namespace MutantFarmLab
 
         public void refresh()
         {
-            _radiationEmitter.emitRads = _powerLevel * _powerBase;
+            _radiationEmitter.emitRads = EmittedRads();
             if(_radiationEmitter.isActiveAndEnabled) _radiationEmitter.Refresh();
             if (canEmitter() && !_radiationEmitter.isActiveAndEnabled)
             {
@@ -60,7 +64,7 @@ namespace MutantFarmLab
         }
         public bool canEmitter()
         {
-            if(_storage != null) {
+            if(_storage != null && _powerLevel > 0) {
                 return _storage.GetMassAvailable(RadiationFarmTileConfig.EnergySource) > 0; 
             }
             return false;
@@ -74,8 +78,7 @@ namespace MutantFarmLab
             
             if (canEmitter())
             {
-                var uraniumOre = _storage.FindFirst(RadiationFarmTileConfig.EnergySource);
-                _storage.ConsumeIgnoringDisease(uraniumOre.PrefabID(), ConsumAmount(dt));
+                _storage.ConsumeIgnoringDisease(RadiationFarmTileConfig.EnergySource, ConsumAmount(dt));
                 _radiationEmitter.SetEmitting(true);
                 return;
             }
@@ -116,8 +119,8 @@ namespace MutantFarmLab
             else
             {
                 descriptors.Add(new Descriptor(
-                    string.Format(STRINGS.UI.STATUSITEMS.CONSUMERATEURANIUMORE.NAME, ConsumAmount(1f)),
-                    string.Format(STRINGS.UI.STATUSITEMS.CONSUMERATEURANIUMORE.TOOLTIP, ConsumAmount(1f)),
+                    string.Format(STRINGS.UI.STATUSITEMS.CONSUMERATEURANIUMORE.NAME, ConsumAmount(1f) * 1000),
+                    string.Format(STRINGS.UI.STATUSITEMS.CONSUMERATEURANIUMORE.TOOLTIP, ConsumAmount(1f) * 1000),
                     Descriptor.DescriptorType.Effect,
                     false
                 ));

@@ -137,7 +137,7 @@ namespace MutantFarmLab.mutantplants
                 .AttributeModifier(Db.Get().PlantAttributes.MinRadiationThreshold, OIL_ENRICH_MIN_RADIATION_ADD, false)
                 .AttributeModifier(Db.Get().PlantAttributes.YieldAmount, OIL_ENRICH_YIELD_MOD, true)
                 .AttributeModifier(Db.Get().Amounts.Maturity.maxAttribute, OIL_ENRICH_GROWTH_CYCLE_MOD, true)
-                .VisualTint(0f, 0f, 0.0f)
+                .VisualTint(-0.6f, -0.6f, -0.6f)
                 .AddSoundEvent("Plant_mutation_Leaf");
             Db.Get().PlantMutations.Add(oilEnrichMut);
 

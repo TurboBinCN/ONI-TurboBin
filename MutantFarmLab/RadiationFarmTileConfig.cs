@@ -62,7 +62,19 @@ namespace MutantFarmLab
             buildingDef.AddSearchTerms(SEARCH_TERMS.FOOD);
             return buildingDef;
         }
-
+        public class SubGoStorage:Storage
+        {
+            protected override void OnPrefabInit()
+            {
+                base.OnPrefabInit();
+            }
+            protected override void OnCleanUp()
+            {
+                PUtil.LogDebug($"SubGoStorage OnCleanUp DropALl items.");
+                DropAll();
+                base.OnCleanUp();
+            }
+        }
         public override void ConfigureBuildingTemplate(GameObject go, Tag prefab_tag)
         {
             //==种植==
@@ -124,7 +136,7 @@ namespace MutantFarmLab
             radiationEmitter.emitDirection = 90f;
             radiationEmitter.emissionOffset = new Vector3(0f, 1f, 0f);
 
-            Storage uraniumStorage = RadiationPlot.AddComponent<Storage>();
+            Storage uraniumStorage = RadiationPlot.AddComponent<SubGoStorage>();
             uraniumStorage.name = RadiationStorageName;
             uraniumStorage.SetDefaultStoredItemModifiers(Storage.StandardSealedStorage);
             uraniumStorage.capacityKg = UraniumCapacity;
