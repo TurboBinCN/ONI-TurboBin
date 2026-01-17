@@ -115,7 +115,7 @@
             public const string Switches = "switches";
             //烹饪
             public const string Cooking = "cooking";
-            //耕种
+            //耕种 食物耕种与站台耕种
             public const string Farming = "farming";
             public const string Ranching = "ranching";
             public const string Washroom = "washroom";

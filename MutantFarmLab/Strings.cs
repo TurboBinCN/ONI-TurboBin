@@ -109,6 +109,24 @@ namespace MutantFarmLab
                     public static LocString DESTROYED = "Task Destroyed.";
                 }
             }
+            public static class STATUSITEMS
+            {
+                public static class NEEDPARTICLES
+                {
+                    public static LocString NAME = "Insufficient Radiation Particles";
+                    public static LocString TOOLTIP = "The Mutant Farm Lab requires Radiation Particles {0} to mutate per seed.";
+                }
+                public static class CONSUMERATEURANIUMORE
+                {
+                    public static LocString NAME = "Uranium Ore Consume Rate: {0}/s";
+                    public static LocString TOOLTIP = "The Radaition Farmtile requires Uranium Ore {0}/s.";
+                }
+                public static class CONSUMERATEPARTICLES
+                {
+                    public static LocString NAME = "HighEnergy Particles Consume Rate: {0}/s";
+                    public static LocString TOOLTIP = "Requires Radiation Particles {0}/s";
+                }
+            }
         }
         #endregion
 

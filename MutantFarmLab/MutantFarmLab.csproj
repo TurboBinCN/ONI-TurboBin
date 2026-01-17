@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -52,7 +53,6 @@
     <Compile Include="mutantplants\FoodEffectRegister.cs" />
     <Compile Include="mutantplants\ManualDeliveryKGDebugPatch.cs" />
     <Compile Include="mutantplants\MutantEffects.cs" />
-    <Compile Include="mutantplants\OilEnriched.cs" />
     <Compile Include="mutantplants\OilEnrichedMutantComponent.cs" />
     <Compile Include="mutantplants\OilEnrichedStates.cs" />
     <Compile Include="mutantplants\PlantMigrationHelper.cs" />
@@ -120,4 +120,8 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>taskkill /f /im OxygenNotIncluded.exe|| ver &gt;nul
+start steam://rungameid/457140</PostBuildEvent>
+  </PropertyGroup>
 </Project>

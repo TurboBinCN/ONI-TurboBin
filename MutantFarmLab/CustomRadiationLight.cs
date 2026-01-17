@@ -1,12 +1,13 @@
 ﻿using KSerialization;
 using PeterHan.PLib.Core;
 using STRINGS;
+using System.Collections.Generic;
 using UnityEngine;
 using static LogicGateBase;
 
 namespace MutantFarmLab
 {
-    public class CustomRadiationLight : KMonoBehaviour, ISingleSliderControl, ISliderControl,ISaveLoadable
+    public class CustomRadiationLight : KMonoBehaviour, ISingleSliderControl, ISliderControl,ISaveLoadable, IGameObjectEffectDescriptor
     {
         //建筑配置项
         public RadiationEmitter radiationEmitter;
@@ -171,6 +172,32 @@ namespace MutantFarmLab
 
         public int SliderDecimalPlaces(int index)=>0;
 
+        public List<Descriptor> GetDescriptors(GameObject go)
+        {
+            List<Descriptor> descriptors = new List<Descriptor>();
+
+            bool hasEnoughParticle = ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) > ParticleConsumeAmount();
+            if (!hasEnoughParticle)
+            {
+                descriptors.Add(new Descriptor(
+                    STRINGS.BUILDINGS.PREFABS.RADIATIONPARTICLEADAPTER.WARNING_NO_FARMTILE,
+                    STRINGS.BUILDINGS.PREFABS.RADIATIONPARTICLEADAPTER.WARNING_NO_FARMTILE_TOOLTIP,
+                    Descriptor.DescriptorType.Requirement,
+                    false
+                ));
+
+            }
+            else if (IsRunningAvailable())
+            {
+                descriptors.Add(new Descriptor(
+                    string.Format(STRINGS.UI.STATUSITEMS.CONSUMERATEPARTICLES.NAME, ParticleConsumeAmount()),
+                    string.Format(STRINGS.UI.STATUSITEMS.CONSUMERATEPARTICLES.TOOLTIP, ParticleConsumeAmount()),
+                    Descriptor.DescriptorType.Requirement,
+                    false
+                ));
+            }
+            return descriptors;
+        }
     }
 
     public class CustomRadiationLightSM : GameStateMachine<CustomRadiationLightSM, CustomRadiationLightSM.StatesInstance, IStateMachineTarget, CustomRadiationLightSM.Def>

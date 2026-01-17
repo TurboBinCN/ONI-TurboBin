@@ -14,7 +14,7 @@ namespace MutantFarmLab
         private RadiationEmitter _radiationEmitter;
         [Serialize]
         private int _powerLevel = 1;
-        private float _consumRate = 0.01f;
+        private float _consumRate = 0.001f;
         private int _powerBase = 300;
 
         protected override void OnPrefabInit()
@@ -65,13 +65,17 @@ namespace MutantFarmLab
             }
             return false;
         }
+        private float ConsumAmount(float dt)
+        {
+            return _powerLevel * dt * _consumRate;
+        }
         public void updatePerTick(RadiationFarmTileStates.StatesInstance smi, float dt)
         {
             
             if (canEmitter())
             {
                 var uraniumOre = _storage.FindFirst(RadiationFarmTileConfig.EnergySource);
-                _storage.ConsumeIgnoringDisease(uraniumOre.PrefabID(), _powerLevel * dt * _consumRate);
+                _storage.ConsumeIgnoringDisease(uraniumOre.PrefabID(), ConsumAmount(dt));
                 _radiationEmitter.SetEmitting(true);
                 return;
             }
@@ -109,8 +113,17 @@ namespace MutantFarmLab
                     false
                 ));
             }
+            else
+            {
+                descriptors.Add(new Descriptor(
+                    string.Format(STRINGS.UI.STATUSITEMS.CONSUMERATEURANIUMORE.NAME, ConsumAmount(1f)),
+                    string.Format(STRINGS.UI.STATUSITEMS.CONSUMERATEURANIUMORE.TOOLTIP, ConsumAmount(1f)),
+                    Descriptor.DescriptorType.Effect,
+                    false
+                ));
+            }
 
-            return descriptors;
+                return descriptors;
         }
     }
     public class RadiationFarmTileStates : GameStateMachine<RadiationFarmTileStates, RadiationFarmTileStates.StatesInstance, IStateMachineTarget, RadiationFarmTileStates.Def>

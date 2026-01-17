@@ -1,8 +1,9 @@
-﻿using UnityEngine;
-using KSerialization;
-using STRINGS;
-using System.Collections.Generic;
+﻿using KSerialization;
 using PeterHan.PLib.Core;
+using STRINGS;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace MutantFarmLab
 {
@@ -39,7 +40,7 @@ namespace MutantFarmLab
 
         private float UPDATE_INTERVAL;
         [Serialize]
-        private int RadiationLevel = 1;
+        public int RadiationLevel = 1;
 
         public void OnSimTick(RadiationParticleAdapterStates.GameInstance smi,float dt)
         {
@@ -89,7 +90,17 @@ namespace MutantFarmLab
                 _radiationEmitter.Refresh();
             }
             _radiationEmitter.SetEmitting(false);
-            
+            Subscribe(-905833192, new Action<object>(OnCopySettings));
+        }
+
+        private void OnCopySettings(object obj)
+        {
+            RadiationParticleAdapterController component = ((GameObject)obj).GetComponent<RadiationParticleAdapterController>();
+            if (component != null)
+            {
+                RadiationLevel = component.RadiationLevel;
+                _radiationEmitter?.Refresh();
+            }
         }
         #endregion
 
@@ -181,7 +192,7 @@ namespace MutantFarmLab
         #region 粒子状态判定 + 联动控制
         private void JudgeParticleEnoughState()
         {
-            _isParticleEnough = ParticleStorage != null && ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) > LowParticleThreshold;
+            _isParticleEnough = ParticleStorage != null && ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) > 0;
         }
 
         private void ControlRadiation_Logic_ParticleConsume()
@@ -240,6 +251,7 @@ namespace MutantFarmLab
                     Descriptor.DescriptorType.Requirement, 
                     false
                 ));
+                
             }
             // 粒子不足 → 显示【Information】类型提示（原生蓝色信息样式）
             else if (!_isParticleEnough)
@@ -248,6 +260,15 @@ namespace MutantFarmLab
                     STRINGS.BUILDINGS.PREFABS.RADIATIONPARTICLEADAPTER.WARNING_LOW_PARTICLE,
                     STRINGS.BUILDINGS.PREFABS.RADIATIONPARTICLEADAPTER.WARNING_LOW_PARTICLE_TOOLTIP,
                     Descriptor.DescriptorType.Information, 
+                    false
+                ));
+            }
+            else
+            {
+                descriptors.Add(new Descriptor(
+                    string.Format(STRINGS.UI.STATUSITEMS.CONSUMERATEPARTICLES.NAME, ParticleConsumeAmount()),
+                    string.Format(STRINGS.UI.STATUSITEMS.CONSUMERATEPARTICLES.TOOLTIP, ParticleConsumeAmount()),
+                    Descriptor.DescriptorType.Requirement,
                     false
                 ));
             }

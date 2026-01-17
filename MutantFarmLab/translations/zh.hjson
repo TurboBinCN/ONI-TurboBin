@@ -87,6 +87,20 @@
           DESTROYED: 任务已销毁。
         }
       }
+      STATUSITEMS: {
+        NEEDPARTICLES: {
+          NAME: 辐射粒子不足
+          TOOLTIP: 种子变异依赖辐射需要辐射粒子,每变异一颗种子需要粒子{0}。
+        }
+        CONSUMERATEURANIUMORE: {
+          NAME: 铀矿消耗速率：{0}/秒
+          TOOLTIP: 辐射种植砖铀矿消耗速率：{0}/秒
+        }
+        CONSUMERATEPARTICLES: {
+          NAME: 辐射粒子消耗速率：{0}/秒
+          TOOLTIP: 建筑所需辐射粒子消耗速率：{0}/秒
+        }
+      }
     }
 
     # ==============================================

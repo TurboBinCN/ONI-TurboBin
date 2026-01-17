@@ -20,6 +20,7 @@ namespace MutantFarmLab
         public static readonly Tag EnergySource = SimHashes.UraniumOre.CreateTag();
         public static readonly string RadiationStorageName = "UraniumOreStorage";
         public static readonly Tag RadiationPlotTag = TagManager.Create("RadiationPlot");
+        public static readonly float UraniumCapacity = 20f;
         private GameObject RadiationPlot;
         public override BuildingDef CreateBuildingDef()
         {
@@ -126,9 +127,9 @@ namespace MutantFarmLab
             Storage uraniumStorage = RadiationPlot.AddComponent<Storage>();
             uraniumStorage.name = RadiationStorageName;
             uraniumStorage.SetDefaultStoredItemModifiers(Storage.StandardSealedStorage);
-            uraniumStorage.capacityKg = 100f;
+            uraniumStorage.capacityKg = UraniumCapacity;
             uraniumStorage.storageFilters = new List<Tag>() { EnergySource };
-            uraniumStorage.allowItemRemoval = true; // 允许小人搬运铀矿
+            //uraniumStorage.allowItemRemoval = true; 
             uraniumStorage.showInUI = true; // UI面板显示铀矿储量
             uraniumStorage.showUnreachableStatus = true;
             uraniumStorage.SetOffsetTable(OffsetGroups.InvertedStandardTable);
@@ -137,8 +138,8 @@ namespace MutantFarmLab
             manualDeliveryKG.SetStorage(uraniumStorage);
             manualDeliveryKG.choreTypeIDHash = Db.Get().ChoreTypes.MachineFetch.IdHash;
             manualDeliveryKG.RequestedItemTag = EnergySource;
-            manualDeliveryKG.capacity = 100f;
-            manualDeliveryKG.MinimumMass = 50f;
+            manualDeliveryKG.capacity = UraniumCapacity;
+            manualDeliveryKG.MinimumMass = UraniumCapacity*0.1f;
             manualDeliveryKG.FillToMinimumMass = true;
             manualDeliveryKG.RoundFetchAmountToInt = false;
             manualDeliveryKG.allowPause = true;
@@ -152,6 +153,7 @@ namespace MutantFarmLab
 
             RadiationPlot.SetActive(true);
             go.AddOrGet<RadiationPlotStorageSaver>();
+            Prioritizable.AddRef(RadiationPlot);
             Prioritizable.AddRef(go);
         }
 

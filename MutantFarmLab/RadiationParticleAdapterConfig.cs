@@ -70,7 +70,6 @@ namespace MutantFarmLab
             def.AddSearchTerms(SEARCH_TERMS.FARM);
 
             GeneratedBuildings.RegisterWithOverlay(OverlayModes.Logic.HighlightItemIDs, ID);
-
             return def;
         }
 
@@ -105,6 +104,8 @@ namespace MutantFarmLab
             RadiationParticleAdapterController controller = go.AddOrGet<RadiationParticleAdapterController>();
             controller.ParticleConsumeRate = 1f;
             controller.LowParticleThreshold = 200f;
+
+            go.AddOrGet<CopyBuildingSettings>();
 
             go.AddOrGetDef<RadiationParticleAdapterStates.Def>();
 

@@ -65,6 +65,7 @@ namespace MutantFarmLab
             highEnergyParticleStorage.autoStore = true;
             highEnergyParticleStorage.PORT_ID = "HEP_STORAGE_MUTANTFARM_LAB";
             highEnergyParticleStorage.showCapacityStatusItem = true;
+            highEnergyParticleStorage.showInUI = true;
 
             var filterable = go.AddOrGet<FlatTagFilterable>();
             filterable.headerText = STRINGS.UI.UISIDESCREENS.MUTANTFARMLAB.FILTER_CATEGORY;

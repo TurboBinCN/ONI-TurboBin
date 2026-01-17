@@ -23,7 +23,7 @@ namespace MutantFarmLab
             TbbBuilding.Initialize(mod, harmony)
                 .ToAdvanced()
                 //变异试验台
-                .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Decor, TbbTypes.Technology.Food.Bioengineering)
+                .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
                 .AddBuilding(MutantFarmLabConfig.ID)
                 //辐射灯带
                 .PlanAndTech(TbbTypes.PlanMenuCategory.Radiation, TbbTypes.PlanMenuSubcategory.Producers, TbbTypes.Technology.RadiationTechnologies.MaterialsScienceResearch)
