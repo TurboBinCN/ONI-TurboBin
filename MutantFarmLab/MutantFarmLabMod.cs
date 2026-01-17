@@ -17,6 +17,7 @@ namespace MutantFarmLab
             if (KPrefabID.NextUniqueID <= 0)
                 KPrefabID.NextUniqueID = 1;
             PUtil.InitLibrary();
+            Debug.DisableLogging();
             new PPatchManager(harmony).RegisterPatchClass(typeof(MutantFarmLabMod));
 
             //建筑注册
@@ -51,8 +52,6 @@ namespace MutantFarmLab
         [HarmonyPostfix] // ✅ 关键：Postfix → 在原生方法执行【之后】运行
         public static void Db_Initialize_Postfix(Db __instance)
         {
-            PUtil.LogDebug("==============原生Db.Initialize()执行完毕！===============");
-
             try
             {
                 PlantMutationRegister.RegisterAllCustomMutations();

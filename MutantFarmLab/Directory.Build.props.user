@@ -2,7 +2,7 @@
 <Project>
 	<PropertyGroup>
 		<Title>变异农场实验室 (MutantFarmLab)</Title>
-		<Description>A high-tech lab that consumes particles to mutate plant seeds into rare variants. Duplicants can insert raw seeds and retrieve mutated ones with unique traits!消耗粒子的高科技实验室，可将普通植物种子诱变为稀有变异品种。复制人可放入原始种子，获取带有独特特性的变异种子！</Description>
+		<Description>A lab that consumes particles to mutate plant seeds into rare variants. Duplicants can insert raw seeds and retrieve mutated ones with unique traits!消耗粒子的高科技实验室，可将普通植物种子诱变为稀有变异品种。复制人可放入原始种子，获取带有独特特性的变异种子！</Description>
 		<ModVersion>1.0.0</ModVersion>
 	</PropertyGroup>
 </Project>
