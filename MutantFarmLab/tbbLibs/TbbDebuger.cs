@@ -9,7 +9,12 @@ namespace MutantFarmLab.tbbLibs
     /// 适配ONI模组开发，无第三方依赖（仅Plib）
     /// </summary>
     public static class TbbDebuger
+    {
+        public static void CallTrace(string funName)
         {
+            PUtil.LogDebug($"[TraceCallTree] [{funName}][{Environment.StackTrace}]");
+
+        }
         /// <summary>
         /// 打印GameObject的完整信息（自身+所有组件+所有子物体）
         /// </summary>

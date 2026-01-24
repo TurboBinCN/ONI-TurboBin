@@ -195,7 +195,7 @@ namespace MutantFarmLab
                 public static class DUAL_HEAD_SYMBIOSIS
                 {
                     public static LocString NAME = "Dual-Head Symbiosis";
-                    public static LocString DESC = "The two plant cores of the Dual-Head share growing conditions; individual head yield is slightly reduced. Under Dual-Head Symbiosis, benefits include: 50% reduction in additional fertilizer required, and weighted average growth cycle.";
+                    public static LocString DESC = "The two plant cores of the Dual-Head share growing conditions; individual head yield is slightly reduced. \n'Dual-Head Symbiosis' benefits: \n50% reduction in additional fertilizer required \nweighted average growth cycle.";
                 }
             }
         }

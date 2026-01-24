@@ -23,7 +23,7 @@ namespace MutantFarmLab.mutantplants
         private const int MIN_LIGHT_REQ = 800;
 
         // ========== 双头株变异 ==========
-        public static bool DUAL_HEAD_ENABLED = false; //双头株变异开关
+        public static bool DUAL_HEAD_ENABLED = true; //双头株变异开关
         public static string DUAL_HEAD_MUT_ID = "DualHeadPlantMutation";
         public static float DUAL_SINGLE_HEAD_YIELD_MOD = -0.3f;
         private const float DUAL_MIN_RADIATION_ADD = 250f;//辐射门槛+250（原生变异标配）
@@ -100,8 +100,6 @@ namespace MutantFarmLab.mutantplants
                 .AttributeModifier(Db.Get().PlantAttributes.FertilizerUsageMod, DUAL_FERTILIZER_COST_MOD - 1f, true)
                 // ✅ 生长周期+20%（Maturity.max越大，生长越慢，严格对应周期延长）
                 .AttributeModifier(Db.Get().Amounts.Maturity.maxAttribute, DUAL_GROWTH_CYCLE_MOD - 1f, true)
-                // ✅ 光照需求+500勒克斯（基础值叠加，提升种植门槛）
-                .AttributeModifier(Db.Get().PlantAttributes.MinLightLux, DUAL_MIN_LIGHT_ADD, false)
                 // ✅ 单头产量-30%（最终整体产量+70%，由双头机制兜底）
                 .AttributeModifier(Db.Get().PlantAttributes.YieldAmount, DUAL_SINGLE_HEAD_YIELD_MOD, true)
                 // ✅ 视觉标识：嫩绿色调，区分原生变异，贴合双生植物特征

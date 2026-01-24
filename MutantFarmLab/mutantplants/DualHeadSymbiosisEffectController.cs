@@ -42,7 +42,7 @@ namespace MutantFarmLab.mutantplants
             _originalState = new PlantStateSnapshot
             {
                 prefersDarkness = illum?.prefersDarkness ?? false,
-                minLightLux = illum.LightIntensityThreshold
+                minLightLux = illum?.LightIntensityThreshold??0
             };
         }
 
@@ -50,10 +50,14 @@ namespace MutantFarmLab.mutantplants
         {
             if (twin == null) return;
 
+            //Modifier：光照(MiniLightLux 取最大值，黑暗共享)
             var myIllum = GetComponent<IlluminationVulnerable>();
             var partnerIllum = twin.GetComponent<IlluminationVulnerable>();
-            
-            // 同步 prefersDarkness（只要一方喜暗，双方都喜暗）
+            if (myIllum == null || partnerIllum == null)
+            {
+                myIllum = gameObject.AddOrGet<IlluminationVulnerable>();
+                partnerIllum = twin.AddOrGet<IlluminationVulnerable>();
+            }
             bool sharedDark = _originalState.prefersDarkness ||
                              (partnerIllum?.prefersDarkness ?? false);
             if (myIllum != null) {
@@ -62,7 +66,6 @@ namespace MutantFarmLab.mutantplants
             }
 
             if(!sharedDark){
-                // 同步 MinLightLux：取最大值（最严苛的需求）
                 float partnerMinLux = partnerIllum.LightIntensityThreshold;
                 float targetMinLux = Mathf.Max(_originalState.minLightLux, partnerMinLux);
 
@@ -77,12 +80,27 @@ namespace MutantFarmLab.mutantplants
                     ));
                 }
             }
-            // 肥料减半
+            //Modifier: 肥料 减半
             _originalState.attributeModifier.Add(new AttributeModifier(
                 Db.Get().PlantAttributes.FertilizerUsageMod.Id,
                 -0.5f, // 减半（假设原值为1.0）
                 "Dual-Head Symbiosis"
             ));
+            //Modifier: 生长周期 加权平均
+            float myMaturity = gameObject.GetAmounts().Get(Db.Get().Amounts.Maturity).maxAttribute.GetTotalValue();
+            float twinMaturity = twin.GetAmounts().Get(Db.Get().Amounts.Maturity).maxAttribute.GetTotalValue();
+            float maxValue = Mathf.Max(myMaturity, twinMaturity);
+            float minValue = Mathf.Min(myMaturity, twinMaturity);
+
+            float baseDelta = 0.6f * maxValue - 0.4f * minValue;
+            float finalDelta = (myMaturity < twinMaturity) ? baseDelta : -baseDelta;
+
+            _originalState.attributeModifier.Add(new AttributeModifier(
+                Db.Get().Amounts.Maturity.maxAttribute.Id,
+                finalDelta,
+                "Dual-Head Symbiosis"
+            ));
+            //Db.Get().Amounts.Maturity.maxAttribute
             foreach (var attr in _originalState.attributeModifier)
             {
                 gameObject.GetComponent<Modifiers>().attributes.Add( attr );
@@ -105,7 +123,7 @@ namespace MutantFarmLab.mutantplants
                 foreach (var modifier in _originalState.attributeModifier)
                 {
                     if (modifier != null) modifiers.attributes.Remove(modifier);
-                    PUtil.LogDebug($"Remove AttrModifier [{modifier.AttributeId}] totalValue:[{gameObject.GetComponent<Modifiers>().attributes.Get(modifier.AttributeId).GetTotalValue()}]");
+                    PUtil.LogDebug($"[双头株]Remove AttrModifier [{modifier.AttributeId}] totalValue:[{gameObject.GetComponent<Modifiers>().attributes.Get(modifier.AttributeId).GetTotalValue()}]");
                 }
             }
             PUtil.LogDebug($"[双头株] 恢复[{gameObject.name}]为原始状态。");

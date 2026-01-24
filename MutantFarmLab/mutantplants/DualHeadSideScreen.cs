@@ -1,11 +1,8 @@
 ﻿using HarmonyLib;
 using MutantFarmLab.mutantplants;
-using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
-using STRINGS;
 using System;
 using System.Reflection;
-using TUNING;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,9 +28,6 @@ namespace MutantFarmLab
         private PlanterSideScreen _planterSideScreen;
         private DetailsScreen _detailsScreen;
         private Operational _plotOperational;
-
-        // === 状态标记 ===
-        public static bool IsCustomPlantOperation { get; set; } = false;
 
         // === 单例 ===
         public static DualHeadSideScreen Instance { get; private set; }
@@ -194,13 +188,7 @@ namespace MutantFarmLab
 
             try
             {
-                IsCustomPlantOperation = true;
-
-                //PlantMigrationHelper.ClearPlotWithoutDestroyingPlant(_targetPlot);
-                //PlantMigrationHelper.ResetPlotToPlantableState(_targetPlot,_plotOperational);
-                //PlantMigrationHelper2.MigratePlant(_targetPlot, PlantablePlotGameObject.GetGameObject(_targetPlot.gameObject).GetComponent<PlantablePlot>());
-                var helper2 = _targetPlot.gameObject.AddOrGet<PlantMigrationHelper2>();
-                helper2.MigratePlant(_targetPlot, PlantablePlotGameObject.GetGameObject(_targetPlot.gameObject).GetComponent<PlantablePlot>());
+                PlantMigrationHelper2.MigratePlant(_targetPlot.Occupant, PlantablePlotGameObject.GetGameObject(_targetPlot.gameObject).GetComponent<PlantablePlot>());
                 RefreshUIAfterDelay();
 
                 PUtil.LogDebug("[双头株] 操作完成，等待 UI 刷新");
@@ -208,11 +196,7 @@ namespace MutantFarmLab
             }
             catch (Exception ex)
             {
-                PUtil.LogError($"[双头株] 操作异常: {ex}");
-            }
-            finally
-            {
-                IsCustomPlantOperation = false;
+                PUtil.LogWarning($"[双头株] 操作异常: {ex}");
             }
         }
 
@@ -257,7 +241,8 @@ namespace MutantFarmLab
 
             //双株变异植株
             var marker = _targetPlot.GetComponent<DualHeadReceptacleMarker>();
-            if (marker == null || marker.primaryPlant == null){
+            if (marker == null || marker.primaryPlant == null)
+            {
                 active = false;
             }
             //双株已配对
@@ -278,49 +263,11 @@ namespace MutantFarmLab
 
     }
 
-    #region Harmony 补丁：防止自定义操作时触发原生销毁逻辑
+    #region 补丁：控制允许种植第二株
 
     [HarmonyPatch]
     public static class DualPlantHarmonyPatches
     {
-        [HarmonyPatch(typeof(Uprootable), nameof(Uprootable.Uproot))]
-        [HarmonyPrefix]
-        public static bool PreventUprootDuringCustomOperation(Uprootable __instance)
-        {
-            if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return true;
-            if (DualHeadSideScreen.IsCustomPlantOperation)
-            {
-                PUtil.LogDebug("[双头株] 拦截 Uproot");
-                return false;
-            }
-            return true;
-        }
-
-        [HarmonyPatch(typeof(Uprootable), nameof(Uprootable.MarkForUproot))]
-        [HarmonyPrefix]
-        public static bool PreventMarkForUprootDuringCustomOperation(Uprootable __instance)
-        {
-            if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return true;
-            if (DualHeadSideScreen.IsCustomPlantOperation)
-            {
-                PUtil.LogDebug("[双头株] 拦截 MarkForUproot");
-                return false;
-            }
-            return true;
-        }
-
-        [HarmonyPatch(typeof(PlantablePlot), nameof(PlantablePlot.OrderRemoveOccupant))]
-        [HarmonyPrefix]
-        public static bool PreventOrderRemoveDuringCustomOperation(PlantablePlot __instance)
-        {
-            if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return true;
-            if (DualHeadSideScreen.IsCustomPlantOperation)
-            {
-                PUtil.LogDebug("[双头株] 拦截 OrderRemoveOccupant");
-                return false;
-            }
-            return true;
-        }
         [HarmonyPatch(typeof(PlantablePlot), "ValidPlant", MethodType.Getter)]
         public static class PlantablePlot_ValidPlant_Patch
         {
@@ -367,6 +314,50 @@ namespace MutantFarmLab
 
                 // 🔁 如果 Refresh() 已被移除且 Init() 足够，则无需延迟刷新
                 // 如仍需延迟初始化（例如依赖 LayoutRebuilder），可保留协程但不调用 Refresh
+            }
+        }
+        /******************************************************************************
+         * 种植前判定执行
+         * 目标方法：SingleEntityReceptacle.IsValidEntity(GameObject candidate)
+         * 核心作用：无植株走原生 / 有植株->挂载带DHP→允许种第二株
+         *****************************************************************************/
+        [HarmonyPatch(typeof(SingleEntityReceptacle), nameof(SingleEntityReceptacle.IsValidEntity))]
+        public static class SingleEntityReceptacle_IsValidEntity_Patch
+        {
+            public static bool Prefix(SingleEntityReceptacle __instance, GameObject candidate, ref bool __result)
+            {
+                if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return true;
+                try
+                {
+                    // 1. 确保这个 receptacle 属于可耕种地块
+                    var plot = __instance.GetComponent<PlantablePlot>();
+                    if (plot == null) return true; // 不是种植地块，走默认逻辑
+
+                    // 2. 获取当前已种的植物（如果有的话）
+                    GameObject existPlant = __instance?.Occupant;
+                    if (existPlant == null) return true; // ✅ 放行原生逻辑，不干预空地块种植
+                                                         // 3. 检查当前已种是否是双头突变植物
+                    var mutantComp = existPlant.GetComponent<MutantPlant>();
+                    if (mutantComp == null || !mutantComp.MutationIDs.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID))
+                        return true; // 不是双头突变，走默认逻辑（拒绝第二株）
+
+                    // 4.检查当前已种植物是否挂载DHP组件 没有即挂载=====
+                    //existPlant.AddOrGet<DualHeadPlantComponent>();
+
+                    //PUtil.LogDebug($"[双头株] 所有 IsValidEntity 检查已完成 -> 允许种植第二株");
+                    __result = true; // ✅ 强制判定「合法可种植」
+                    return false;    // ✅ 终止原生逻辑，直接生效我们的判定结果
+                }
+                catch (Exception ex)
+                {
+                    PUtil.LogWarning($"[双头株] 操作异常: {ex}");
+                    return true;
+                }
+                finally
+                {
+                    __result = true;
+                }
+
             }
         }
     }

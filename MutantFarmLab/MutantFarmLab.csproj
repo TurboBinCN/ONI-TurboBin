@@ -45,7 +45,6 @@
   <ItemGroup>
     <Compile Include="mutantplants\ActinoMutantionComponent.cs" />
     <Compile Include="mutantplants\DualHeadPlantComponent.cs" />
-    <Compile Include="mutantplants\DualHeadPlotPatch.cs" />
     <Compile Include="mutantplants\DualHeadSideScreen.cs" />
     <Compile Include="mutantplants\DualHeadSymbiosisEffectController.cs" />
     <Compile Include="mutantplants\FertilizationMonitorDebugPatch.cs" />

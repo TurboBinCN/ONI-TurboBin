@@ -136,7 +136,7 @@
             public const string Dining = "dining";
             //--娱乐
             public const string Recreation = "recreation";
-            //站台子菜单
+            //--装饰
             public const string Decor = "decor";
             //--研究
             public const string Research = "research";

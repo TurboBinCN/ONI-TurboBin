@@ -1,10 +1,7 @@
 ﻿using HarmonyLib;
-using Klei.AI;
 using KSerialization;
 using MutantFarmLab.mutantplants;
-using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
-using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
@@ -15,11 +12,16 @@ namespace MutantFarmLab
     public static class PlantablePlotGameObject
     {
         public static string storageName = "Dual_Head_Plot";
-
+        public class BackPlatablePlot: PlantablePlot
+        {
+            protected override void OnPrefabInit()
+            {
+                base.OnPrefabInit();
+            }
+        }
         public static GameObject Init(GameObject parentGo)
         {
             GameObject SubGameObject;
-            PUtil.LogDebug($"[SubGO] OnSpawn called. Parent: {parentGo.name}");
 
             SubGameObject = new GameObject(storageName);
             SubGameObject.SetActive(false); // ← 关键！先禁用
@@ -29,7 +31,6 @@ namespace MutantFarmLab
 
             var kPrefabID = SubGameObject.AddOrGet<KPrefabID>();
             kPrefabID.PrefabTag = TagManager.Create(storageName + "Tag");
-            //kPrefabID.InstanceID = KPrefabID.GetUniqueID();
             kPrefabID.AddTag(GameTags.StorageLocker, false);
 
             Storage storage = SubGameObject.AddOrGet<Storage>();
@@ -45,10 +46,10 @@ namespace MutantFarmLab
             kSelectable.SetName(storageName);
             kSelectable.IsSelectable = true;
 
-            var plantablePlot = SubGameObject.AddOrGet<PlantablePlot>();
+            var plantablePlot = SubGameObject.AddOrGet<BackPlatablePlot>();
             plantablePlot.AddDepositTag(GameTags.CropSeed);
             plantablePlot.AddDepositTag(GameTags.WaterSeed);
-            //以下必须设置，放在Farmtile中，影响肥料系统
+            //以下必须设置，已经放在Farmtile中，影响肥料系统
             //plantablePlot.occupyingObjectRelativePosition.y = 1f;
             //plantablePlot.SetFertilizationFlags(true, true);
 
@@ -56,9 +57,7 @@ namespace MutantFarmLab
 
             parentGo.AddOrGet<SubStorageSaver>();
 
-            PUtil.LogDebug($"[SubGO] Activating...");
-
-            //SubGameObject.SetActive(true);
+            //SubGameObject.SetActive(true);//需要的时候SetActive 否则种植砖底下会有两个未种植的图标
             KPrefabIDTracker.Get().Register(SubGameObject.AddOrGet<KPrefabID>());
 
             if (parentGo != null)
@@ -87,15 +86,14 @@ namespace MutantFarmLab
     [SerializationConfig(MemberSerialization.OptIn)]
     public class SubStorageSaver : KMonoBehaviour, ISaveLoadable
     {
-        [Serialize]
-        private List<ItemElement> savedItems = new List<ItemElement>();
-
         public class ItemElement
         {
             public SimHashes id;
             public float Mass;
             public float Temperature;
         }
+        [Serialize]
+        private List<ItemElement> savedItems = new();
 
         private Storage _storage;
 
@@ -112,10 +110,9 @@ namespace MutantFarmLab
         [OnSerializing]
         public void SerializeStorage()
         {
+            PUtil.LogDebug($"[SubStorageSaver] OnSerializing [{_storage.items.Count}]");
             savedItems.Clear();
-            if (_storage == null || _storage.items == null) return;
-
-            if (_storage.items.Count == 0) return;
+            if (_storage == null || _storage.items == null || _storage.items.Count <= 0) return;
 
             foreach (var item in _storage.items)
             {
@@ -134,11 +131,19 @@ namespace MutantFarmLab
         [OnDeserialized]
         public void DeserializeStorage()
         {
-            PUtil.LogDebug($"[SubStorageSaver] OnDeserialized");
-            if (savedItems.Count <= 0 || _storage == null) return;
-            PUtil.LogDebug($"[SubStorageSaver]storage is not null. saveItems Count:[{savedItems.Count}]");
-            TbbDebuger.PrintGameObjectFullInfo(_storage.gameObject);
-            PUtil.LogDebug($"[SubStorageSaver] storage.gameObject name :[{_storage.gameObject.name}] [{_storage.gameObject.GetMyWorldId()}] parent name:[{_storage.gameObject.transform?.parent?.gameObject?.name}]");
+            
+            if (savedItems.Count <= 0) return;
+
+            if (_storage == null)
+            {
+                var plot = gameObject.transform.Find(PlantablePlotGameObject.storageName);
+                if (plot != null)
+                {
+                    _storage = plot.GetComponent<Storage>();
+                }
+            }
+            PUtil.LogDebug($"[SubStorageSaver] OnDeserialized Count:[{savedItems.Count}] _storage: [{_storage}]");
+            if (_storage == null) return;
             foreach (var elem in savedItems)
             {
                 GameObject prefab = Assets.GetPrefab(elem.id.CreateTag());
@@ -156,11 +161,11 @@ namespace MutantFarmLab
             savedItems.Clear();
         }
     }
-    [HarmonyPatch(typeof(HydroponicFarmConfig), "DoPostConfigureComplete")]
-    public static class HydroponicFarmConfig_Patches
+    [HarmonyPatch(typeof(HydroponicFarmConfig), "ConfigureBuildingTemplate")]
+    public static class HydroponicFarmConfig_ConfigureBuildingTemplate_Patches
     {
         [HarmonyPostfix]
-        public static void Postfix(ref GameObject go)
+        public static void Postfix(ref GameObject go, Tag prefab_tag)
         {
             if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
             var sub = PlantablePlotGameObject.Init(go);
@@ -172,11 +177,11 @@ namespace MutantFarmLab
             go.AddOrGet<DualHeadReceptacleMarker>();
         }
     }
-    [HarmonyPatch(typeof(FarmTileConfig), "DoPostConfigureComplete")]
-    public static class FarmTileConfig_Patches
+    [HarmonyPatch(typeof(FarmTileConfig), "ConfigureBuildingTemplate")]
+    public static class FarmTileConfig_ConfigureBuildingTemplate_Patches
     {
         [HarmonyPostfix]
-        public static void Postfix(ref GameObject go)
+        public static void Postfix(ref GameObject go, Tag prefab_tag)
         {
             if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
             var sub = PlantablePlotGameObject.Init(go);
