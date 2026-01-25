@@ -1,10 +1,6 @@
-﻿using HarmonyLib;
-using Klei.AI;
-using MutantFarmLab.tbbLibs;
+﻿using Klei.AI;
 using PeterHan.PLib.Core;
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
 namespace MutantFarmLab.mutantplants
@@ -20,12 +16,14 @@ namespace MutantFarmLab.mutantplants
             }
             //---情况 1：植物没有种植槽，直接移植
             GameObject sourcePlantObject = plant;
-            if (sourcePlantObject.GetComponent<ReceptacleMonitor>()?.GetReceptacle() == null)
+            var sourcePlantablePlot = sourcePlantObject.GetComponent<ReceptacleMonitor>()?.GetReceptacle();
+            if (sourcePlantablePlot == null)
             {
                 PUtil.LogWarning("[双头株]植株没有种植槽，直接放入目标种植槽.");
                 targetPlot.ReplacePlant(sourcePlantObject, keepPlantablePlotStorage);
                 return;
             }
+            var marker = sourcePlantablePlot.gameObject.GetComponent<DualHeadReceptacleMarker>();
             //--情况 2： 植株有种植槽，重建植株
             // --- 步骤 1: 获取植物的核心信息 ---
             KPrefabID plantKpid = sourcePlantObject.GetComponent<KPrefabID>();
@@ -93,9 +91,6 @@ namespace MutantFarmLab.mutantplants
             {
                 component10.SetMasterPriority(component9.GetMasterPriority());
             }
-            
-            TbbDebuger.PrintGameObjectFullInfo(rebuildedPlantObject);
-
             if (rebuildedPlantObject == null)
             {
                 PUtil.LogError("[双头株]Failed to instantiate the standard seed object.");
@@ -107,23 +102,19 @@ namespace MutantFarmLab.mutantplants
             if (sourcePlantObject != null){
                 PUtil.LogDebug("[双头株]执行拔除植物");
                 Util.KDestroyGameObject(sourcePlantObject);
-                InvokeMethod(sourcePlantObject.GetComponent<ReceptacleMonitor>().GetReceptacle(), "ClearOccupant",new object[] { });
+                TbbHarmonyExtension.InvokeMethod(sourcePlantObject.GetComponent<ReceptacleMonitor>().GetReceptacle(), "ClearOccupant",new object[] { });
             }
             // --- 步骤 4: 强制放入目标种植槽 ---
             PUtil.LogDebug("[双头株]调用 ReplacePlant 放入种植槽.");
             targetPlot.gameObject.SetActive(true);
             targetPlot.ReplacePlant(rebuildedPlantObject, keepPlantablePlotStorage);
+            var dualHeadPlantComponent = rebuildedPlantObject.AddOrGet<DualHeadPlantComponent>();
+            dualHeadPlantComponent.RootPlotGameObject = targetPlot.gameObject;
+            marker.primaryPlant = rebuildedPlantObject;
             //sourcePlot.ReplacePlant(standardSeedObject, keepPlantablePlotStorage);//原地重种没问题
         }
 
         private static bool useGrowthTimeRatio = true;
         private static bool keepPlantablePlotStorage = true;
-        private static void InvokeMethod(object obj, string name, params object[] args)
-        {
-            if (obj == null) return;
-            var types = args == null ? Type.EmptyTypes : Array.ConvertAll(args, a => a?.GetType() ?? typeof(object));
-            var method = obj.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, types, null);
-            method?.Invoke(obj, args);
-        }
     }
 }

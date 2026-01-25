@@ -15,6 +15,7 @@ namespace MutantFarmLab.mutantplants
     public class DualHeadSymbiosisEffectController : KMonoBehaviour
     {
         public GameObject twin; // 配对的另一株
+        public float maturity = 0;
         private PlantStateSnapshot _originalState;
         private bool _applied = false;
 
@@ -50,7 +51,7 @@ namespace MutantFarmLab.mutantplants
         {
             if (twin == null) return;
 
-            //Modifier：光照(MiniLightLux 取最大值，黑暗共享)
+            //---Modifier：光照(MiniLightLux 取最大值，黑暗共享)
             var myIllum = GetComponent<IlluminationVulnerable>();
             var partnerIllum = twin.GetComponent<IlluminationVulnerable>();
             if (myIllum == null || partnerIllum == null)
@@ -80,27 +81,42 @@ namespace MutantFarmLab.mutantplants
                     ));
                 }
             }
-            //Modifier: 肥料 减半
+            //----Modifier: 肥料 减半
             _originalState.attributeModifier.Add(new AttributeModifier(
                 Db.Get().PlantAttributes.FertilizerUsageMod.Id,
-                -0.5f, // 减半（假设原值为1.0）
+                PlantMutationRegister.DUAL_HEAD_SYMBIOSIS_FertilizerUsageMod, // 减半（假设原值为1.0）
                 "Dual-Head Symbiosis"
             ));
-            //Modifier: 生长周期 加权平均
-            float myMaturity = gameObject.GetAmounts().Get(Db.Get().Amounts.Maturity).maxAttribute.GetTotalValue();
-            float twinMaturity = twin.GetAmounts().Get(Db.Get().Amounts.Maturity).maxAttribute.GetTotalValue();
-            float maxValue = Mathf.Max(myMaturity, twinMaturity);
-            float minValue = Mathf.Min(myMaturity, twinMaturity);
+            //----Modifier: 生长周期 加权平均
+            if(maturity == 0){
+                float myMaturity = gameObject.GetAmounts().Get(Db.Get().Amounts.Maturity).maxAttribute.GetTotalValue();
+                float twinMaturity = twin.GetAmounts().Get(Db.Get().Amounts.Maturity).maxAttribute.GetTotalValue();
+                float maxValue = Mathf.Max(myMaturity, twinMaturity);
+                float minValue = Mathf.Min(myMaturity, twinMaturity);
 
-            float baseDelta = 0.6f * maxValue - 0.4f * minValue;
-            float finalDelta = (myMaturity < twinMaturity) ? baseDelta : -baseDelta;
+                float k = PlantMutationRegister.DUAL_HEAD_SYMBIOSIS_Maturity_RATIO;
+                maturity = ((k / (1 + k)) * maxValue + (1 / (1 + k)) * minValue);
 
+                twin.AddOrGet<DualHeadSymbiosisEffectController>().maturity = maturity;
+            }
+            float finalDelta = GetMaturityModifierDelta(gameObject,maturity);
+            PUtil.LogDebug($"[双圣株] maturity：[{maturity}] finalDelta：[{finalDelta}]");
             _originalState.attributeModifier.Add(new AttributeModifier(
                 Db.Get().Amounts.Maturity.maxAttribute.Id,
                 finalDelta,
-                "Dual-Head Symbiosis"
+                "Dual-Head Symbiosis",
+                true,false,true
             ));
-            //Db.Get().Amounts.Maturity.maxAttribute
+            Growing growingA = gameObject.GetComponent<Growing>();
+            AmountInstance growiingAAmountInstance = TbbHarmonyExtension.GetField(growingA, "maturity") as AmountInstance;
+            growiingAAmountInstance.SetValue(twin.GetComponent<Growing>().PercentGrown()*maturity);
+            //----Modifier: 收获增益
+            _originalState.attributeModifier.Add(new AttributeModifier(
+                Db.Get().PlantAttributes.YieldAmount.Id,
+                PlantMutationRegister.DUAL_HEAD_SYMBIOSIS_YIELD_MOD,
+                "Dual-Head Symbiosis",
+                true, false, true
+            ));
             foreach (var attr in _originalState.attributeModifier)
             {
                 gameObject.GetComponent<Modifiers>().attributes.Add( attr );
@@ -127,6 +143,23 @@ namespace MutantFarmLab.mutantplants
                 }
             }
             PUtil.LogDebug($"[双头株] 恢复[{gameObject.name}]为原始状态。");
+        }
+        public float GetMaturityModifierDelta(GameObject plant,float targetMaturity)
+        {
+            AttributeInstance Instance = plant.GetComponent<Modifiers>().attributes.Get(Db.Get().Amounts.Maturity.maxAttribute.Id);
+            ArrayRef<AttributeModifier> modifiers = Instance.Modifiers;
+            float mutiplierNum = 0;
+            float basevalue = Instance.Attribute.BaseValue;
+            float sumNum = basevalue;
+            for (int i = 0;i<modifiers.Count; i++)
+            {
+                if (!modifiers[i].UIOnly)
+                {
+                    if (modifiers[i].IsMultiplier) mutiplierNum += modifiers[i].Value;
+                    else sumNum += modifiers[i].Value;
+                }
+            }
+            return targetMaturity / sumNum - 1f - mutiplierNum;
         }
     }
 }

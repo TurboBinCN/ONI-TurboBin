@@ -31,5 +31,27 @@ namespace MutantFarmLab
                 Debug.LogException(ex);
             }
         }
+        public static void InvokeMethod(object obj, string name, params object[] args)
+        {
+            if (obj == null) return;
+            var types = args == null ? Type.EmptyTypes : Array.ConvertAll(args, a => a?.GetType() ?? typeof(object));
+            var method = obj.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, types, null);
+            method?.Invoke(obj, args);
+        }
+        public static void SetField(object obj, string name, object value)
+        {
+            if (obj == null) return;
+            var field = obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            if (field != null)
+                field.SetValue(obj, value);
+        }
+        public static object GetField(object obj, string name)
+        {
+            if (obj == null) return null;
+            var field = obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            if (field != null)
+                return field.GetValue(obj);
+            return null;
+        }
     }
 }

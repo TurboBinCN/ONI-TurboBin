@@ -29,9 +29,12 @@ namespace MutantFarmLab.mutantplants
         private const float DUAL_MIN_RADIATION_ADD = 250f;//辐射门槛+250（原生变异标配）
         private const float DUAL_FERTILIZER_COST_MOD = 1.5f;//养料消耗+50%
         private const float DUAL_GROWTH_CYCLE_MOD = 1.2f;//生长周期+20%
-        private const int DUAL_MIN_LIGHT_ADD = 500;//光照需求+500勒克斯
         private const string DUAL_SOUND_EVENT = "Plant_mutation_Leaf";//变异音效（复用原生绿叶变异）
 
+        // ---双头株 双株共生 增益---
+        public const float DUAL_HEAD_SYMBIOSIS_FertilizerUsageMod = -0.5f;
+        public const float DUAL_HEAD_SYMBIOSIS_Maturity_RATIO = 6 / 4f; //生长周期加权比例
+        public const float DUAL_HEAD_SYMBIOSIS_YIELD_MOD = 0.7f;//产量+70%
         //== 辐光菌==
         public static string ACTINO_MUT_ID = "ActinobacteriaMutation";
         public static float ACTINO_FERTILIZER_COST_MOD = -0.6f; //养料消耗-60%
