@@ -100,16 +100,14 @@ namespace MutantFarmLab.mutantplants
                 twin.AddOrGet<DualHeadSymbiosisEffectController>().maturity = maturity;
             }
             float finalDelta = GetMaturityModifierDelta(gameObject,maturity);
-            PUtil.LogDebug($"[双圣株] maturity：[{maturity}] finalDelta：[{finalDelta}]");
+            PUtil.LogDebug($"[双头株] maturity：[{maturity}] finalDelta：[{finalDelta}]");
             _originalState.attributeModifier.Add(new AttributeModifier(
                 Db.Get().Amounts.Maturity.maxAttribute.Id,
                 finalDelta,
                 "Dual-Head Symbiosis",
                 true,false,true
             ));
-            Growing growingA = gameObject.GetComponent<Growing>();
-            AmountInstance growiingAAmountInstance = TbbHarmonyExtension.GetField(growingA, "maturity") as AmountInstance;
-            growiingAAmountInstance.SetValue(twin.GetComponent<Growing>().PercentGrown()*maturity);
+           
             //----Modifier: 收获增益
             _originalState.attributeModifier.Add(new AttributeModifier(
                 Db.Get().PlantAttributes.YieldAmount.Id,
@@ -123,6 +121,11 @@ namespace MutantFarmLab.mutantplants
                 // 注意：这里我们仍依赖 attribute 查询是否实时生效
                 PUtil.LogDebug($"[双头株] 设置[{gameObject.name}] 修改项 [{attr.AttributeId}] 最终值:[{gameObject.GetComponent<Modifiers>().attributes.Get(attr.AttributeId).GetTotalValue()}]");
             }
+            //----生长进度同步
+            Growing growingA = gameObject.GetComponent<Growing>();
+            AmountInstance growiingAAmountInstance = TbbHarmonyExtension.GetField(growingA, "maturity") as AmountInstance;
+            PUtil.LogDebug($"[双头株] [{gameObject.name}] 设置生长进度: [{twin.GetComponent<Growing>().PercentGrown()}%] [{twin.GetComponent<Growing>().PercentGrown() * maturity}]");
+            growiingAAmountInstance.SetValue(twin.GetComponent<Growing>().PercentGrown() * maturity);
         }
 
         private void RestoreOriginalState()

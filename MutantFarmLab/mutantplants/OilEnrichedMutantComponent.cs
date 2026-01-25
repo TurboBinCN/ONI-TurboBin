@@ -51,6 +51,15 @@ namespace MutantFarmLab.mutantplants
             EntityCellVisualizer entityCellVisualizer = gameObject.AddOrGet<EntityCellVisualizer>();
             entityCellVisualizer.AddPort(EntityCellVisualizer.Ports.LiquidOut, OUTPUT_CONDUIT_CELL_OFFSET, entityCellVisualizer.Resources.liquidIOColours.output.connected);
 
+            //气压
+            var pressureVulnerable = gameObject.GetComponent<PressureVulnerable>();
+            if(pressureVulnerable != null)
+            {
+                pressureVulnerable.pressureWarning_High = PlantMutationRegister.OIL_ENRICH_AIRPRESS_RANGE_MOD;
+                pressureVulnerable.pressureLethal_High = pressureVulnerable.pressureWarning_High*1.5f;
+                pressureVulnerable.pressureWarning_Low = 0;
+                pressureVulnerable.pressureLethal_Low = 0;
+            }
             gameObject.AddOrGet<DynamicStorageSaver>();
 
             gameObject.AddOrGet<OilEnrichedStates>();

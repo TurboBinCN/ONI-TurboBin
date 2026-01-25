@@ -32,7 +32,7 @@ namespace MutantFarmLab.mutantplants
         private const string DUAL_SOUND_EVENT = "Plant_mutation_Leaf";//变异音效（复用原生绿叶变异）
 
         // ---双头株 双株共生 增益---
-        public const float DUAL_HEAD_SYMBIOSIS_FertilizerUsageMod = -0.5f;
+        public const float DUAL_HEAD_SYMBIOSIS_FertilizerUsageMod = 0.1f;
         public const float DUAL_HEAD_SYMBIOSIS_Maturity_RATIO = 6 / 4f; //生长周期加权比例
         public const float DUAL_HEAD_SYMBIOSIS_YIELD_MOD = 0.7f;//产量+70%
         //== 辐光菌==
@@ -43,13 +43,16 @@ namespace MutantFarmLab.mutantplants
         public static int ACTINO_LIGHT_LUX = 1800; //光照强度1800lux
         public static int ACTINO_MIN_RADIATION = 60; //辐射强度
         public static float ACTINO_TEMP_RANGE_MOD = 0.6f;//生存温度范围+60%
+        public const float ACTINO_AIRPRESS_RANGE_MOD = 0.6f;//气压范围+60%
 
         //==原油富集==
         public static string OIL_ENRICH_MUT_ID = "OilEnrichMutation";
-        public static float OIL_ENRICH_CARBONGAS_MOD = 0.6667f; //二氧化碳消耗100kg/600s = 0.6667kg/s
+        public static float OIL_ENRICH_CARBONGAS_MOD = 0.075f; //二氧化碳消耗45kg/600s = 0.075kg/s
         public static float OIL_ENRICH_YIELD_MOD = -0.5f; //产量-50%
         public static float OIL_ENRICH_GROWTH_CYCLE_MOD = 2f; //生长周期+200%
         private const float OIL_ENRICH_MIN_RADIATION_ADD = 250f;//辐射门槛+250
+        public const float OIL_ENRICH_TEMP_RANGE_MOD = 0.6f;//生存温度范围+60%
+        public const float OIL_ENRICH_AIRPRESS_RANGE_MOD = 20f;//气压调整到20kg
         /// <summary>
         /// 注册所有自定义变异（入口方法）
         /// </summary>
@@ -138,6 +141,7 @@ namespace MutantFarmLab.mutantplants
                 .AttributeModifier(Db.Get().PlantAttributes.MinRadiationThreshold, OIL_ENRICH_MIN_RADIATION_ADD, false)
                 .AttributeModifier(Db.Get().PlantAttributes.YieldAmount, OIL_ENRICH_YIELD_MOD, true)
                 .AttributeModifier(Db.Get().Amounts.Maturity.maxAttribute, OIL_ENRICH_GROWTH_CYCLE_MOD, true)
+                .AttributeModifier(Db.Get().PlantAttributes.WiltTempRangeMod, OIL_ENRICH_TEMP_RANGE_MOD, true)
                 .VisualTint(-0.6f, -0.6f, -0.6f)
                 .AddSoundEvent("Plant_mutation_Leaf");
             Db.Get().PlantMutations.Add(oilEnrichMut);

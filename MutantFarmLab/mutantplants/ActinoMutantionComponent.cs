@@ -40,10 +40,13 @@ namespace MutantFarmLab.mutantplants
                 }
             }
             //TODO:移除气体需求组件
-            var gasCom = gameObject.GetComponent<PressureVulnerable>();
-            if(gasCom != null)
+            var pressureVulnerable = gameObject.GetComponent<PressureVulnerable>();
+            if (pressureVulnerable != null)
             {
-                DestroyImmediate(gasCom);
+                pressureVulnerable.pressureWarning_High *= (1 + PlantMutationRegister.ACTINO_AIRPRESS_RANGE_MOD);
+                pressureVulnerable.pressureLethal_High *= (1 + PlantMutationRegister.ACTINO_AIRPRESS_RANGE_MOD);
+                pressureVulnerable.pressureWarning_Low *= Math.Abs(1 - PlantMutationRegister.ACTINO_AIRPRESS_RANGE_MOD);
+                pressureVulnerable.pressureLethal_Low *= Math.Abs(1 - PlantMutationRegister.ACTINO_AIRPRESS_RANGE_MOD);
             }
 
             //挂载辐射源组件

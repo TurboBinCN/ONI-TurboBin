@@ -2,7 +2,6 @@
 using Klei.AI;
 using PeterHan.PLib.Core;
 using UnityEngine;
-using static STRINGS.DUPLICANTS.DISEASES;
 
 namespace MutantFarmLab.mutantplants
 {
@@ -20,7 +19,7 @@ namespace MutantFarmLab.mutantplants
                 id: RAD_CLEAR_ID,
                 name: STRINGS.DUPLICANTS.MODIFIERS.RADCLEAR.NAME,
                 description: STRINGS.DUPLICANTS.MODIFIERS.RADCLEAR.DESCRIPTION,
-                duration: 0f,
+                duration: 60f,
                 show_in_ui: true,
                 trigger_floating_text: true,
                 is_bad: false
