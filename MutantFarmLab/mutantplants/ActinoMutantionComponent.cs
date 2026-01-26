@@ -84,6 +84,8 @@ namespace MutantFarmLab.mutantplants
             Subscribe((int)GameHashes.Grow, OnPlantGrowing);
             Subscribe((int)GameHashes.Wilt, OnPlantStatusChanged);
             Subscribe((int)GameHashes.WiltRecover, OnPlantStatusChanged);
+
+            OnPlantStatusChanged(new object[] { });
         }
 
         private void OnPlantGrowing(object obj)

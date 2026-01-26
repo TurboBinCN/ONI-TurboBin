@@ -78,7 +78,6 @@ namespace MutantFarmLab.mutantplants
                 .AttributeModifier(Db.Get().PlantAttributes.MinRadiationThreshold, MIN_RADIATION_REQ, false)
                 .AttributeModifier(Db.Get().PlantAttributes.FertilizerUsageMod, FERTILIZER_COST_MOD - 1f, true)
                 .AttributeModifier(Db.Get().Amounts.Maturity.maxAttribute, GROWTH_SPEED_MOD - 1f, true)
-                .AttributeModifier(Db.Get().PlantAttributes.MinLightLux, MIN_LIGHT_REQ, false)
                 .AttributeModifier(Db.Get().PlantAttributes.YieldAmount, YIELD_MOD, false)
                 .BonusCrop(RadiationResistSeedConfig.ID, 1f)
                 .VisualTint(0.1f, 0.3f, 0.5f)

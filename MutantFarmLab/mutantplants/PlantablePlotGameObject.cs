@@ -1,10 +1,14 @@
 ﻿using HarmonyLib;
 using KSerialization;
 using MutantFarmLab.mutantplants;
+using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using TemplateClasses;
 using UnityEngine;
+using static MutantFarmLab.RadiationFarmTileConfig;
+using static StructureTemperaturePayload;
 
 namespace MutantFarmLab
 {
@@ -37,7 +41,6 @@ namespace MutantFarmLab
             storage.name = storageName;
             storage.SetDefaultStoredItemModifiers(Storage.StandardSealedStorage);
             storage.capacityKg = 2000f;
-            storage.allowItemRemoval = true;
             storage.showInUI = true;
             storage.showUnreachableStatus = true;
             storage.SetOffsetTable(OffsetGroups.InvertedStandardTable);
@@ -58,8 +61,6 @@ namespace MutantFarmLab
             parentGo.AddOrGet<SubStorageSaver>();
 
             //SubGameObject.SetActive(true);//需要的时候SetActive 否则种植砖底下会有两个未种植的图标
-            KPrefabIDTracker.Get().Register(SubGameObject.AddOrGet<KPrefabID>());
-
             if (parentGo != null)
                 PUtil.LogDebug($"[SubGO] transfromGOName:[{parentGo.name}] transfromGOID：[{parentGo.GetMyWorldId()}] transform localPosition:[{parentGo.transform.localPosition.ToString()}] transform postion:[{parentGo.transform.position}] SubGameObject worldID:[{SubGameObject.GetMyWorldId()}] SubGameObjectl localPosition:[{SubGameObject.transform.localPosition.ToString()} subGameObject postion: [{SubGameObject.transform.position}]");
 
@@ -150,6 +151,7 @@ namespace MutantFarmLab
                 if (prefab == null) continue;
 
                 GameObject itemGo = Util.KInstantiate(prefab);
+                itemGo.SetActive(true);
                 _storage.Store(itemGo);
 
                 if (itemGo.TryGetComponent(out PrimaryElement primary))
@@ -161,11 +163,11 @@ namespace MutantFarmLab
             savedItems.Clear();
         }
     }
-    [HarmonyPatch(typeof(HydroponicFarmConfig), "ConfigureBuildingTemplate")]
-    public static class HydroponicFarmConfig_ConfigureBuildingTemplate_Patches
+    [HarmonyPatch(typeof(HydroponicFarmConfig), "DoPostConfigureComplete")]
+    public static class HydroponicFarmConfig_DoPostConfigureComplete_Patches
     {
         [HarmonyPostfix]
-        public static void Postfix(ref GameObject go, Tag prefab_tag)
+        public static void Postfix(ref GameObject go)
         {
             if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
             var sub = PlantablePlotGameObject.Init(go);
@@ -177,11 +179,11 @@ namespace MutantFarmLab
             go.AddOrGet<DualHeadReceptacleMarker>();
         }
     }
-    [HarmonyPatch(typeof(FarmTileConfig), "ConfigureBuildingTemplate")]
-    public static class FarmTileConfig_ConfigureBuildingTemplate_Patches
+    [HarmonyPatch(typeof(FarmTileConfig), "DoPostConfigureComplete")]
+    public static class FarmTileConfig_DoPostConfigureComplete_Patches
     {
         [HarmonyPostfix]
-        public static void Postfix(ref GameObject go, Tag prefab_tag)
+        public static void Postfix(ref GameObject go)
         {
             if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
             var sub = PlantablePlotGameObject.Init(go);

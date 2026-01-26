@@ -141,7 +141,7 @@ namespace MutantFarmLab
             uraniumStorage.SetDefaultStoredItemModifiers(Storage.StandardSealedStorage);
             uraniumStorage.capacityKg = UraniumCapacity;
             uraniumStorage.storageFilters = new List<Tag>() { EnergySource };
-            //uraniumStorage.allowItemRemoval = true; 
+            uraniumStorage.onlyTransferFromLowerPriority = false;
             uraniumStorage.showInUI = true; // UI面板显示铀矿储量
             uraniumStorage.showUnreachableStatus = true;
             uraniumStorage.SetOffsetTable(OffsetGroups.InvertedStandardTable);

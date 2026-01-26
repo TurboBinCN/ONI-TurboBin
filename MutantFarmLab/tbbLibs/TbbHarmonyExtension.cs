@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace MutantFarmLab
@@ -48,6 +49,7 @@ namespace MutantFarmLab
         public static object GetField(object obj, string name)
         {
             if (obj == null) return null;
+            //Traverse.Create(obj).Field<List<FetchList2>>("fetchLists").Value;
             var field = obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             if (field != null)
                 return field.GetValue(obj);

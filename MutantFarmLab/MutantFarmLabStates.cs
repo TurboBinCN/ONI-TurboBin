@@ -1,13 +1,8 @@
 ﻿using KSerialization;
-using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static StatusItem;
-using static STRINGS.BUILDINGS.PREFABS.EXTERIORWALL.FACADES;
-using static STRINGS.UI;
 
 namespace MutantFarmLab
 {
@@ -164,11 +159,6 @@ namespace MutantFarmLab
             {
                 SeedFilter.tagOptions.Clear();
                 SeedFilter.tagOptions.AddRange(ValidSeedTags);
-                SeedFilter.selectedTags.AddRange(ValidSeedTags);
-                if (Game.Instance == null || !Game.Instance.IsLoading())
-                {
-                    SeedFilter.selectedTags.Clear();
-                }
                 SeedFilter.currentlyUserAssignable = true;
                 TreeSeedFilter.OnFilterChanged += _ => UnifiedStateManager(true);
             }
@@ -190,32 +180,6 @@ namespace MutantFarmLab
                         mdkg.Pause(false, "设备通电");
                     }
 
-                    if(Game.Instance != null && Game.Instance.IsLoading()){
-
-                        if (!canDelivery && !_isTaskExecuting && filterChanged)
-                        {
-                            if (mdkg == null || string.IsNullOrEmpty(mdkg.RequestedItemTag.Name) || !mdkg.RequestedItemTag.IsValid)
-                            {
-                                continue;
-                            }
-                            if (SeedStorage == null || SeedStorage.items.Count == 0) continue;
-
-                            Tag targetGameTag = mdkg.RequestedItemTag;
-                            List<GameObject> needDropItems = new List<GameObject>();
-                            foreach (var item in SeedStorage.items)
-                            {
-                                if (item == null || !item.activeInHierarchy) continue;
-                                var kprefab = item.GetComponent<KPrefabID>();
-                                if (kprefab == null || !kprefab.PrefabTag.IsValid) continue;
-                                if (kprefab.PrefabTag.Name == targetGameTag.Name) needDropItems.Add(item);
-                            }
-
-                            foreach (var dropItem in needDropItems)
-                            {
-                                SeedStorage.Drop(dropItem);
-                            }
-                        }
-                    }
                 }
                 SeedStorage.Trigger((int)GameHashes.OnStorageChange, SeedStorage);
             }
@@ -379,7 +343,6 @@ namespace MutantFarmLab
         {
             public float currentMutationTime = 0f;
             private HighEnergyParticleStorage _particleStorage;
-            private MutantFarmLabController _controller;
 
             private HighEnergyParticleStorage ParticleStorage
             {
