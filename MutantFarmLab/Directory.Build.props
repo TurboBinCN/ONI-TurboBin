@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-	<Import  Project="..\Directory.Build.props" Condition=" Exists('..\Directory.Build.props') " />
+	<Import Project="..\Directory.Build.props" Condition=" Exists('..\Directory.Build.props') " />
 	<Import Condition=" Exists('Directory.Build.props.user') " Project="Directory.Build.props.user" />
-
+	<PropertyGroup>
+		<ForceONIRestart>true</ForceONIRestart>
+	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="Hjson" HintPath="../libs/Hjson.dll" />
-
 	</ItemGroup>
 </Project>
