@@ -258,7 +258,6 @@ namespace MutantFarmLab.mutantplants
             if (__instance == null || newPlant == null) return;
             var receptacleGo = __instance.gameObject;
             var marker = receptacleGo.AddOrGet<DualHeadReceptacleMarker>();
-            PUtil.LogDebug($"[双头株] [{newPlant.name}] ConfigureOccupyingObject");
             // 情况1：新植物是双头变异株 → 成为第一株
             if (newPlant.TryGetComponent(out MutantPlant mutant)
                 && mutant.MutationIDs?.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID) == true)

@@ -111,7 +111,6 @@ namespace MutantFarmLab
         [OnSerializing]
         public void SerializeStorage()
         {
-            PUtil.LogDebug($"[SubStorageSaver] OnSerializing [{_storage.items.Count}]");
             savedItems.Clear();
             if (_storage == null || _storage.items == null || _storage.items.Count <= 0) return;
 
@@ -143,7 +142,6 @@ namespace MutantFarmLab
                     _storage = plot.GetComponent<Storage>();
                 }
             }
-            PUtil.LogDebug($"[SubStorageSaver] OnDeserialized Count:[{savedItems.Count}] _storage: [{_storage}]");
             if (_storage == null) return;
             foreach (var elem in savedItems)
             {
