@@ -1,14 +1,12 @@
 ﻿// DualHeadPlantComponent.cs
 using HarmonyLib;
 using Klei.AI;
-using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
-using System;
 using UnityEngine;
 
 namespace MutantFarmLab.mutantplants
 {
-    public class DualHeadReceptacleMarker : KMonoBehaviour,ISaveLoadable
+    public class DualHeadReceptacleMarker : KMonoBehaviour, ISaveLoadable
     {
         [SerializeField]
         public GameObject primaryPlant;
@@ -49,11 +47,13 @@ namespace MutantFarmLab.mutantplants
             bool GameLoad = false;
 
             //===母株： 需要找到自己RootPlotGameObject
-            if(RootPlotGameObject == null){
+            if (RootPlotGameObject == null)
+            {
                 RootPlotGameObject = _PlantI.GetComponent<ReceptacleMonitor>()?.GetReceptacle()?.gameObject;//占据Farmtile:母株(没有开启第二种植槽)/子株
                 GameLoad = true;
             }
-            if (RootPlotGameObject == null && isDulHeadMutantPlant()){
+            if (RootPlotGameObject == null && isDulHeadMutantPlant())
+            {
 
                 PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}] 开始数据重建.");
                 //TODO 子株也是双头株变异需要判断
@@ -96,8 +96,8 @@ namespace MutantFarmLab.mutantplants
                 return;
             }
             _marker = RootPlotGameObject.GetComponent<DualHeadReceptacleMarker>();
-            
-            if(_marker?.primaryPlant == null)
+
+            if (_marker?.primaryPlant == null)
             {
                 _marker.primaryPlant = _PlantI;
             }
@@ -105,12 +105,13 @@ namespace MutantFarmLab.mutantplants
             var OccupantPlant = RootPlotGameObject.GetComponent<PlantablePlot>().Occupant;
 
             PUtil.LogDebug($"[双头株] 母株：[{_PlantI.name}] [{_PlantI.GetComponent<ReceptacleMonitor>()?.GetReceptacle()?.gameObject?.name}] OccupantPlant株: [{OccupantPlant.name}] [{OccupantPlant.GetComponent<ReceptacleMonitor>()?.GetReceptacle()?.gameObject?.name}]");
-            
+
             //===读档时迁移操作，判断：读档 && 有双株 时机：母株重建时
             //注释:DualHeadSideScreen ClickHandler中完成初次迁移
             //读档需要二次种植到PlantablePlot上，原因：farmtile上的子gameobject上的plantableplot不能在游戏载入中载入
             //确定有两株植物-->母株迁移Plot
-            if(GameLoad && OccupantPlant != _PlantI && _marker.primaryPlant == _PlantI){
+            if (GameLoad && OccupantPlant != _PlantI && _marker.primaryPlant == _PlantI)
+            {
                 var plantablePlotGO = PlantablePlotGameObject.GetGameObject(RootPlotGameObject);
                 if (plantablePlotGO != null)
                 {
@@ -156,12 +157,14 @@ namespace MutantFarmLab.mutantplants
 
         protected override void OnCleanUp()
         {
-            if( _marker != null && _marker.primaryPlant == _PlantI) { 
+            if (_marker != null && _marker.primaryPlant == _PlantI)
+            {
                 _marker.primaryPlant = null;
                 //母株unactive Plot
                 PlantablePlotGameObject.setActive(RootPlotGameObject, false);
             }
-            if (dualHead) {
+            if (dualHead)
+            {
                 //清理关联引用与增益
                 var dulHeadPlantCom = _PlantI.GetComponent<DualHeadPlantComponent>();
                 PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}]CleanUP 开始清理[{dulHeadPlantCom?.twin.gameObject.name}]共生状态.");
@@ -176,13 +179,14 @@ namespace MutantFarmLab.mutantplants
         private bool SetDualHead(bool flag = false)
         {
             // 检查 twin 是否有效
-            if (twin == null)dualHead = false;
+            if (twin == null) dualHead = false;
 
 
             var twinPlantDualHeadCom = twin?.GetComponent<DualHeadPlantComponent>();
 
             // 同步设置 dualHead 状态
-            if(twinPlantDualHeadCom!= null){
+            if (twinPlantDualHeadCom != null)
+            {
                 dualHead = flag;
                 twinPlantDualHeadCom.dualHead = flag;
             }
@@ -192,7 +196,8 @@ namespace MutantFarmLab.mutantplants
         void BreakSymbiosis(GameObject plant)
         {
             Effects effectsComp = plant?.GetComponent<Effects>();
-            if (effectsComp != null && effectsComp.HasEffect(MutantEffects.DUAL_HEAD_SYMBIOSIS)){
+            if (effectsComp != null && effectsComp.HasEffect(MutantEffects.DUAL_HEAD_SYMBIOSIS))
+            {
                 effectsComp.Remove(MutantEffects.DUAL_HEAD_SYMBIOSIS);
                 var controller = plant.GetComponent<DualHeadSymbiosisEffectController>();
                 controller?.RemoveEffect();

@@ -43,6 +43,7 @@ namespace MutantFarmLab
             storage.capacityKg = 2000f;
             storage.showInUI = true;
             storage.showUnreachableStatus = true;
+            storage.allowClearable = true;
             storage.SetOffsetTable(OffsetGroups.InvertedStandardTable);
 
             var kSelectable = SubGameObject.AddOrGet<KSelectable>();

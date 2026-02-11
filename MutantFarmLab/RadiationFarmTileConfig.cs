@@ -1,15 +1,11 @@
-﻿using Klei.AI;
-using KSerialization;
-using MutantFarmLab.tbbLibs;
+﻿using KSerialization;
+using MutantFarmLab.mutantplants;
 using PeterHan.PLib.Core;
 using STRINGS;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.Serialization;
-using TemplateClasses;
 using TUNING;
 using UnityEngine;
-using static KMod.Testing;
 
 namespace MutantFarmLab
 {
@@ -62,7 +58,7 @@ namespace MutantFarmLab
             buildingDef.AddSearchTerms(SEARCH_TERMS.FOOD);
             return buildingDef;
         }
-        public class SubGoStorage:Storage
+        public class SubGoStorage : Storage
         {
             protected override void OnPrefabInit()
             {
@@ -91,7 +87,6 @@ namespace MutantFarmLab
             conduitConsumer.capacityKG = 5f;
             conduitConsumer.capacityTag = GameTags.Liquid;
             conduitConsumer.wrongElementResult = ConduitConsumer.WrongElementResult.Dump;
-            conduitConsumer.forceAlwaysSatisfied = true;
 
             PlantablePlot plantablePlot = go.AddOrGet<PlantablePlot>();
             plantablePlot.AddDepositTag(GameTags.CropSeed);
@@ -151,7 +146,7 @@ namespace MutantFarmLab
             manualDeliveryKG.choreTypeIDHash = Db.Get().ChoreTypes.MachineFetch.IdHash;
             manualDeliveryKG.RequestedItemTag = EnergySource;
             manualDeliveryKG.capacity = UraniumCapacity;
-            manualDeliveryKG.MinimumMass = UraniumCapacity*0.1f;
+            manualDeliveryKG.MinimumMass = UraniumCapacity * 0.1f;
             manualDeliveryKG.FillToMinimumMass = true;
             manualDeliveryKG.RoundFetchAmountToInt = false;
             manualDeliveryKG.allowPause = true;
@@ -177,6 +172,14 @@ namespace MutantFarmLab
             go.GetComponent<KPrefabID>().AddTag(GameTags.FarmTiles, false);
             go.GetComponent<RequireInputs>().requireConduitHasMass = false;
 
+            if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
+            var sub = PlantablePlotGameObject.Init(go);
+            PlantablePlot plantablePlot = sub.AddOrGet<PlantablePlot>();
+            plantablePlot.occupyingObjectRelativePosition = new Vector3(0f, 1f, 0f);
+
+            plantablePlot.SetFertilizationFlags(true, true);
+
+            go.AddOrGet<DualHeadReceptacleMarker>();
         }
     }
     public class RadiationPlotStorageHolder : KMonoBehaviour, ISaveLoadable

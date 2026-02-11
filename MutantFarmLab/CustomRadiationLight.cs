@@ -135,13 +135,6 @@ namespace MutantFarmLab
                 Refresh();
                 return;
             }
-            float particleAmount = ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle);
-            if (particleAmount <= lowParticleThreshold)
-            {
-                radiationEmitter.SetEmitting(false);
-                Refresh();
-                return;
-            }
             ParticleStorage.ConsumeAndGet(ParticleConsumeAmount(dt));
         }
         public string SliderTitleKey => STRINGS.BUILDINGS.PREFABS.CUSTOMRADIATIONLIGHT.NAME;
