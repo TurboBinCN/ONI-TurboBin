@@ -86,9 +86,6 @@
     <Compile Include="tbbLibs\TbbBuilding.cs" />
     <Compile Include="CustomRadiationLightConfig.cs" />
     <Compile Include="CustomRadiationLight.cs" />
-    <Compile Include="TestConduitDispenser.cs" />
-    <Compile Include="TestFarmTileConfig.cs" />
-    <Compile Include="testTankConfig.cs" />
     <Compile Include="TranspilerUtils.cs" />
     <Compile Include="BuildLocationPatch.cs" />
   </ItemGroup>
