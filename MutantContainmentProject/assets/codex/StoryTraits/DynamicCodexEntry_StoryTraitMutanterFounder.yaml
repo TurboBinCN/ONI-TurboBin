@@ -1,0 +1,348 @@
+id: "StoryTraitMutanterFounder"
+title: STRINGS.CODEX.STORY_TRAITS.MUTANTER_FOUNDER.NAME
+parentId: STORYTRAITS
+iconAssetName: critter_manipulator_codex_icon
+contentContainers:
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexImage
+          spriteName: "CritterManipulator_image"
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.NAME
+          style: Title
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.DESCRIPTION
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_complete
+    content:
+      - !CodexText
+          stringKey: STRINGS.UI.KEEPSAKES.CRITTER_MANIPULATOR.NAME
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.UI.KEEPSAKES.CRITTER_MANIPULATOR.DESCRIPTION
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_initial
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.BEGIN_POPUP.CODEX_NAME
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.BEGIN_POPUP.DESCRIPTION
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_hatchspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.HATCHSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.HATCH
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_lightbugspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.LIGHTBUGSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.LIGHTBUG
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_oilfloaterspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.OILFLOATERSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.OILFLOATER
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_dreckospecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.DRECKOSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.DRECKO
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_glomspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.GLOMSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.GLOM
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_puftspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.PUFTSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.PUFT
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_pacuspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.PACUSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.PACU
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_moospecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.MOOSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.MOO
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_molespecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.MOLESPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.MOLE
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_squirrelspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.SQUIRRELSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.SQUIRREL
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_crabspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.CRABSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.CRAB
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_divergentspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.DIVERGENTSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.DIVERGENT
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_staterpillarspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.STATERPILLARSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.STATERPILLAR
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_beetaspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.BEETASPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.BEETA
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------CERES DLC2_ID Spigot Seals
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_sealspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.SEALSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.SEAL
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------CERES DLC2_ID Bammoth
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_bellyspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.BELLYSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.BELLY
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------CERES DLC2_ID Flox
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_deerspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.DEERSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.DEER
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------PREHISTORIC DLC4_ID Raptor
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_raptorspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.RAPTORSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.RAPTOR
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body          
+#-----------------------------PREHISTORIC DLC4_ID Chameleon
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_chameleonspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.CHAMELEONSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.CHAMELEON
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body          
+#-----------------------------PREHISTORIC DLC4_ID Stego
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_stegospecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.STEGOSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.STEGO
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body     
+#-----------------------------PREHISTORIC DLC4_ID Mosquito
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_mosquitospecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.MOSQUITOSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.MOSQUITO
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body     
+#-----------------------------PREHISTORIC DLC4_ID Prehistoric Pacu
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_prehistoricpacuspecies
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.PREHISTORICPACUSPECIES
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.SPECIES_ENTRIES_EXPANDED.PREHISTORICPACU
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body     
+#-----------------------------
+  - contentLayout: Vertical
+    lockID: story_trait_critter_manipulator_complete
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.END_POPUP.CODEX_NAME
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.END_POPUP.DESCRIPTION
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
+#-----------------------------

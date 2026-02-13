@@ -1,0 +1,21 @@
+id: "MUTANTER_SCP173"
+title: STRINGS.CODEX.MUTANTER.MUTANTER_SCP173.TITLE
+
+contentContainers:
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_SCP173.TITLE
+          style: Title
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_SCP173.SUBTITLE
+          style: Subtitle
+      - !CodexDividerLine
+          preferredWidth: -1
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_SCP173.BODY.CONTAINER1
+          style: Body

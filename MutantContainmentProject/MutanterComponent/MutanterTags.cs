@@ -1,0 +1,21 @@
+﻿namespace MutantContainmentProject.MutanterComponent
+{
+    public static class MutanterTags
+    {
+        public static readonly Tag Mutanter = TagManager.Create("Mutanter");
+        public static readonly Tag MutanterBuildings = TagManager.Create("MutanterBuildings");
+        public static readonly Tag ShouldBeSeCured = TagManager.Create("ShouldBeSeCured");
+
+        public static readonly Tag Incapacitated = TagManager.Create("Incapacitated");
+        public static readonly Tag MutanterBrain = TagManager.Create("MutanterBrain");
+        //攻击类Tag
+        public static readonly Tag PsychologicalAttack = TagManager.Create("PsychologicalAttack");
+        public static class Mutanters
+        {
+            public static class Species
+            {
+                public static readonly Tag SCP173 = TagManager.Create("SCP173", STRINGS.MUTANTERS.FAMILY_PLURAL.SCP173);
+            }
+        }
+    }
+}

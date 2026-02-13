@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<PropertyGroup>
+		<Title>畸变收容项目 | Mutant Containment Project</Title>
+		<Description>
+			在缺氧的异星地下殖民地，新增一套完整的畸变收容管理系统。
+			你需要建造专用收容设施，派遣复制人对各类畸变异常体进行研究、沟通、清洁与管控，从中提取特殊源能与物资，解锁强大的 E.G.O 装备与收容科技。
+			每一种畸变体都有独特的习性与风险，操作不当将引发收容失效、设施损毁、复制人失控等危机。合理分配人员属性、搭建安全管控网络、应对突发暴动，在残酷的地下生存与高风险收益之间寻找平衡。
+			本 Mod 深度融合脑叶公司核心玩法与缺氧生存逻辑，带来全新的管理挑战与后期内容。
+			Add a complete Mutant Containment System to your subterranean colony in Oxygen Not Included.
+			Construct specialized containment facilities, assign duplicants to research, interact, clean and manage various mutant anomalies. Extract unique energy and resources from them, and unlock powerful E.G.O equipment and containment technologies.
+			Each mutant entity has unique behaviors and risks. Improper operations will lead to containment breaches, facility damage, duplicant breakdowns and other crises. Properly assign duplicant attributes, build a secure control network, respond to sudden outbreaks, and balance high-risk rewards with harsh underground survival.
+			This mod deeply integrates the core gameplay of Lobotomy Corporation with Oxygen Not Included's survival mechanics, bringing brand-new management challenges and late-game content.
+		</Description>
+		<ModVersion>1.0.0</ModVersion>
+	</PropertyGroup>
+</Project>

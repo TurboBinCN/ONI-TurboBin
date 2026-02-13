@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<PropertyGroup>
+		<Title>TBB Libs</Title>
+		<Description>TBB Libs</Description>
+		<ModVersion>1.0.0</ModVersion>
+	</PropertyGroup>
+</Project>

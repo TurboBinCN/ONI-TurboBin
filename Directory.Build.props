@@ -117,6 +117,8 @@
         BeforeTargets="BeforeBuild;PrepareForBuild;InitializeBuildStatus"
 		Condition=" '$(EnableBuildDebug)' != 'false' "> <!-- 可通过开关关闭调试 -->
 		<Message Importance="high" Text="====ModName:$(Title)===" />
+		<Message Importance="high" Text="====Description:$(Description)===" />
+		<Message Importance="high" Text="====ModVersion:$(ModVersion)===" />
 		<Message Importance="high" Text="====Platform:$(Platform)" />
 		<Message Importance="high" Text="====GameFolderSteam:$(GameFolderSteam)" />
 		<Message Importance="high" Text="====ModOutPutFolder:$(ModOutputFolderDebug)" />

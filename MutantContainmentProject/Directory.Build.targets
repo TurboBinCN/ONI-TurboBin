@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<Import Project="..\Directory.Build.targets" Condition=" Exists('..\Directory.Build.targets') " />
+	<Target Name="copyPorjectFiles" DependsOnTargets="CopyArtifactsToInstallFolder" AfterTargets="CopyArtifactsToInstallFolder">
+		<ItemGroup>
+			<customDlls Include="$(ProjectDir)/../libs/Hjson.dll" />
+			<TranslationFiles Include="$(ProjectDir)/translations/*.*" />
+			<AssetsFiles Include="$(ProjectDir)/assets/**/*.*" />
+			<TbbLibDll Include="$(ProjectDir)/../TbbLib/bin/$(ConfigurationName)/TbbLib.dll" Condition="Exists('$(ProjectDir)/../TbbLib/bin/$(ConfigurationName)/TbbLib.dll')" />
+		</ItemGroup>
+		<Copy SourceFiles="@(customDlls)" DestinationFolder="$(InstallFolder)" />
+		<Copy SourceFiles="@(TbbLibDll)" DestinationFolder="$(InstallFolder)" />
+		<Copy SourceFiles="@(AssetsFiles)" DestinationFolder="$(InstallFolder)/assets/%(RecursiveDir)" />
+		<Copy SourceFiles="@(TranslationFiles)" DestinationFiles="@(TranslationFiles->'$(InstallFolder)/translations/%(RecursiveDir)%(Filename)%(Extension)')" />
+	</Target>
+	<Target Name="RunONI" DependsOnTargets="copyPorjectFiles" AfterTargets="copyPorjectFiles" Condition=" '$(ForceONIRestart)' == 'true' ">
+		
+		<Exec Command="taskkill /f /im OxygenNotIncluded.exe|| ver &gt;nul"/>
+		<Exec Command="start steam://rungameid/457140"/>
+	</Target>
+</Project>

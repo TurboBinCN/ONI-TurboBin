@@ -1,0 +1,407 @@
+﻿{
+  STRINGS: {
+    SECURE_ACTION: {
+      ACTION_INSTINCT: {
+        CHECK_VITAL_SIGNS: 检查生命体征
+        CONFIRM_NUTRIENT_NEEDS_CHANGE: 确认营养需求变化
+        CONFIRM_NUTRIENT_SUPPLY_STEPS: 确认营养供给步骤
+        COGITO_INJECTION_37: Cogito注入37%
+        CHECK_FEAR_INDEX: 检查恐惧指数
+        ADJUST_WATER_INTAKE: 调整水分摄取
+        CHECK_SKIN_HARDNESS: 检查表皮硬度
+        REGULATE_IMMUNE_SYSTEM: 调节免疫系统
+        REPAIR_DAMAGED_TISSUE: 修复受损组织
+        ANALYZE_NEURAL_TISSUE: 分析神经组织
+        ANALYZE_ATTACK_MECHANISM: 分析攻击机制
+        ANALYZE_ORGANIC_STATE: 分析有机状态
+        ANALYZE_INNATE_TRAITS: 分析先天特质
+        ENHANCE_SELF_DEFENSE: 增强自我防御
+        CHECK_EMOTIONAL_STATE: 检查情绪状态
+        TRIGGER_INSTINCTIVE_REACTION: 诱发本能反应
+        SUPPRESS_NEUROTRANSMITTERS: 抑制神经递质
+        CHECK_INNATE_TRIGGER_FACTORS: 检查先天诱发因子
+        ANALYZE_ENVIRONMENTAL_STIMULI: 分析环境刺激
+        TEST_CLASSICAL_CONDITIONING_REFLEX: 测试经典性条件反射
+        TEST_OPERANT_CONDITIONING_REFLEX: 测试工具性条件反射
+        TEST_DEFENSIVE_CONDITIONING_REFLEX: 测试防御性条件反射
+        STRENGTHEN_NEUTRAL_STIMULUS: 强化中性刺激
+        SUPPRESS_PHYSIOLOGICAL_NEEDS: 抑制生理需求
+        SATISFY_PHYSIOLOGICAL_NEEDS: 满足生理需求
+        TEST_OPERATIONAL_CONDITIONING_REFLEX: 测试操作性条件反射
+      }
+      ACTION_RECONNAISSANCE: {
+        CHECK_AIR_INDICATORS: 检查空气指标
+        REGULATE_AIR_CIRCULATION: 调节空气流通
+        START_CLEANING_PROCEDURES: 开始清洁步骤
+        SWEEP_GROUND_DEBRIS: 清扫地面污物
+        ADJUST_LIGHTING_INTENSITY: 调节照明强度
+        START_COMPREHENSIVE_ANALYSIS: 开始全面分析
+        ANALYZE_BEHAVIOR_PATTERNS: 分析行为模式
+        CHECK_CONTAINMENT_ROOM_FUNCTION: 检查收容室功能
+        CHECK_VISUAL_ENVIRONMENT: 检查视觉环境
+        OPTIMIZE_CONTAINMENT_ROOM_ENVIRONMENT: 优化收容室环境
+        CHECK_AUDIO_SYSTEM: 检查音响系统
+        TEST_VOLUME_STABILITY: 测试音量稳定
+        ANALYZE_CAUSES_OF_STRESS: 分析压力原因
+        ANALYZE_EXISTENTIAL_COGNITION: 分析存在认知
+        ANALYZE_ENVIRONMENTAL_COGNITION: 分析环境认知
+        CONFIRM_PERCEPTION_AND_MEMORY: 确认感知与记忆
+        TEST_PROBLEM_SOLVING_ABILITY: 测试问题解决能力
+        TEST_THINKING_ABILITY: 测试思考能力
+        TEST_THOUGHT_PROCESS: 测试思考过程
+        ANALYZE_EXTERNAL_COGNITION: 分析外界认知
+        CHECK_INTERNAL_MOTIVATION: 检查内部动机
+        CHECK_KNOWLEDGE_NEEDS: 检查知识需求
+        CHECK_GROWTH_RATE: 检查成长速度
+        OBSERVE_VARIOUS_PHENOMENA: 观察各种现象
+        MONITOR_GOSTALT_INDEX: 监控戈斯塔特指数
+        ANALYZE_MIND_BODY_ISOMORPHISM: 分析心理与物理同构
+        CONFIRM_SYSTEM_NORMAL_OPERATION: 确认系统正常运作
+      }
+      ACTION_COMMUNICATE: {
+        CONFIRM_EMOTIONAL_STATE: 确认情绪状态
+        ANALYZE_LIKES_AND_DISLIKES: 分析个体的喜好
+        LIST_FRIENDLY_BEHAVIORS: 列出友好行为
+        TEST_STRESS_INDICATORS: 测试压力指标
+        ATTEMPT_DIRECT_CONTACT: 尝试直接接触
+        START_EMOTIONAL_EXCHANGE: 开始情感交流
+        ATTEMPT_RATIONAL_DIALOGUE: 尝试理性对话
+        CHECK_COMMUNICATION_STAGE: 检查沟通阶段
+        ADJUST_COMMUNICATION_METHOD: 调整沟通方式
+        ANALYZE_CONTROL_TYPES: 分析控件类型
+        CONFIRM_UNSTABLE_FACTORS: 确认不安定因素
+        CHECK_COMFORT_LEVEL_OF_COMMUNICATION: 检查安心交流等级
+        CONFIRM_RESISTANCE_TO_COMMUNICATION: 确认对交流的抵抗
+        ANALYZE_PSYCHOLOGICAL_EFFECTS: 分析心理作用
+        CONFIRM_INTERNAL_WORKING_MODE: 确认内部工作模式
+        CONCRETIZE_MENTAL_IMAGERY: 心象具体化
+        ANALYZE_RELATIONSHIP_FORMATION_MECHANICS: 分析关系形成机理
+        APPLY_COGNITIVE_THEORY: 应用认知理论
+        CULTIVATE_VASOPRESSIN_RECEPTORS: 培养血管加压素受体
+        ATTEMPT_TO_BUILD_TRUST: 试图建立互信
+        TEST_COMMUNICATION_BARRIERS: 测试交流隔阂
+        CHECK_CONSCIOUSNESS_STATE: 检查意识状态
+        ANALYZE_POSITIVE_BEHAVIORS: 分析积极表现
+        ATTEMPT_TO_ELIMINATE_RELATIONSHIP: 试图消除关系
+        STRENGTHEN_SELF_LEVEL: 强化自我水平
+      }
+      ACTION_INTIMIDATION: {
+        SUPPRESS_ANTIKABALLAH_ENERGY: 抑制逆卡巴拉能量
+        ATTEMPT_TO_ERASE_MEMORY: 试图抹消记忆
+        ATTEMPT_TO_ACCELERATE_FORGETTING: 试图加快忘却
+        SUPPRESS_THOUGHT_ABILITY: 抑制思考能力
+        SUPPRESS_NEUROTIC_WEAKNESS: 抑制神经衰弱
+        SUPPRESS_MENTAL_DECLINE: 抑制精神衰退
+        SUPPRESS_SECONDARY_DAMAGE: 抑制二次伤害
+        SUPPRESS_DESIRE_NEEDS: 抑制欲望需求
+        SUPPRESS_IMPULSE_BEHAVIOR: 抑制冲动行为
+        SUPPRESS_INSTINCTIVE_BEHAVIOR: 抑制本能行为
+        SUPPRESS_COMMUNICATION_ABILITY: 抑制交流能力
+        SECONDARIZE_DESIRE_REFLEX: 二次化欲望反射
+        ELIMINATE_PULSE_CIRCUIT: 消除脉冲电路
+        SUPPRESS_SUICIDAL_IMPULSE: 抑制求死冲动
+        START_CLEARING_DESIRES: 开始清除欲望
+        INJECT_COGITO: 注射Cogito
+        ACCELERATE_ENERGY_CONVECTION: 加速能源对流
+        SUPPRESS_CORE_ENERGY: 抑制核心能量
+        MAP_NEURAL_NETWORK: 映射神经网络
+        NEUTRALIZE_TOXINS_IN_BODY: 中和体内毒素
+        DEAL_WITH_HYSTERIA: 应对歇斯底里
+        DECOMPOSE_COMPLEX_CONCEPTS: 分解复杂概念
+        SYMBOLICALLY_INTIMIDATE: 象征性地压迫
+        REPEATED_INTIMIDATION_TEST: 反复压迫试验
+        DISTINGUISH_INSTINCTIVE_IMPULSES: 区分本能冲动
+        ACCELERATE_SINGLE_POINT_REGRESSION: 加快单点回归
+      }
+    }
+    CREATURES: {
+      FAMILY_PLURAL: {
+        SCP173: <link=\"MUTANTER_SCP173\">SCP-173</link>
+      }
+    }
+    MUTANTERS: {
+      STATUSITEMS: {
+        IDLE: {
+            NAME: 空闲
+            TOOLTIP: 无特殊行为，处于静止状态
+        }
+        INCAPACITATED: {
+            NAME: 瘫痪
+            TOOLTIP: 失去行动能力，无法攻击或移动
+        }
+        SEALED:  {
+            NAME: 封印
+            TOOLTIP: 被强制约束，暂时无法活动
+        }
+        STABLE:  {
+            NAME: 稳定
+            TOOLTIP: 状态平稳，未表现出攻击性
+        }
+        AGITATED:  {
+            NAME: 焦躁
+            TOOLTIP: 情绪躁动，即将进入敌对状态
+        }
+        HOSTILE:  {
+            NAME: 敌对
+            TOOLTIP: 极度危险，会主动发起攻击
+        }
+        SPECIALACTION:  {
+            NAME: 特殊行动
+            TOOLTIP: 正在执行专属特殊行为
+        }
+      }
+      FAMILY_PLURAL: {
+        SCP173: <link=\"MUTANTER_SCP173\">SCP-173</link>
+      }
+    }
+    BUILDINGS: {
+      PREFABS: {
+        GRAVITASMUTANTERFOUNDER: {
+          NAME: 畸变源核遗迹
+          DESC: 深埋异星地下的古老遗迹，承载着未知文明的畸变研究痕迹，核心蕴含强烈的畸变能量，是畸变体诞生的源头，需通过献祭与特定条件解锁，唤醒其中封存的独特畸变体。
+          EFFECT: 作为畸变体的诞生源头，提供独特的畸变体诞生机制和特殊的环境效果。
+        }
+        CONTAINMENTMONITORSTATION: {
+          NAME: 畸变体监控站
+          DESC: 用于监控畸变体，并进行相应的安全控制措施，防止畸变体突破收容
+          EFFECT: 在畸变体收容所内，对畸变体进行安全防治。
+        }
+      }
+    }
+    DUPLICANTS: {
+      ATTRIBUTES: {
+        BRAVERY: {
+          NAME: 勇气
+        }
+        WILLPOWER: {
+          NAME: 精神
+        }
+        SUCCESSRATE: {
+          NAME: 成功率
+        }
+        WORKINGSPEED: {
+          NAME: 工作速度
+        }
+        ATTACKSPEED: {
+          NAME: 攻击速度
+        }
+        MOVINGSPEED: {
+          NAME: 移动速度
+        }
+      }
+      ROLES: {
+        BAVERYI: {
+          NAME: 勇气I
+        }
+        BAVERYII: {
+          NAME: 勇气II
+        }
+        BAVERYIII: {
+          NAME: 勇气III
+        }
+        WILLPOWERI: {
+          NAME: 精神I
+        }
+        WILLPOWERII: {
+          NAME: 精神II
+        }
+        WILLPOWERIII: {
+          NAME: 精神III
+        }
+        SUCCESSRATEI: {
+          NAME: 成功率I
+        }
+        SUCCESSRATEII: {
+          NAME: 成功率II
+        }
+        SUCCESSRATEIII: {
+          NAME: 成功率III
+        }
+        WORKINGSPEEDI: {
+          NAME: 工作速度I
+        }
+        WORKINGSPEEDII: {
+          NAME: 工作速度II
+        }
+        WORKINGSPEEDIII: {
+          NAME: 工作速度III
+        }
+      }
+    }
+    SKILLGROUP: {
+      CONTAIN: {
+        NAME: 收容
+      }
+      WILLPOWER: {
+        NAME: 精神
+      }
+      DISCIPLINE: {
+        NAME: 自律
+      }
+      RIGHTEOUSNESS: {
+        NAME: 正义
+      }
+    }
+    CHOREGROUPS: {
+      CONTAIN: {
+        NAME: 收容
+      }
+      WILLPOWER: {
+        NAME: 精神
+      }
+      DISCIPLINE: {
+        NAME: 自律
+      }
+      RIGHTEOUSNESS: {
+        NAME: 正义
+      }
+    }
+    CHORES: {
+      CONTAIN: {
+        NAME: 收容
+        STATUS: 正在进行收容
+        TOOLTIP: 收容这个实体
+      }
+      WILLPOWER: {
+        NAME: 谨慎
+        STATUS: 正在进行收容
+        TOOLTIP: 收容这个实体
+      }
+      DISCIPLINE: {
+        NAME: 自律
+        STATUS: 正在进行收容
+        TOOLTIP: 收容这个实体
+      }
+      RIGHTEOUSNESS: {
+        NAME: 正义
+        STATUS: 正在进行收容
+        TOOLTIP: 收容这个实体
+      }
+    }
+    SKILLS: {
+      BRAVERYI: {
+        NAME: 勇气 I
+        DESCRIPTION: 勇气 I 增加生命值
+      }
+      BRAVERYII: {
+        NAME: 勇气 II
+        DESCRIPTION: 勇气 II 增加生命值
+      }
+      BRAVERYIII: {
+        NAME: 勇气 III
+        DESCRIPTION: 勇气 III 增加生命值
+      }
+      CAUTIONI: {
+        NAME: 谨慎 I
+        DESCRIPTION: 谨慎 I 增加精神值
+      }
+      CAUTIONII: {
+        NAME: 谨慎 II
+        DESCRIPTION: 谨慎 II 增加精神值
+      }
+      CAUTIONIII: {
+        NAME: 谨慎 III
+        DESCRIPTION: 谨慎 III 增加精神值
+      }
+      DISCIPLINEI: {
+        NAME: 自律 I
+        DESCRIPTION: 自律 I 增加成功率/工作速度
+      }
+      DISCIPLINEII: {
+        NAME: 自律 II
+        DESCRIPTION: 自律 II 增加成功率/工作速度
+      }
+      DISCIPLINEIII: {
+        NAME: 自律 III
+        DESCRIPTION: 自律 III 增加成功率/工作速度
+      }
+      RIGHTEOUSNESSI: {
+        NAME: 正义 I
+        DESCRIPTION: 正义 I 增加攻击速度/移动速度
+      }
+      RIGHTEOUSNESSII: {
+        NAME: 正义 II
+        DESCRIPTION: 正义 II 增加攻击速度/移动速度
+      }
+      RIGHTEOUSNESSIII: {
+        NAME: 正义 III
+        DESCRIPTION: 正义 III 增加攻击速度/移动速度
+      }
+    }
+    TRAITS: {
+      PHYSICAL: {
+        NAME: 物理属性
+        DESC: 该实体具备物理攻击能力
+      }
+      PSYCHOLOGICAL: {
+        NAME: 精神属性
+        DESC: 该实体具备精神攻击能力
+      }
+    }
+    EFFECTS: {
+      MUTANTER_CONTAINED_EFFECT: {
+        NAME: 已收容
+        DESCRIPTION: 此单位已被收容。
+      }
+      MUTANTER_WILLED_EFFECT: {
+        NAME: 突破收容
+        DESCRIPTION: 此单位已突破收容。
+      }
+    }
+    UI: {
+      UISIDESCREENS: {
+        CONTAINTMENTMONITOR: {
+          TITLE: 控制畸变体
+          ACTION: 安全控制措施：
+          ACTION_ON: 激活中
+          ACTION_OFF: 未激活
+          ACTION_INSTINCT: 本能
+          ACTION_RECONNAISSANCE: 洞察
+          ACTION_COMMUNICATION: 沟通
+          ACTION_INTIMIDATION: 压迫
+        }
+      }
+    }
+    ROOMS: {
+      CATEGORY: {
+        MUTANTER_CONTAINER: {
+          CATE_NAME: 畸变体收容室
+          NAME: 畸变体收容室
+          DESCRIPTION: 一个用于收容畸变体的特殊房间。
+          TOOLTIP: 在此房间内的畸变体会受到行为限制。需要一个特殊的收容建筑。
+        }
+      }
+      CRITERIA: {
+        CONTAINMENTMONITOR: {
+          NAME: 需要畸变体监控站
+          DESCRIPTION: 房间内必须包含一个畸变体监控站
+        }
+      }
+    }
+    ENTITY: {
+      MUTANTER: {
+        MUTANTER_SCP173: {
+          NAME: <link=\"MUTANTER_SCP173\">SCP-173</link>
+          DESCRIPTION: 1993 年转移至 19 号站点。起源未知。主体由混凝土与钢筋构成，表面残留有 Krylon 牌喷漆痕迹。SCP-173 具备活动性且极度敌对。
+        }
+      }
+    }
+    CODEX: {
+      STORY_TRAITS: {
+        MUTANTER_FOUNDER: {
+          NAME: 畸变源核遗迹
+          DESCRIPTION: 深埋异星地下的古老遗迹，承载着未知文明的畸变研究痕迹，核心蕴含强烈的畸变能量，是畸变体诞生的源头，需通过献祭与特定条件解锁，唤醒其中封存的独特畸变体。
+        }
+      }
+      MUTANTER: {
+        MUTANTER_SCP173: {
+          TITLE: SCP-173
+          SUBTITLE: SCP-173
+          BODY: {
+            CONTAINER1: "项目编号：SCP-173\n项目等级：Euclid（欧几里得）\n特殊收容措施：SCP-173 必须始终存放于上锁容器内。人员必须进入其收容间时，任何时候不得少于三人，且进入后立即重新锁门。在所有人员撤离并重新锁门前，必须有两人持续与 SCP-173 保持直接视线接触。\n描述：1993 年转移至 19 号站点。起源未知。主体由混凝土与钢筋构成，表面残留有 Krylon 牌喷漆痕迹。SCP-173 具备活动性且极度敌对。\n该物体在被直接注视时无法移动，视线绝对不可中断。进入收容间的人员必须互相提醒后再眨眼。\n其攻击方式为折断目标颈骨底部或勒颈。遇袭时，人员需执行 4 级危险物品收容程序。\n无人在收容间内时，内部会传来石头刮擦的声响，此为正常现象；若该行为出现异常，需立即上报当班高级监管人员。\n地板上的红棕色物质是粪便与血液的混合物，来源不明。地板上始终留有三双脚印，尺寸固定，从未被观测到移动或改变。\n附录 173-01：禁止人员携带任何记录设备进入 SCP-173 收容间。任何在收容间内制作的录音、录像均须立即销毁。此命令自【数据删除】事件后生效。"
+          }
+        }
+      }
+    }
+  }
+}

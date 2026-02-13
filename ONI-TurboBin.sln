@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36717.8
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11415.280
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ONI-TurboBin", "ONI-TurboBin\ONI-TurboBin.csproj", "{BD07949E-FF85-43C7-95E5-027D35977156}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSBuildTasksHelper", "MSBuildTasksHelper\MSBuildTasksHelper.csproj", "{AD63DE59-10C8-4A97-B9DE-718C1FEAEEB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MutantFarmLab", "MutantFarmLab\MutantFarmLab.csproj", "{5C5D453D-D850-44C1-934C-576112F0B187}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MutantContainmentProject", "MutantContainmentProject\MutantContainmentProject.csproj", "{7EF70A9A-ADD7-4347-B4A2-D050546D21B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TbbLib", "TbbLib\TbbLib.csproj", "{F7162753-681D-4DC6-9649-2CC944EC5834}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{5C5D453D-D850-44C1-934C-576112F0B187}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C5D453D-D850-44C1-934C-576112F0B187}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C5D453D-D850-44C1-934C-576112F0B187}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EF70A9A-ADD7-4347-B4A2-D050546D21B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EF70A9A-ADD7-4347-B4A2-D050546D21B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EF70A9A-ADD7-4347-B4A2-D050546D21B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EF70A9A-ADD7-4347-B4A2-D050546D21B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7162753-681D-4DC6-9649-2CC944EC5834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7162753-681D-4DC6-9649-2CC944EC5834}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7162753-681D-4DC6-9649-2CC944EC5834}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7162753-681D-4DC6-9649-2CC944EC5834}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
