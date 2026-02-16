@@ -1,12 +1,12 @@
 ﻿using PeterHan.PLib.Core;
 using System;
+using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
-using System.Runtime.CompilerServices;
-using System.IO;
 
-namespace TBBHe.TbbLib.Debuger
+namespace TBB.He.TbbLib.Debuger
 {
     public static class TbbDebuger
     {
@@ -93,7 +93,8 @@ namespace TBBHe.TbbLib.Debuger
         {
             WriteLog(LogLevel.Debug, LogType.Log, Environment.StackTrace, Assembly.GetCallingAssembly().GetNameSafe() ?? "?");
         }
-        public static void LogGameObjectFullInfo(GameObject rootObj, int indentLevel = 4) {
+        public static void LogGameObjectFullInfo(GameObject rootObj, int indentLevel = 4)
+        {
             WriteLog(LogLevel.Debug, LogType.Log, GetGameObjectFullInfoString(rootObj, indentLevel), Assembly.GetCallingAssembly().GetNameSafe() ?? "?");
         }
         /// <summary>

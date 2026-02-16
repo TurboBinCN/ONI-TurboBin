@@ -1,10 +1,9 @@
 ﻿using Database;
 using HarmonyLib;
 using System.Collections.Generic;
-using TBB.He.TbbLib.Module;
 using TBB.He.TbbLib.Utils;
 
-namespace TbbLib.Module
+namespace TBB.He.TbbLib.Module
 {
     public class TbbDuplicantsAttributes : TbbModule<TbbDuplicantsAttributes>
     {

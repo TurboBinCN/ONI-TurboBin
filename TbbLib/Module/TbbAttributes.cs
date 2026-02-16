@@ -1,9 +1,8 @@
 ﻿using Database;
 using HarmonyLib;
 using System.Collections.Generic;
-using TBB.He.TbbLib.Module;
 
-namespace TbbLib.Module
+namespace TBB.He.TbbLib.Module
 {
     public class TbbAttributes : TbbModule<TbbAttributes>
     {

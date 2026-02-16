@@ -1,5 +1,4 @@
 ﻿using Database;
-using STRINGS;
 using TBB.He.TbbLib.Utils;
 
 namespace MutantContainmentProject.Skills
@@ -11,8 +10,9 @@ namespace MutantContainmentProject.Skills
         public static readonly string ChoreTypeDisciplineID = "Discipline";
         public static readonly string ChoreTypeRighteousnessID = "Righteousness";
 
-        public static void ChoreTypeContain(ChoreTypes __instance) {
-            TbbHarmonyExtension.InvokeMethod(__instance,"Add",new object[] {
+        public static void ChoreTypeContain(ChoreTypes __instance)
+        {
+            TbbHarmonyExtension.InvokeMethod(__instance, "Add", new object[] {
                 ChoreTypeContainID, new string[]{ChoreTypeContainID}, "", new string[0], STRINGS.CHORES.CONTAIN.NAME, STRINGS.CHORES.CONTAIN.STATUS, STRINGS.CHORES.CONTAIN.TOOLTIP, false, 5000, null
             });
         }

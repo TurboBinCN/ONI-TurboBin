@@ -9,10 +9,10 @@ using MutantContainmentProject.Room;
 using MutantContainmentProject.SideScreen;
 using MutantContainmentProject.Skills;
 using PeterHan.PLib.Core;
+using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.Module;
+using TBB.He.TbbLib.SingleToneInstance;
 using TBB.He.TbbLib.UI;
-using TBBHe.TbbLib.Debuger;
-using TbbLib.Module;
 
 namespace MutantContainmentProject
 {
@@ -123,7 +123,10 @@ namespace MutantContainmentProject
                     .ToAdvanced()
                     .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
                     .AddBuilding(ContainmentMonitorStationConfig.ID);
-                
+                //全局单例
+                TbbSingleTone.Initialize(mod, harmony)
+                    .Add<MutanterSpeciesCatalog>();
+
             }
         }
     }

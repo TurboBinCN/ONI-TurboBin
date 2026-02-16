@@ -1,8 +1,4 @@
-﻿using STRINGS;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using TUNING;
+﻿using TUNING;
 using UnityEngine;
 
 namespace MutantContainmentProject.Buildings
@@ -46,7 +42,7 @@ namespace MutantContainmentProject.Buildings
             go.AddComponent<Storage>();
             Activatable activatable = go.AddComponent<Activatable>();
             activatable.synchronizeAnims = false;
-            activatable.overrideAnims = new KAnimFile[]{Assets.GetAnim("anim_use_remote_kanim")};
+            activatable.overrideAnims = new KAnimFile[] { Assets.GetAnim("anim_use_remote_kanim") };
             activatable.SetWorkTime(30f);
 
             //var def = go.AddOrGetDef<GravitasMutanterFounder.Def>();

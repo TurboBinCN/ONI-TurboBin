@@ -1,6 +1,5 @@
 ﻿using Database;
 using System.Collections.Generic;
-using TBBHe.TbbLib.Debuger;
 
 namespace MutantContainmentProject.Skills
 {

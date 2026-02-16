@@ -2,7 +2,7 @@
 using MutantContainmentProject.Room;
 using System;
 using System.Collections.Generic;
-using TBBHe.TbbLib.Debuger;
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
 namespace MutantContainmentProject.Buildings
@@ -34,7 +34,7 @@ namespace MutantContainmentProject.Buildings
 
             Operational
                 .TagTransition(GameTags.Operational, Unoperational, true)
-                .Update("FindRanachable", delegate (Instance smi, float dt)
+                .Update("FindMutanters", delegate (Instance smi, float dt)
                     {
                         smi.FindMutanter(smi);
                     }, UpdateRate.SIM_1000ms, false);

@@ -1,14 +1,12 @@
 ﻿using Database;
 using HarmonyLib;
-using Klei.AI;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using TBB.He.TbbLib.Module;
+using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.Utils;
-using TBBHe.TbbLib.Debuger;
 
-namespace TbbLib.Module
+namespace TBB.He.TbbLib.Module
 {
     public class TbbStatusItems : TbbModule<TbbStatusItems>
     {

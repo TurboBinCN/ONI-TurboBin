@@ -1,4 +1,5 @@
 ﻿using KSerialization;
+using MutantContainmentProject.Mutanters;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,19 +16,29 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             smi.Initialize();
         });
 
-        inoperational.PlayAnim("off")
+        inoperational
+            .PlayAnim("off")
             .EventTransition(GameHashes.OperationalChanged, operational.idle, (Instance smi) => smi.GetComponent<Operational>().IsOperational);
 
         // Operational Group: 主要工作状态组
-        operational.DefaultState(operational.idle)
+        operational
+            .DefaultState(operational.idle)
             .EventTransition(GameHashes.OperationalChanged, this.inoperational, (Instance smi) => !smi.GetComponent<Operational>().IsOperational);
 
+        //this.operational.idle
+        //    .PlayAnim("idle", KAnim.PlayMode.Loop).Enter(new StateMachine<GravitasCreatureManipulator, GravitasCreatureManipulator.Instance, IStateMachineTarget, GravitasCreatureManipulator.Def>.State.Callback(GravitasCreatureManipulator.CheckForCritter))
+        //    .ToggleMainStatusItem(Db.Get().BuildingStatusItems.CreatureManipulatorWaiting, null)
+        //    .ParamTransition<GameObject>(this.creatureTarget, this.operational.capture, (GravitasCreatureManipulator.Instance smi, GameObject p) => p != null && !smi.IsCritterStored)
+        //    .ParamTransition<GameObject>(this.creatureTarget, this.operational.working.pre, (GravitasCreatureManipulator.Instance smi, GameObject p) => p != null && smi.IsCritterStored)
+        //    .ParamTransition<float>(this.cooldownTimer, this.operational.cooldown, GameStateMachine<GravitasCreatureManipulator, GravitasCreatureManipulator.Instance, IStateMachineTarget, GravitasCreatureManipulator.Def>.IsGTZero);
         // Idle State: 等待献祭和检查开启条件
-        operational.idle.PlayAnim("idle", KAnim.PlayMode.Loop)
+        operational.idle
+            .PlayAnim("idle", KAnim.PlayMode.Loop)
             .Enter(delegate (Instance smi)
             {
                 smi.UpdateMeter(); // 更新进度条，显示已收集的物种
             })
+            .ParamTransition<GameObject>(sacrificeTarget, operational.activating.pre, (Instance smi, GameObject target) => target != null && smi.HasSacrificeItems)
             .ToggleMainStatusItem(Db.Get().BuildingStatusItems.CreatureManipulatorWaiting, null) // 使用相似的状态项
                                                                                                  // 检查是否满足开启条件 (物种数量 + 物品等级)
             .ParamTransition<bool>(unlockConditionMet, operational.activating.pre, (Instance smi, bool met) => met)
@@ -35,11 +46,13 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             .ParamTransition(cooldownTimer, operational.cooldown, IsGTZero);
 
         // Activating Group: 从准备激活到实际激活的过程
-        operational.activating.DefaultState(operational.activating.pre)
+        operational
+            .activating.DefaultState(operational.activating.pre)
             .ToggleMainStatusItem(Db.Get().BuildingStatusItems.CreatureManipulatorWorking, null); // 使用相似的工作状态项
 
         // Pre Activation: 动画前奏，消耗献祭物品
-        operational.activating.pre.PlayAnim("working_pre")
+        operational
+            .activating.pre.PlayAnim("working_pre")
             .OnAnimQueueComplete(operational.activating.loop)
             .Enter(delegate (Instance smi)
             {
@@ -53,7 +66,8 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             });
 
         // Loop Activation: 激活动画循环
-        operational.activating.loop.PlayAnim("working_loop", KAnim.PlayMode.Loop)
+        operational
+            .activating.loop.PlayAnim("working_loop", KAnim.PlayMode.Loop)
             .Update(delegate (Instance smi, float dt)
             {
                 smi.sm.activationTimer.DeltaClamp(-dt, 0f, float.MaxValue, smi);
@@ -61,7 +75,8 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             .ParamTransition<float>(activationTimer, operational.activating.pst, IsLTEZero);
 
         // Post Activation: 激活动画结束，生成畸变体和陷阱
-        operational.activating.pst.PlayAnim("working_pst")
+        operational
+            .activating.pst.PlayAnim("working_pst")
             .OnAnimQueueComplete(operational.cooldown) // 激活完成后直接进入冷却
             .Enter(delegate (Instance smi)
             {
@@ -133,6 +148,10 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
         public int maxMutantsPerSpawn = 2; // 单次最大生成畸变体数量
         public int minMutantsPerSpawn = 1; // 单次最小生成畸变体数量
         public List<Tag> requiredSacrificeTags; // 必需的献祭物品标签列表 (例如 ["Critter"], ["Meat"], ["SpecialItem"])
+        //public static readonly Dictionary<string, List<Tag>> requiredSacrificeTags = new()
+        //{
+        //    {SCP173Config.ID, new List<Tag> { HatchConfig.ID,HatchConfig.ID,HatchConfig.ID } }//SCP-173
+        //};
     }
 
     public class ActivatingStates : State
@@ -153,6 +172,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
     {
         public Instance(IStateMachineTarget master, Def def) : base(master, def)
         {
+            //祭坛检测
             this.pickupCell = Grid.OffsetCell(Grid.PosToCell(master.gameObject), base.smi.def.pickupOffset);
             this.m_partitionEntry = GameScenePartitioner.Instance.Add("GravitasMutanterFounder", base.gameObject, this.pickupCell, GameScenePartitioner.Instance.pickupablesChangedLayer, new Action<object>(this.DetectSacrifice));
             this.m_progressMeter = new MeterController(base.GetComponent<KBatchedAnimController>(), "meter_target", "meter", Meter.Offset.UserSpecified, Grid.SceneLayer.TileFront, Array.Empty<string>());
@@ -162,7 +182,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             this.m_sacrificeContainer = master.gameObject.GetComponent<Storage>();
             m_sacrificeContainer.allowItemRemoval = false; // 防止外部轻易拿走献祭品
             m_sacrificeContainer.showDescriptor = false;
-            m_sacrificeContainer.storageFilters = def.requiredSacrificeTags; // 只接受指定类型的献祭
+            //m_sacrificeContainer.storageFilters = def.requiredSacrificeTags; // 只接受指定类型的献祭
             m_sacrificeContainer.capacityKg = 2000f; // 设置容量
         }
 

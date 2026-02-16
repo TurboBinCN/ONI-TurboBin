@@ -1,7 +1,7 @@
 ﻿using Klei.AI;
 using MutantContainmentProject.Buildings;
 using System.Collections.Generic;
-using TbbLib.UI;
+using TBB.He.TbbLib.UI;
 using TUNING;
 using UnityEngine;
 
@@ -75,13 +75,14 @@ namespace MutantContainmentProject.MutanterComponent
 
             return template;
         }
-        public static GameObject ExtendThreatToBaseMutanter(GameObject template,bool considerDecor = true)
+        public static GameObject ExtendThreatToBaseMutanter(GameObject template, bool considerDecor = true)
         {
             //template.AddOrGetDef<ThreatMonitor.Def>().fleethresholdState = Health.HealthState.Dead;
             //template.AddWeapon(1f, 1f, AttackProperties.DamageType.Standard, AttackProperties.TargetType.Single, 1, 0f);
             template.AddOrGet<MutanterAttackBehaviors>();
             var EmotionMonitorDef = template.AddOrGetDef<EmotionMonitor.Def>();
-            if(considerDecor){ 
+            if (considerDecor)
+            {
                 template.AddOrGetDef<CreatureDecorMonitor.Def>();
                 EmotionMonitorDef.considerDecor = true;
             }
@@ -118,6 +119,7 @@ namespace MutantContainmentProject.MutanterComponent
             pickupable.sortOrder = sortOrder;
             template.AddOrGet<Clearable>().isClearable = false;
             template.AddOrGet<Traits>();
+
             //收容逻辑：暴动后收容逻辑，被攻击、生命扣减为0，封包
             template.AddOrGet<Health>().isCritter = true;
             template.AddOrGet<RangedAttackable>();
@@ -174,7 +176,7 @@ namespace MutantContainmentProject.MutanterComponent
             return template;
         }
 
-        public static GameObject BaseGameObject(string id, string name, string desc, string anim_file, string symbol_override_prefix, float warnLowTemp, float warnHighTemp, float lethalLowTemp, float lethalHighTemp)
+        public static GameObject BaseGameObject(string id, string name, string desc, string anim_file, string anim_build_file, string anim_emotes_file, string symbol_override_prefix, float warnLowTemp, float warnHighTemp, float lethalLowTemp, float lethalHighTemp)
         {
 
             float mass = 50f;
@@ -190,7 +192,9 @@ namespace MutantContainmentProject.MutanterComponent
             float defaultTemperature = (warnLowTemp + warnHighTemp) / 2f;
             GameObject gameObject = EntityTemplates.CreatePlacedEntity(id, name, desc, mass, anim, initialAnim, sceneLayer, width, height, decor, default(EffectorValues), SimHashes.Creature, null, defaultTemperature);
 
-            ExtendEntityToBasicCreature(false, gameObject, anim_file, "chameleo_build_kanim", null, FactionManager.FactionID.Pest, warnLowTemp, warnHighTemp, lethalLowTemp, lethalHighTemp);
+            gameObject.AddOrGet<MutanterCreature>();
+
+            ExtendEntityToBasicCreature(false, gameObject, anim_file, anim_build_file, null, FactionManager.FactionID.Pest, warnLowTemp, warnHighTemp, lethalLowTemp, lethalHighTemp);
             if (!string.IsNullOrEmpty(symbol_override_prefix))
             {
                 gameObject.AddOrGet<SymbolOverrideController>().ApplySymbolOverridesByAffix(Assets.GetAnim(anim_file), symbol_override_prefix, null, 0);
@@ -211,7 +215,7 @@ namespace MutantContainmentProject.MutanterComponent
                 .Add(new FixedCaptureStates.Def(), true, -1).Add(new RanchedStates.Def(), false, -1)
                 .Add(new EatStates.Def(), true, -1)
                 .Add(new PlayAnimsStates.Def(GameTags.Creatures.Poop, false, "poop", global::STRINGS.CREATURES.STATUSITEMS.EXPELLING_SOLID.NAME, global::STRINGS.CREATURES.STATUSITEMS.EXPELLING_SOLID.TOOLTIP), true, -1)
-                .Add(new CritterEmoteStates.Def(Assets.GetAnim("chameleo_emotes_kanim")), true, -1).PopInterruptGroup()
+                .Add(new CritterEmoteStates.Def(Assets.GetAnim(anim_emotes_file)), true, -1).PopInterruptGroup()
                 .Add(new CreatureSleepStates.Def(), true, -1).Add(new IdleStates.Def(), true, -1);
             //AddMutanterBrain(gameObject, chore_table, MutanterTags.Mutanters.Species.SCP173, symbol_override_prefix);
             EntityTemplates.AddCreatureBrain(gameObject, chore_table, MutanterTags.Mutanters.Species.SCP173, symbol_override_prefix);

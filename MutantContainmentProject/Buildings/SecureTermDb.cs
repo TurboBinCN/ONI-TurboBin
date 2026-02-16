@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TBBHe.TbbLib.Debuger;
+using TBB.He.TbbLib.Debuger;
 
 namespace MutantContainmentProject.Buildings
 {
@@ -74,13 +74,16 @@ namespace MutantContainmentProject.Buildings
         // 按照行动类型分类存储词条名称，便于按类型检索
         private Dictionary<SecureAction, List<string>> termsByActionType = new();
         private static SecureTermDb _instance;
-        public static SecureTermDb Instance { get 
+        public static SecureTermDb Instance
+        {
+            get
             {
                 if (_instance == null) new SecureTermDb();
-                return _instance; 
-            } 
+                return _instance;
+            }
         }
-        public SecureTermDb() {
+        public SecureTermDb()
+        {
             _instance = this;
             InitializeData();
         }

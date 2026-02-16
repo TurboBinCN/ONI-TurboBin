@@ -1,6 +1,6 @@
 ﻿using Klei.AI;
 using MutantContainmentProject.MutanterEffect;
-using TBBHe.TbbLib.Debuger;
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
 namespace MutantContainmentProject.Buildings

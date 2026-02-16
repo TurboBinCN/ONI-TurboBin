@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace TbbLib.UI
+namespace TBB.He.TbbLib.UI
 {
     public class TbbRangeVisualizer : KMonoBehaviour
     {

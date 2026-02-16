@@ -1,5 +1,5 @@
 ﻿using MutantContainmentProject.MutanterComponent;
-using TBBHe.TbbLib.Debuger;
+using TBB.He.TbbLib.Debuger;
 
 namespace MutantContainmentProject.Room
 {

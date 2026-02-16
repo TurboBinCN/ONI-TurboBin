@@ -1,14 +1,8 @@
 ﻿using HarmonyLib;
-using Klei.AI;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TBB.He.TbbLib.Module;
 using TBB.He.TbbLib.Utils;
 
-namespace TbbLib.Module
+namespace TBB.He.TbbLib.Module
 {
     public class TbbEffect : TbbModule<TbbEffect>
     {

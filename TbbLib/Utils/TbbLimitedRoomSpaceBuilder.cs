@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using TBBHe.TbbLib.Debuger;
+using TBB.He.TbbLib.Debuger;
 
-namespace TbbLib.Utils
+namespace TBB.He.TbbLib.Utils
 {
     /// <summary>
     /// 有限空间房间构建器，从一个起始格子开始，探测指定格子数距离内的连通区域。

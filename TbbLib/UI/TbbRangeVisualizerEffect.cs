@@ -1,8 +1,7 @@
-﻿using HarmonyLib;
-using Unity.Collections;
+﻿using Unity.Collections;
 using UnityEngine;
 
-namespace TbbLib.UI
+namespace TBB.He.TbbLib.UI
 {
     public class TbbRangeVisualizerEffect : MonoBehaviour
     {

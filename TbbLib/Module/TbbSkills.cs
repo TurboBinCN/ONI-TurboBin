@@ -2,9 +2,8 @@
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using TBB.He.TbbLib.Module;
 
-namespace TbbLib.Module
+namespace TBB.He.TbbLib.Module
 {
     public class TbbSkills : TbbModule<TbbSkills>
     {

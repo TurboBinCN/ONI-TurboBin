@@ -1,6 +1,6 @@
 ﻿using Database;
 using System;
-using TBBHe.TbbLib.Debuger;
+using TBB.He.TbbLib.Debuger;
 
 namespace MutantContainmentProject.MutanterComponent
 {

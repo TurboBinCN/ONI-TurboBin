@@ -1,6 +1,4 @@
 ﻿using Klei.AI;
-using System.Linq;
-using TBBHe.TbbLib.Debuger;
 
 namespace MutantContainmentProject.Skills
 {

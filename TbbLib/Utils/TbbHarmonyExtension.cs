@@ -1,9 +1,8 @@
 ﻿using HarmonyLib;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using TBBHe.TbbLib.Debuger;
+using TBB.He.TbbLib.Debuger;
 
 namespace TBB.He.TbbLib.Utils
 {
@@ -43,7 +42,7 @@ namespace TBB.He.TbbLib.Utils
         }
         public static bool InvokeMethod(out object __result, object obj, string name, params object[] args)
         {
-            __result = null; 
+            __result = null;
             if (obj == null) return false;
             var types = args == null ? Type.EmptyTypes : Array.ConvertAll(args, a => a?.GetType() ?? typeof(object));
             var method = obj.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, types, null);

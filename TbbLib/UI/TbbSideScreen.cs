@@ -107,12 +107,12 @@ namespace TBB.He.TbbLib.UI
             IList<DetailsScreen.SideScreenRef> existing, Type sourceScreen, Type newScreen)
         {
             if (sourceScreen.IsAssignableFrom(typeof(SideScreenContent)))
-                    throw new TypeLoadException(
-                    "参数sourceScreen不可用的，该类型必须继承" + typeof(SideScreenContent).FullName);
+                throw new TypeLoadException(
+                "参数sourceScreen不可用的，该类型必须继承" + typeof(SideScreenContent).FullName);
 
             if (newScreen.IsAssignableFrom(typeof(TbbSideScreenContent)))
-                    throw new TypeLoadException(
-                    "参数newScreen不可用的，该类型必须继承" + typeof(TbbSideScreenContent).FullName);
+                throw new TypeLoadException(
+                "参数newScreen不可用的，该类型必须继承" + typeof(TbbSideScreenContent).FullName);
 
             foreach (var sideScreenRef in existing)
             {

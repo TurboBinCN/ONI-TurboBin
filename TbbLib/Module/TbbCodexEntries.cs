@@ -1,15 +1,13 @@
 ﻿using HarmonyLib;
 using Klei;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using TBB.He.TbbLib.Module;
+using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.Utils;
-using TBBHe.TbbLib.Debuger;
 
-namespace TbbLib.Module
+namespace TBB.He.TbbLib.Module
 {
     public class TbbCodexEntries : TbbModule<TbbCodexEntries>
     {
@@ -17,7 +15,7 @@ namespace TbbLib.Module
         private static readonly string CODEX_FILE_PATH_RELATIVE = "assets/codex/";
         private static readonly string CODEX_FILE_PREFIX = "DynamicCodexEntry_";
 
-        private Dictionary<string,string> entities = new();
+        private Dictionary<string, string> entities = new();
 
         protected override void Initialized()
         {
@@ -26,9 +24,9 @@ namespace TbbLib.Module
             Harmony.Patch(typeof(CodexCache), "CollectYAMLEntries",
                 postfix: new HarmonyMethod(typeof(TbbCodexEntries), nameof(CodexCache_CollectYAMLEntitries_Postfix)));
         }
-        public TbbCodexEntries ADD(string entry,string category)
+        public TbbCodexEntries ADD(string entry, string category)
         {
-            entities.Add(category,entry);
+            entities.Add(category, entry);
             return Instance;
         }
         public static void CodexCache_CollectYAMLEntitries_Postfix(List<CategoryEntry> categories)

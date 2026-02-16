@@ -1,8 +1,8 @@
 ﻿using Klei.AI;
 using System.Collections.Generic;
-using TBBHe.TbbLib.Debuger;
-using TbbLib.UI;
-using TbbLib.Utils;
+using TBB.He.TbbLib.Debuger;
+using TBB.He.TbbLib.UI;
+using TBB.He.TbbLib.Utils;
 using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent
