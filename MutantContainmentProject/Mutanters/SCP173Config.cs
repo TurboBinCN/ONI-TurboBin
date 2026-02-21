@@ -8,27 +8,23 @@ namespace MutantContainmentProject.Mutanters
     {
         public static string ID = "MUTANTER_SCP173";
         public static readonly string TRAIT_ID = "MutanterSCP173Trait";
-        public static readonly string KANIM_NAME = "chameleo_kanim";
+        //public static readonly string KANIM_NAME = "chameleo_kanim";
+        public static readonly string KANIM_NAME = "SCP173_kanim";
         public static readonly string KANIM_BUILD_NAME = "chameleo_build_kanim";
         public static readonly string KANIM_EMOTES_NAME = "chameleo_emotes_kanim";
 
-        private static string[] traits = new string[] { TRAIT_ID, "Regeneration" };
         public GameObject CreatePrefab()
         {
             string name = STRINGS.ENTITY.MUTANTER.MUTANTER_SCP173.NAME;
             string desc = STRINGS.ENTITY.MUTANTER.MUTANTER_SCP173.DESCRIPTION;
 
-            GameObject prefab = BaseMutanter.BaseGameObject(ID, name, desc, KANIM_NAME, KANIM_BUILD_NAME, KANIM_EMOTES_NAME, null, 233.15f, 293.15f, 173.15f, 373.15f);
+            GameObject prefab = BaseMutanter.BaseGameObject(ID, name, desc, KANIM_NAME, KANIM_NAME, KANIM_EMOTES_NAME, null, 233.15f, 293.15f, 173.15f, 373.15f);
 
-            BaseMutanter.ExtendMutanterToDangerLevel(prefab, MutanterDangerLevel.TETH);
             BaseMutanter.ExtendMutanterMove(prefab, "DreckoNavGrid");
 
-            Trait trait = Db.Get().CreateTrait(TRAIT_ID, name, name, null, false, null, true, true);
-            trait.Add(new AttributeModifier(Db.Get().Amounts.HitPoints.maxAttribute.Id, 25f, name, false, false, true));
-            trait.Add(new AttributeModifier(Db.Get().Amounts.Age.maxAttribute.Id, 9999, name, false, false, true));
+            BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name,25);
 
-            BaseMutanter.ExtendTraitsToBaseMutanter(prefab, traits);
-            BaseMutanter.ExtendThreatToBaseMutanter(prefab);
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.TETH,faction:FactionManager.FactionID.Pest);
 
             return prefab;
         }

@@ -18,15 +18,36 @@ namespace MutantContainmentProject.MutanterComponent
     }
     public class BaseMutanter
     {
-        public static GameObject ExtendMutanterToDangerLevel(GameObject template, MutanterDangerLevel dangerLevel)
+        //畸变体基础设置：情绪管理、威胁管理、攻击方式管理
+        public static GameObject ExtendToBaseMutanter(GameObject template, MutanterDangerLevel dangerLevel, bool considerDecor = true, FactionManager.FactionID faction = FactionManager.FactionID.Prey)
         {
-            //TODO 收容modifiers
-            //TODO 收容监控
-            //TODO 攻击行为
-            template.AddOrGetDef<MutanterSecurableMonitor.Def>();
+            template.AddOrGetDef<MutanterStateMachine.Def>();//挂载：畸变体基础组件
+            template.AddOrGetDef<MutanterSecurableMonitor.Def>();//挂载：畸变体安全控制监控SMI
+
+            //template.AddOrGetDef<ThreatMonitor.Def>().fleethresholdState = Health.HealthState.Dead;
+            //template.AddWeapon(1f, 1f, AttackProperties.DamageType.Standard, AttackProperties.TargetType.Single, 1, 0f);
+            var emotionMonitorDef = template.AddOrGetDef<EmotionMonitor.Def>();//挂载：畸变体情绪或理智SMI
+            if (considerDecor)
+            {
+                template.AddOrGetDef<CreatureDecorMonitor.Def>();
+                emotionMonitorDef.considerDecor = true;
+                emotionMonitorDef.considerPlantFactors = true;
+                emotionMonitorDef.considerEnvironmentalFactors = true;
+            }
+            template.AddOrGet<FactionAlignment>().Alignment = faction; //挂载：阵营
+            template.AddOrGet<RangedAttackable>(); //跟FactionAlignment相互依赖. 需要修改
+            template.AddOrGet<TbbRangeVisualizer>();//挂载：威胁范围显示
+            template.AddOrGet<MutanterAttackBehaviors>();//挂载：攻击能力
+
+            //收容逻辑：暴动后收容逻辑，被攻击、生命扣减低于1，封包
+            template.AddOrGet<Health>().isCritter = true;//挂载：健康检测
+            EntityTemplates.CreateAndRegisterBaggedCreature(template, true, false, false);//挂载：被击败后打包
+            template.AddOrGetDef<DefeatStates.Def>();//挂载：击败状态监控
+
 
             return template;
         }
+        //畸变体移动方式
         public static GameObject ExtendMutanterMove(GameObject template, string NavGridName = "WalkerNavGrid1x1", NavType navType = NavType.Floor, int max_probing_radius = 32, float moveSpeed = 2f)
         {
             //需要各个畸变体自己设置 移动方式
@@ -48,26 +69,19 @@ namespace MutantContainmentProject.MutanterComponent
 
             return template;
         }
-        public static GameObject ExtendToBaseMutanter(GameObject template)
+        //畸变体特性
+        public static GameObject ExtendTraitsToBaseMutanter(GameObject template, string TRAIT_ID, string name, float hitpoints)
         {
-            var emotionMonitor = template.AddOrGetDef<EmotionMonitor.Def>();
-            emotionMonitor.considerDecor = true;
-            emotionMonitor.considerPlantFactors = true;
-            emotionMonitor.considerEnvironmentalFactors = true;
-
-            template.AddOrGetDef<MutanterStateMachine.Def>();
-
-            return template;
-        }
-        public static GameObject ExtendTraitsToBaseMutanter(GameObject template, string[] traits)
-        {
+            template.AddOrGet<Traits>();
             Modifiers modifiers = template.AddOrGet<Modifiers>();
-            if (traits != null)
+            if (TRAIT_ID != null)
             {
-                foreach (var trait in traits)
-                {
-                    modifiers.initialTraits.Add(trait);
-                }
+                Trait trait = Db.Get().CreateTrait(TRAIT_ID, STRINGS.TRAITS.MUTANTER_TRAITS.NAME, STRINGS.TRAITS.MUTANTER_TRAITS.DESC, null, false, null, true, true);
+                trait.Add(new AttributeModifier(Db.Get().Amounts.HitPoints.maxAttribute.Id, hitpoints, name, false, false, true));
+                trait.Add(new AttributeModifier(Db.Get().Amounts.Age.maxAttribute.Id, 9999, name, false, false, true));
+
+                modifiers.initialTraits.Add(TRAIT_ID);
+                modifiers.initialTraits.Add("Regeneration");
             }
 
             modifiers.initialAmounts.Add(Db.Get().Amounts.HitPoints.Id);
@@ -75,23 +89,8 @@ namespace MutantContainmentProject.MutanterComponent
 
             return template;
         }
-        public static GameObject ExtendThreatToBaseMutanter(GameObject template, bool considerDecor = true)
-        {
-            //template.AddOrGetDef<ThreatMonitor.Def>().fleethresholdState = Health.HealthState.Dead;
-            //template.AddWeapon(1f, 1f, AttackProperties.DamageType.Standard, AttackProperties.TargetType.Single, 1, 0f);
-            template.AddOrGet<MutanterAttackBehaviors>();
-            var EmotionMonitorDef = template.AddOrGetDef<EmotionMonitor.Def>();
-            if (considerDecor)
-            {
-                template.AddOrGetDef<CreatureDecorMonitor.Def>();
-                EmotionMonitorDef.considerDecor = true;
-            }
-            template.AddOrGetDef<MutanterStateMachine.Def>();
-            template.AddOrGet<TbbRangeVisualizer>();
 
-            return template;
-        }
-        public static GameObject ExtendEntityToBasicCreature(bool isWarmBlooded, GameObject template, string anim_filename, string build_filename = null, string symbol_override_prefix = null, FactionManager.FactionID faction = FactionManager.FactionID.Prey, float warningLowTemperature = 283.15f, float warningHighTemperature = 293.15f, float lethalLowTemperature = 243.15f, float lethalHighTemperature = 343.15f)
+        public static GameObject ExtendEntityToBasicCreature(bool isWarmBlooded, GameObject template, string anim_filename, string build_filename = null, string symbol_override_prefix = null, float warningLowTemperature = 283.15f, float warningHighTemperature = 293.15f, float lethalLowTemperature = 243.15f, float lethalHighTemperature = 343.15f)
         {
             List<KAnimFile> list = new List<KAnimFile>();
             KAnimFile kAnimFile = ((anim_filename != null) ? Assets.GetAnim(anim_filename) : null);
@@ -118,17 +117,8 @@ namespace MutantContainmentProject.MutanterComponent
 
             pickupable.sortOrder = sortOrder;
             template.AddOrGet<Clearable>().isClearable = false;
-            template.AddOrGet<Traits>();
-
-            //收容逻辑：暴动后收容逻辑，被攻击、生命扣减为0，封包
-            template.AddOrGet<Health>().isCritter = true;
-            template.AddOrGet<RangedAttackable>();
-            EntityTemplates.CreateAndRegisterBaggedCreature(template, true, false, false);
-            template.AddOrGetDef<DefeatStates.Def>();
-
-
             template.AddOrGet<CharacterOverlay>();
-            template.AddOrGet<FactionAlignment>().Alignment = faction;
+            
             template.AddOrGet<Prioritizable>();
             template.AddOrGet<Effects>();
             template.AddOrGetDef<CritterEmoteMonitor.Def>();//TODO 可能需要针对畸变体修正
@@ -194,7 +184,7 @@ namespace MutantContainmentProject.MutanterComponent
 
             gameObject.AddOrGet<MutanterCreature>();
 
-            ExtendEntityToBasicCreature(false, gameObject, anim_file, anim_build_file, null, FactionManager.FactionID.Pest, warnLowTemp, warnHighTemp, lethalLowTemp, lethalHighTemp);
+            ExtendEntityToBasicCreature(false, gameObject, anim_file, anim_build_file, null, warnLowTemp, warnHighTemp, lethalLowTemp, lethalHighTemp);
             if (!string.IsNullOrEmpty(symbol_override_prefix))
             {
                 gameObject.AddOrGet<SymbolOverrideController>().ApplySymbolOverridesByAffix(Assets.GetAnim(anim_file), symbol_override_prefix, null, 0);

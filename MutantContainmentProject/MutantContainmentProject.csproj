@@ -80,6 +80,8 @@
     <Compile Include="Strings.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="anim\assets\SCP173\scp173_anim.bytes" />
+    <None Include="anim\assets\SCP173\scp173_build.bytes" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP173.yaml" />
     <None Include="assets\codex\StoryTraits\DynamicCodexEntry_StoryTraitMutanterFounder.yaml" />
     <None Include="assets\templates\storytraits\mutanter_founder.yaml" />
@@ -89,11 +91,11 @@
     <None Include="translations\zh.hjson" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="anim\assets\SCP173\scp173.png" />
     <Content Include="developNotes.txt" />
     <Content Include="Directory.Build.props.user" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="anim\assets\" />
     <Folder Include="Codex\" />
     <Folder Include="UI\" />
   </ItemGroup>

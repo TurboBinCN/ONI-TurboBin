@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent
@@ -11,12 +12,22 @@ namespace MutantContainmentProject.MutanterComponent
 
         public static MutanterSpeciesCatalog Instance
         {
-            get { 
-                if(_instance == null) new MutanterSpeciesCatalog();
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<MutanterSpeciesCatalog>();
+                    if (_instance == null)
+                    {
+                        GameObject go = new GameObject("MutanterSpeciesCatalog");
+                        _instance = go.AddComponent<MutanterSpeciesCatalog>();
+                    }
+                }
                 return _instance;
             }
         }
-
+        public MutanterSpeciesCatalog() { 
+        }
         protected override void OnPrefabInit()
         {
             base.OnPrefabInit();
@@ -53,11 +64,15 @@ namespace MutantContainmentProject.MutanterComponent
         }
         public int GetMutanterSpeciesCount(Tag speciesID)
         {
-            if (this.discoveredMutanters.TryGetValue(speciesID, out int count))
+            if (discoveredMutanters.TryGetValue(speciesID, out int count))
             {
                 return count;
             }
             return 0;
+        }
+        public int GetMutanterSpeciesCount()
+        {
+            return discoveredMutanters.Count;
         }
     }
 }
