@@ -1,63 +1,74 @@
-﻿using KSerialization;
+﻿using Database;
+using KSerialization;
+using MutantContainmentProject.Buildings;
+using MutantContainmentProject.MutanterComponent;
 using MutantContainmentProject.Mutanters;
+using MutantContainmentProject.MutanterStoryStraits;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
+using static MutantContainmentProject.STRINGS;
 
 public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder, GravitasMutanterFounder.Instance, IStateMachineTarget, GravitasMutanterFounder.Def>
 {
     public override void InitializeStates(out BaseState default_state)
     {
-        default_state = this.inoperational;
-        base.serializable = StateMachine.SerializeType.ParamsOnly;
+        default_state = inoperational;
+        serializable = SerializeType.ParamsOnly;
 
         root.Enter(delegate (Instance smi)
         {
+            TbbDebuger.LogDebug($"GravitasMutanterFounder SMI Enter Root");
             smi.Initialize();
+        }).EventHandler(GameHashes.BuildingActivated, (smi, activated) =>
+        {
+            if (((Boxed<bool>)activated).value)
+            {
+                TbbDebuger.LogDebug($"GravitasMutanterFounder:[{((Boxed<bool>)activated).value}]");
+                StoryManager.Instance.BeginStoryEvent(Db.Get().Stories.Get(MutanterStoris.GravitasMutanterFounderID));
+            }
         });
 
         inoperational
+            .Enter((smi) => { TbbDebuger.LogDebug($"[GravitasMutanterFounder] states:inoperational"); })
             .PlayAnim("off")
-            .EventTransition(GameHashes.OperationalChanged, operational.idle, (Instance smi) => smi.GetComponent<Operational>().IsOperational);
+            .EventTransition(GameHashes.OperationalChanged, operational.idle, (smi) => smi.GetComponent<Operational>().IsOperational);
 
-        // Operational Group: 主要工作状态组
         operational
+            .Enter((smi) => { TbbDebuger.LogDebug($"[GravitasMutanterFounder] states:operational"); })
             .DefaultState(operational.idle)
-            .EventTransition(GameHashes.OperationalChanged, this.inoperational, (Instance smi) => !smi.GetComponent<Operational>().IsOperational);
+            .EventTransition(GameHashes.OperationalChanged, inoperational, (smi) => !smi.GetComponent<Operational>().IsOperational);
 
-        //this.operational.idle
-        //    .PlayAnim("idle", KAnim.PlayMode.Loop).Enter(new StateMachine<GravitasCreatureManipulator, GravitasCreatureManipulator.Instance, IStateMachineTarget, GravitasCreatureManipulator.Def>.State.Callback(GravitasCreatureManipulator.CheckForCritter))
-        //    .ToggleMainStatusItem(Db.Get().BuildingStatusItems.CreatureManipulatorWaiting, null)
-        //    .ParamTransition<GameObject>(this.creatureTarget, this.operational.capture, (GravitasCreatureManipulator.Instance smi, GameObject p) => p != null && !smi.IsCritterStored)
-        //    .ParamTransition<GameObject>(this.creatureTarget, this.operational.working.pre, (GravitasCreatureManipulator.Instance smi, GameObject p) => p != null && smi.IsCritterStored)
-        //    .ParamTransition<float>(this.cooldownTimer, this.operational.cooldown, GameStateMachine<GravitasCreatureManipulator, GravitasCreatureManipulator.Instance, IStateMachineTarget, GravitasCreatureManipulator.Def>.IsGTZero);
-        // Idle State: 等待献祭和检查开启条件
         operational.idle
             .PlayAnim("idle", KAnim.PlayMode.Loop)
             .Enter(delegate (Instance smi)
             {
+                TbbDebuger.LogDebug($"[GravitasMutanterFounder] states:operational.idle");
                 smi.UpdateMeter(); // 更新进度条，显示已收集的物种
             })
-            .ParamTransition<GameObject>(sacrificeTarget, operational.activating.pre, (Instance smi, GameObject target) => target != null && smi.HasSacrificeItems)
-            .ToggleMainStatusItem(Db.Get().BuildingStatusItems.CreatureManipulatorWaiting, null) // 使用相似的状态项
-                                                                                                 // 检查是否满足开启条件 (物种数量 + 物品等级)
-            .ParamTransition<bool>(unlockConditionMet, operational.activating.pre, (Instance smi, bool met) => met)
+            .ToggleMainStatusItem(GravitasMutanterFounderBuildingStatusItems.Instance.GravitasMutanterFounderWaiting, null)
+            .ParamTransition(unlockConditionMet, operational.activating.pre, (Instance smi, bool met) =>
+            {
+                TbbDebuger.LogDebug($"[GravitasMutanterFounder] states:operational.idle unlockConditionMet");
+                return met;
+            })
             // 检查是否正在冷却
             .ParamTransition(cooldownTimer, operational.cooldown, IsGTZero);
 
-        // Activating Group: 从准备激活到实际激活的过程
-        operational
-            .activating.DefaultState(operational.activating.pre)
-            .ToggleMainStatusItem(Db.Get().BuildingStatusItems.CreatureManipulatorWorking, null); // 使用相似的工作状态项
+        // Activating Group:从准备激活到畸变体生成
+        operational.activating
+            .Enter((smi) => { TbbDebuger.LogDebug($"[GravitasMutanterFounder] states:operational.activating"); })
+            .DefaultState(operational.activating.pre)
+            .ToggleMainStatusItem(GravitasMutanterFounderBuildingStatusItems.Instance.GravitasMutanterFounderWorking, null);
 
-        // Pre Activation: 动画前奏，消耗献祭物品
-        operational
-            .activating.pre.PlayAnim("working_pre")
+        operational.activating.pre
+            .Enter((smi) => { TbbDebuger.LogDebug($"[GravitasMutanterFounder] states:operational.activating.pre"); })
+            .PlayAnim("working_pre")
             .OnAnimQueueComplete(operational.activating.loop)
             .Enter(delegate (Instance smi)
             {
-                smi.ConsumeSacrificeItems(); // 在这里消耗掉作为献祭的物品
-                smi.SetActivationLevel(); // 根据消耗的物品设置本次激活的等级
                 smi.sm.activationTimer.Set(smi.def.activationDuration, smi, false); // 设置激活过程的持续时间
             })
             .Exit(delegate (Instance smi)
@@ -66,8 +77,9 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             });
 
         // Loop Activation: 激活动画循环
-        operational
-            .activating.loop.PlayAnim("working_loop", KAnim.PlayMode.Loop)
+        operational.activating.loop
+            .Enter((smi) => { TbbDebuger.LogDebug($"[GravitasMutanterFounder] states:operational.activating.loop"); })
+            .PlayAnim("working_loop", KAnim.PlayMode.Loop)
             .Update(delegate (Instance smi, float dt)
             {
                 smi.sm.activationTimer.DeltaClamp(-dt, 0f, float.MaxValue, smi);
@@ -75,38 +87,46 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             .ParamTransition<float>(activationTimer, operational.activating.pst, IsLTEZero);
 
         // Post Activation: 激活动画结束，生成畸变体和陷阱
-        operational
-            .activating.pst.PlayAnim("working_pst")
+        operational.activating.pst
+            .Enter((smi) => { TbbDebuger.LogDebug($"[GravitasMutanterFounder] states:operational.activating.pst"); })
+            .PlayAnim("working_pst")
             .OnAnimQueueComplete(operational.cooldown) // 激活完成后直接进入冷却
             .Enter(delegate (Instance smi)
             {
-                smi.SpawnMutants(); // 生成畸变体
-                smi.TryTriggerTrap(); // 尝试触发陷阱
-                // 计算并设置冷却时间，基于激活等级
+                Tag species = smi.SpawnMutants(); // 生成畸变体
+                smi.ConsumeSacrificeItems(); // 在这里消耗掉作为献祭的物品
+
+                if (species != Tag.Invalid)
+                {
+                    smi.gameObject.Trigger(1980521255, null);
+                    smi.ShowNotification(species);
+                    smi.TryShowCompletedNotification();
+                }
+                //TODO 需要细化完善， 计算并设置冷却时间，基于激活等级
                 float cooldownDuration = smi.GetCooldownDurationForLevel(smi.ActivationLevel);
                 smi.sm.cooldownTimer.Set(cooldownDuration, smi, false);
+                smi.sm.unlockConditionMet.Set(false, smi, false);
             });
 
-        // Cooldown State: 冷却期间，无法再次激活
-        State cooldownState = operational.cooldown
+        // 添加冷却状态的进度条状态项
+        operational.cooldown
+            .Enter((smi) => { TbbDebuger.LogDebug($"[GravitasMutanterFounder] states:operational.cooldown"); })
             .PlayAnim("working_cooldown", KAnim.PlayMode.Loop)
             .Update(delegate (Instance smi, float dt)
             {
                 smi.sm.cooldownTimer.DeltaClamp(-dt, 0f, float.MaxValue, smi);
             }, UpdateRate.SIM_1000ms, false)
-            .ParamTransition(cooldownTimer, operational.idle, IsLTEZero);
+            .ParamTransition(cooldownTimer, operational.idle, IsLTEZero)
+            .ToggleStatusItem(
+                BUILDINGS.STATUSITEMS.GRAVITAS_MUTANTER_FOUNDER_COOLDOWN.NAME,
+                BUILDINGS.STATUSITEMS.GRAVITAS_MUTANTER_FOUNDER_COOLDOWN.TOOLTIP,
+                "", StatusItem.IconType.Info, NotificationType.Neutral, false, default(HashedString), 129022,
+                (str, smi) => CooldownProcessing(str, smi),
+                (str, smi) => CooldownProcessingTooltip(str, smi),
+                Db.Get().StatusItemCategories.Main
+            );
 
-        // 添加冷却状态的进度条状态项
-        string cooldownName = "GRAVITAS_MUTANTER_FOUNDER_COOLDOWN"; // 替换为实际的STRINGS键
-        string cooldownTooltip = "GRAVITAS_MUTANTER_FOUNDER_COOLDOWN_TOOLTIP"; // 替换为实际的STRINGS键
-        string icon = "";
-        StatusItem.IconType icon_type = StatusItem.IconType.Info;
-        NotificationType notification_type = NotificationType.Neutral;
-        bool allow_multiples = false;
-        StatusItemCategory main = Db.Get().StatusItemCategories.Main;
-        Func<string, Instance, string> resolve_string_callback = new Func<string, Instance, string>(CooldownProcessing);
-        Func<string, Instance, string> resolve_tooltip_callback = new Func<string, Instance, string>(CooldownProcessingTooltip);
-        cooldownState.ToggleStatusItem(cooldownName, cooldownTooltip, icon, icon_type, notification_type, allow_multiples, default(HashedString), 129022, resolve_string_callback, resolve_tooltip_callback, main);
+
     }
 
     private static string CooldownProcessing(string str, Instance smi)
@@ -130,8 +150,6 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
 
     public TargetParameter sacrificeTarget;
 
-    // public StateMachine<GravitasMutanterFounder, GravitasMutanterFounder.Instance, IStateMachineTarget, GravitasMutanterFounder.Def>.ObjectParameter sacrificeContainer; 
-
     public State inoperational;
 
     public ActiveStates operational;
@@ -148,10 +166,16 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
         public int maxMutantsPerSpawn = 2; // 单次最大生成畸变体数量
         public int minMutantsPerSpawn = 1; // 单次最小生成畸变体数量
         public List<Tag> requiredSacrificeTags; // 必需的献祭物品标签列表 (例如 ["Critter"], ["Meat"], ["SpecialItem"])
-        //public static readonly Dictionary<string, List<Tag>> requiredSacrificeTags = new()
-        //{
-        //    {SCP173Config.ID, new List<Tag> { HatchConfig.ID,HatchConfig.ID,HatchConfig.ID } }//SCP-173
-        //};
+
+        // ---献祭配方字典 ---
+        public Dictionary<Tag, Dictionary<Tag, int>> sacrificeRecipes = new() {
+            {
+                SCP173Config.ID, new Dictionary<Tag, int> {
+                    { HatchConfig.ID, 3 }// 需要3个Hatch
+                }
+            }
+        };
+
     }
 
     public class ActivatingStates : State
@@ -170,31 +194,64 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
 
     public new class Instance : GameInstance
     {
+        // 缓存本次激活将使用的配方和目标
+        private Tag m_activationTarget;
+        private Dictionary<Tag, int> m_usedRecipe;
+
         public Instance(IStateMachineTarget master, Def def) : base(master, def)
         {
-            //祭坛检测
-            this.pickupCell = Grid.OffsetCell(Grid.PosToCell(master.gameObject), base.smi.def.pickupOffset);
-            this.m_partitionEntry = GameScenePartitioner.Instance.Add("GravitasMutanterFounder", base.gameObject, this.pickupCell, GameScenePartitioner.Instance.pickupablesChangedLayer, new Action<object>(this.DetectSacrifice));
-            this.m_progressMeter = new MeterController(base.GetComponent<KBatchedAnimController>(), "meter_target", "meter", Meter.Offset.UserSpecified, Grid.SceneLayer.TileFront, Array.Empty<string>());
+            //献祭物品检测逻辑
+            pickupCell = Grid.OffsetCell(Grid.PosToCell(master.gameObject), smi.def.pickupOffset);
+
+            m_partitionEntry = GameScenePartitioner.Instance.Add("GravitasMutanterFounder", gameObject, pickupCell, GameScenePartitioner.Instance.pickupablesChangedLayer, new Action<object>(DetectSacrifice));
+
+            m_largeCreaturePartitionEntry = GameScenePartitioner.Instance.Add("GravitasMutanterFounder.large", gameObject, Grid.CellLeft(pickupCell), GameScenePartitioner.Instance.pickupablesChangedLayer, new Action<object>(DetectLargeCreature));
+
+            m_progressMeter = new MeterController(GetComponent<KBatchedAnimController>(), "meter_target", "meter", Meter.Offset.UserSpecified, Grid.SceneLayer.TileFront, Array.Empty<string>());
+
 
             // 初始化献祭相关的集合
-            this.m_sacrificedSpecies = new HashSet<Tag>();
-            this.m_sacrificeContainer = master.gameObject.GetComponent<Storage>();
+            m_sacrificedSpecies = new HashSet<Tag>();
+            m_sacrificeContainer = master.gameObject.GetComponent<Storage>();
             m_sacrificeContainer.allowItemRemoval = false; // 防止外部轻易拿走献祭品
             m_sacrificeContainer.showDescriptor = false;
-            //m_sacrificeContainer.storageFilters = def.requiredSacrificeTags; // 只接受指定类型的献祭
             m_sacrificeContainer.capacityKg = 2000f; // 设置容量
         }
 
         public override void StartSM()
         {
             base.StartSM();
-            this.UpdateStatusItems();
-            this.UpdateMeter();
-            // 可能的故事事件或通知初始化
-            // StoryManager.Instance.ForceCreateStory(Db.Get().Stories.MutanterFounder, base.gameObject.GetMyWorldId());
-        }
+            UpdateStatusItems();
+            UpdateMeter();
 
+            // 可故事事件或通知初始化
+            StoryManager.Instance.ForceCreateStory(Db.Get().Stories.Get(MutanterStoris.GravitasMutanterFounderID), gameObject.GetMyWorldId());
+
+            if (MutanterSpeciesCatalog.Instance.GetMutanterSpeciesCount() >= smi.def.numSpeciesToUnlockMorphMode)
+            {
+                StoryManager.Instance.BeginStoryEvent(Db.Get().Stories.Get(MutanterStoris.GravitasMutanterFounderID));
+            }
+            TryShowCompletedNotification();
+
+            onBuildingSelectHandle = Subscribe(-1503271301, new Action<object>(OnBuildingSelect));
+
+            StoryManager.Instance.DiscoverStoryEvent(Db.Get().Stories.Get(MutanterStoris.GravitasMutanterFounderID));
+        }
+        private void OnBuildingSelect(object obj)
+        {
+            if (!((Boxed<bool>)obj).value)
+            {
+                return;
+            }
+            if (!m_introPopupSeen)
+            {
+                ShowIntroNotification();
+            }
+            if (m_endNotification != null)
+            {
+                m_endNotification.customClickCallback(m_endNotification.customClickData);
+            }
+        }
         public void Initialize()
         {
             // 清理上次运行的痕迹（如果有）
@@ -208,17 +265,16 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
 
         private void UpdateStatusItems()
         {
-            KSelectable component = base.gameObject.GetComponent<KSelectable>();
-            // 根据是否解锁（物种数达到要求）显示不同状态项
-            component.ToggleStatusItem(Db.Get().BuildingStatusItems.CreatureManipulatorProgress, !this.IsUnlocked, this); // 复用进度条
-            component.ToggleStatusItem(Db.Get().BuildingStatusItems.CreatureManipulatorMorphMode, this.IsUnlocked, this); // 复用解锁后状态
-            component.ToggleStatusItem(Db.Get().BuildingStatusItems.CreatureManipulatorMorphModeLocked, !this.IsUnlocked, this); // 复用锁定状态
+            KSelectable component = gameObject.GetComponent<KSelectable>();
+            component.ToggleStatusItem(GravitasMutanterFounderBuildingStatusItems.Instance.GravitasMutanterFounderProgress, !IsUnlocked, this);
+            component.ToggleStatusItem(GravitasMutanterFounderBuildingStatusItems.Instance.GravitasMutanterFounderMorphMode, IsUnlocked, this);
+            component.ToggleStatusItem(GravitasMutanterFounderBuildingStatusItems.Instance.GravitasMutanterFounderMorphModeLocked, !IsUnlocked, this);
         }
 
         public void UpdateMeter()
         {
             // 更新进度条，显示已献祭的不同物种数量 / 总需求数量
-            m_progressMeter.SetPositionPercent(Mathf.Clamp01((float)m_sacrificedSpecies.Count / (float)base.smi.def.numSpeciesToUnlockMorphMode));
+            m_progressMeter.SetPositionPercent(Mathf.Clamp01(m_sacrificedSpecies.Count / (float)smi.def.numSpeciesToUnlockMorphMode));
         }
 
         public bool IsUnlocked
@@ -229,27 +285,32 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             }
         }
 
-        public bool HasSacrificeItems
+        public int ActivationLevel { get; private set; } = 0;
+        private void DetectLargeCreature(object obj)
         {
-            get
+            Pickupable pickupable = obj as Pickupable;
+            if (pickupable == null)
             {
-                return m_sacrificeContainer.items.Count > 0;
+                return;
+            }
+            if (pickupable.GetComponent<KCollider2D>().bounds.size.x > 1.5f)
+            {
+                DetectSacrifice(obj);
             }
         }
-
-        public int ActivationLevel { get; private set; } = 0;
-
         private void DetectSacrifice(object obj)
         {
             Pickupable pickupable = obj as Pickupable;
-            if (pickupable == null || !this.IsSacrificeValid(pickupable.KPrefabID))
+            if (pickupable == null || !IsSacrificeValid(pickupable.KPrefabID))
             {
                 return;
             }
 
             // 检查是否在正确的状态下接收献祭
-            if (base.smi.IsInsideState(base.smi.sm.operational.idle))
+            List<GameObject> list = new();
+            if (smi.IsInsideState(smi.sm.operational.idle) && (m_sacrificeContainer.Find(pickupable.gameObject.PrefabID(), list) == null || !list.Contains(pickupable.gameObject)))
             {
+                TbbDebuger.LogDebug($"[GravitasMutanterFounder] Store [{pickupable.gameObject.GetInstanceID()}]");
                 // 尝试将物品放入献祭容器
                 if (m_sacrificeContainer.Store(pickupable.gameObject, false, false, true, false))
                 {
@@ -259,55 +320,154 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                     {
                         m_sacrificedSpecies.Add(creatureBrain.species);
                     }
-                    // 如果是其他类型物品，可以根据其标签或预制件ID记录
 
-                    this.UpdateStatusItems();
-                    this.UpdateMeter();
+                    UpdateStatusItems();
+                    UpdateMeter();
 
                     // 检查开启条件是否满足
-                    this.CheckAndSetUnlockCondition();
+                    CheckAndSetUnlockCondition();
                 }
             }
         }
 
         public bool IsSacrificeValid(KPrefabID kpid)
         {
-            // 检查物品标签是否在必需列表中
-            foreach (var tag in base.smi.def.requiredSacrificeTags)
+            foreach (var recipePair in base.smi.def.sacrificeRecipes)
             {
-                if (kpid.HasTag(tag))
+                var recipe = recipePair.Value;
+                foreach (var ingredient in recipe.Keys)
                 {
-                    return true;
+                    if (kpid.HasTag(ingredient))
+                    {
+                        return true; // 如果物品是任何一个配方的一部分，则有效
+                    }
                 }
             }
+            return false; // 否则无效
+        }
+        // --- 配方检查 ---
+        private bool CanActivateAndSpawn(out Tag target, out Dictionary<Tag, int> recipe)
+        {
+            TbbDebuger.LogDebug($"[GravitasMutanterFounder] 开始检查激活条件...当前牺牲容器物品数量: {m_sacrificeContainer.items.Count}");
+            target = Tag.Invalid;
+            recipe = null;
+
+            // 遍历所有可用的配方
+            foreach (var recipePair in smi.def.sacrificeRecipes)
+            {
+                Tag possibleTarget = recipePair.Key;
+                Dictionary<Tag, int> possibleRecipe = recipePair.Value;
+
+                // 检查当前库存是否满足此配方
+                bool hasEnough = true;
+                foreach (var ingredient in possibleRecipe)
+                {
+                    Tag ingredientTag = ingredient.Key;
+                    int requiredCount = ingredient.Value;
+
+                    float currentCount = CountItemsInStorage(ingredientTag);
+                    if (currentCount < requiredCount)
+                    {
+                        hasEnough = false;
+                        break; // 当前配方不满足，跳出内层循环检查下一个
+                    }
+                }
+                if (hasEnough)
+                {
+                    target = possibleTarget;
+                    recipe = possibleRecipe;
+                    return true; // 成功找到
+                }
+
+            }
+
+            // 所有配方都不满足
             return false;
         }
-
+        // --- 统计存储中某种标签的物品数量 ---
+        private float CountItemsInStorage(Tag tag)
+        {
+            float count = 0;
+            foreach (var item in m_sacrificeContainer.items)
+            {
+                var kpid = item.GetComponent<KPrefabID>();
+                if (kpid != null && kpid.HasTag(tag))
+                {
+                    // 如果物品有StackSize组件，则加上其堆叠数量
+                    var pickupable = item.GetComponent<Pickupable>();
+                    count += (pickupable != null ? pickupable.TotalAmount : 1);
+                }
+            }
+            return count;
+        }
         private void CheckAndSetUnlockCondition()
         {
-            bool conditionMet = this.IsUnlocked && this.HasSacrificeItems;
+            // 检查是否有足够的物品满足任意一个配方
+            bool conditionMet = CanActivateAndSpawn(out m_activationTarget, out m_usedRecipe);
             sm.unlockConditionMet.Set(conditionMet, this, false);
+            if (conditionMet)
+            {
+                // 添加 null 检查，防止在 m_usedRecipe 为 null 时调用 .Select()
+                string recipeDetails = m_usedRecipe != null
+                    ? string.Join(", ", m_usedRecipe.Select(kvp => $"{kvp.Key}:{kvp.Value}"))
+                    : "没有匹配的配方或者发生错误";
+                TbbDebuger.LogDebug($"[GravitasMutanterFounder] 解锁0conditionmet! 准备生成{m_activationTarget}配方: {recipeDetails}");
+            }
         }
 
         public void ConsumeSacrificeItems()
         {
-            // 一次性清空献祭容器，模拟消耗
-            List<GameObject> itemsToConsume = new List<GameObject>(m_sacrificeContainer.items);
-            foreach (var item in itemsToConsume)
+            if (m_usedRecipe == null)
             {
-                item.DeleteObject();
+                TbbDebuger.LogWarning("[GravitasMutanterFounder] 准备消耗祭品但是没有配方");
+                return;
             }
-            // 清空记录的物种集合，因为献祭已经发生 (如果需要持久化物种解锁状态，应单独保存)
-            // this.m_sacrificedSpecies.Clear(); 
-        }
 
-        public void SetActivationLevel()
-        {
-            // 简单示例：根据消耗的物品数量或特定物品类型来设置等级
-            // 这里可以更复杂，比如分析消耗物品的 "power" 或 "tier"
-            int consumedCount = m_sacrificeContainer.items.Count; // 实际上容器已清空，可能需要缓存
-            // 临时示例：如果消耗了超过一定数量的物品，视为高级开启
-            this.ActivationLevel = consumedCount > 2 ? 2 : 1; // Level 1 or 2
+            foreach (var ingredient in m_usedRecipe)
+            {
+                Tag ingredientTag = ingredient.Key;
+                int requiredCount = ingredient.Value;
+
+                float consumedSoFar = 0;
+                List<GameObject> itemsToRemove = new List<GameObject>();
+
+                foreach (var itemGO in m_sacrificeContainer.items)
+                {
+                    if (consumedSoFar >= requiredCount) break;
+
+                    var kpid = itemGO.GetComponent<KPrefabID>();
+                    if (kpid != null && kpid.HasTag(ingredientTag))
+                    {
+                        var pickupable = itemGO.GetComponent<Pickupable>();
+                        float availableInThisStack = pickupable != null ? pickupable.TotalAmount : 1;
+
+                        float toTakeFromThisStack = Mathf.Min(requiredCount - consumedSoFar, availableInThisStack);
+
+                        if (toTakeFromThisStack == availableInThisStack)
+                        {
+                            // 整个堆栈都要被消耗
+                            itemsToRemove.Add(itemGO);
+                        }
+                        else
+                        {
+                            // 只消耗堆栈的一部分
+                            pickupable.TotalAmount -= toTakeFromThisStack;
+                        }
+                        consumedSoFar += toTakeFromThisStack;
+                    }
+                }
+
+                // 从存储中移除被完全消耗的物品
+                foreach (var itemGO in itemsToRemove)
+                {
+                    m_sacrificeContainer.Drop(itemGO, true); // Drop会将其从存储中移除
+                    itemGO.DeleteObject();
+                }
+            }
+
+            // 清空缓存的配方信息
+            m_usedRecipe = null;
+            m_activationTarget = Tag.Invalid;
         }
 
         public float GetCooldownDurationForLevel(int level)
@@ -317,88 +477,153 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             return baseCooldown + bonusCooldown;
         }
 
-        public void SpawnMutants()
+        public Tag SpawnMutants()
         {
-            int numToSpawn = UnityEngine.Random.Range(base.smi.def.minMutantsPerSpawn, base.smi.def.maxMutantsPerSpawn + 1);
-            Vector3 spawnPos = Grid.CellToPosCBC(Grid.PosToCell(base.smi), Grid.SceneLayer.Creatures) + base.smi.def.dropOffset.ToVector3();
+            if (m_activationTarget == Tag.Invalid)
+            {
+                TbbDebuger.LogWarning($"[GravitasMutanterFounder]没有目标畸变体被激活");
+                return Tag.Invalid;
+            }
 
+            //TODO 生成畸变体的位置应该是随机的，需要修改
+            Vector3 spawnPos = Grid.CellToPosCBC(Grid.PosToCell(smi), Grid.SceneLayer.Creatures) + smi.def.dropOffset.ToVector3();
+
+            //int numToSpawn = UnityEngine.Random.Range(smi.def.minMutantsPerSpawn, smi.def.maxMutantsPerSpawn + 1);
+            int numToSpawn = 1;
             for (int i = 0; i < numToSpawn; i++)
             {
-                // TODO: 选择要生成的具体畸变体 prefab
-                Tag mutantPrefabTag = TagManager.Create("MutantPrefab"); // 替换为实际的 prefab 标签
-                GameObject mutantGO = Util.KInstantiate(Assets.GetPrefab(mutantPrefabTag), spawnPos);
+                GameObject mutantGO = Util.KInstantiate(Assets.GetPrefab(m_activationTarget), spawnPos);
                 if (mutantGO != null)
                 {
                     mutantGO.SetActive(true);
-                    // 触发生成事件或动画
+                    TbbDebuger.LogDebug($"[GravitasMutanterFounder] 生成畸变体： {m_activationTarget} @ [{spawnPos}]");
+                    //TODO 生成畸变体后的动画等 清空FOW&Camera Fade In
+
+                    //FocusTargetSequence.Start(mutantGO.GetComponent<MonoBehaviour>(), new FocusTargetSequence.Data
+                    //{
+                    //    WorldId = mutantGO.GetMyWorldId(),
+                    //    OrthographicSize = 6f,
+                    //    TargetSize = 6f,
+                    //    Target = spawnPos,
+                    //    PopupData = eventInfo,
+                    //    CompleteCB = new System.Action(OnStorySequenceComplete),
+                    //    CanCompleteCB = null
+                    //});
+                    return m_activationTarget;
                 }
             }
+            return Tag.Invalid;
         }
 
-        public void TryTriggerTrap()
+        public void ShowIntroNotification()
         {
-            float chance = base.smi.def.trapChance;
-            if (UnityEngine.Random.value < chance)
+            Game.Instance.unlocks.Unlock(GravitasMutanterFounderConfig.INITIAL_LORE_UNLOCK_ID, true);
+            m_introPopupSeen = true;
+            EventInfoScreen.ShowPopup(EventInfoDataHelper.GenerateStoryTraitData(CODEX.STORY_TRAITS.MUTANTER_FOUNDER.BEGIN_POPUP.NAME, CODEX.STORY_TRAITS.MUTANTER_FOUNDER.BEGIN_POPUP.DESCRIPTION, CODEX.STORY_TRAITS.CLOSE_BUTTON, "crittermanipulatoractivate_kanim", EventInfoDataHelper.PopupType.BEGIN, null, null, null));
+        }
+        public void TryShowCompletedNotification()
+        {
+            if (MutanterSpeciesCatalog.Instance.GetMutanterSpeciesCount() < smi.def.numSpeciesToUnlockMorphMode || IsMorphMode)
+                return;
+
+            //TODO 需要完成显示信息界面
+            eventInfo = EventInfoDataHelper.GenerateStoryTraitData((string)CODEX.STORY_TRAITS.MUTANTER_FOUNDER.END_POPUP.NAME, (string)CODEX.STORY_TRAITS.MUTANTER_FOUNDER.END_POPUP.DESCRIPTION, (string)CODEX.STORY_TRAITS.MUTANTER_FOUNDER.END_POPUP.BUTTON, "crittermanipulatormorphmode_kanim", EventInfoDataHelper.PopupType.COMPLETE);
+
+            m_endNotification = EventInfoScreen.CreateNotification(eventInfo, new Notification.ClickCallback(UnlockMorphMode));
+            gameObject.AddOrGet<Notifier>().Add(m_endNotification);
+            gameObject.GetComponent<KSelectable>().AddStatusItem(Db.Get().MiscStatusItems.AttentionRequired, smi);
+        }
+        public void ShowNotification(Tag species)
+        {
+            Game.Instance.unlocks.Unlock(GravitasMutanterFounderConfig.LORE_UNLOCK_ID.For(species), false);
+
+            ShowNotificationAndWaitForClick().Then(() => ShowLoreUnlockedPopup(species));
+
+            Promise ShowNotificationAndWaitForClick()
             {
-                TriggerSpecificTrap();
+                return new Promise(resolve =>
+                {
+                    Notification notification1 = new Notification((string)CODEX.STORY_TRAITS.MUTANTER_FOUNDER.UNLOCK_SPECIES_NOTIFICATION.NAME, NotificationType.Event, (notifications, obj) =>
+                    {
+                        string str = (string)CODEX.STORY_TRAITS.MUTANTER_FOUNDER.UNLOCK_SPECIES_NOTIFICATION.TOOLTIP;
+                        foreach (Notification notification2 in notifications)
+                        {
+                            string tooltipData = notification2.tooltipData as string;
+                            str = $"{str}\n • {(string)Strings.Get("STRINGS.CREATURES.FAMILY_PLURAL." + tooltipData)}";
+                        }
+                        return str;
+                    }, species.ToString().ToUpper(), false, custom_click_callback: obj => resolve(), clear_on_click: true);
+                    gameObject.AddOrGet<Notifier>().Add(notification1);
+                });
             }
         }
-        //private void Scan(Tag species)
-        //{
-        //    if (this.ScannedSpecies.Add(species))
-        //    {
-        //        base.gameObject.Trigger(1980521255, null);
-        //        this.UpdateStatusItems();
-        //        this.UpdateMeter();
-        //        this.ShowCritterScannedNotification(species);
-        //    }
-        //    this.TryShowCompletedNotification();
-        //}
-        //public void ShowCritterScannedNotification(Tag species)
-        //{
-        //    Game.Instance.unlocks.Unlock(GravitasCreatureManipulatorConfig.CRITTER_LORE_UNLOCK_ID.For(species), false);
-        //    ShowCritterScannedNotificationAndWaitForClick().Then((System.Action)(() => GravitasCreatureManipulator.Instance.ShowLoreUnlockedPopup(species)));
-
-        //    Promise ShowCritterScannedNotificationAndWaitForClick()
-        //    {
-        //        return new Promise((System.Action<System.Action>)(resolve =>
-        //        {
-        //            Notification notification1 = new Notification((string)CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.UNLOCK_SPECIES_NOTIFICATION.NAME, NotificationType.Event, (Func<List<Notification>, object, string>)((notifications, obj) =>
-        //            {
-        //                string str = (string)CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.UNLOCK_SPECIES_NOTIFICATION.TOOLTIP;
-        //                foreach (Notification notification2 in notifications)
-        //                {
-        //                    string tooltipData = notification2.tooltipData as string;
-        //                    str = $"{str}\n • {(string)Strings.Get("STRINGS.CREATURES.FAMILY_PLURAL." + tooltipData)}";
-        //                }
-        //                return str;
-        //            }), (object)species.ToString().ToUpper(), false, custom_click_callback: (Notification.ClickCallback)(obj => resolve()), clear_on_click: true);
-        //            this.gameObject.AddOrGet<Notifier>().Add(notification1);
-        //        }));
-        //    }
-        //}
-        //public void TryShowCompletedNotification()
-        //{
-        //    if (this.ScannedSpecies.Count < this.smi.def.numSpeciesToUnlockMorphMode || this.IsMorphMode)
-        //        return;
-        //    this.eventInfo = EventInfoDataHelper.GenerateStoryTraitData((string)CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.END_POPUP.NAME, (string)CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.END_POPUP.DESCRIPTION, (string)CODEX.STORY_TRAITS.CRITTER_MANIPULATOR.END_POPUP.BUTTON, "crittermanipulatormorphmode_kanim", EventInfoDataHelper.PopupType.COMPLETE);
-        //    this.m_endNotification = EventInfoScreen.CreateNotification(this.eventInfo, new Notification.ClickCallback(this.UnlockMorphMode));
-        //    this.gameObject.AddOrGet<Notifier>().Add(this.m_endNotification);
-        //    this.gameObject.GetComponent<KSelectable>().AddStatusItem(Db.Get().MiscStatusItems.AttentionRequired, (object)this.smi);
-        //}
-
-        private void TriggerSpecificTrap()
+        public static void ShowLoreUnlockedPopup(Tag species)
         {
-            // TODO: 实现具体的陷阱效果
-            // 例如，释放毒气、瞬间高温区域、播放特效动画等
-            // SimUtil.DamageArea(...);
-            // ElementLoader.FindElementByHash(SimHashes.ToxicSand).CreateDiseaseInCell(...);
-            Debug.Log($"[GravitasMutanterFounder] Trap triggered at {base.gameObject.name}!");
+            InfoDialogScreen infoDialogScreen =
+                LoreBearer.ShowPopupDialog().SetHeader(CODEX.STORY_TRAITS.MUTANTER_FOUNDER.UNLOCK_SPECIES_POPUP.NAME).AddDefaultOK(false);
+
+            bool flag = CodexCache.GetEntryForLock(GravitasMutanterFounderConfig.LORE_UNLOCK_ID.For(species)) != null;
+            Option<string> bodyContentForSpeciesTag = GravitasMutanterFounderConfig.GetBodyContentForSpeciesTag(species);
+
+            if (flag && bodyContentForSpeciesTag.HasValue)
+            {
+                infoDialogScreen.AddPlainText(bodyContentForSpeciesTag.Value).AddOption(CODEX.STORY_TRAITS.MUTANTER_FOUNDER.UNLOCK_SPECIES_POPUP.VIEW_IN_CODEX, LoreBearerUtil.OpenCodexByEntryID(GravitasMutanterFounderConfig.CODEX_ENTRY_ID), false);
+                return;
+            }
+            infoDialogScreen.AddPlainText(GravitasMutanterFounderConfig.GetBodyContentForUnknownSpecies());
+        }
+        public void UnlockMorphMode(object _)
+        {
+            if (m_morphModeUnlocked) return;
+
+            Game.Instance.unlocks.Unlock(GravitasMutanterFounderConfig.COMPLETED_LORE_UNLOCK_ID, true);
+
+            if (m_endNotification != null)
+            {
+                gameObject.AddOrGet<Notifier>().Remove(m_endNotification);
+            }
+            m_morphModeUnlocked = true;
+            UpdateStatusItems();
+            ClearEndNotification();
+            Vector3 target = Grid.CellToPosCCC(Grid.OffsetCell(Grid.PosToCell(smi), new CellOffset(0, 2)), Grid.SceneLayer.Ore);
+            StoryManager.Instance.CompleteStoryEvent(Db.Get().Stories.Get(MutanterStoris.GravitasMutanterFounderID), gameObject.GetComponent<MonoBehaviour>(), new FocusTargetSequence.Data
+            {
+                WorldId = smi.GetMyWorldId(),
+                OrthographicSize = 6f,
+                TargetSize = 6f,
+                Target = target,
+                PopupData = eventInfo,
+                CompleteCB = new System.Action(OnStorySequenceComplete),
+                CanCompleteCB = null
+            });
+        }
+        private void OnStorySequenceComplete()
+        {
+            //TODO 
+            Vector3 keepsakeSpawnPosition = Grid.CellToPosCCC(Grid.OffsetCell(Grid.PosToCell(smi), new CellOffset(-1, 1)), Grid.SceneLayer.Ore);
+            StoryManager.Instance.CompleteStoryEvent(Db.Get().Stories.Get(MutanterStoris.GravitasMutanterFounderID), keepsakeSpawnPosition);
+            eventInfo = null;
+        }
+        public void ClearEndNotification()
+        {
+            gameObject.GetComponent<KSelectable>().RemoveStatusItem(Db.Get().MiscStatusItems.AttentionRequired, false);
+            if (m_endNotification != null)
+            {
+                gameObject.AddOrGet<Notifier>().Remove(this.m_endNotification);
+            }
+            m_endNotification = null;
         }
 
         protected override void OnCleanUp()
         {
-            GameScenePartitioner.Instance.Free(ref this.m_partitionEntry);
+            GameScenePartitioner.Instance.Free(ref m_partitionEntry);
+        }
+        public bool IsMorphMode
+        {
+            get
+            {
+                return m_morphModeUnlocked;
+            }
         }
 
         public int pickupCell;
@@ -407,13 +632,80 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
         private Operational m_operational;
 
         private MeterController m_progressMeter;
-
+        private HandleVector<int>.Handle m_largeCreaturePartitionEntry;
         private HandleVector<int>.Handle m_partitionEntry;
 
         [Serialize]
-        private HashSet<Tag> m_sacrificedSpecies;
+        public HashSet<Tag> m_sacrificedSpecies;
 
         [MyCmpReq]
         private Storage m_sacrificeContainer;
+
+        private int onBuildingSelectHandle;
+
+        [Serialize]
+        private bool m_introPopupSeen;
+        private Notification m_endNotification;
+        [Serialize]
+        private bool m_morphModeUnlocked;
+        private EventInfoData eventInfo;
+    }
+    public class GravitasMutanterFounderBuildingStatusItems
+    {
+        public StatusItem GravitasMutanterFounderWaiting;
+
+        public StatusItem GravitasMutanterFounderProgress;
+
+        public StatusItem GravitasMutanterFounderMorphModeLocked;
+
+        public StatusItem GravitasMutanterFounderMorphMode;
+
+        public StatusItem GravitasMutanterFounderWorking;
+
+        private static GravitasMutanterFounderBuildingStatusItems _instance;
+        public static GravitasMutanterFounderBuildingStatusItems Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new GravitasMutanterFounderBuildingStatusItems();
+                }
+                return _instance;
+            }
+        }
+        public void CreateStatusItems(BuildingStatusItems buildingStatusItems)
+        {
+            GravitasMutanterFounderWaiting = buildingStatusItems.Add(new StatusItem("GravitasMutanterFounderWaiting", "BUILDINGS", "", StatusItem.IconType.Info, NotificationType.Neutral, false, OverlayModes.None.ID, true, 129022, null));
+
+            GravitasMutanterFounderProgress = buildingStatusItems.Add(new StatusItem("GravitasMutanterFounderProgress", "BUILDINGS", "", StatusItem.IconType.Info, NotificationType.Neutral, false, OverlayModes.None.ID, true, 129022, null));
+            GravitasMutanterFounderProgress.resolveStringCallback = delegate (string str, object data)
+            {
+                Instance instance = (Instance)data;
+                return string.Format(str, instance.m_sacrificedSpecies.Count, instance.def.numSpeciesToUnlockMorphMode);
+            };
+            GravitasMutanterFounderProgress.resolveTooltipCallback = delegate (string str, object data)
+            {
+                Instance instance = (Instance)data;
+                if (instance.m_sacrificedSpecies.Count == 0)
+                {
+                    str = str + "\n • " + BUILDINGS.STATUSITEMS.GRAVITASMUTANTERFOUNDERPROGRESS.NO_DATA;
+                }
+                else
+                {
+                    foreach (Tag tag in instance.m_sacrificedSpecies)
+                    {
+                        str = str + "\n • " + Strings.Get("STRINGS.CREATURES.FAMILY_PLURAL." + tag.ToString().ToUpper());
+                    }
+                }
+                return str;
+            };
+
+            GravitasMutanterFounderMorphModeLocked = buildingStatusItems.Add(new StatusItem("GravitasMutanterFounderMorphModeLocked", "BUILDINGS", "", StatusItem.IconType.Info, NotificationType.Neutral, false, OverlayModes.None.ID, true, 129022));
+
+            GravitasMutanterFounderMorphMode = buildingStatusItems.Add(new StatusItem("GravitasMutanterFounderMorphMode", "BUILDINGS", "", StatusItem.IconType.Info, NotificationType.Neutral, false, OverlayModes.None.ID, true, 129022));
+
+            GravitasMutanterFounderWorking = buildingStatusItems.Add(new StatusItem("GravitasMutanterFounderWorking", "BUILDINGS", "", StatusItem.IconType.Info, NotificationType.Neutral, false, OverlayModes.None.ID, true, 129022));
+        }
     }
 }

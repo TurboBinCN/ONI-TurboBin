@@ -1,5 +1,6 @@
 ﻿using TUNING;
 using UnityEngine;
+using static MutantContainmentProject.STRINGS;
 
 namespace MutantContainmentProject.Buildings
 {
@@ -45,10 +46,10 @@ namespace MutantContainmentProject.Buildings
             activatable.overrideAnims = new KAnimFile[] { Assets.GetAnim("anim_use_remote_kanim") };
             activatable.SetWorkTime(30f);
 
-            //var def = go.AddOrGetDef<GravitasMutanterFounder.Def>();
-            //def.pickupOffset = new CellOffset(-1, 0);
-            //def.dropOffset = new CellOffset(1, 0);
-            //def.numSpeciesToUnlockMorphMode = 5;
+            var def = go.AddOrGetDef<GravitasMutanterFounder.Def>();
+            def.pickupOffset = new CellOffset(-1, 0);
+            def.dropOffset = new CellOffset(1, 0);
+            def.numSpeciesToUnlockMorphMode = 1;
             //def.workingDuration = 15f;
             //def.cooldownDuration = 540f;
 
@@ -66,17 +67,50 @@ namespace MutantContainmentProject.Buildings
 
         public const string ID = "GravitasMutanterFounder";
 
-        public const string CODEX_ENTRY_ID = "STORYTRAITCRITTERMANIPULATOR";
+        public const string CODEX_ENTRY_ID = "STORYTRAITMUTANTERFOUNDER";
 
         public const string INITIAL_LORE_UNLOCK_ID = "story_trait_mutanter_founder_initial";
-
-        public const string PARKING_LORE_UNLOCK_ID = "story_trait_mutanter_founder_parking";
 
         public const string COMPLETED_LORE_UNLOCK_ID = "story_trait_mutanter_founder_complete";
 
         private const int HEIGHT = 4;
-
-        public static class CRITTER_LORE_UNLOCK_ID
+        public static Option<string> GetNameForSpeciesTag(Tag species)
+        {
+            StringEntry entry;
+            if (!Strings.TryGet("STRINGS.CREATURES.FAMILY_PLURAL." + species.ToString().ToUpper(), out entry))
+            {
+                return Option.None;
+            }
+            return Option.Some<string>(entry);
+        }
+        public static Option<string> GetDescriptionForSpeciesTag(Tag species)
+        {
+            StringEntry entry;
+            if (!Strings.TryGet("STRINGS.CODEX.STORY_TRAITS.MUTANTER_FOUNDER.SPECIES_ENTRIES." + species.ToString().ToUpper().Replace("SPECIES", ""), out entry))
+            {
+                return Option.None;
+            }
+            return Option.Some<string>(entry);
+        }
+        public static string GetBodyContent(string name, string desc)
+        {
+            return "<size=125%><b>" + name + "</b></size><line-height=150%>\n</line-height>" + desc;
+        }
+        public static Option<string> GetBodyContentForSpeciesTag(Tag species)
+        {
+            Option<string> nameForSpeciesTag = GetNameForSpeciesTag(species);
+            Option<string> descriptionForSpeciesTag = GetDescriptionForSpeciesTag(species);
+            if (nameForSpeciesTag.HasValue && descriptionForSpeciesTag.HasValue)
+            {
+                return GetBodyContent(nameForSpeciesTag.Value, descriptionForSpeciesTag.Value);
+            }
+            return Option.None;
+        }
+        public static string GetBodyContentForUnknownSpecies()
+        {
+            return GetBodyContent(CODEX.STORY_TRAITS.MUTANTER_FOUNDER.SPECIES_ENTRIES.UNKNOWN_TITLE, CODEX.STORY_TRAITS.MUTANTER_FOUNDER.SPECIES_ENTRIES.UNKNOWN);
+        }
+        public static class LORE_UNLOCK_ID
         {
             public static string For(Tag species)
             {

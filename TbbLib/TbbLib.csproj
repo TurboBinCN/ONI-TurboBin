@@ -45,6 +45,7 @@
     <Compile Include="Debuger\TbbDebuger.cs" />
     <Compile Include="Module\TbbAttributes.cs" />
     <Compile Include="Module\TbbBuilding.cs" />
+    <Compile Include="Module\TbbBuildingStatusItems.cs" />
     <Compile Include="Module\TbbChoreGroups.cs" />
     <Compile Include="Module\TbbChoreTypes.cs" />
     <Compile Include="Module\TbbCodexEntries.cs" />

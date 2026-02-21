@@ -130,7 +130,7 @@ namespace MutantContainmentProject
         {
             public class FAMILY_PLURAL
             {
-                public static LocString SCP173 = global::STRINGS.UI.FormatAsLink("SCP-173", SCP173Config.ID);
+                public static LocString MUTANTER_SCP173 = global::STRINGS.UI.FormatAsLink("SCP-173", SCP173Config.ID);
             }
         }
         public static class MUTANTERS
@@ -184,7 +184,7 @@ namespace MutantContainmentProject
             {
                 public static class GRAVITASMUTANTERFOUNDER
                 {
-                    public static LocString NAME = "Mutant Seal Ruins";
+                    public static LocString NAME = "Mutant Seal Altar Ruins";
                     public static LocString DESC = "An ancient ruin buried deep underground on an alien planet, carrying traces of mutation research from an unknown civilization. It seals powerful mutant energy and unique mutants, which can only be unlocked through sacrifices and specific conditions to awaken the sealed creatures.";
                     public static LocString EFFECT = "EFFECT";
                 }
@@ -193,6 +193,77 @@ namespace MutantContainmentProject
                     public static LocString NAME = "Mutant Monitoring Station";
                     public static LocString DESC = "Used to monitor mutants and implement corresponding safety control measures to prevent them from breaking containment.";
                     public static LocString EFFECT = "Provides security prevention measures for mutants within the Mutant Containment Chamber.";
+                }
+            }
+            public static class STATUSITEMS
+            {
+                public static class GRAVITAS_MUTANTER_FOUNDER_COOLDOWN
+                {
+                    public static LocString NAME = "Processing Sacrifice: {percent}";
+                    public static LocString TOOLTIP = "This building is busy sacrificing creature\n\nRemaining: {timeleft}";
+                }
+                public static class GRAVITASMUTANTERFOUNDERPROGRESS
+                {
+                    public static LocString NAME = "Collected Mutant Entity Data {0}/{1}";
+
+                    public static LocString TOOLTIP = string.Concat(new string[]
+                    {
+                    "This altar requires energy signatures from multiple ",
+                    global::STRINGS.UI.PRE_KEYWORD,/*<style="KKeyword"></style>*/
+                    "Mutant Entity",
+                    global::STRINGS.UI.PST_KEYWORD,
+                    " types to unlock its mutation manipulator\n\nEntities analyzed:"
+                    });
+                    public static LocString NO_DATA = "No mutant Entities scanned";
+                }
+                public class GRAVITASMUTANTERFOUNDERMORPHMODELOCKED
+                {
+                    public static LocString NAME = "Current Status: Sealed";
+                    public static LocString TOOLTIP = string.Concat(new string[]
+                    {
+                    "This altar cannot activate until it collects more ",
+                    global::STRINGS.UI.PRE_KEYWORD,
+                    "Mutant Entity",
+                    global::STRINGS.UI.PST_KEYWORD,
+                    " energy signatures"
+                    });
+                }
+                public class GRAVITASMUTANTERFOUNDERMORPHMODE
+                {
+                    public static LocString NAME = "Current Status: Active";
+                    public static LocString TOOLTIP = string.Concat(new string[]
+                    {
+                    "This altar is ready to manipulate ",
+                    global::STRINGS.UI.PRE_KEYWORD,
+                    "Mutant Entity",
+                    global::STRINGS.UI.PST_KEYWORD,
+                    " energy signatures"
+                    });
+                }
+                public class GRAVITASMUTANTERFOUNDERWAITING
+                {
+                    public static LocString NAME = "Waiting for Sacrifices";
+                    public static LocString TOOLTIP = string.Concat(new string[]
+                    {
+                    "This altar is waiting for ",
+                    global::STRINGS.UI.PRE_KEYWORD,
+                    "Sacrifices",
+                    global::STRINGS.UI.PST_KEYWORD,
+                    " to enter its energy absorption zone"
+                    });
+                }
+
+                public class GRAVITASMUTANTERFOUNDERWORKING
+                {
+                    public static LocString NAME = "Absorbing Sacrifice Essence";
+                    public static LocString TOOLTIP = string.Concat(new string[]
+                    {
+                    "This altar is extracting unstable energy from ",
+                    global :: STRINGS.UI.PRE_KEYWORD,
+                    "Sacrifices",
+                    global::STRINGS.UI.PST_KEYWORD,
+                    "  to generate an Aberrant Entity"
+                    });
                 }
             }
         }
@@ -441,6 +512,10 @@ namespace MutantContainmentProject
                 public static LocString NAME = "Psychological";
                 public static LocString DESC = "This entity is capable of Psychological assault";
             }
+            public static class MUTANTER_TRAITS {
+                public static LocString NAME = "Mutanter Traits";
+                public static LocString DESC = "This entity has its own traits.";
+            }
         }
         public static class EFFECTS
         {
@@ -515,10 +590,41 @@ namespace MutantContainmentProject
         {
             public static class STORY_TRAITS
             {
+                public static LocString CLOSE_BUTTON = "Close";
                 public static class MUTANTER_FOUNDER
                 {
-                    public static LocString NAME = "Mutant Seal Ruins";
+                    public static LocString NAME = "Mutant Seal Altar Ruins";
                     public static LocString DESCRIPTION = "An ancient ruin buried deep underground on an alien planet, carrying traces of mutation research from an unknown civilization. It seals powerful mutant energy and unique mutants, which can only be unlocked through sacrifices and specific conditions to awaken the sealed creatures.";
+                    public static class END_POPUP {
+                        public static LocString NAME = "Story Trait Complete: Mutant Seal Altar Ruins";
+                        public static LocString CODEX_NAME = "Ritual Concluded";
+                        public static LocString DESCRIPTION = "Success! The Mutant Seal Altar Ruins has been fully calibrated.\n\nIt can now channel the unstable energy of aberrant entities to alter their physical traits.\n\nCaution: Overuse will cause the altar to enter a hostile state, triggering unforeseen mutations.";
+                        public static LocString BUTTON = "Unlock Altar Manipulation Mode";
+                    }
+                    public class BEGIN_POPUP
+                    {
+                        public static LocString NAME = "Story Trait: Mutant Seal Altar Ruins";
+                        public static LocString CODEX_NAME = "Altar Discovered";
+                        public static LocString DESCRIPTION = "I've uncovered an ancient altar infused with the residual energy of mutant entities.\n\nWith sufficient calibration, it could be used to manipulate the genetic instability of these creatures.\n\nBut its power is volatile—proceed with extreme caution.";
+                    }
+                    public class UNLOCK_SPECIES_NOTIFICATION
+                    {
+                        public static LocString NAME = "New Mutant Entity discovered";
+                        public static LocString TOOLTIP = "The " + BUILDINGS.PREFABS.GRAVITASMUTANTERFOUNDER.NAME + " has generated these mutant entity variants:\n";
+                    }
+                    public class UNLOCK_SPECIES_POPUP
+                    {
+                        public static LocString NAME = "New Mutant Entity discovered";
+                        public static LocString VIEW_IN_CODEX = "Review Entity Data";
+                    }
+                    public class SPECIES_ENTRIES {
+                        public static LocString MUTANTER_SCP173 = "Specimen attempted to disrupt the altar's energy core. Review data for more information.";
+                        public static LocString UNKNOWN_TITLE = "ALERT FROM ALTAR CONTROL SYSTEM";
+                        public static LocString UNKNOWN = "Sacrifice successfully processed.\n\nMutation function unavailable due to energy flux malfunction.\n\nPlease note that kicking the altar's exterior is unlikely to correct this issue and may result in permanent damage to the energy matrix.";
+                    }
+                    public class SPECIES_ENTRIES_EXPANDED {
+                        public static LocString MUTANTER_SCP173 = "Specimen attempted to breach the altar's energy core casing. Sample is viable, though the containment apparatus may be somewhat mangled.\n\nAtomic force microscopy of the impact pattern reveals traces of goethite, a mineral notable for its exceptional strength and affinity for unstable aberrant energy.";
+                    }
                 }
             }
             public static class MUTANTER

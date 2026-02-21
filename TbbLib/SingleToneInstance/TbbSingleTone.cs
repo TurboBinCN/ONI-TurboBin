@@ -21,14 +21,13 @@ namespace TBB.He.TbbLib.SingleToneInstance
 
             TbbDebuger.LogDebug($"[TbbSingleTone] 注册Mod全局单例");
             if (Instance == null) return;
-
             GameObject ModSingletonManagerGameObject = new GameObject("ModSingletonManager");
             ModSingletonManagerGameObject.SetActive(true);
             foreach (Type t in Instance._singleTones)
             {
                 if (ModSingletonManagerGameObject.GetComponent(t) == null)
                 {
-                    TbbDebuger.LogDebug($"[TbbSingleTone] 注册单例:[{nameof(t)}]");
+                    TbbDebuger.LogDebug($"[TbbSingleTone] 注册单例:[{nameof(t.Name)}]");
                     ModSingletonManagerGameObject.AddComponent(t);
                 }
             }
@@ -36,7 +35,7 @@ namespace TBB.He.TbbLib.SingleToneInstance
         public TbbSingleTone Add<TSingleToneComponent>()
             where TSingleToneComponent : KMonoBehaviour
         {
-            if (Instance == null)
+            if (Instance != null)
             {
                 Instance._singleTones.Add(typeof(TSingleToneComponent));
             }

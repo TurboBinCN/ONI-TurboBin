@@ -13,6 +13,7 @@ using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.Module;
 using TBB.He.TbbLib.SingleToneInstance;
 using TBB.He.TbbLib.UI;
+using static GravitasMutanterFounder;
 
 namespace MutantContainmentProject
 {
@@ -123,6 +124,9 @@ namespace MutantContainmentProject
                     .ToAdvanced()
                     .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
                     .AddBuilding(ContainmentMonitorStationConfig.ID);
+                //建筑StatusItems
+                TbbBuildingStatusItems.Initialize(mod, harmony)
+                    .Add(GravitasMutanterFounderBuildingStatusItems.Instance.CreateStatusItems);
                 //全局单例
                 TbbSingleTone.Initialize(mod, harmony)
                     .Add<MutanterSpeciesCatalog>();

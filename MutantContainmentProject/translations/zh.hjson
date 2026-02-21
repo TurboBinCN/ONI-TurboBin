@@ -116,7 +116,7 @@
     }
     CREATURES: {
       FAMILY_PLURAL: {
-        SCP173: <link=\"MUTANTER_SCP173\">SCP-173</link>
+        MUTANTER_SCP173: <link=\"MUTANTER_SCP173\">SCP-173</link>
       }
     }
     MUTANTERS: {
@@ -157,7 +157,7 @@
     BUILDINGS: {
       PREFABS: {
         GRAVITASMUTANTERFOUNDER: {
-          NAME: 畸变源核遗迹
+          NAME: 畸变源核祭坛遗迹
           DESC: 深埋异星地下的古老遗迹，承载着未知文明的畸变研究痕迹，核心蕴含强烈的畸变能量，是畸变体诞生的源头，需通过献祭与特定条件解锁，唤醒其中封存的独特畸变体。
           EFFECT: 作为畸变体的诞生源头，提供独特的畸变体诞生机制和特殊的环境效果。
         }
@@ -165,6 +165,33 @@
           NAME: 畸变体监控站
           DESC: 用于监控畸变体，并进行相应的安全控制措施，防止畸变体突破收容
           EFFECT: 在畸变体收容所内，对畸变体进行安全防治。
+        }
+      }
+      STATUSITEMS: {
+        GRAVITAS_MUTANTER_FOUNDER_COOLDOWN: {
+            NAME: "正在献祭 {percent}"
+            TOOLTIP: "祭坛正在献祭 剩余:{timeleft}"
+        }
+        GRAVITASMUTANTERFOUNDERPROGRESS: {
+            NAME: "已收集畸变体数据 {0}/{1}"
+            TOOLTIP: "该祭坛需要收集多种 <style=\"KKeyword\">畸变体</style> 的能量特征，才能解锁突变操控功能\n\n已分析的畸变体："
+            NO_DATA: 未分析任何畸变体
+        }
+        GRAVITASMUTANTERFOUNDERMORPHMODELOCKED: {
+            NAME: 当前状态：封印中
+            TOOLTIP: "该祭坛需收集更多 <style=\"KKeyword\">畸变体</style> 能量特征才能激活"
+        }
+        GRAVITASMUTANTERFOUNDERMORPHMODE: {
+            NAME: 当前状态：激活中
+            TOOLTIP: "该祭坛已就绪，可操控 <style=\"KKeyword\">畸变体</style> 的突变形态"
+        }
+        GRAVITASMUTANTERFOUNDERWAITING: {
+            NAME: 等待祭品
+            TOOLTIP: "该祭坛正在等待 <style=\"KKeyword\">祭品</style> 进行献祭"
+        }
+        GRAVITASMUTANTERFOUNDERWORKING: {
+            NAME: 汲取祭品能量
+            TOOLTIP: "该祭坛正在从 <style=\"KKeyword\">祭品</style> 中汲取不稳定能量，用以生成畸变体"
         }
       }
     }
@@ -337,6 +364,10 @@
         NAME: 精神属性
         DESC: 该实体具备精神攻击能力
       }
+      MUTANTER_TRAITS: {
+        NAME: 畸变体特性
+        DESC: 这个畸变体拥有自己的特性
+      }
     }
     EFFECTS: {
       MUTANTER_CONTAINED_EFFECT: {
@@ -388,9 +419,37 @@
     }
     CODEX: {
       STORY_TRAITS: {
+        CLOSE_BUTTON: 关闭
         MUTANTER_FOUNDER: {
-          NAME: 畸变源核遗迹
+          NAME: 畸变源核祭坛遗迹
           DESCRIPTION: 深埋异星地下的古老遗迹，承载着未知文明的畸变研究痕迹，核心蕴含强烈的畸变能量，是畸变体诞生的源头，需通过献祭与特定条件解锁，唤醒其中封存的独特畸变体。
+          END_POPUP: {
+            NAME:剧情特质完成：畸变源核祭坛遗迹
+            CODEX_NAME:仪式完成
+            DESCRIPTION:"成功！畸变体祭坛已完成全部校准。\n\n现在可引导畸变体的不稳定能量，改变其物理特性。\n\n警告：过度使用会导致祭坛进入敌对状态，引发不可预知的突变。"
+            BUTTON:解锁祭坛操控模式
+          }
+          BEGIN_POPUP: {
+            NAME: 剧情特质：畸变源核祭坛遗迹
+            CODEX_NAME: 发现祭坛
+            DESCRIPTION: "我发现了一座浸染着畸变体残余能量的古老祭坛。\n\n完成足够校准后，可利用它操控这些生物的基因不稳定性。\n\n但其能量极不稳定——务必极度谨慎操作。"
+          }
+          UNLOCK_SPECIES_NOTIFICATION: {
+            NAME: 畸变体已出现
+            TOOLTIP: "畸变源核祭坛遗迹 已发现以下畸变体变体：\n"
+          }
+          UNLOCK_SPECIES_POPUP: {
+            NAME: 畸变体已出现
+            TOOLTIP: "查看畸变体数据"
+          }
+          SPECIES_ENTRIES: {
+            MUTANTER_SCP173: 样本试图干扰祭坛能量核心。查看数据了解更多信息。
+            UNKNOWN_TITLE: 祭坛控制系统警告
+            UNKNOWN: "祭品已成功处理。\n\n因能量波动故障，突变功能暂时不可用。\n\n请注意：踢击祭坛外壳无法修复此问题，还可能对能量矩阵造成永久性损坏。"
+          }
+          SPECIES_ENTRIES_EXPANDED: {
+            MUTANTER_SCP173: "样本试图突破祭坛能量核心外壳。样本状态可用，但收容装置已出现一定程度的损毁。\n\n对撞击痕迹的原子力显微镜分析显示存在针铁矿痕迹——这种矿物以极高的强度和对畸变体不稳定能量的亲和性著称。"
+          }
         }
       }
       MUTANTER: {
