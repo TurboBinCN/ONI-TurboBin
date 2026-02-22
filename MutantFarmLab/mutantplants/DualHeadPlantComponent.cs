@@ -104,7 +104,7 @@ namespace MutantFarmLab.mutantplants
             //子株占据Farmtile
             var OccupantPlant = RootPlotGameObject.GetComponent<PlantablePlot>().Occupant;
 
-            PUtil.LogDebug($"[双头株] 母株：[{_PlantI.name}] [{_PlantI.GetComponent<ReceptacleMonitor>()?.GetReceptacle()?.gameObject?.name}] OccupantPlant株: [{OccupantPlant.name}] [{OccupantPlant.GetComponent<ReceptacleMonitor>()?.GetReceptacle()?.gameObject?.name}]");
+            PUtil.LogDebug($"[双头株] 母株：[{_PlantI.name}] [{_PlantI.GetComponent<ReceptacleMonitor>()?.GetReceptacle()?.gameObject?.name}] OccupantPlant株: [{OccupantPlant?.name}] [{OccupantPlant?.GetComponent<ReceptacleMonitor>()?.GetReceptacle()?.gameObject?.name}]");
 
             //===读档时迁移操作，判断：读档 && 有双株 时机：母株重建时
             //注释:DualHeadSideScreen ClickHandler中完成初次迁移
@@ -127,7 +127,7 @@ namespace MutantFarmLab.mutantplants
             }
             //===绑定双株，设置增益，判断： 有双株 && 没有开启 双头株增益
             //确定有两株植物-->重建子株并绑定
-            if ((_marker.primaryPlant != _PlantI || OccupantPlant != _PlantI) && !dualHead)
+            if (OccupantPlant != null && (_marker.primaryPlant != _PlantI || OccupantPlant != _PlantI) && !dualHead)
             {
                 var twinPlant = OccupantPlant;
                 if (_marker.primaryPlant != _PlantI) twinPlant = _marker.primaryPlant;

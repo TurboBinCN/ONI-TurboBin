@@ -175,11 +175,13 @@ namespace MutantFarmLab
             if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
             var sub = PlantablePlotGameObject.Init(go);
             PlantablePlot plantablePlot = sub.AddOrGet<PlantablePlot>();
-            plantablePlot.occupyingObjectRelativePosition = new Vector3(0f, 1f, 0f);
+            plantablePlot.occupyingObjectRelativePosition.y = 1f;
 
             plantablePlot.SetFertilizationFlags(true, true);
 
             go.AddOrGet<DualHeadReceptacleMarker>();
+
+            PlantablePlotGameObject.SetUpFarmPlotTags(go, sub);
         }
     }
     public class RadiationPlotStorageHolder : KMonoBehaviour, ISaveLoadable

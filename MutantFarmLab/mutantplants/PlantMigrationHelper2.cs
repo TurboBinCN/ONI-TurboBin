@@ -14,6 +14,11 @@ namespace MutantFarmLab.mutantplants
                 PUtil.LogWarning("[双头株]Source or Target plot is null.");
                 return;
             }
+            Rotatable rotatable = targetPlot.gameObject.transform.parent?.gameObject.GetComponent<Rotatable>();
+            if (rotatable != null)
+            {
+                if (rotatable.GetOrientation() == Orientation.FlipV) targetPlot.occupyingObjectRelativePosition.y = -1;
+            }
             //---情况 1：植物没有种植槽，直接移植
             GameObject sourcePlantObject = plant;
             var sourcePlantablePlot = sourcePlantObject.GetComponent<ReceptacleMonitor>()?.GetReceptacle();
@@ -99,10 +104,11 @@ namespace MutantFarmLab.mutantplants
             PUtil.LogDebug($"[双头株]Instantiated standard seed object: {rebuildedPlantObject.name}");
 
             // --- 步骤 3: 销毁源植物 ---
-            if (sourcePlantObject != null){
+            if (sourcePlantObject != null)
+            {
                 PUtil.LogDebug("[双头株]执行拔除植物");
                 Util.KDestroyGameObject(sourcePlantObject);
-                TbbHarmonyExtension.InvokeMethod(sourcePlantObject.GetComponent<ReceptacleMonitor>().GetReceptacle(), "ClearOccupant",new object[] { });
+                TbbHarmonyExtension.InvokeMethod(sourcePlantObject.GetComponent<ReceptacleMonitor>().GetReceptacle(), "ClearOccupant", new object[] { });
             }
             // --- 步骤 4: 强制放入目标种植槽 ---
             PUtil.LogDebug("[双头株]调用 ReplacePlant 放入种植槽.");

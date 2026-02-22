@@ -1,14 +1,11 @@
 ﻿using HarmonyLib;
 using KSerialization;
 using MutantFarmLab.mutantplants;
-using MutantFarmLab.tbbLibs;
 using PeterHan.PLib.Core;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using TemplateClasses;
 using UnityEngine;
-using static MutantFarmLab.RadiationFarmTileConfig;
-using static StructureTemperaturePayload;
 
 namespace MutantFarmLab
 {
@@ -16,11 +13,24 @@ namespace MutantFarmLab
     public static class PlantablePlotGameObject
     {
         public static string storageName = "Dual_Head_Plot";
-        public class BackPlatablePlot: PlantablePlot
+        public class BackPlatablePlot : PlantablePlot
         {
             protected override void OnPrefabInit()
             {
                 base.OnPrefabInit();
+            }
+        }
+        public class SubGoStorage : Storage
+        {
+            protected override void OnPrefabInit()
+            {
+                base.OnPrefabInit();
+            }
+            protected override void OnCleanUp()
+            {
+                PUtil.LogDebug($"SubGoStorage OnCleanUp DropALl items.");
+                DropAll();
+                base.OnCleanUp();
             }
         }
         public static GameObject Init(GameObject parentGo)
@@ -35,9 +45,11 @@ namespace MutantFarmLab
 
             var kPrefabID = SubGameObject.AddOrGet<KPrefabID>();
             kPrefabID.PrefabTag = TagManager.Create(storageName + "Tag");
+            kPrefabID.AddTag(GameTags.CodexCategories.FarmBuilding, false);
+            kPrefabID.AddTag(GameTags.FarmTiles, false);
             kPrefabID.AddTag(GameTags.StorageLocker, false);
 
-            Storage storage = SubGameObject.AddOrGet<Storage>();
+            Storage storage = SubGameObject.AddOrGet<SubGoStorage>();
             storage.name = storageName;
             storage.SetDefaultStoredItemModifiers(Storage.StandardSealedStorage);
             storage.capacityKg = 2000f;
@@ -48,7 +60,7 @@ namespace MutantFarmLab
 
             var kSelectable = SubGameObject.AddOrGet<KSelectable>();
             kSelectable.SetName(storageName);
-            kSelectable.IsSelectable = true;
+            kSelectable.IsSelectable = false;
 
             var plantablePlot = SubGameObject.AddOrGet<BackPlatablePlot>();
             plantablePlot.AddDepositTag(GameTags.CropSeed);
@@ -81,6 +93,34 @@ namespace MutantFarmLab
             {
                 farmtileObj.transform.Find(storageName)?.gameObject?.SetActive(active);
             }
+        }
+
+        public static void SetUpFarmPlotTags(GameObject go, GameObject subGo)
+        {
+            go.GetComponent<KPrefabID>().prefabSpawnFn += delegate (GameObject inst)
+            {
+                Rotatable component = inst.GetComponent<Rotatable>();
+                PlantablePlot component2 = subGo.GetComponent<PlantablePlot>();
+
+                switch (component.GetOrientation())
+                {
+                    case Orientation.Neutral:
+                    case Orientation.FlipH:
+                        component2.occupyingObjectRelativePosition.y = 1f;
+                        break;
+                    case Orientation.R90:
+                    case Orientation.R270:
+                    case Orientation.R180:
+                    case Orientation.FlipV:
+                        component2.occupyingObjectRelativePosition.y = -1f;
+                        break;
+                    case Orientation.NumRotations:
+                        break;
+                    default:
+                        component2.occupyingObjectRelativePosition.y = 1f;
+                        break;
+                }
+            };
         }
 
     }
@@ -132,7 +172,7 @@ namespace MutantFarmLab
         [OnDeserialized]
         public void DeserializeStorage()
         {
-            
+
             if (savedItems.Count <= 0) return;
 
             if (_storage == null)
@@ -176,6 +216,8 @@ namespace MutantFarmLab
             plantablePlot.SetFertilizationFlags(true, true);
 
             go.AddOrGet<DualHeadReceptacleMarker>();
+
+            PlantablePlotGameObject.SetUpFarmPlotTags(go, sub);
         }
     }
     [HarmonyPatch(typeof(FarmTileConfig), "DoPostConfigureComplete")]
@@ -187,11 +229,31 @@ namespace MutantFarmLab
             if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
             var sub = PlantablePlotGameObject.Init(go);
             PlantablePlot plantablePlot = sub.AddOrGet<PlantablePlot>();
-            plantablePlot.occupyingObjectRelativePosition = new Vector3(0f, 1f, 0f);
+            plantablePlot.occupyingObjectRelativePosition.y = 1f;
 
             plantablePlot.SetFertilizationFlags(true, false);
 
             go.AddOrGet<DualHeadReceptacleMarker>();
+
+            PlantablePlotGameObject.SetUpFarmPlotTags(go, sub);
+        }
+    }
+    [HarmonyPatch(typeof(SingleEntityReceptacle), "OnOccupantDestroyed")]
+    public class SingleEntityReceptacle_OnOccupantDestroyed_Patches
+    {
+        public static bool Prefix(SingleEntityReceptacle __instance, object data)
+        {
+
+            try
+            {
+                var name = __instance.gameObject.name;
+            }
+            catch (Exception ex)
+            {
+                PUtil.LogWarning($"{ex.Message}\n{ex.StackTrace}");
+                return false;
+            }
+            return true;
         }
     }
 }
