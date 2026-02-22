@@ -81,7 +81,7 @@ namespace MutantFarmLab.mutantplants
                     ));
                 }
             }
-            //----Modifier: 肥料 减半
+            //----Modifier: 肥料 减半 主要谨慎处理，因为有些植株不需要肥料
             _originalState.attributeModifier.Add(new AttributeModifier(
                 Db.Get().PlantAttributes.FertilizerUsageMod.Id,
                 PlantMutationRegister.DUAL_HEAD_SYMBIOSIS_FertilizerUsageMod, // 减半（假设原值为1.0）
@@ -119,7 +119,7 @@ namespace MutantFarmLab.mutantplants
             {
                 gameObject.GetComponent<Modifiers>().attributes.Add( attr );
                 // 注意：这里我们仍依赖 attribute 查询是否实时生效
-                PUtil.LogDebug($"[双头株] 设置[{gameObject.name}] 修改项 [{attr.AttributeId}] 最终值:[{gameObject.GetComponent<Modifiers>().attributes.Get(attr.AttributeId).GetTotalValue()}]");
+                PUtil.LogDebug($"[双头株] 设置[{gameObject.name}] 修改项 [{attr.AttributeId}] 最终值:[{gameObject.GetComponent<Modifiers>().attributes.Get(attr.AttributeId)?.GetTotalValue()}]");
             }
             //----生长进度同步
             Growing growingA = gameObject.GetComponent<Growing>();
@@ -141,8 +141,10 @@ namespace MutantFarmLab.mutantplants
                 // 注意：需要保存添加的 modifier 实例才能精准移除
                 foreach (var modifier in _originalState.attributeModifier)
                 {
-                    if (modifier != null) modifiers.attributes.Remove(modifier);
-                    PUtil.LogDebug($"[双头株]Remove AttrModifier [{modifier.AttributeId}] totalValue:[{gameObject.GetComponent<Modifiers>().attributes.Get(modifier.AttributeId).GetTotalValue()}]");
+                    if (modifier != null) {
+                        modifiers.attributes.Get(modifier.AttributeId)?.Remove(modifier);
+                        PUtil.LogDebug($"[双头株]Remove AttrModifier [{modifier.AttributeId}] totalValue:[{gameObject.GetComponent<Modifiers>().attributes.Get(modifier.AttributeId)?.GetTotalValue()}]");
+                    }
                 }
             }
             PUtil.LogDebug($"[双头株] 恢复[{gameObject.name}]为原始状态。");

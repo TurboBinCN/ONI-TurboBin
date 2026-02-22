@@ -115,6 +115,7 @@
     <None Include="anim\assets\radiation_tile_adapter\radiation_tile_adapter_build.bytes" />
     <None Include="Directory.Build.props" />
     <None Include="Directory.Build.targets" />
+    <None Include="translations\ru.hjson" />
     <None Include="translations\zh.hjson" />
   </ItemGroup>
   <ItemGroup />
