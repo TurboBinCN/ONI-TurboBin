@@ -154,6 +154,11 @@
         SCP173: <link=\"MUTANTER_SCP173\">SCP-173</link>
       }
     }
+    MISC: {
+      TAGS: {
+        UNOBTANIUM: 不可得之物
+      }
+    }
     BUILDINGS: {
       PREFABS: {
         GRAVITASMUTANTERFOUNDER: {
@@ -165,6 +170,11 @@
           NAME: 畸变体监控站
           DESC: 用于监控畸变体，并进行相应的安全控制措施，防止畸变体突破收容
           EFFECT: 在畸变体收容所内，对畸变体进行安全防治。
+        }
+        CONTAINMENTTILE: {
+          NAME: 中子质收容护壁
+          DESC: 由中子质锻造而成的强化护壁，构成畸变体收容室的核心结构屏障。可抵御物理突破，并抑制收容实体释放的不稳定能量。
+          EFFECT: 为畸变体收容室内的畸变体提供无法穿透的物理收容防护与能量抑制效果。
         }
       }
       STATUSITEMS: {

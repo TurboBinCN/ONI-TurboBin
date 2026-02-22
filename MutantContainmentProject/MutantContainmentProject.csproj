@@ -44,10 +44,12 @@
     <Compile Include="Buildings\ContainmentMonitorWorkable.cs" />
     <Compile Include="Buildings\ContainmentMonitorStationConfig.cs" />
     <Compile Include="Buildings\ContainmentMonitor.cs" />
+    <Compile Include="Buildings\ContainmentTileConfig.cs" />
     <Compile Include="Buildings\GravitasMutanterFounder.cs" />
     <Compile Include="Buildings\GravitasMutanterFounderConfig.cs" />
     <Compile Include="Buildings\SecureTermDb.cs" />
     <Compile Include="Buildings\MutanterSecurableMonitor.cs" />
+    <Compile Include="FunctionPatches\MiningNeutronium_Patches.cs" />
     <Compile Include="MutanterCodexEntries\MutanterCodexEntry.cs" />
     <Compile Include="MutanterComponent\MutanterBrain.cs" />
     <Compile Include="MutanterComponent\MutanterCreature.cs" />
@@ -80,6 +82,8 @@
     <Compile Include="Strings.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="anim\assets\containment_tile\containment_tile_anim.bytes" />
+    <None Include="anim\assets\containment_tile\containment_tile_build.bytes" />
     <None Include="anim\assets\SCP173\scp173_anim.bytes" />
     <None Include="anim\assets\SCP173\scp173_build.bytes" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP173.yaml" />
@@ -91,7 +95,9 @@
     <None Include="translations\zh.hjson" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="anim\assets\containment_tile\containment_tile.png" />
     <Content Include="anim\assets\SCP173\scp173.png" />
+    <Content Include="assets\texture\containment_tile_solid.png" />
     <Content Include="developNotes.txt" />
     <Content Include="Directory.Build.props.user" />
   </ItemGroup>

@@ -6,5 +6,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="Hjson" HintPath="../libs/Hjson.dll" />
+		<Reference Include="UnityEngine.AssetBundle" HintPath="$(GameFolder)/UnityEngine.AssetBundleModule.dll" />
 	</ItemGroup>
 </Project>

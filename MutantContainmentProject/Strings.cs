@@ -178,6 +178,11 @@ namespace MutantContainmentProject
                 public static LocString SCP173 = global::STRINGS.UI.FormatAsLink("SCP-173", SCP173Config.ID);
             }
         }
+        public static class MISC {
+            public static class TAGS { 
+                public static LocString UNOBTANIUM = "Unobtanium";
+            }
+        }
         public static class BUILDINGS
         {
             public static class PREFABS
@@ -193,6 +198,11 @@ namespace MutantContainmentProject
                     public static LocString NAME = "Mutant Monitoring Station";
                     public static LocString DESC = "Used to monitor mutants and implement corresponding safety control measures to prevent them from breaking containment.";
                     public static LocString EFFECT = "Provides security prevention measures for mutants within the Mutant Containment Chamber.";
+                }
+                public static class CONTAINMENTTILE {
+                    public static LocString NAME = "Neutronium Containment Plating";
+                    public static LocString DESC = "Forged from neutronium, this reinforced plating forms the structural barrier of the Aberrant Containment Chamber. It resists physical breaches and suppresses unstable energy emissions from contained entities.";
+                    public static LocString EFFECT = "Provides impenetrable physical containment and energy suppression for aberrant entities within the Aberrant Containment Chamber.";
                 }
             }
             public static class STATUSITEMS
