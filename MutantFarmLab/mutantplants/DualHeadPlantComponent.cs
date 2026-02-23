@@ -127,25 +127,53 @@ namespace MutantFarmLab.mutantplants
             }
             //===绑定双株，设置增益，判断： 有双株 && 没有开启 双头株增益
             //确定有两株植物-->重建子株并绑定
-            if (OccupantPlant != null && (_marker.primaryPlant != _PlantI || OccupantPlant != _PlantI) && !dualHead)
+            if (_marker.primaryPlant != null && !dualHead)
             {
-                var twinPlant = OccupantPlant;
-                if (_marker.primaryPlant != _PlantI) twinPlant = _marker.primaryPlant;
+                // 检查是否存在另一株植物（可能在不同种植槽）
+                GameObject twinPlant = null;
 
-                var twinPlantCom = twinPlant.AddOrGet<DualHeadPlantComponent>();
-                if (twinPlantCom != OccupantPlant)
+                // 情况1：原生种植槽中有其他植物
+                if (OccupantPlant != null && OccupantPlant != _PlantI)
                 {
-                    twinPlantCom.RootPlotGameObject = RootPlotGameObject;
-                    twinPlantCom.iPlotGameObject = RootPlotGameObject;
-                    twinPlantCom._marker = _marker;
+                    twinPlant = OccupantPlant;
                 }
-                twinPlantCom.SetTwin(this);
+                // 情况2：主植物标记指向其他植物
+                else if (_marker.primaryPlant != _PlantI)
+                {
+                    twinPlant = _marker.primaryPlant;
+                }
+                // 情况3：检查额外种植槽中是否有植物
+                else
+                {
+                    var plantablePlotGO = PlantablePlotGameObject.GetGameObject(RootPlotGameObject);
+                    if (plantablePlotGO != null)
+                    {
+                        var extraPlot = plantablePlotGO.GetComponent<PlantablePlot>();
+                        if (extraPlot != null && extraPlot.Occupant != null && extraPlot.Occupant != _PlantI)
+                        {
+                            twinPlant = extraPlot.Occupant;
+                        }
+                    }
+                }
 
-                SetTwin(twinPlantCom);
-                SetDualHead(true);
-                ApplyDualHeadBonuses(_PlantI, twinPlant);
+                // 如果找到另一株植物，执行绑定
+                if (twinPlant != null)
+                {
+                    var twinPlantCom = twinPlant.AddOrGet<DualHeadPlantComponent>();
+                    if (twinPlantCom != twinPlant)
+                    {
+                        twinPlantCom.RootPlotGameObject = RootPlotGameObject;
+                        twinPlantCom.iPlotGameObject = RootPlotGameObject;
+                        twinPlantCom._marker = _marker;
+                    }
+                    twinPlantCom.SetTwin(this);
 
-                PUtil.LogDebug($"[双头株] 完成绑定与Effect 母株[{_PlantI.name}] 子株:[{twin.gameObject.name}] 标记:[{_marker.primaryPlant.name}] dualHead:[{dualHead}]");
+                    SetTwin(twinPlantCom);
+                    SetDualHead(true);
+                    ApplyDualHeadBonuses(_PlantI, twinPlant);
+
+                    PUtil.LogDebug($"[双头株] 完成绑定与Effect 母株[{_PlantI.name}] 子株:[{twin.gameObject.name}] 标记:[{_marker.primaryPlant.name}] dualHead:[{dualHead}]");
+                }
             }
         }
         private void ApplyDualHeadBonuses(GameObject primary, GameObject secondary)
@@ -167,8 +195,8 @@ namespace MutantFarmLab.mutantplants
             {
                 //清理关联引用与增益
                 var dulHeadPlantCom = _PlantI.GetComponent<DualHeadPlantComponent>();
-                PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}]CleanUP 开始清理[{dulHeadPlantCom?.twin.gameObject.name}]共生状态.");
-                BreakSymbiosis(dulHeadPlantCom?.twin.gameObject);
+                PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}]CleanUP 开始清理[{dulHeadPlantCom?.twin?.gameObject.name}]共生状态.");
+                BreakSymbiosis(dulHeadPlantCom?.twin?.gameObject);
 
                 //断开配对
                 SetDualHead(false);
