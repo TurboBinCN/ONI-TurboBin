@@ -74,8 +74,7 @@ namespace MutantContainmentProject
                     .Add(MutanterAttributes.AttributeWillPower, MutanterAttributes.AttributeWillPowerID)
                     .Add(MutanterAttributes.AttributeSuccessRate, MutanterAttributes.AttributeSuccessRateID)
                     .Add(MutanterAttributes.AttributeWorkingSpeed, MutanterAttributes.AttributeWorkingSpeedID)
-                    .Add(MutanterAttributes.AttributeAttackSpeed, MutanterAttributes.AttributeAttackSpeedID)
-                    .Add(MutanterAttributes.AttributeMovingSpeed, MutanterAttributes.AttributeMovingSpeedID);
+                    .Add(MutanterAttributes.AttributeAttackDamage, MutanterAttributes.AttributeAttackDamageID);
                 //ChoreGroups
                 TbbChoreGroups.Initialize(mod, harmony)
                     .Add(MutanterChoreGroups.ChoreGroupContain)
@@ -100,8 +99,7 @@ namespace MutantContainmentProject
                     .Add(MutanterSkillPerks.SkillPerkWillPower)
                     .Add(MutanterSkillPerks.SkillSuccessRatePower)
                     .Add(MutanterSkillPerks.SkillWorkingSpeedPower)
-                    .Add(MutanterSkillPerks.SkillAttackSpeedPower)
-                    .Add(MutanterSkillPerks.SkillMovingSpeedPower);
+                    .Add(MutanterSkillPerks.SkillAttackDamagePower);
                 //技能
                 TbbSkills.Initialize(mod, harmony)
                     .Add(MutanterSkills.SkillBraveryI)

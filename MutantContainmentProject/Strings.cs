@@ -1,4 +1,4 @@
-﻿using MutantContainmentProject.Mutanters;
+using MutantContainmentProject.Mutanters;
 
 namespace MutantContainmentProject
 {
@@ -297,13 +297,9 @@ namespace MutantContainmentProject
                 {
                     public static LocString NAME = "Working Speed";
                 }
-                public static class ATTACKSPEED
+                public static class ATTACKDAMAGE
                 {
-                    public static LocString NAME = "Attack Speed";
-                }
-                public static class MOVINGSPEED
-                {
-                    public static LocString NAME = "Moving Speed";
+                    public static LocString NAME = "Attack Damage";
                 }
             }
             public static class ROLES
@@ -356,29 +352,17 @@ namespace MutantContainmentProject
                 {
                     public static LocString NAME = "WorkingSpeedIII";
                 }
-                public static class ATTACKPEEDI
+                public static class ATTACKDAMAGEI
                 {
-                    public static LocString NAME = "AttackSpeedI";
+                    public static LocString NAME = "AttackDamageI";
                 }
-                public static class ATTACKPEEDII
+                public static class ATTACKDAMAGEII
                 {
-                    public static LocString NAME = "AttackSpeedII";
+                    public static LocString NAME = "AttackDamageII";
                 }
-                public static class ATTACKPEEDIII
+                public static class ATTACKDAMAGEIII
                 {
-                    public static LocString NAME = "AttackSpeedIII";
-                }
-                public static class MOVINGSPEEDI
-                {
-                    public static LocString NAME = "MovingSpeedI";
-                }
-                public static class MOVINGSPEEDII
-                {
-                    public static LocString NAME = "MovingSpeedII";
-                }
-                public static class MOVINGSPEEDIII
-                {
-                    public static LocString NAME = "MovingSpeedIII";
+                    public static LocString NAME = "AttackDamageIII";
                 }
             }
         }
@@ -452,17 +436,17 @@ namespace MutantContainmentProject
             public static class BRAVERYI
             {
                 public static LocString NAME = "Bravery I";
-                public static LocString DESCRIPTION = "Bravery I Increase hitpoints.";
+                public static LocString DESCRIPTION = "Increase 10 hit points";
             }
             public static class BRAVERYII
             {
                 public static LocString NAME = "Bravery II";
-                public static LocString DESCRIPTION = "Bravery II Increase hitpoints.";
+                public static LocString DESCRIPTION = "Increase 10 hit points";
             }
             public static class BRAVERYIII
             {
                 public static LocString NAME = "Bravery III";
-                public static LocString DESCRIPTION = "Bravery III Increase hitpoints.";
+                public static LocString DESCRIPTION = "Increase 10 hit points";
             }
             public static class CAUTIONI
             {
@@ -497,17 +481,17 @@ namespace MutantContainmentProject
             public static class RIGHTEOUSNESSI
             {
                 public static LocString NAME = "Righteousness I";
-                public static LocString DESCRIPTION = "Righteousness I.Increase Attack Speed/Moving Speed";
+                public static LocString DESCRIPTION = "Righteousness I.Increase Attack Damage";
             }
             public static class RIGHTEOUSNESSII
             {
                 public static LocString NAME = "Righteousness II";
-                public static LocString DESCRIPTION = "Righteousness II.Increase Attack Speed/Moving Speed";
+                public static LocString DESCRIPTION = "Righteousness II.Increase Attack Damage";
             }
             public static class RIGHTEOUSNESSIII
             {
                 public static LocString NAME = "Righteousness III";
-                public static LocString DESCRIPTION = "Righteousness III.Increase Attack Speed/Moving Speed";
+                public static LocString DESCRIPTION = "Righteousness III.Increase Attack Damage";
             }
         }
         public static class TRAITS

@@ -1,4 +1,4 @@
-﻿using Klei.AI;
+using Klei.AI;
 
 namespace MutantContainmentProject.Skills
 {
@@ -8,8 +8,7 @@ namespace MutantContainmentProject.Skills
         public static string AttributeWillPowerID = "WillPower";
         public static string AttributeSuccessRateID = "SuccessRate";
         public static string AttributeWorkingSpeedID = "WorkingSpeed";
-        public static string AttributeAttackSpeedID = "AttackSpeed";
-        public static string AttributeMovingSpeedID = "MovingSpeed";
+        public static string AttributeAttackDamageID = "AttackDamage";
         public static void AttributeBravery(Database.Attributes __instance)
         {
             var attribute = __instance.Add(new Attribute(AttributeBraveryID, is_trainable: true, Attribute.Display.Skill, is_profession: true, 0f, null, null, "mod_excavation"));
@@ -34,15 +33,10 @@ namespace MutantContainmentProject.Skills
 
             attribute.SetFormatter(new StandardAttributeFormatter(GameUtil.UnitClass.SimpleInteger, GameUtil.TimeSlice.None));
         }
-        public static void AttributeAttackSpeed(Database.Attributes __instance)
-        {
-            var attribute = __instance.Add(new Attribute(AttributeAttackSpeedID, is_trainable: true, Attribute.Display.Skill, is_profession: true, 0f, null, null, "mod_excavation"));
 
-            attribute.SetFormatter(new StandardAttributeFormatter(GameUtil.UnitClass.SimpleInteger, GameUtil.TimeSlice.None));
-        }
-        public static void AttributeMovingSpeed(Database.Attributes __instance)
+        public static void AttributeAttackDamage(Database.Attributes __instance)
         {
-            var attribute = __instance.Add(new Attribute(AttributeMovingSpeedID, is_trainable: true, Attribute.Display.Skill, is_profession: true, 0f, null, null, "mod_excavation"));
+            var attribute = __instance.Add(new Attribute(AttributeAttackDamageID, is_trainable: true, Attribute.Display.Skill, is_profession: true, 0f, null, null, "mod_excavation"));
 
             attribute.SetFormatter(new StandardAttributeFormatter(GameUtil.UnitClass.SimpleInteger, GameUtil.TimeSlice.None));
         }

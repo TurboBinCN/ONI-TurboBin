@@ -49,6 +49,8 @@
     <Compile Include="Buildings\GravitasMutanterFounderConfig.cs" />
     <Compile Include="Buildings\SecureTermDb.cs" />
     <Compile Include="Buildings\MutanterSecurableMonitor.cs" />
+    <Compile Include="Duplicants\AttackMutanterWeapon.cs" />
+    <Compile Include="Duplicants\DuplicantsAttribute_Patch.cs" />
     <Compile Include="FunctionPatches\MiningNeutronium_Patches.cs" />
     <Compile Include="MutanterCodexEntries\MutanterCodexEntry.cs" />
     <Compile Include="MutanterComponent\MutanterBrain.cs" />
@@ -81,6 +83,7 @@
     <Compile Include="Skills\MutanterSkillGroups.cs" />
     <Compile Include="Skills\MutanterSkillPerks.cs" />
     <Compile Include="Skills\MutanterSkills.cs" />
+    <Compile Include="Skills\SkillAmountPerk.cs" />
     <Compile Include="Strings.cs" />
   </ItemGroup>
   <ItemGroup>

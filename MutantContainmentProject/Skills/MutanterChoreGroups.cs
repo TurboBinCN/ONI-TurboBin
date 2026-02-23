@@ -37,7 +37,7 @@ namespace MutantContainmentProject.Skills
         {
             object choregroupObj;
             bool success = TbbHarmonyExtension.InvokeMethod(out choregroupObj, __instance, "Add", new object[] {
-                ChoreGroupRighteousnessID, STRINGS.CHOREGROUPS.RIGHTEOUSNESS.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeAttackSpeedID),
+                ChoreGroupRighteousnessID, STRINGS.CHOREGROUPS.RIGHTEOUSNESS.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeAttackDamageID),
                 "icon_errand_dig",2, true
             });
         }

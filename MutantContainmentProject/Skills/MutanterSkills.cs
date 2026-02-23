@@ -25,7 +25,7 @@ namespace MutantContainmentProject.Skills
         {
             var skill = new Skill(SkillBraveryIID, STRINGS.SKILLS.BRAVERYI.NAME, STRINGS.SKILLS.BRAVERYI.DESCRIPTION, 0, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillGroupContainID, new List<SkillPerk>
             {
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseContainSpeedSmall)
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseHitPointsSmall)
             }, null, "Minion", null, null);
             return skill;
         }
@@ -33,7 +33,7 @@ namespace MutantContainmentProject.Skills
         {
             var skill = new Skill(SkillBraveryIIID, STRINGS.SKILLS.BRAVERYII.NAME, STRINGS.SKILLS.BRAVERYII.DESCRIPTION, 1, hat: "hat_role_mining2", badge: "skillbadge_role_mining2", skillGroup: MutanterSkillGroups.SkillGroupContainID, new List<SkillPerk>
             {
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseContainSpeedMedium)
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseHitPointsMedium)
             }, new List<string>
             {
                 SkillBraveryIID
@@ -45,7 +45,7 @@ namespace MutantContainmentProject.Skills
         {
             var skill = new Skill(SkillBraveryIIIID, STRINGS.SKILLS.BRAVERYIII.NAME, STRINGS.SKILLS.BRAVERYIII.DESCRIPTION, 2, hat: "hat_role_mining3", badge: "skillbadge_role_mining3", skillGroup: MutanterSkillGroups.SkillGroupContainID, new List<SkillPerk>
             {
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseContainSpeedLarge)
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseHitPointsLarge)
             }, new List<string>
             {
                 SkillBraveryIIID
@@ -107,8 +107,7 @@ namespace MutantContainmentProject.Skills
         {
             var skill = new Skill(SkillRighteousnessIID, STRINGS.SKILLS.RIGHTEOUSNESSI.NAME, STRINGS.SKILLS.RIGHTEOUSNESSI.DESCRIPTION, 0, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillRighteousnessID, new List<SkillPerk>
             {
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseAttackSpeedSmall),
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseMovingSpeedSmall)
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseAttackDamageSmall)
             }, null, "Minion", null, null);
             return skill;
         }
@@ -116,8 +115,7 @@ namespace MutantContainmentProject.Skills
         {
             var skill = new Skill(SkillRighteousnessIIID, STRINGS.SKILLS.RIGHTEOUSNESSII.NAME, STRINGS.SKILLS.RIGHTEOUSNESSII.DESCRIPTION, 1, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillRighteousnessID, new List<SkillPerk>
             {
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseAttackSpeedMedium),
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseMovingSpeedMedium)
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseAttackDamageMedium)
             }, null, "Minion", null, null);
             return skill;
         }
@@ -125,8 +123,7 @@ namespace MutantContainmentProject.Skills
         {
             var skill = new Skill(SkillRighteousnessIIIID, STRINGS.SKILLS.RIGHTEOUSNESSIII.NAME, STRINGS.SKILLS.RIGHTEOUSNESSIII.DESCRIPTION, 2, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillRighteousnessID, new List<SkillPerk>
             {
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseAttackSpeedLarge),
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseMovingSpeedLarge)
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseAttackDamageLarge)
             }, null, "Minion", null, null);
             return skill;
         }

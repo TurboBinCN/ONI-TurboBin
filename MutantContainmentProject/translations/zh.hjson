@@ -1,4 +1,4 @@
-﻿{
+{
   STRINGS: {
     SECURE_ACTION: {
       ACTION_INSTINCT: {
@@ -219,11 +219,8 @@
         WORKINGSPEED: {
           NAME: 工作速度
         }
-        ATTACKSPEED: {
-          NAME: 攻击速度
-        }
-        MOVINGSPEED: {
-          NAME: 移动速度
+        ATTACKDAMAGE: {
+          NAME: 攻击伤害
         }
       }
       ROLES: {
@@ -318,15 +315,15 @@
     SKILLS: {
       BRAVERYI: {
         NAME: 勇气 I
-        DESCRIPTION: 勇气 I 增加生命值
+        DESCRIPTION: 增加10点生命值
       }
       BRAVERYII: {
         NAME: 勇气 II
-        DESCRIPTION: 勇气 II 增加生命值
+        DESCRIPTION: 增加10点生命值
       }
       BRAVERYIII: {
         NAME: 勇气 III
-        DESCRIPTION: 勇气 III 增加生命值
+        DESCRIPTION: 增加10点生命值
       }
       CAUTIONI: {
         NAME: 谨慎 I
@@ -354,15 +351,15 @@
       }
       RIGHTEOUSNESSI: {
         NAME: 正义 I
-        DESCRIPTION: 正义 I 增加攻击速度/移动速度
+        DESCRIPTION: 正义 I 增加攻击伤害
       }
       RIGHTEOUSNESSII: {
         NAME: 正义 II
-        DESCRIPTION: 正义 II 增加攻击速度/移动速度
+        DESCRIPTION: 正义 II 增加攻击伤害
       }
       RIGHTEOUSNESSIII: {
         NAME: 正义 III
-        DESCRIPTION: 正义 III 增加攻击速度/移动速度
+        DESCRIPTION: 正义 III 增加攻击伤害
       }
     }
     TRAITS: {

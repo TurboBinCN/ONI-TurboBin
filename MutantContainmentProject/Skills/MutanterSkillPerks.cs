@@ -1,4 +1,4 @@
-﻿using Database;
+using Database;
 
 namespace MutantContainmentProject.Skills
 {
@@ -21,61 +21,57 @@ namespace MutantContainmentProject.Skills
         public static readonly string IncreaseWorkingSpeedMedium = "IncreaseWorkingSpeedMedium";
         public static readonly string IncreaseWorkingSpeedLarge = "IncreaseWorkingSpeedLarge";
 
-        //攻击速度
-        public static readonly string IncreaseAttackSpeedSmall = "IncreaseAttackSpeedSmall";
-        public static readonly string IncreaseAttackSpeedMedium = "IncreaseAttackSpeedMedium";
-        public static readonly string IncreaseAttackSpeedLarge = "IncreaseAttackSpeedLarge";
-        //移动速度
-        public static readonly string IncreaseMovingSpeedSmall = "IncreaseMovingSpeedSmall";
-        public static readonly string IncreaseMovingSpeedMedium = "IncreaseMovingSpeedMedium";
-        public static readonly string IncreaseMovingSpeedLarge = "IncreaseMovingSpeedLarge";
+        //攻击伤害
+        public static readonly string IncreaseAttackDamageSmall = "IncreaseAttackDamageSmall";
+        public static readonly string IncreaseAttackDamageMedium = "IncreaseAttackDamageMedium";
+        public static readonly string IncreaseAttackDamageLarge = "IncreaseAttackDamageLarge";
+
+        //生命值
+        public static readonly string IncreaseHitPointsSmall = "IncreaseHitPointsSmall";
+        public static readonly string IncreaseHitPointsMedium = "IncreaseHitPointsMedium";
+        public static readonly string IncreaseHitPointsLarge = "IncreaseHitPointsLarge";
+
+        public static float ATTRIBUTE_BONUS = 3f;
+        public static float HEALTH_BONUS_PER_LEVEL = 10f;
         public static void SkillPerkContain(SkillPerks __instance)
         {
-            __instance.Add(new SkillAttributePerk(IncreaseContainSpeedSmall, MutanterAttributes.AttributeBraveryID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_FIRST, STRINGS.DUPLICANTS.ROLES.BAVERYI.NAME, false));
+            __instance.Add(new SkillAmountPerk(IncreaseHitPointsSmall, "HitPoints", HEALTH_BONUS_PER_LEVEL * ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.BAVERYI.NAME, false));
 
-            __instance.Add(new SkillAttributePerk(IncreaseContainSpeedMedium, MutanterAttributes.AttributeBraveryID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_SECOND, STRINGS.DUPLICANTS.ROLES.BAVERYII.NAME, false));
+            __instance.Add(new SkillAmountPerk(IncreaseHitPointsMedium, "HitPoints", HEALTH_BONUS_PER_LEVEL * ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.BAVERYII.NAME, false));
 
-            __instance.Add(new SkillAttributePerk(IncreaseContainSpeedLarge, MutanterAttributes.AttributeBraveryID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_THIRD, STRINGS.DUPLICANTS.ROLES.BAVERYIII.NAME, false));
+            __instance.Add(new SkillAmountPerk(IncreaseHitPointsLarge, "HitPoints", HEALTH_BONUS_PER_LEVEL * ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.BAVERYIII.NAME, false));
         }
         public static void SkillPerkWillPower(SkillPerks __instance)
         {
-            __instance.Add(new SkillAttributePerk(IncreaseWillPowerSmall, MutanterAttributes.AttributeWillPowerID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_FIRST, STRINGS.DUPLICANTS.ROLES.WILLPOWERI.NAME, false));
+            __instance.Add(new SkillAttributePerk(IncreaseWillPowerSmall, MutanterAttributes.AttributeWillPowerID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.WILLPOWERI.NAME, false));
 
-            __instance.Add(new SkillAttributePerk(IncreaseWillPowerMedium, MutanterAttributes.AttributeWillPowerID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_SECOND, STRINGS.DUPLICANTS.ROLES.WILLPOWERII.NAME, false));
+            __instance.Add(new SkillAttributePerk(IncreaseWillPowerMedium, MutanterAttributes.AttributeWillPowerID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.WILLPOWERII.NAME, false));
 
-            __instance.Add(new SkillAttributePerk(IncreaseWillPowerLarge, MutanterAttributes.AttributeWillPowerID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_THIRD, STRINGS.DUPLICANTS.ROLES.WILLPOWERIII.NAME, false));
+            __instance.Add(new SkillAttributePerk(IncreaseWillPowerLarge, MutanterAttributes.AttributeWillPowerID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.WILLPOWERIII.NAME, false));
         }
         public static void SkillSuccessRatePower(SkillPerks __instance)
         {
-            __instance.Add(new SkillAttributePerk(IncreaseSuccessRateLow, MutanterAttributes.AttributeSuccessRateID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_FIRST, STRINGS.DUPLICANTS.ROLES.SUCCESSRATEI.NAME, false));
+            __instance.Add(new SkillAttributePerk(IncreaseSuccessRateLow, MutanterAttributes.AttributeSuccessRateID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.SUCCESSRATEI.NAME, false));
 
-            __instance.Add(new SkillAttributePerk(IncreaseSuccessRateMedium, MutanterAttributes.AttributeSuccessRateID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_SECOND, STRINGS.DUPLICANTS.ROLES.SUCCESSRATEII.NAME, false));
+            __instance.Add(new SkillAttributePerk(IncreaseSuccessRateMedium, MutanterAttributes.AttributeSuccessRateID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.SUCCESSRATEII.NAME, false));
 
-            __instance.Add(new SkillAttributePerk(IncreaseSuccessRateHigh, MutanterAttributes.AttributeSuccessRateID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_THIRD, STRINGS.DUPLICANTS.ROLES.SUCCESSRATEIII.NAME, false));
+            __instance.Add(new SkillAttributePerk(IncreaseSuccessRateHigh, MutanterAttributes.AttributeSuccessRateID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.SUCCESSRATEIII.NAME, false));
         }
         public static void SkillWorkingSpeedPower(SkillPerks __instance)
         {
-            __instance.Add(new SkillAttributePerk(IncreaseWorkingSpeedSmall, MutanterAttributes.AttributeWorkingSpeedID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_FIRST, STRINGS.DUPLICANTS.ROLES.WORKINGSPEEDI.NAME, false));
+            __instance.Add(new SkillAttributePerk(IncreaseWorkingSpeedSmall, MutanterAttributes.AttributeWorkingSpeedID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.WORKINGSPEEDI.NAME, false));
 
-            __instance.Add(new SkillAttributePerk(IncreaseWorkingSpeedMedium, MutanterAttributes.AttributeWorkingSpeedID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_SECOND, STRINGS.DUPLICANTS.ROLES.WORKINGSPEEDII.NAME, false));
+            __instance.Add(new SkillAttributePerk(IncreaseWorkingSpeedMedium, MutanterAttributes.AttributeWorkingSpeedID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.WORKINGSPEEDII.NAME, false));
 
-            __instance.Add(new SkillAttributePerk(IncreaseWorkingSpeedLarge, MutanterAttributes.AttributeWorkingSpeedID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_THIRD, STRINGS.DUPLICANTS.ROLES.WORKINGSPEEDIII.NAME, false));
+            __instance.Add(new SkillAttributePerk(IncreaseWorkingSpeedLarge, MutanterAttributes.AttributeWorkingSpeedID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.WORKINGSPEEDIII.NAME, false));
         }
-        public static void SkillAttackSpeedPower(SkillPerks __instance)
+        public static void SkillAttackDamagePower(SkillPerks __instance)
         {
-            __instance.Add(new SkillAttributePerk(IncreaseAttackSpeedSmall, MutanterAttributes.AttributeAttackSpeedID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_FIRST, STRINGS.DUPLICANTS.ROLES.ATTACKPEEDI.NAME, false));
+            __instance.Add(new SkillAttributePerk(IncreaseAttackDamageSmall, MutanterAttributes.AttributeAttackDamageID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.ATTACKDAMAGEI.NAME, false));
 
-            __instance.Add(new SkillAttributePerk(IncreaseAttackSpeedMedium, MutanterAttributes.AttributeAttackSpeedID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_SECOND, STRINGS.DUPLICANTS.ROLES.ATTACKPEEDII.NAME, false));
+            __instance.Add(new SkillAttributePerk(IncreaseAttackDamageMedium, MutanterAttributes.AttributeAttackDamageID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.ATTACKDAMAGEII.NAME, false));
 
-            __instance.Add(new SkillAttributePerk(IncreaseAttackSpeedLarge, MutanterAttributes.AttributeAttackSpeedID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_THIRD, STRINGS.DUPLICANTS.ROLES.ATTACKPEEDIII.NAME, false));
-        }
-        public static void SkillMovingSpeedPower(SkillPerks __instance)
-        {
-            __instance.Add(new SkillAttributePerk(IncreaseMovingSpeedSmall, MutanterAttributes.AttributeMovingSpeedID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_FIRST, STRINGS.DUPLICANTS.ROLES.MOVINGSPEEDI.NAME, false));
-
-            __instance.Add(new SkillAttributePerk(IncreaseMovingSpeedMedium, MutanterAttributes.AttributeMovingSpeedID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_SECOND, STRINGS.DUPLICANTS.ROLES.MOVINGSPEEDII.NAME, false));
-
-            __instance.Add(new SkillAttributePerk(IncreaseMovingSpeedLarge, MutanterAttributes.AttributeMovingSpeedID, (float)TUNING.ROLES.ATTRIBUTE_BONUS_THIRD, STRINGS.DUPLICANTS.ROLES.MOVINGSPEEDIII.NAME, false));
+            __instance.Add(new SkillAttributePerk(IncreaseAttackDamageLarge, MutanterAttributes.AttributeAttackDamageID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.ATTACKDAMAGEIII.NAME, false));
         }
     }
 }
