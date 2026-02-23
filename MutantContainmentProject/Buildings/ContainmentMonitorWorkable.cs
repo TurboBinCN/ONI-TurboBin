@@ -1,8 +1,11 @@
-﻿using Klei.AI;
+using Klei.AI;
+using MutantContainmentProject.MutanterComponent;
 using MutantContainmentProject.Skills;
 using System.Collections.Generic;
+using TBB.He.TbbLib.Debuger;
 using TUNING;
 using UnityEngine;
+using static MutantContainmentProject.MutanterComponent.MutanterProductComponent;
 
 namespace MutantContainmentProject.Buildings
 {
@@ -66,6 +69,9 @@ namespace MutantContainmentProject.Buildings
         protected override void OnStartWork(WorkerBase worker)
         {
             base.OnStartWork(worker);
+
+            // 重置工作状态
+            ResetWorkState();
 
             workerGameObject = worker.gameObject;
             Modifiers modifiers = workerGameObject.GetComponent<Modifiers>();
@@ -140,7 +146,8 @@ namespace MutantContainmentProject.Buildings
         {
             base.OnCompleteWork(worker);
 
-            //TODO 生成中间态物质逻辑 依赖于workerCompletedSubtasks/mutanterCompletedSubtasks
+            // 生成产出物逻辑
+            GenerateMutanterProducts();
 
             //TODO 失败小人重伤
 
@@ -152,6 +159,121 @@ namespace MutantContainmentProject.Buildings
                 if (securable != null) securable.GoInToContaiment();
             }
 
+        }
+
+        private void GenerateMutanterProducts()
+        {
+            // 综合小人成功和畸变体成功来计算产出物基础
+            int workerSuccessCount = workerCompletedSubtasks;
+            int mutanterSuccessCount = mutanterCompletedSubtasks;
+            
+            // 计算综合成功率
+            // 小人成功率作为主要因素，畸变体成功数作为负面因素
+            float baseSuccessRate = workerSuccessRateFactor;
+            
+            // 畸变体成功数越多，成功率越低
+            float mutanterPenalty = mutanterSuccessCount * 0.1f;
+            float finalSuccessRate = Mathf.Max(0.1f, baseSuccessRate - mutanterPenalty);
+            
+            // 计算总任务数，只考虑小人的成功数，畸变体的成功数不增加总产出
+            // 同时，畸变体的成功数会减少总任务数
+            int totalEffectiveSubtasks = Mathf.Max(1, workerSuccessCount - mutanterSuccessCount);
+            // 直接获取监控站管理的畸变体
+            if (_containmentMonitorSMI != null && _containmentMonitorSMI.gameObject != null)
+            {
+                int cell = Grid.PosToCell(_containmentMonitorSMI.gameObject.transform.position);
+                List<MutanterSecurableMonitor.Instance> targetSecurables = _containmentMonitorSMI.TargetSecurables;
+                
+                foreach (var securable in targetSecurables)
+                {
+                    if (securable != null && securable.gameObject != null)
+                    {
+                        // 获取畸变体的产出物组件
+                        MutanterProductComponent productComponent = securable.gameObject.GetComponent<MutanterProductComponent>();
+
+                        if (productComponent != null)
+                        {
+                            // 生成产出物
+                            var generatedProducts = productComponent.GenerateProducts(finalSuccessRate, totalEffectiveSubtasks);
+                            
+                            // 处理生成的产出物
+                            foreach (var generatedProduct in generatedProducts)
+                            {
+                                SpawnProduct(cell, generatedProduct.Id, generatedProduct.Amount);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SpawnProduct(int cell, Tag productId, int amount)
+        {
+            // 尝试将 productId 转换为 SimHashes
+            SimHashes elementHash = (SimHashes)Hash.SDBMLower(productId.Name);
+            Element element = ElementLoader.FindElementByHash(elementHash);
+
+            if (element != null)
+            {
+                // 使用元素系统生成产出物
+                float spawnAmount = amount;
+                float temperature = element.defaultValues.temperature;
+
+                if (element.IsGas || element.IsLiquid)
+                {
+                    // 对于气体和液体，使用 AddRemoveSubstance 一次性生成
+                    SimMessages.AddRemoveSubstance(
+                        cell,
+                        elementHash,
+                        CellEventLogger.Instance.ElementConsumerSimUpdate,
+                        spawnAmount,
+                        temperature,
+                        byte.MaxValue,
+                        0
+                    );
+                }
+                else if (element.IsSolid)
+                {
+                    // 对于固体，使用 SpawnResource 一次性生成
+                    element.substance.SpawnResource(
+                        Grid.CellToPosCCC(cell, Grid.SceneLayer.Ore),
+                        spawnAmount,
+                        temperature,
+                        byte.MaxValue,
+                        0,
+                        forceTemperature: true
+                    );
+                }
+
+                // 显示弹出效果
+                PopFXManager.Instance.SpawnFX(
+                    PopFXManager.Instance.sprite_Resource,
+                    element.name,
+                    _containmentMonitorSMI.gameObject.transform
+                );
+            }
+            else
+            {
+                // 如果找不到元素，尝试直接实例化预制体
+                GameObject prefab = Assets.GetPrefab(productId);
+                if (prefab != null)
+                {
+                    // 一次性生成多个预制体
+                    for (int i = 0; i < amount; i++)
+                    {
+                        GameObject productInstance = GameUtil.KInstantiate(prefab, Grid.CellToPosCCC(cell, Grid.SceneLayer.Ore), Grid.SceneLayer.Ore);
+                        if (productInstance != null)
+                        {
+                            PrimaryElement pe = productInstance.GetComponent<PrimaryElement>();
+                            if (pe != null)
+                            {
+                                pe.Units = 1f;
+                            }
+                            productInstance.SetActive(true);
+                        }
+                    }
+                }
+            }
         }
         protected override void OnStopWork(WorkerBase worker)
         {

@@ -1,4 +1,4 @@
-﻿using Klei.AI;
+using Klei.AI;
 using MutantContainmentProject.MutanterComponent;
 using UnityEngine;
 
@@ -25,6 +25,10 @@ namespace MutantContainmentProject.Mutanters
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name,25);
 
             BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.TETH,faction:FactionManager.FactionID.Pest);
+
+            // 添加产出物
+            BaseMutanter.AddProductToMutanter(prefab, SimHashes.Gold.CreateTag(), 1000f, 0.8f);
+            BaseMutanter.AddProductToMutanter(prefab, SimHashes.Diamond.CreateTag(), 1000f, 0.4f);
 
             return prefab;
         }

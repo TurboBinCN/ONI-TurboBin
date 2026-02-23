@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace MutantContainmentProject.Buildings
 {
+    //畸变体监控站
     public class ContainmentMonitorStationConfig : IBuildingConfig
     {
         public static readonly string ID = "ContainmentMonitorStation";

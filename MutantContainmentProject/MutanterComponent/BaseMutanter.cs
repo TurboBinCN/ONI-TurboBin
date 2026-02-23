@@ -1,6 +1,7 @@
-﻿using Klei.AI;
+using Klei.AI;
 using MutantContainmentProject.Buildings;
 using System.Collections.Generic;
+using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.UI;
 using TUNING;
 using UnityEngine;
@@ -23,6 +24,7 @@ namespace MutantContainmentProject.MutanterComponent
         {
             template.AddOrGetDef<MutanterStateMachine.Def>();//挂载：畸变体基础组件
             template.AddOrGetDef<MutanterSecurableMonitor.Def>();//挂载：畸变体安全控制监控SMI
+            template.AddOrGetDef<MutanterMoltenMetalMonitor.Def>();//挂载：畸变体熔融金属监控SMI
 
             //template.AddOrGetDef<ThreatMonitor.Def>().fleethresholdState = Health.HealthState.Dead;
             //template.AddWeapon(1f, 1f, AttackProperties.DamageType.Standard, AttackProperties.TargetType.Single, 1, 0f);
@@ -44,8 +46,34 @@ namespace MutantContainmentProject.MutanterComponent
             EntityTemplates.CreateAndRegisterBaggedCreature(template, true, false, false);//挂载：被击败后打包
             template.AddOrGetDef<DefeatStates.Def>();//挂载：击败状态监控
 
+            // 添加产出物组件
+            template.AddOrGet<MutanterProductComponent>();
 
             return template;
+        }
+
+        // 添加产出物到畸变体
+        public static void AddProductToMutanter(GameObject template, Tag productId, float baseAmount, float successRateMultiplier)
+        {
+            MutanterProductComponent productComponent = template.GetComponent<MutanterProductComponent>();
+            TbbDebuger.LogDebug($"productComponent[{productComponent}]");
+            if (productComponent != null)
+            {
+                // 获取畸变体ID
+                string mutanterId = template.GetComponent<KPrefabID>().PrefabID().Name;
+                
+                // 添加到静态数据库
+                MutanterProductComponent.AddProductToDatabase(mutanterId, new MutanterProductComponent.Product(productId, baseAmount, successRateMultiplier));
+                
+                // 同时添加到当前实例（用于预览）
+                productComponent.AddProduct(new MutanterProductComponent.Product(productId, baseAmount, successRateMultiplier));
+            }
+        }
+
+        // 重载方法，支持 string 类型的产品 ID
+        public static void AddProductToMutanter(GameObject template, string productId, float baseAmount, float successRateMultiplier)
+        {
+            AddProductToMutanter(template, new Tag(productId), baseAmount, successRateMultiplier);
         }
         //畸变体移动方式
         public static GameObject ExtendMutanterMove(GameObject template, string NavGridName = "WalkerNavGrid1x1", NavType navType = NavType.Floor, int max_probing_radius = 32, float moveSpeed = 2f)

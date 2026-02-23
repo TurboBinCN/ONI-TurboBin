@@ -53,6 +53,8 @@
     <Compile Include="MutanterCodexEntries\MutanterCodexEntry.cs" />
     <Compile Include="MutanterComponent\MutanterBrain.cs" />
     <Compile Include="MutanterComponent\MutanterCreature.cs" />
+    <Compile Include="MutanterComponent\MutanterMoltenMetalMonitor.cs" />
+    <Compile Include="MutanterComponent\MutanterProductComponent.cs" />
     <Compile Include="MutanterEffect\MutanterEffects.cs" />
     <Compile Include="MutantContainmentProjectMod.cs" />
     <Compile Include="MutanterComponent\BaseMutanter.cs" />
