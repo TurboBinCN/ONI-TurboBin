@@ -417,6 +417,10 @@
           NAME: 需要畸变体监控站
           DESCRIPTION: 房间内必须包含一个畸变体监控站
         }
+        CONTAINMENTMONITOREXTERIOR: {
+          NAME: 中子质收容护壁
+          DESCRIPTION: 房间需要中子质收容护壁
+        }
       }
     }
     ENTITY: {

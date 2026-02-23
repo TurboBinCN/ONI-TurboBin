@@ -1,5 +1,10 @@
-﻿using MutantContainmentProject.MutanterComponent;
+using MutantContainmentProject.MutanterComponent;
+using rail;
+using System;
+using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
+using UnityEngine;
+
 
 namespace MutantContainmentProject.Room
 {
@@ -37,6 +42,72 @@ namespace MutantContainmentProject.Room
                 return;
             }
 
+            // --- 添加外墙约束 --- 检查所有外墙是否为收容砖或门
+            var containmentWallConstraint = new RoomConstraints.Constraint(
+                building_criteria: null,
+                room_criteria: (global::Room room) =>
+                {
+                    bool flag = true;
+                    HashSet<int> boundaryCells = new HashSet<int>();
+                    
+                    // 遍历房间的所有内部单元格，找到其相邻的边界单元格
+                    foreach (int cell in room.cavity.cells)
+                    {
+                        if (!Grid.IsValidCell(cell))
+                            continue;
+                        
+                        // 检查四个方向的相邻单元格
+                        int[] adjacentCells = new int[]
+                        {
+                            Grid.XYToCell(Grid.CellToXY(cell).x - 1, Grid.CellToXY(cell).y), // 左
+                            Grid.XYToCell(Grid.CellToXY(cell).x + 1, Grid.CellToXY(cell).y), // 右
+                            Grid.XYToCell(Grid.CellToXY(cell).x, Grid.CellToXY(cell).y - 1), // 下
+                            Grid.XYToCell(Grid.CellToXY(cell).x, Grid.CellToXY(cell).y + 1)  // 上
+                        };
+                        
+                        // 添加相邻的边界单元格到集合中
+                        foreach (int adjCell in adjacentCells)
+                        {
+                            if (Grid.IsValidCell(adjCell) && IsCavityBoundary(adjCell))
+                            {
+                                boundaryCells.Add(adjCell);
+                            }
+                        }
+                    }
+                    
+                    // 检查所有边界单元格是否是收容砖或门
+                    foreach (int boundaryCell in boundaryCells)
+                    {
+                        if (!flag)
+                            break;
+                        
+                        // 检查该单元格是否有门
+                        if (Grid.HasDoor[boundaryCell])
+                            continue; // 门是有效的
+                        
+                        // 检查该单元格是否有收容砖（只检查FoundationTile层，因为ContainmentTileConfig是FoundationTile）
+                        bool hasContainmentTile = false;
+                        
+                        // 检查地面层的对象
+                        GameObject foundationObj = Grid.Objects[boundaryCell, (int)ObjectLayer.FoundationTile];
+                        TbbDebuger.LogDebug($"Checking prefabID: {foundationObj?.GetComponent<KPrefabID>()?.name}");
+                        if (foundationObj != null && foundationObj.GetComponent<KPrefabID>()?.HasTag(MutanterTags.MutanterBuildings) == true)
+                        {
+                            hasContainmentTile = true;
+                        }
+                        
+                        if (!hasContainmentTile)
+                        {
+                            flag = false;
+                        }
+                    }
+                    
+                    return flag;
+                },
+                name: STRINGS.BUILDINGS.PREFABS.CONTAINMENTTILE.NAME,
+                description: "收容室的所有外墙必须是收容砖或门"
+            );
+
             // --- 5. 创建房间类型 ---
             ContainmentChamber = new RoomType(
                 id: ROOMTYPE_ID, // 唯一的房间类型ID
@@ -49,7 +120,8 @@ namespace MutantContainmentProject.Room
                 additional_constraints: new RoomConstraints.Constraint[]
                 {
                     RoomConstraints.MINIMUM_SIZE_12,
-                    RoomConstraints.MAXIMUM_SIZE_64
+                    RoomConstraints.MAXIMUM_SIZE_64,
+                    containmentWallConstraint
                 },
                 display_details: new RoomDetails.Detail[]
                     {
@@ -64,7 +136,6 @@ namespace MutantContainmentProject.Room
                 priority_building_use: false // 不优先占用建筑
                                              //effects: effects.ToArray() // 应用的效果数组
             );
-
             // --- 6. 将房间类型注册到数据库 ---
             if (!Db.Get().RoomTypes.Exists(ROOMTYPE_ID))
             {
@@ -72,6 +143,14 @@ namespace MutantContainmentProject.Room
                 TbbDebuger.LogDebug($"Added Room Type: {ContainmentChamber.Id}");
             }
         }
+        
+        private static bool IsCavityBoundary(int cell)
+        {
+            // 参考RoomProber.IsCavityBoundary的实现
+            return (Grid.BuildMasks[cell] & (Grid.BuildFlags.Solid | Grid.BuildFlags.Foundation)) != 0 || Grid.HasDoor[cell];
+        }
+
+
 
         public static void RegisterRoomCategory()
         {

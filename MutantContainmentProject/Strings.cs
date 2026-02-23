@@ -583,6 +583,11 @@ namespace MutantContainmentProject
                     public static LocString NAME = "Require a Mutanter Contaiment Monitor";
                     public static LocString DESCRIPTION = "Requires one 'Mutanter Container Monitor' Building";
                 }
+                public static class CONTAINMENTMONITOREXTERIOR
+                {
+                    public static LocString NAME = "Neutronium Containment Plating";
+                    public static LocString DESCRIPTION = "Requires EXTERIOR WALL 'Neutronium Containment Plating'";
+                }
             }
         }
         public static class ENTITY

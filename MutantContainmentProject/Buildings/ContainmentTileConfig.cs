@@ -1,6 +1,4 @@
 ﻿using STRINGS;
-using System.IO;
-using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.Utils;
 using TUNING;
 using UnityEngine;
@@ -13,7 +11,7 @@ namespace MutantContainmentProject.Buildings
         public static readonly int BlockTileConnectorID = Hash.SDBMLower("tiles_solid_tops");
         public override BuildingDef CreateBuildingDef()
         {
-            BuildingDef buildingDef = BuildingTemplates.CreateBuildingDef(ID, 1, 1, "containment_tile_kanim", 100, 10f, TUNING.BUILDINGS.CONSTRUCTION_MASS_KG.TIER3, 
+            BuildingDef buildingDef = BuildingTemplates.CreateBuildingDef(ID, 1, 1, "containment_tile_kanim", 100, 10f, TUNING.BUILDINGS.CONSTRUCTION_MASS_KG.TIER3,
               new string[]{
                 SimHashes.Unobtanium.ToString()
             }, 1600f, BuildLocationRule.Tile, TUNING.BUILDINGS.DECOR.BONUS.TIER0, NOISE_POLLUTION.NONE, 0.2f);
@@ -58,6 +56,7 @@ namespace MutantContainmentProject.Buildings
         {
             GeneratedBuildings.RemoveLoopingSounds(go);
             go.GetComponent<KPrefabID>().AddTag(GameTags.FloorTiles, false);
+            go.GetComponent<KPrefabID>().AddTag(MutanterComponent.MutanterTags.MutanterBuildings, false);
         }
 
         public override void DoPostConfigureUnderConstruction(GameObject go)
@@ -65,7 +64,7 @@ namespace MutantContainmentProject.Buildings
             base.DoPostConfigureUnderConstruction(go);
             go.AddOrGet<KAnimGridTileVisualizer>();
         }
-        
+
 
     }
 }
