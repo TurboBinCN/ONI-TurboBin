@@ -1,6 +1,5 @@
-﻿using System;
+﻿using KSerialization;
 using System.Collections.Generic;
-using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent
@@ -8,7 +7,8 @@ namespace MutantContainmentProject.MutanterComponent
     public class MutanterSpeciesCatalog : KMonoBehaviour
     {
         private static MutanterSpeciesCatalog _instance;
-        private Dictionary<Tag,int> discoveredMutanters = new();
+        [Serialize]
+        private Dictionary<Tag, int> discoveredMutanters = new();
 
         public static MutanterSpeciesCatalog Instance
         {
@@ -26,7 +26,8 @@ namespace MutantContainmentProject.MutanterComponent
                 return _instance;
             }
         }
-        public MutanterSpeciesCatalog() { 
+        public MutanterSpeciesCatalog()
+        {
         }
         protected override void OnPrefabInit()
         {
@@ -47,7 +48,7 @@ namespace MutantContainmentProject.MutanterComponent
                 Tag speciesID = kPrefabID.PrefabID();
                 if (!this.discoveredMutanters.ContainsKey(speciesID))
                 {
-                    this.discoveredMutanters[speciesID] = 1;
+                    this.discoveredMutanters[speciesID] = 0;
                 }
             }
         }
@@ -73,6 +74,11 @@ namespace MutantContainmentProject.MutanterComponent
         public int GetMutanterSpeciesCount()
         {
             return discoveredMutanters.Count;
+        }
+
+        public bool IsMutanterSpeciesExists(Tag speciesID)
+        {
+            return discoveredMutanters.ContainsKey(speciesID);
         }
     }
 }

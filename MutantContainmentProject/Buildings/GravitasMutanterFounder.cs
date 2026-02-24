@@ -485,8 +485,27 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 return Tag.Invalid;
             }
 
-            //TODO 生成畸变体的位置应该是随机的，需要修改
-            Vector3 spawnPos = Grid.CellToPosCBC(Grid.PosToCell(smi), Grid.SceneLayer.Creatures) + smi.def.dropOffset.ToVector3();
+            // 检查畸变体是否已经存在
+            if (MutanterSpeciesCatalog.Instance.IsMutanterSpeciesExists(m_activationTarget))
+            {
+                TbbDebuger.LogWarning($"[GravitasMutanterFounder] 畸变体 {m_activationTarget} 已经存在，无法生成");
+                ShowMutanterExistsNotification(m_activationTarget);
+                // 清空献祭容器
+                if (m_sacrificeContainer != null)
+                {
+                    m_sacrificeContainer.DropAll();
+                }
+                return Tag.Invalid;
+            }
+
+            // 获取随机生成位置
+            Vector3 spawnPos = GetRandomSpawnPosition(m_activationTarget);
+            if (spawnPos == Vector3.zero)
+            {
+                // 如果没有找到合适位置，使用默认位置
+                spawnPos = Grid.CellToPosCBC(Grid.PosToCell(smi), Grid.SceneLayer.Creatures) + smi.def.dropOffset.ToVector3();
+                TbbDebuger.LogWarning($"[GravitasMutanterFounder] 没有找到合适的随机位置，使用默认位置: {spawnPos}");
+            }
 
             //int numToSpawn = UnityEngine.Random.Range(smi.def.minMutantsPerSpawn, smi.def.maxMutantsPerSpawn + 1);
             int numToSpawn = 1;
@@ -497,22 +516,147 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 {
                     mutantGO.SetActive(true);
                     TbbDebuger.LogDebug($"[GravitasMutanterFounder] 生成畸变体： {m_activationTarget} @ [{spawnPos}]");
-                    //TODO 生成畸变体后的动画等 清空FOW&Camera Fade In
-
-                    //FocusTargetSequence.Start(mutantGO.GetComponent<MonoBehaviour>(), new FocusTargetSequence.Data
-                    //{
-                    //    WorldId = mutantGO.GetMyWorldId(),
-                    //    OrthographicSize = 6f,
-                    //    TargetSize = 6f,
-                    //    Target = spawnPos,
-                    //    PopupData = eventInfo,
-                    //    CompleteCB = new System.Action(OnStorySequenceComplete),
-                    //    CanCompleteCB = null
-                    //});
+                    
+                    // 注册新生成的畸变体
+                    MutanterSpeciesCatalog.Instance.RegisterMutanterSpecies(m_activationTarget);
+                    
+                    // 执行迷雾揭开和镜头操作
+                    StartRevealSequence(mutantGO, spawnPos);
+                    
                     return m_activationTarget;
                 }
             }
             return Tag.Invalid;
+        }
+        
+        private Vector3 GetRandomSpawnPosition(Tag mutantTag)
+        {
+            // 获取畸变体预制体以确定大小
+            GameObject prefab = Assets.GetPrefab(mutantTag);
+            if (prefab == null)
+            {
+                TbbDebuger.LogWarning($"[GravitasMutanterFounder] 无法找到畸变体预制体: {mutantTag}");
+                return Vector3.zero;
+            }
+            
+            // 估算畸变体大小（默认2x2格子）
+            int width = 2;
+            int height = 2;
+
+            // 尝试从碰撞体获取实际大小
+            KBoxCollider2D collider = prefab.GetComponent<KBoxCollider2D>();
+            if (collider != null)
+            {
+                width = Mathf.CeilToInt(collider.size.x);
+                height = Mathf.CeilToInt(collider.size.y);
+            }
+            
+            // 获取当前世界ID
+            int worldID = gameObject.GetMyWorldId();
+            
+            // 尝试最多100次寻找合适位置
+            int maxAttempts = 100;
+            for (int attempt = 0; attempt < maxAttempts; attempt++)
+            {
+                // 在世界范围内随机选择一个起始格子
+                int x = UnityEngine.Random.Range(0, Grid.WidthInCells);
+                int y = UnityEngine.Random.Range(0, Grid.HeightInCells);
+                
+                // 检查该位置是否在当前世界
+                int cell = Grid.XYToCell(x, y);
+                if (Grid.IsValidCell(cell) && Grid.WorldIdx[cell] == worldID)
+                {
+                    // 检查该区域是否满足无液体和无固体的条件
+                    if (IsAreaSuitableForSpawn(x, y, width, height))
+                    {
+                        // 返回该位置的中心坐标
+                        return Grid.CellToPosCBC(cell, Grid.SceneLayer.Creatures);
+                    }
+                }
+            }
+            
+            // 没有找到合适位置
+            return Vector3.zero;
+        }
+        
+        private bool IsAreaSuitableForSpawn(int startX, int startY, int width, int height)
+        {
+            // 检查指定区域内的所有格子
+            for (int x = startX; x < startX + width; x++)
+            {
+                for (int y = startY; y < startY + height; y++)
+                {
+                    int cell = Grid.XYToCell(x, y);
+                    
+                    // 检查格子是否有效
+                    if (!Grid.IsValidCell(cell))
+                    {
+                        return false;
+                    }
+                    
+                    // 检查是否有固体
+                    if (Grid.Solid[cell])
+                    {
+                        return false;
+                    }
+                    
+                    // 检查是否有液体
+                    if (Grid.IsLiquid(cell))
+                    {
+                        return false;
+                    }
+                    
+                    // 检查是否有其他物体
+                    if (Grid.Objects[cell, (int)ObjectLayer.Pickupables] != null)
+                    {
+                        return false;
+                    }
+                }
+            }
+            
+            return true;
+        }
+        
+        private void StartRevealSequence(GameObject mutantGO, Vector3 spawnPos)
+        {
+            // 揭开迷雾
+            Vector2I cellPos = Grid.PosToXY(spawnPos);
+            GridVisibility.Reveal(cellPos.x, cellPos.y, 8, 1f);
+            
+            // 镜头操作 - 拉近到生成位置
+            CameraController.Instance.DisableUserCameraControl = true;
+            CameraController.Instance.SetOverrideZoomSpeed(0.6f);
+            
+            // 设置相机目标位置和缩放
+            float initialOrthographicSize = 15f;
+            float finalOrthographicSize = 6f;
+            
+            CameraController.Instance.SetTargetPos(spawnPos, initialOrthographicSize, false);
+            
+            // 使用GameScheduler实现平滑的镜头缩放和淡入效果
+            StartRevealSequenceWithScheduler(spawnPos, finalOrthographicSize);
+        }
+        
+        private void StartRevealSequenceWithScheduler(Vector3 targetPos, float finalZoom)
+        {
+            // 第一阶段：淡入效果
+            CameraController.Instance.FadeInColor(Color.black, callback:() => {
+                // 淡入完成后，镜头拉近
+                CameraController.Instance.SetTargetPos(targetPos, finalZoom, false);
+                
+                // 第二阶段：等待3秒展示生成的畸变体
+                GameScheduler.Instance.Schedule("RevealSequence_Wait", 3f, _ => {
+                    // 第三阶段：镜头拉远
+                    CameraController.Instance.SetTargetPos(targetPos, 15f, true);
+                    
+                    // 第四阶段：等待1秒后恢复控制
+                    GameScheduler.Instance.Schedule("RevealSequence_Complete", 1f, __ => {
+                        // 恢复相机控制
+                        CameraController.Instance.DisableUserCameraControl = false;
+                        CameraController.Instance.SetOverrideZoomSpeed(1f);
+                    });
+                });
+            });
         }
 
         public void ShowIntroNotification()
@@ -571,6 +715,23 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 return;
             }
             infoDialogScreen.AddPlainText(GravitasMutanterFounderConfig.GetBodyContentForUnknownSpecies());
+        }
+        
+        public void ShowMutanterExistsNotification(Tag species)
+        {
+            // 显示畸变体已存在的通知
+            Notification notification = new Notification(
+                "畸变体已存在", 
+                NotificationType.Bad, 
+                (notifications, obj) => 
+                {
+                    return $"该畸变体 {species.ToString()} 已经存在于世界中，无法重复生成。";
+                }, 
+                species.ToString().ToUpper(), 
+                false, 
+                clear_on_click: true
+            );
+            gameObject.AddOrGet<Notifier>().Add(notification);
         }
         public void UnlockMorphMode(object _)
         {
