@@ -146,7 +146,7 @@ namespace MutantContainmentProject.Buildings
                 }
 
                 if (_mutantersInRoom == null) findMutanterInRoom();
-                TbbDebuger.LogDebug($"[畸变收容所] _mutantersInRoom:[{_mutantersInRoom.Count}]");
+                //TbbDebuger.LogDebug($"[畸变收容所] _mutantersInRoom:[{_mutantersInRoom.Count}]");
                 foreach (var kprefabID in _mutantersInRoom)
                 {
                     var smi = kprefabID.GetSMI<MutanterSecurableMonitor.Instance>();
@@ -156,10 +156,10 @@ namespace MutantContainmentProject.Buildings
                         smi.States.SetContainmentMonitor(this);
                         targetSecurable.Add(smi);
                     }
-                    TbbDebuger.LogDebug($"[畸变收容所] 畸变体:name[{kprefabID.name}] ShouldBeSecured: [{smi.ShouldBeSecured()}] RemoteDockChore:[{instance.remoteChore.RemoteDockChore}] RemoteDockChore.Complete:[{instance.remoteChore.RemoteDockChore?.isComplete}]");
+                    //TbbDebuger.LogDebug($"[畸变收容所] 畸变体:name[{kprefabID.name}] ShouldBeSecured: [{smi.ShouldBeSecured()}] RemoteDockChore:[{instance.remoteChore.RemoteDockChore}] RemoteDockChore.Complete:[{instance.remoteChore.RemoteDockChore?.isComplete}]");
                     if (CurrentAction != SecureAction.None && smi.ShouldBeSecured() && (instance.remoteChore.RemoteDockChore == null || (instance.remoteChore.RemoteDockChore?.isComplete == true)))
                     {
-                        TbbDebuger.LogDebug($"[畸变收容所] 畸变体:name[{kprefabID.name}] 需要被收容，创建收容任务");
+                        //TbbDebuger.LogDebug($"[畸变收容所] 畸变体:name[{kprefabID.name}] 需要被收容，创建收容任务");
                         instance.SetRemoteChore(instance, CreateChore(instance));
                     }
                 }

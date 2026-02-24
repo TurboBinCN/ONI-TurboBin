@@ -1,6 +1,7 @@
 using Klei.AI;
+using MutantContainmentProject.MutanterEffect;
+using System;
 using System.Collections.Generic;
-using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.UI;
 using TBB.He.TbbLib.Utils;
 using UnityEngine;
@@ -26,13 +27,11 @@ namespace MutantContainmentProject.MutanterComponent
         public const float MAX_INSANITY = 100f;
         public const float MIN_INSANITY = 0f;
 
-        public const int PROBE_RANGE = 10;
+        // 从 MutanterStateMachine 获取探测范围，不再使用硬编码常量
         public List<KPrefabID> threaters = new();
         public List<KPrefabID> buildings = new();
         public List<KPrefabID> plants = new();
         public List<KPrefabID> creatures = new();
-
-
 
         public override void InitializeStates(out BaseState default_state)
         {
@@ -48,56 +47,67 @@ namespace MutantContainmentProject.MutanterComponent
         private void UpdateThreateArea(StatesInstance smi, float dt)
         {
             float insanityValue = smi.INSANITYValue; // 获取值一次，提高可读性和效率
-
-            if (insanityValue >= 75f)
+            if (smi.MutanterStateMachineDef == null) return;
+            if (insanityValue <= smi.MutanterStateMachineDef.sanityThresholdToAttack)
             {
-                smi.tbbRangeVisualizer.SetHightlightColor(Color.white);
+                smi.tbbRangeVisualizer.SetHightlightColor(Color.red);
             }
-            else if (insanityValue >= 50f)
+            else if (insanityValue <= smi.MutanterStateMachineDef.sanityThresholdToHostile)
             {
                 smi.tbbRangeVisualizer.SetHightlightColor(Color.yellow);
             }
+            else if (insanityValue <= smi.MutanterStateMachineDef.sanityThresholdToAgitate)
+            {
+                smi.tbbRangeVisualizer.SetHightlightColor(Color.white);
+            }
             else
             {
-                smi.tbbRangeVisualizer.SetHightlightColor(Color.red);
+                smi.tbbRangeVisualizer.SetHightlightColor(new Color(0f, 1f, 0.8f, 1f));
             }
         }
 
         private void CalculateNewINSANITY(StatesInstance smi, float dt)
         {
             SpaceProbe(smi, dt);
-            float newINSANITY = smi.INSANITYValue;
+            float positiveImpact = 0f;
+            float negativeImpact = 0f;
 
-            //TbbDebuger.LogDebug($"[EmotionMonitor] threatercount:[{threaters.Count}]");
-            newINSANITY -= EvaluateThreaters(smi);
-
-            // 仅当配置允许时才计算环境影响
+            // 处理所有影响因素，分离正负值
+            AddImpact(EvaluateThreaters(smi), ref positiveImpact, ref negativeImpact);
+            
             if (smi.def.considerEnvironmentalFactors)
-            {
-                newINSANITY += EvaluateEnvironment(smi);
-            }
-
-            // 仅当配置允许时才计算生物影响
-            newINSANITY += EvaluateNearbyCreatures(smi);
-
-            // 仅当配置允许时才计算植物影响
+                AddImpact(EvaluateEnvironment(smi), ref positiveImpact, ref negativeImpact);
+            
+            AddImpact(EvaluateNearbyCreatures(smi), ref positiveImpact, ref negativeImpact);
+            
             if (smi.def.considerPlantFactors)
+                AddImpact(EvaluateNearbyPlants(smi), ref positiveImpact, ref negativeImpact);
+            
+            AddImpact(smi.def.timeBasedINSANITYDriftPerSecond * dt, ref positiveImpact, ref negativeImpact);
+
+            // 应用Effect影响：对正值加成、负值削弱
+            float effectImpact = EvaluateEffects(smi);
+            if (effectImpact > 0)
             {
-                newINSANITY += EvaluateNearbyPlants(smi);
+                positiveImpact *= (1 + effectImpact);
+                negativeImpact *= (1 - effectImpact);
             }
 
-            // 安全控制措施影响
-            // 固定Effect影响
-            newINSANITY += EvaluateEffects(smi);
-
-            // 随时间自然衰减或恢复
-            newINSANITY += smi.def.timeBasedINSANITYDriftPerSecond * dt;
-
-            newINSANITY = Mathf.Clamp(newINSANITY, MIN_INSANITY, MAX_INSANITY);
-            smi.INSANITYValue = newINSANITY;
+            // 计算总影响并更新理智值
+            float totalImpact = positiveImpact + negativeImpact;
+            smi.INSANITYValue = Mathf.Clamp(smi.INSANITYValue + totalImpact, MIN_INSANITY, MAX_INSANITY);
 
             UpdateThreateArea(smi, dt);
             //TbbDebuger.LogDebug($"[EmotionMonitor] {smi.master.name} 理智值更新: {smi.INSANITYValue:F2}");
+        }
+        
+        // 辅助方法：分离并累加正负影响
+        private void AddImpact(float impact, ref float positiveImpact, ref float negativeImpact)
+        {
+            if (impact > 0)
+                positiveImpact += impact;
+            else
+                negativeImpact += impact;
         }
 
         private float EvaluateEnvironment(StatesInstance smi)
@@ -131,8 +141,8 @@ namespace MutantContainmentProject.MutanterComponent
         {
             var BaseCell = Grid.PosToCell(smi);
             //根据probelayer找到对应的植物、小人、建筑、动物等
-            if (smi.tbbRangeVisualizer == null) return;
-            List<int> list_cells = TbbLimitedRoomSpaceBuilder.BuildRoom(BaseCell, 10);
+            if (smi.tbbRangeVisualizer == null || smi.MutanterStateMachineDef == null) return;
+            List<int> list_cells = TbbLimitedRoomSpaceBuilder.BuildRoom(BaseCell, smi.MutanterStateMachineDef.threatenRange);
             //TbbDebuger.LogDebug($"[畸变收容所]SpaceProbe cell count:[{list_cells.Count}]");
             //用于可视化显示威胁区域
             smi.tbbRangeVisualizer.SetTargetCells(list_cells);
@@ -171,9 +181,14 @@ namespace MutantContainmentProject.MutanterComponent
             float impact = 0f;
             if (threaters.Count > 0)
             {
-                impact += 5f;
+                impact += 2f;
+                var effects = smi.master.gameObject.GetComponent<Effects>();
+                if (effects != null && effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+                {
+                    impact *= 0.5f;
+                }
             }
-            return impact;
+            return -impact;
         }
         private float EvaluateNearbyPlants(StatesInstance smi)
         {
@@ -188,6 +203,10 @@ namespace MutantContainmentProject.MutanterComponent
             var effects = smi.master.gameObject.GetComponent<Effects>();
             if (effects != null)
             {
+                if (effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+                {
+                    impact += 0.1f;
+                }
             }
             return impact;
         }
@@ -198,7 +217,15 @@ namespace MutantContainmentProject.MutanterComponent
             public float INSANITYValue;
             public TbbRangeVisualizer tbbRangeVisualizer;
             public float GetINSANITY() => INSANITYValue;
-
+            private MutanterStateMachine.Def mutanterStateMachineDef;
+            public MutanterStateMachine.Def MutanterStateMachineDef
+            {
+                get
+                {
+                    if (mutanterStateMachineDef == null) mutanterStateMachineDef = gameObject.GetDef<MutanterStateMachine.Def>();
+                    return mutanterStateMachineDef;
+                }
+            }
             public StatesInstance(IStateMachineTarget master, Def def) : base(master, def)
             {
                 if (smi.def.considerDecor)
@@ -210,6 +237,8 @@ namespace MutantContainmentProject.MutanterComponent
                     Subscribe((int)GameHashes.CreatureHighDecor, (_) => _highDecor = true);
                 }
                 tbbRangeVisualizer = master.gameObject.GetComponent<TbbRangeVisualizer>();
+
+                mutanterStateMachineDef = gameObject.GetComponent<MutanterStateMachine.Def>();
             }
             protected override void OnCleanUp()
             {
@@ -218,7 +247,8 @@ namespace MutantContainmentProject.MutanterComponent
                 base.OnCleanUp();
             }
 
-            public List<KPrefabID> GetThreaters() {
+            public List<KPrefabID> GetThreaters()
+            {
                 return sm.threaters;
             }
         }
@@ -251,7 +281,10 @@ namespace MutantContainmentProject.MutanterComponent
             public float plantProximityImpact = 0.5f;
 
             // --- 时间流逝影响 ---
-            public float timeBasedINSANITYDriftPerSecond = -0.01f;
+            public float timeBasedINSANITYDriftPerSecond = 0.01f;
+
+            // --- 威胁范围 ---
+            public int threatenRange = 10;
 
             //public override void Configure()
             //{

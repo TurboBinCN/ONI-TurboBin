@@ -19,7 +19,7 @@ namespace TBB.He.TbbLib.Utils
         {
             if (!Grid.IsValidCell(startCell) || IsCavityBoundary(startCell))
             {
-                TbbDebuger.LogDebug($"LimitedRoomSpaceBuilder: 起始格子 {startCell} 无效或为边界。");
+                //TbbDebuger.LogDebug($"LimitedRoomSpaceBuilder: 起始格子 {startCell} 无效或为边界。");
                 return new List<int>();
             }
 

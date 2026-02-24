@@ -156,6 +156,7 @@ namespace MutantContainmentProject.MutanterComponent
             public float sanityThresholdToHostile = 40;
             public float sanityThresholdToAttack = 30;
             public float sanityThresholdToStable = 70;
+            public int threatenRange = 10;
         }
 
         // 执行攻击逻辑
