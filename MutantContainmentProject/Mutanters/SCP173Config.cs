@@ -1,5 +1,6 @@
 using Klei.AI;
 using MutantContainmentProject.MutanterComponent;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MutantContainmentProject.Mutanters
@@ -24,7 +25,7 @@ namespace MutantContainmentProject.Mutanters
 
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name,25);
 
-            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.TETH,faction:FactionManager.FactionID.Pest);
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.TETH,faction:FactionManager.FactionID.Pest,attackTags:new List<Tag> { MutanterTags.PsychologicalAttack });
 
             // 添加产出物
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Gold.CreateTag(), 1000f, 0.8f);

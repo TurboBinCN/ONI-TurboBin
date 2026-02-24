@@ -1,4 +1,4 @@
-﻿namespace MutantContainmentProject.MutanterComponent
+namespace MutantContainmentProject.MutanterComponent
 {
     public static class MutanterTags
     {
@@ -10,6 +10,8 @@
         public static readonly Tag MutanterBrain = TagManager.Create("MutanterBrain");
         //攻击类Tag
         public static readonly Tag PsychologicalAttack = TagManager.Create("PsychologicalAttack");
+        public static readonly Tag ErosionAttack = TagManager.Create("ErosionAttack");
+        public static readonly Tag SoulAttack = TagManager.Create("SoulAttack");
         public static class Mutanters
         {
             public static class Species

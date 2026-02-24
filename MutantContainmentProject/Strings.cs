@@ -161,16 +161,44 @@ namespace MutantContainmentProject
                 {
                     public static LocString NAME = "Agitated";
                     public static LocString TOOLTIP = "Unstable and agitated, will turn hostile soon.";
+                    public static LocString NOTIFICATION_NAME = "Mutanter fall into AGITATED";
                 }
                 public static class HOSTILE
                 {
                     public static LocString NAME = "Hostile";
                     public static LocString TOOLTIP = "Extremely dangerous, will attack on sight.";
+                    public static LocString NOTIFICATION_NAME = "Mutanter fall into HOSTILE";
                 }
                 public static class SPECIALACTION
                 {
                     public static LocString NAME = "SpecialAction";
                     public static LocString TOOLTIP = "Performing a unique special behavior.";
+                }
+                public static class ATTACKLOOP
+                {
+                    public static LocString NAME = "Attacking";
+                    public static LocString TOOLTIP = "The entity is attacking.";
+                    public static LocString NOTIFICATION_NAME = "Mutanter is ATTACKING.";
+                }
+                public static class MELEEATTACK
+                {
+                    public static LocString NAME = "Melee Attack";
+                    public static LocString TOOLTIP = "The entity is using melee attack.";
+                }
+                public static class PSYCHOLOGICALATTACK
+                {
+                    public static LocString NAME = "Psychological Attack";
+                    public static LocString TOOLTIP = "The entity is using psychological attack.";
+                }
+                public static class EROSIONATTACK
+                {
+                    public static LocString NAME = "Erosion Attack";
+                    public static LocString TOOLTIP = "The entity is using erosion attack.";
+                }
+                public static class SOULATTACK
+                {
+                    public static LocString NAME = "Soul Attack";
+                    public static LocString TOOLTIP = "The entity is using soul attack.";
                 }
             }
             public class FAMILY_PLURAL
@@ -505,6 +533,16 @@ namespace MutantContainmentProject
             {
                 public static LocString NAME = "Psychological";
                 public static LocString DESC = "This entity is capable of Psychological assault";
+            }
+            public static class EROSION
+            {
+                public static LocString NAME = "Erosion";
+                public static LocString DESC = "This entity is capable of erosion assault";
+            }
+            public static class SOUL
+            {
+                public static LocString NAME = "Soul";
+                public static LocString DESC = "This entity is capable of soul assault";
             }
             public static class MUTANTER_TRAITS {
                 public static LocString NAME = "Mutanter Traits";

@@ -140,14 +140,37 @@
         AGITATED:  {
             NAME: 焦躁
             TOOLTIP: 情绪躁动，即将进入敌对状态
+            NOTIFICATION_NAME: 畸变体进入敌对状态
         }
         HOSTILE:  {
             NAME: 敌对
             TOOLTIP: 极度危险，会主动发起攻击
+            NOTIFICATION_NAME: 畸变体进入敌对状态
         }
         SPECIALACTION:  {
             NAME: 特殊行动
             TOOLTIP: 正在执行专属特殊行为
+        }
+        ATTACKLOOP: {
+            NAME: 正在攻击
+            TOOLTIP: 该实体正在攻击
+            NOTIFICATION_NAME: 畸变体已经发起攻击
+        }
+        MELEEATTACK: {
+            NAME: 近战攻击
+            TOOLTIP: 该实体正在使用近战攻击
+        }
+        PSYCHOLOGICALATTACK: {
+            NAME: 精神攻击
+            TOOLTIP: 该实体正在使用精神攻击
+        }
+        EROSIONATTACK: {
+            NAME: 侵蚀攻击
+            TOOLTIP: 该实体正在使用侵蚀攻击
+        }
+        SOULATTACK: {
+            NAME: 灵魂攻击
+            TOOLTIP: 该实体正在使用灵魂攻击
         }
       }
       FAMILY_PLURAL: {
@@ -370,6 +393,14 @@
       PSYCHOLOGICAL: {
         NAME: 精神属性
         DESC: 该实体具备精神攻击能力
+      }
+      EROSION: {
+        NAME: 侵蚀属性
+        DESC: 该实体具备侵蚀攻击能力
+      }
+      SOUL: {
+        NAME: 灵魂属性
+        DESC: 该实体具备灵魂攻击能力
       }
       MUTANTER_TRAITS: {
         NAME: 畸变体特性

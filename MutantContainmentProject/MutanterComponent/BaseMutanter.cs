@@ -20,7 +20,7 @@ namespace MutantContainmentProject.MutanterComponent
     public class BaseMutanter
     {
         //畸变体基础设置：情绪管理、威胁管理、攻击方式管理
-        public static GameObject ExtendToBaseMutanter(GameObject template, MutanterDangerLevel dangerLevel, bool considerDecor = true, FactionManager.FactionID faction = FactionManager.FactionID.Prey)
+        public static GameObject ExtendToBaseMutanter(GameObject template, MutanterDangerLevel dangerLevel, bool considerDecor = true, FactionManager.FactionID faction = FactionManager.FactionID.Prey, List<Tag> attackTags = null)
         {
             template.AddOrGetDef<MutanterStateMachine.Def>();//挂载：畸变体基础组件
             template.AddOrGetDef<MutanterSecurableMonitor.Def>();//挂载：畸变体安全控制监控SMI
@@ -39,7 +39,16 @@ namespace MutantContainmentProject.MutanterComponent
             template.AddOrGet<FactionAlignment>().Alignment = faction; //挂载：阵营
             template.AddOrGet<RangedAttackable>(); //跟FactionAlignment相互依赖. 需要修改
             template.AddOrGet<TbbRangeVisualizer>();//挂载：威胁范围显示
-            template.AddOrGet<MutanterAttackBehaviors>();//挂载：攻击能力
+            
+            // 挂载：攻击能力，并传递攻击标签
+            var attackBehaviors = template.AddOrGet<MutanterAttackBehaviors>();
+            if (attackTags != null)
+            {
+                foreach (var tag in attackTags)
+                {
+                    template.GetComponent<KPrefabID>().AddTag(tag);
+                }
+            }
 
             //收容逻辑：暴动后收容逻辑，被攻击、生命扣减低于1，封包
             template.AddOrGet<Health>().isCritter = true;//挂载：健康检测

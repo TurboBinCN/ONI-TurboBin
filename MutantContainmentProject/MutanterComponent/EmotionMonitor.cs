@@ -1,4 +1,4 @@
-﻿using Klei.AI;
+using Klei.AI;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.UI;
@@ -32,6 +32,8 @@ namespace MutantContainmentProject.MutanterComponent
         public List<KPrefabID> plants = new();
         public List<KPrefabID> creatures = new();
 
+
+
         public override void InitializeStates(out BaseState default_state)
         {
             default_state = root;
@@ -43,7 +45,6 @@ namespace MutantContainmentProject.MutanterComponent
                 })
                 .Update((smi, dt) => CalculateNewINSANITY(smi, dt), UpdateRate.SIM_1000ms);
         }
-
         private void UpdateThreateArea(StatesInstance smi, float dt)
         {
             float insanityValue = smi.INSANITYValue; // 获取值一次，提高可读性和效率
@@ -67,7 +68,7 @@ namespace MutantContainmentProject.MutanterComponent
             SpaceProbe(smi, dt);
             float newINSANITY = smi.INSANITYValue;
 
-            TbbDebuger.LogDebug($"[EmotionMonitor] threatercount:[{threaters.Count}]");
+            //TbbDebuger.LogDebug($"[EmotionMonitor] threatercount:[{threaters.Count}]");
             newINSANITY -= EvaluateThreaters(smi);
 
             // 仅当配置允许时才计算环境影响
@@ -96,7 +97,7 @@ namespace MutantContainmentProject.MutanterComponent
             smi.INSANITYValue = newINSANITY;
 
             UpdateThreateArea(smi, dt);
-            TbbDebuger.LogDebug($"[EmotionMonitor] {smi.master.name} 理智值更新: {smi.INSANITYValue:F2}");
+            //TbbDebuger.LogDebug($"[EmotionMonitor] {smi.master.name} 理智值更新: {smi.INSANITYValue:F2}");
         }
 
         private float EvaluateEnvironment(StatesInstance smi)
@@ -132,7 +133,7 @@ namespace MutantContainmentProject.MutanterComponent
             //根据probelayer找到对应的植物、小人、建筑、动物等
             if (smi.tbbRangeVisualizer == null) return;
             List<int> list_cells = TbbLimitedRoomSpaceBuilder.BuildRoom(BaseCell, 10);
-            TbbDebuger.LogDebug($"[畸变收容所]SpaceProbe cell count:[{list_cells.Count}]");
+            //TbbDebuger.LogDebug($"[畸变收容所]SpaceProbe cell count:[{list_cells.Count}]");
             //用于可视化显示威胁区域
             smi.tbbRangeVisualizer.SetTargetCells(list_cells);
             creatures.Clear();
@@ -216,19 +217,20 @@ namespace MutantContainmentProject.MutanterComponent
                 Unsubscribe((int)GameHashes.CreatureHighDecor);
                 base.OnCleanUp();
             }
+
+            public List<KPrefabID> GetThreaters() {
+                return sm.threaters;
+            }
         }
         public class Def : BaseDef
         {
             public float INSANITYCalculationInterval = 5f;
 
             // --- 环境因素总开关 ---
-            [Tooltip("是否考虑环境因素(灯光,装饰度)对理智的影响?")]
             public bool considerEnvironmentalFactors = true;
 
             // --- 环境因素子项开关 ---
-            [Tooltip("是否考虑灯光对理智的影响? (需启用总开关)")]
             public bool considerLighting = true;
-            [Tooltip("是否考虑装饰度对理智的影响? (需启用总开关)")]
             public bool considerDecor = true;
             public float DecorValueTreshold = 80f;
 
@@ -242,7 +244,6 @@ namespace MutantContainmentProject.MutanterComponent
             public float cloneOrAndroidProximityImpact = -2f;
 
             // --- 植物因素总开关 ---
-            [Tooltip("是否考虑附近植物对理智的影响?")]
             public bool considerPlantFactors = true;
 
             // --- 植物因素参数 ---

@@ -1,4 +1,4 @@
-﻿using Klei.AI;
+using Klei.AI;
 
 namespace MutantContainmentProject.MutanterTraits
 {
@@ -16,6 +16,8 @@ namespace MutantContainmentProject.MutanterTraits
         private static readonly string MutanterTraitsGroupID = "MutanterTraitsGroup";
         public static readonly string MutanterPsychological = "Psychological";
         public static readonly string MutanterPhysical = "physical";
+        public static readonly string MutanterErosion = "Erosion";
+        public static readonly string MutanterSoul = "Soul";
 
         public static void PsychologicalTrait(){
             TraitUtil.CreateNamedTrait(MutanterPsychological, STRINGS.TRAITS.PSYCHOLOGICAL.NAME, STRINGS.TRAITS.PSYCHOLOGICAL.DESC, false);
@@ -24,20 +26,13 @@ namespace MutantContainmentProject.MutanterTraits
         {
             TraitUtil.CreateNamedTrait(MutanterPhysical, STRINGS.TRAITS.PSYCHOLOGICAL.NAME, STRINGS.TRAITS.PSYCHOLOGICAL.DESC, false);
         }
-        /*
-         *             var lightSensitive = new MutanterTraitDef("LIGHT_SENSITIVE", "光敏", "暴露在光线下时理智持续下降。", TraitType.Passive);
-
-            // Example: Create "Regeneration" trait
-            var regeneration = new MutanterTraitDef("REGENERATION", "再生", "每秒恢复少量生命值。", TraitType.Passive);
-
-            // Example: Create "Berserker" trait (Triggered)
-            var berserker = new MutanterTraitDef("BERSERKER", "濒死狂暴", "生命值低于30%时，攻击力大幅增加。", TraitType.Triggered);
-
-            // Example: Create "Mind Polluter" trait (Passive)
-            var mindPolluter = new MutanterTraitDef("MIND_POLLUTER", "精神污染", "持续降低附近员工的理智。", TraitType.Passive);
-
-            // Example: Create "Damage Immunity" trait (Passive)
-            var damageImmune = new MutanterTraitDef("DAMAGE_IMMUNITY", "免疫物理伤害", "完全免疫物理伤害。", TraitType.Passive);
-         */
+        public static void ErosionTrait()
+        {
+            TraitUtil.CreateNamedTrait(MutanterErosion, STRINGS.TRAITS.EROSION.NAME, STRINGS.TRAITS.EROSION.DESC, false);
+        }
+        public static void SoulTrait()
+        {
+            TraitUtil.CreateNamedTrait(MutanterSoul, STRINGS.TRAITS.SOUL.NAME, STRINGS.TRAITS.SOUL.DESC, false);
+        }
     }
 }
