@@ -233,8 +233,8 @@
         BRAVERY: {
           NAME: 勇气
         }
-        WILLPOWER: {
-          NAME: 精神
+        MENTALRESISTANCE: {
+          NAME: 精神抗性
         }
         SUCCESSRATE: {
           NAME: 成功率
@@ -256,14 +256,14 @@
         BAVERYIII: {
           NAME: 勇气III
         }
-        WILLPOWERI: {
-          NAME: 精神I
+        MENTALRESISTANCEI: {
+          NAME: 精神抗性I
         }
-        WILLPOWERII: {
-          NAME: 精神II
+        MENTALRESISTANCEII: {
+          NAME: 精神抗性II
         }
-        WILLPOWERIII: {
-          NAME: 精神III
+        MENTALRESISTANCEIII: {
+          NAME: 精神抗性III
         }
         SUCCESSRATEI: {
           NAME: 成功率I
@@ -283,14 +283,23 @@
         WORKINGSPEEDIII: {
           NAME: 工作速度III
         }
+        MENTALRESISTANCEI: {
+          NAME: 精神抗性I
+        }
+        MENTALRESISTANCEII: {
+          NAME: 精神抗性II
+        }
+        MENTALRESISTANCEIII: {
+          NAME: 精神抗性III
+        }
       }
     }
     SKILLGROUP: {
       CONTAIN: {
         NAME: 收容
       }
-      WILLPOWER: {
-        NAME: 精神
+      MENTALRESISTANCE: {
+        NAME: 精神抗性
       }
       DISCIPLINE: {
         NAME: 自律
@@ -303,8 +312,8 @@
       CONTAIN: {
         NAME: 收容
       }
-      WILLPOWER: {
-        NAME: 精神
+      MENTALRESISTANCE: {
+        NAME: 精神抗性
       }
       DISCIPLINE: {
         NAME: 自律
@@ -319,10 +328,10 @@
         STATUS: 正在进行收容
         TOOLTIP: 收容这个实体
       }
-      WILLPOWER: {
-        NAME: 谨慎
-        STATUS: 正在进行收容
-        TOOLTIP: 收容这个实体
+      MENTALRESISTANCE: {
+        NAME: 精神抗性
+        STATUS: 正在进行精神抗性训练
+        TOOLTIP: 减少精神攻击带来的压力
       }
       DISCIPLINE: {
         NAME: 自律
@@ -348,17 +357,17 @@
         NAME: 勇气 III
         DESCRIPTION: 增加10点生命值
       }
-      CAUTIONI: {
-        NAME: 谨慎 I
-        DESCRIPTION: 谨慎 I 增加精神值
+      MENTALRESISTANCEI: {
+        NAME: 精神抗性 I
+        DESCRIPTION: 精神抗性 I 减少精神攻击带来的压力
       }
-      CAUTIONII: {
-        NAME: 谨慎 II
-        DESCRIPTION: 谨慎 II 增加精神值
+      MENTALRESISTANCEII: {
+        NAME: 精神抗性 II
+        DESCRIPTION: 精神抗性 II 减少精神攻击带来的压力
       }
-      CAUTIONIII: {
-        NAME: 谨慎 III
-        DESCRIPTION: 谨慎 III 增加精神值
+      MENTALRESISTANCEIII: {
+        NAME: 精神抗性 III
+        DESCRIPTION: 精神抗性 III 减少精神攻击带来的压力
       }
       DISCIPLINEI: {
         NAME: 自律 I

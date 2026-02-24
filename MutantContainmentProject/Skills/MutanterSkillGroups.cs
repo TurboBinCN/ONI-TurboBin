@@ -5,13 +5,13 @@ namespace MutantContainmentProject.Skills
 {
     public class MutanterSkillGroups
     {
-        public static string SkillGroupContainID = "Contain";
-        public static string SkillGroupWillPowerID = "WillPower";
+        public static string SkillGroupBraveryID = "Bravery";
+        public static string SkillGroupMentalResistanceID = "MentalResistance";
         public static string SkillGroupDisciplineID = "Discipline";
-        public static string SkillRighteousnessID = "Righteousness";
+        public static string SkillGroupRighteousnessID = "Righteousness";
         public static SkillGroup SkillGroupBravery()
         {
-            var skillgroup = new SkillGroup(SkillGroupContainID, MutanterChoreTypes.ChoreTypeContainID, STRINGS.SKILLGROUP.CONTAIN.NAME, "icon_errand_dig", "icon_archetype_dig");
+            var skillgroup = new SkillGroup(SkillGroupBraveryID, MutanterChoreTypes.ChoreTypeContainID, STRINGS.SKILLGROUP.CONTAIN.NAME, "icon_errand_dig", "icon_archetype_dig");
 
             skillgroup.relevantAttributes = new List<Klei.AI.Attribute>
             {
@@ -24,17 +24,17 @@ namespace MutantContainmentProject.Skills
 
             return skillgroup;
         }
-        public static SkillGroup SkillGroupWillPower()
+        public static SkillGroup SkillGroupMentalResistance()
         {
-            var skillgroup = new SkillGroup(SkillGroupWillPowerID, MutanterChoreTypes.ChoreTypeWillPowerID, STRINGS.SKILLGROUP.WILLPOWER.NAME, "icon_errand_dig", "icon_archetype_dig");
+            var skillgroup = new SkillGroup(SkillGroupMentalResistanceID, MutanterChoreTypes.ChoreTypeMentalResistanceID, STRINGS.SKILLGROUP.MENTALRESISTANCE.NAME, "icon_errand_dig", "icon_archetype_dig");
 
             skillgroup.relevantAttributes = new List<Klei.AI.Attribute>
             {
-                Db.Get().ChoreGroups.TryGet(MutanterChoreGroups.ChoreGroupWillPowerID).attribute
+                Db.Get().ChoreGroups.TryGet(MutanterChoreGroups.ChoreGroupMentalResistanceID).attribute
             };
             skillgroup.requiredChoreGroups = new List<string>
             {
-                MutanterChoreGroups.ChoreGroupWillPowerID
+                MutanterChoreGroups.ChoreGroupMentalResistanceID
             };
 
             return skillgroup;
@@ -54,9 +54,9 @@ namespace MutantContainmentProject.Skills
 
             return skillgroup;
         }
-        public static SkillGroup SkillRighteousness()
+        public static SkillGroup SkillGroupRighteousness()
         {
-            var skillgroup = new SkillGroup(SkillRighteousnessID, MutanterChoreTypes.ChoreTypeRighteousnessID, STRINGS.SKILLGROUP.RIGHTEOUSNESS.NAME, "icon_errand_dig", "icon_archetype_dig");
+            var skillgroup = new SkillGroup(SkillGroupRighteousnessID, MutanterChoreTypes.ChoreTypeRighteousnessID, STRINGS.SKILLGROUP.RIGHTEOUSNESS.NAME, "icon_errand_dig", "icon_archetype_dig");
 
             skillgroup.relevantAttributes = new List<Klei.AI.Attribute>
             {

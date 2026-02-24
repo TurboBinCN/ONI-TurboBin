@@ -5,7 +5,7 @@ namespace MutantContainmentProject.Skills
     public class MutanterAttributes
     {
         public static string AttributeBraveryID = "Bravery";
-        public static string AttributeWillPowerID = "WillPower";
+        public static string AttributeMentalResistanceID = "MentalResistance";
         public static string AttributeSuccessRateID = "SuccessRate";
         public static string AttributeWorkingSpeedID = "WorkingSpeed";
         public static string AttributeAttackDamageID = "AttackDamage";
@@ -15,9 +15,9 @@ namespace MutantContainmentProject.Skills
 
             attribute.SetFormatter(new StandardAttributeFormatter(GameUtil.UnitClass.SimpleInteger, GameUtil.TimeSlice.None));
         }
-        public static void AttributeWillPower(Database.Attributes __instance)
+        public static void AttributeMentalResistance(Database.Attributes __instance)
         {
-            var attribute = __instance.Add(new Attribute(AttributeWillPowerID, is_trainable: true, Attribute.Display.Skill, is_profession: true, 0f, null, null, "mod_excavation"));
+            var attribute = __instance.Add(new Attribute(AttributeMentalResistanceID, is_trainable: true, Attribute.Display.Skill, is_profession: true, 0f, null, null, "mod_excavation"));
 
             attribute.SetFormatter(new StandardAttributeFormatter(GameUtil.UnitClass.SimpleInteger, GameUtil.TimeSlice.None));
         }

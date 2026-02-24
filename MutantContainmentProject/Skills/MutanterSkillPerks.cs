@@ -8,10 +8,6 @@ namespace MutantContainmentProject.Skills
         public static readonly string IncreaseContainSpeedMedium = "IncreaseContainSpeedMedium";
         public static readonly string IncreaseContainSpeedLarge = "IncreaseContainSpeedLarge";
 
-        public static readonly string IncreaseWillPowerSmall = "IncreaseWillPowerSmall";
-        public static readonly string IncreaseWillPowerMedium = "IncreaseWillPowerMedium";
-        public static readonly string IncreaseWillPowerLarge = "IncreaseCWillPowerLarge";
-
         //收容或安全限制操作成功率
         public static readonly string IncreaseSuccessRateLow = "IncreaseSuccessRateLow";
         public static readonly string IncreaseSuccessRateMedium = "IncreaseSuccessRateMedium";
@@ -31,8 +27,14 @@ namespace MutantContainmentProject.Skills
         public static readonly string IncreaseHitPointsMedium = "IncreaseHitPointsMedium";
         public static readonly string IncreaseHitPointsLarge = "IncreaseHitPointsLarge";
 
+        //精神抗性
+        public static readonly string IncreaseMentalResistanceSmall = "IncreaseMentalResistanceSmall";
+        public static readonly string IncreaseMentalResistanceMedium = "IncreaseMentalResistanceMedium";
+        public static readonly string IncreaseMentalResistanceLarge = "IncreaseMentalResistanceLarge";
+
         public static float ATTRIBUTE_BONUS = 3f;
         public static float HEALTH_BONUS_PER_LEVEL = 10f;
+        public static float MENTAL_RESISTANCE_BONUS = 1f;
         public static void SkillPerkContain(SkillPerks __instance)
         {
             __instance.Add(new SkillAmountPerk(IncreaseHitPointsSmall, "HitPoints", HEALTH_BONUS_PER_LEVEL * ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.BAVERYI.NAME, false));
@@ -40,14 +42,6 @@ namespace MutantContainmentProject.Skills
             __instance.Add(new SkillAmountPerk(IncreaseHitPointsMedium, "HitPoints", HEALTH_BONUS_PER_LEVEL * ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.BAVERYII.NAME, false));
 
             __instance.Add(new SkillAmountPerk(IncreaseHitPointsLarge, "HitPoints", HEALTH_BONUS_PER_LEVEL * ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.BAVERYIII.NAME, false));
-        }
-        public static void SkillPerkWillPower(SkillPerks __instance)
-        {
-            __instance.Add(new SkillAttributePerk(IncreaseWillPowerSmall, MutanterAttributes.AttributeWillPowerID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.WILLPOWERI.NAME, false));
-
-            __instance.Add(new SkillAttributePerk(IncreaseWillPowerMedium, MutanterAttributes.AttributeWillPowerID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.WILLPOWERII.NAME, false));
-
-            __instance.Add(new SkillAttributePerk(IncreaseWillPowerLarge, MutanterAttributes.AttributeWillPowerID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.WILLPOWERIII.NAME, false));
         }
         public static void SkillSuccessRatePower(SkillPerks __instance)
         {
@@ -72,6 +66,16 @@ namespace MutantContainmentProject.Skills
             __instance.Add(new SkillAttributePerk(IncreaseAttackDamageMedium, MutanterAttributes.AttributeAttackDamageID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.ATTACKDAMAGEII.NAME, false));
 
             __instance.Add(new SkillAttributePerk(IncreaseAttackDamageLarge, MutanterAttributes.AttributeAttackDamageID, ATTRIBUTE_BONUS, STRINGS.DUPLICANTS.ROLES.ATTACKDAMAGEIII.NAME, false));
+        }
+
+        public static void SkillMentalResistancePower(SkillPerks __instance)
+        {
+            // 使用Caution属性作为精神抗性
+            __instance.Add(new SkillAttributePerk(IncreaseMentalResistanceSmall, MutanterAttributes.AttributeMentalResistanceID, MENTAL_RESISTANCE_BONUS, STRINGS.DUPLICANTS.ROLES.MENTALRESISTANCEI.NAME, false));
+
+            __instance.Add(new SkillAttributePerk(IncreaseMentalResistanceMedium, MutanterAttributes.AttributeMentalResistanceID, MENTAL_RESISTANCE_BONUS, STRINGS.DUPLICANTS.ROLES.MENTALRESISTANCEII.NAME, false));
+
+            __instance.Add(new SkillAttributePerk(IncreaseMentalResistanceLarge, MutanterAttributes.AttributeMentalResistanceID, MENTAL_RESISTANCE_BONUS, STRINGS.DUPLICANTS.ROLES.MENTALRESISTANCEIII.NAME, false));
         }
     }
 }

@@ -41,9 +41,9 @@ namespace MutantContainmentProject.Buildings
             synchronizeAnims = true;
 
             //attributeConverter = Db.Get().AttributeConverters.Ranching; // 假设使用 ranching 属性
-            //attributeExperienceMultiplier = DUPLICANTSTATS.ATTRIBUTE_LEVELING.MOST_DAY_EXPERIENCE;
-            //skillExperienceSkillGroup = Db.Get().SkillGroups.Ranching.Id;
-            //skillExperienceMultiplier = SKILLS.MOST_DAY_EXPERIENCE;
+            attributeExperienceMultiplier = DUPLICANTSTATS.ATTRIBUTE_LEVELING.MOST_DAY_EXPERIENCE;
+            skillExperienceSkillGroup = MutantContainmentProject.Skills.MutanterSkillGroups.SkillGroupDisciplineID;
+            skillExperienceMultiplier = SKILLS.MOST_DAY_EXPERIENCE;
 
             //shouldShowSkillPerkStatusItem = true;
             //requiredSkillPerk = Db.Get().SkillPerks.CanIdentifyMutantSeeds.Id;

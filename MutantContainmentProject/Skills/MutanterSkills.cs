@@ -9,10 +9,10 @@ namespace MutantContainmentProject.Skills
         public static readonly string SkillBraveryIID = "SkillBraveryI";
         public static readonly string SkillBraveryIIID = "SkillBraveryII";
         public static readonly string SkillBraveryIIIID = "SkillBraveryIII";
-        //谨慎 I/II/III 增加最大精神
-        public static readonly string SkillCautionIID = "SkillCautionI";
-        public static readonly string SkillCautionIIID = "SkillCautionII";
-        public static readonly string SkillCautionIIIID = "SkillCautionIII";
+        //精神抗性 I/II/III 降低精神攻击带来的压力增长
+        public static readonly string SkillMentalResistanceIID = "SkillMentalResistanceI";
+        public static readonly string SkillMentalResistanceIIID = "SkillMentalResistanceII";
+        public static readonly string SkillMentalResistanceIIIID = "SkillMentalResistanceIII";
         //自律 I/II/III 增加成功率 工作速度
         public static readonly string SkillDisciplineIID = "SkillDisciplineI";
         public static readonly string SkillDisciplineIIID = "SkillDisciplineII";
@@ -23,7 +23,7 @@ namespace MutantContainmentProject.Skills
         public static readonly string SkillRighteousnessIIIID = "SkillRighteousnessIII";
         public static Skill SkillBraveryI()
         {
-            var skill = new Skill(SkillBraveryIID, STRINGS.SKILLS.BRAVERYI.NAME, STRINGS.SKILLS.BRAVERYI.DESCRIPTION, 0, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillGroupContainID, new List<SkillPerk>
+            var skill = new Skill(SkillBraveryIID, STRINGS.SKILLS.BRAVERYI.NAME, STRINGS.SKILLS.BRAVERYI.DESCRIPTION, 0, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillGroupBraveryID, new List<SkillPerk>
             {
                 Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseHitPointsSmall)
             }, null, "Minion", null, null);
@@ -31,7 +31,7 @@ namespace MutantContainmentProject.Skills
         }
         public static Skill SkillBraveryII()
         {
-            var skill = new Skill(SkillBraveryIIID, STRINGS.SKILLS.BRAVERYII.NAME, STRINGS.SKILLS.BRAVERYII.DESCRIPTION, 1, hat: "hat_role_mining2", badge: "skillbadge_role_mining2", skillGroup: MutanterSkillGroups.SkillGroupContainID, new List<SkillPerk>
+            var skill = new Skill(SkillBraveryIIID, STRINGS.SKILLS.BRAVERYII.NAME, STRINGS.SKILLS.BRAVERYII.DESCRIPTION, 1, hat: "hat_role_mining2", badge: "skillbadge_role_mining2", skillGroup: MutanterSkillGroups.SkillGroupBraveryID, new List<SkillPerk>
             {
                 Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseHitPointsMedium)
             }, new List<string>
@@ -43,7 +43,7 @@ namespace MutantContainmentProject.Skills
         }
         public static Skill SkillBraveryIII()
         {
-            var skill = new Skill(SkillBraveryIIIID, STRINGS.SKILLS.BRAVERYIII.NAME, STRINGS.SKILLS.BRAVERYIII.DESCRIPTION, 2, hat: "hat_role_mining3", badge: "skillbadge_role_mining3", skillGroup: MutanterSkillGroups.SkillGroupContainID, new List<SkillPerk>
+            var skill = new Skill(SkillBraveryIIIID, STRINGS.SKILLS.BRAVERYIII.NAME, STRINGS.SKILLS.BRAVERYIII.DESCRIPTION, 2, hat: "hat_role_mining3", badge: "skillbadge_role_mining3", skillGroup: MutanterSkillGroups.SkillGroupBraveryID, new List<SkillPerk>
             {
                 Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseHitPointsLarge)
             }, new List<string>
@@ -52,27 +52,27 @@ namespace MutantContainmentProject.Skills
             }, "Minion", null, null);
             return skill;
         }
-        public static Skill SkillCautionI()
+        public static Skill SkillMentalResistanceI()
         {
-            var skill = new Skill(SkillCautionIID, STRINGS.SKILLS.CAUTIONI.NAME, STRINGS.SKILLS.CAUTIONI.DESCRIPTION, 0, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillGroupWillPowerID, new List<SkillPerk>
+            var skill = new Skill(SkillMentalResistanceIID, STRINGS.SKILLS.MENTALRESISTANCEI.NAME, STRINGS.SKILLS.MENTALRESISTANCEI.DESCRIPTION, 0, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillGroupMentalResistanceID, new List<SkillPerk>
             {
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseWillPowerSmall)
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseMentalResistanceSmall)
             }, null, "Minion", null, null);
             return skill;
         }
-        public static Skill SkillCautionII()
+        public static Skill SkillMentalResistanceII()
         {
-            var skill = new Skill(SkillCautionIIID, STRINGS.SKILLS.CAUTIONII.NAME, STRINGS.SKILLS.CAUTIONII.DESCRIPTION, 1, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillGroupWillPowerID, new List<SkillPerk>
+            var skill = new Skill(SkillMentalResistanceIIID, STRINGS.SKILLS.MENTALRESISTANCEII.NAME, STRINGS.SKILLS.MENTALRESISTANCEII.DESCRIPTION, 1, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillGroupMentalResistanceID, new List<SkillPerk>
             {
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseWillPowerMedium)
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseMentalResistanceMedium)
             }, null, "Minion", null, null);
             return skill;
         }
-        public static Skill SkillCautionIII()
+        public static Skill SkillMentalResistanceIII()
         {
-            var skill = new Skill(SkillCautionIIIID, STRINGS.SKILLS.CAUTIONIII.NAME, STRINGS.SKILLS.CAUTIONIII.DESCRIPTION, 2, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillGroupWillPowerID, new List<SkillPerk>
+            var skill = new Skill(SkillMentalResistanceIIIID, STRINGS.SKILLS.MENTALRESISTANCEIII.NAME, STRINGS.SKILLS.MENTALRESISTANCEIII.DESCRIPTION, 2, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillGroupMentalResistanceID, new List<SkillPerk>
             {
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseWillPowerLarge)
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseMentalResistanceLarge)
             }, null, "Minion", null, null);
             return skill;
         }
@@ -105,7 +105,7 @@ namespace MutantContainmentProject.Skills
         }
         public static Skill SkillRighteousnessI()
         {
-            var skill = new Skill(SkillRighteousnessIID, STRINGS.SKILLS.RIGHTEOUSNESSI.NAME, STRINGS.SKILLS.RIGHTEOUSNESSI.DESCRIPTION, 0, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillRighteousnessID, new List<SkillPerk>
+            var skill = new Skill(SkillRighteousnessIID, STRINGS.SKILLS.RIGHTEOUSNESSI.NAME, STRINGS.SKILLS.RIGHTEOUSNESSI.DESCRIPTION, 0, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillGroupRighteousnessID, new List<SkillPerk>
             {
                 Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseAttackDamageSmall)
             }, null, "Minion", null, null);
@@ -113,7 +113,7 @@ namespace MutantContainmentProject.Skills
         }
         public static Skill SkillRighteousnessII()
         {
-            var skill = new Skill(SkillRighteousnessIIID, STRINGS.SKILLS.RIGHTEOUSNESSII.NAME, STRINGS.SKILLS.RIGHTEOUSNESSII.DESCRIPTION, 1, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillRighteousnessID, new List<SkillPerk>
+            var skill = new Skill(SkillRighteousnessIIID, STRINGS.SKILLS.RIGHTEOUSNESSII.NAME, STRINGS.SKILLS.RIGHTEOUSNESSII.DESCRIPTION, 1, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillGroupRighteousnessID, new List<SkillPerk>
             {
                 Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseAttackDamageMedium)
             }, null, "Minion", null, null);
@@ -121,7 +121,7 @@ namespace MutantContainmentProject.Skills
         }
         public static Skill SkillRighteousnessIII()
         {
-            var skill = new Skill(SkillRighteousnessIIIID, STRINGS.SKILLS.RIGHTEOUSNESSIII.NAME, STRINGS.SKILLS.RIGHTEOUSNESSIII.DESCRIPTION, 2, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillRighteousnessID, new List<SkillPerk>
+            var skill = new Skill(SkillRighteousnessIIIID, STRINGS.SKILLS.RIGHTEOUSNESSIII.NAME, STRINGS.SKILLS.RIGHTEOUSNESSIII.DESCRIPTION, 2, hat: "hat_role_mining1", badge: "skillbadge_role_mining1", skillGroup: MutanterSkillGroups.SkillGroupRighteousnessID, new List<SkillPerk>
             {
                 Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseAttackDamageLarge)
             }, null, "Minion", null, null);

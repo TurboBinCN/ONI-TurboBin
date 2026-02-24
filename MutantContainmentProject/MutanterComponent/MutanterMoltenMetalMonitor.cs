@@ -118,7 +118,7 @@ namespace MutantContainmentProject.MutanterComponent
                     energyRate *= (1f + insanityFactor * def.insanityEnergyMultiplier);
                 }
                 energyAccumulated += energyRate * dt;
-                TbbDebuger.LogDebug($"[{master.name}] 累积能量: {energyAccumulated:F2}");
+                //TbbDebuger.LogDebug($"[{master.name}] 累积能量: {energyAccumulated:F2}");
             }
 
             public bool IsReadyToDischarge()

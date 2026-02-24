@@ -6,7 +6,7 @@ namespace MutantContainmentProject.Skills
     public class MutanterChoreGroups
     {
         public static readonly string ChoreGroupContainID = "Contain";
-        public static readonly string ChoreGroupWillPowerID = "WillPower";
+        public static readonly string ChoreGroupMentalResistanceID = "MentalResistance";
         public static readonly string ChoreGroupDisciplineID = "Discipline";
         public static readonly string ChoreGroupRighteousnessID = "Righteousness";
         public static void ChoreGroupContain(ChoreGroups __instance)
@@ -17,11 +17,11 @@ namespace MutantContainmentProject.Skills
                 "icon_errand_dig",2, true
             });
         }
-        public static void ChoreGroupWillPower(ChoreGroups __instance)
+        public static void ChoreGroupMentalResistance(ChoreGroups __instance)
         {
             object choregroupObj;
             bool success = TbbHarmonyExtension.InvokeMethod(out choregroupObj, __instance, "Add", new object[] {
-                ChoreGroupWillPowerID, STRINGS.CHOREGROUPS.WILLPOWER.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeWillPowerID),
+                ChoreGroupMentalResistanceID, STRINGS.CHOREGROUPS.MENTALRESISTANCE.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeMentalResistanceID),
                 "icon_errand_dig",2, true
             });
         }

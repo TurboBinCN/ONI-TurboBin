@@ -313,9 +313,9 @@ namespace MutantContainmentProject
                 {
                     public static LocString NAME = "Bavery";
                 }
-                public static class WILLPOWER
+                public static class MENTALRESISTANCE
                 {
-                    public static LocString NAME = "WillPower";
+                    public static LocString NAME = "Mental Resistance";
                 }
                 public static class SUCCESSRATE
                 {
@@ -344,17 +344,17 @@ namespace MutantContainmentProject
                 {
                     public static LocString NAME = "BaveryIII";
                 }
-                public static class WILLPOWERI
+                public static class MENTALRESISTANCEI
                 {
-                    public static LocString NAME = "WillPowerI";
+                    public static LocString NAME = "MentalResistanceI";
                 }
-                public static class WILLPOWERII
+                public static class MENTALRESISTANCEII
                 {
-                    public static LocString NAME = "WillPowerII";
+                    public static LocString NAME = "MentalResistanceII";
                 }
-                public static class WILLPOWERIII
+                public static class MENTALRESISTANCEIII
                 {
-                    public static LocString NAME = "WillPowerIII";
+                    public static LocString NAME = "MentalResistanceIII";
                 }
                 public static class SUCCESSRATEI
                 {
@@ -400,9 +400,9 @@ namespace MutantContainmentProject
             {
                 public static LocString NAME = "Contain";
             }
-            public static class WILLPOWER
+            public static class MENTALRESISTANCE
             {
-                public static LocString NAME = "WillPower";
+                public static LocString NAME = "Mental Resistance";
             }
             public static class DISCIPLINE
             {
@@ -419,9 +419,9 @@ namespace MutantContainmentProject
             {
                 public static LocString NAME = "Contain";
             }
-            public static class WILLPOWER
+            public static class MENTALRESISTANCE
             {
-                public static LocString NAME = "WillPower";
+                public static LocString NAME = "Mental Resistance";
             }
             public static class DISCIPLINE
             {
@@ -440,11 +440,11 @@ namespace MutantContainmentProject
                 public static LocString STATUS = "Go to Containing...";
                 public static LocString TOOLTIP = "Contain the entity.";
             }
-            public static class WILLPOWER
+            public static class MENTALRESISTANCE
             {
-                public static LocString NAME = "WillPower";
-                public static LocString STATUS = "WillPower";
-                public static LocString TOOLTIP = "Contain the entity.";
+                public static LocString NAME = "Mental Resistance";
+                public static LocString STATUS = "Mental Resistance";
+                public static LocString TOOLTIP = "Reduce stress from psychological attacks.";
             }
             public static class DISCIPLINE
             {
@@ -476,20 +476,20 @@ namespace MutantContainmentProject
                 public static LocString NAME = "Bravery III";
                 public static LocString DESCRIPTION = "Increase 10 hit points";
             }
-            public static class CAUTIONI
+            public static class MENTALRESISTANCEI
             {
-                public static LocString NAME = "Caution I";
-                public static LocString DESCRIPTION = "Caution I Increase Willpower.";
+                public static LocString NAME = "Mental Resistance I";
+                public static LocString DESCRIPTION = "Mental Resistance I. Reduce stress from psychological attacks.";
             }
-            public static class CAUTIONII
+            public static class MENTALRESISTANCEII
             {
-                public static LocString NAME = "Caution II";
-                public static LocString DESCRIPTION = "Caution I Increase Willpower.";
+                public static LocString NAME = "Mental Resistance II";
+                public static LocString DESCRIPTION = "Mental Resistance II. Reduce stress from psychological attacks.";
             }
-            public static class CAUTIONIII
+            public static class MENTALRESISTANCEIII
             {
-                public static LocString NAME = "Caution III";
-                public static LocString DESCRIPTION = "Caution I Increase Willpower.";
+                public static LocString NAME = "Mental Resistance III";
+                public static LocString DESCRIPTION = "Mental Resistance III. Reduce stress from psychological attacks.";
             }
             public static class DISCIPLINEI
             {

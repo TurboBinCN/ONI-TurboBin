@@ -42,8 +42,26 @@ namespace MutantContainmentProject.MutanterComponent
                 var stressAmount = amounts.Get(Db.Get().Amounts.Stress);
                 if (stressAmount != null)
                 {
-                    stressAmount.value = Mathf.Min(stressAmount.value + _stressAmount, 100f);
-                    TbbDebuger.LogDebug($"[PsychologicalAttack] {target.name} stress increased to {stressAmount.value}%");
+                    // 计算精神抗性影响
+                    float mentalResistanceFactor = 1f;
+                    
+                    // 从目标的属性中获取MentalResistance值作为精神抗性
+                    var attributes = target.GetAttributes();
+                    if (attributes != null)
+                    {
+                        var mentalResistanceAttribute = attributes.Get("MentalResistance");
+                        if (mentalResistanceAttribute != null)
+                        {
+                            // MentalResistance值越高，精神抗性越强，压力增长越慢
+                            float mentalResistanceValue = mentalResistanceAttribute.GetTotalValue();
+                            mentalResistanceFactor = Mathf.Max(0.1f, 1f - (mentalResistanceValue * 0.1f));
+                        }
+                    }
+                    
+                    // 应用精神抗性
+                    float effectiveStressAmount = _stressAmount * mentalResistanceFactor;
+                    stressAmount.value = Mathf.Min(stressAmount.value + effectiveStressAmount, 100f);
+                    TbbDebuger.LogDebug($"[PsychologicalAttack] {target.name} stress increased to {stressAmount.value}%, effective amount: {effectiveStressAmount}, resistance factor: {mentalResistanceFactor}");
                 }
             }
 

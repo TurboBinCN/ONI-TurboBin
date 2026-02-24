@@ -6,7 +6,7 @@ namespace MutantContainmentProject.Skills
     public class MutanterChoreTypes
     {
         public static readonly string ChoreTypeContainID = "Contain";
-        public static readonly string ChoreTypeWillPowerID = "WillPower";
+        public static readonly string ChoreTypeMentalResistanceID = "MentalResistance";
         public static readonly string ChoreTypeDisciplineID = "Discipline";
         public static readonly string ChoreTypeRighteousnessID = "Righteousness";
 
@@ -16,10 +16,10 @@ namespace MutantContainmentProject.Skills
                 ChoreTypeContainID, new string[]{ChoreTypeContainID}, "", new string[0], STRINGS.CHORES.CONTAIN.NAME, STRINGS.CHORES.CONTAIN.STATUS, STRINGS.CHORES.CONTAIN.TOOLTIP, false, 5000, null
             });
         }
-        public static void ChoreTypeWillPower(ChoreTypes __instance)
+        public static void ChoreTypeMentalResistance(ChoreTypes __instance)
         {
             TbbHarmonyExtension.InvokeMethod(__instance, "Add", new object[] {
-                ChoreTypeWillPowerID, new string[]{ChoreTypeWillPowerID}, "", new string[0], STRINGS.CHORES.WILLPOWER.NAME, STRINGS.CHORES.WILLPOWER.STATUS, STRINGS.CHORES.WILLPOWER.TOOLTIP, false, 5000, null
+                ChoreTypeMentalResistanceID, new string[]{ChoreTypeMentalResistanceID}, "", new string[0], STRINGS.CHORES.MENTALRESISTANCE.NAME, STRINGS.CHORES.MENTALRESISTANCE.STATUS, STRINGS.CHORES.MENTALRESISTANCE.TOOLTIP, false, 5000, null
             });
         }
         public static void ChoreTypeDiscipline(ChoreTypes __instance)

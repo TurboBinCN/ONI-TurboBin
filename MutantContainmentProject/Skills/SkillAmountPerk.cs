@@ -19,7 +19,20 @@ namespace MutantContainmentProject.Skills
             SkillAmountPerk skillAmountPerk = this;
             Klei.AI.Amount amount = Db.Get().Amounts.Get(amountId);
             this.modifier = new AttributeModifier(amount.maxAttribute.Id, modifierBonus, modifierDesc);
-            this.Name = string.Format((string)UI.ROLES_SCREEN.PERKS.ATTRIBUTE_EFFECT_FMT, (object)this.modifier.GetFormattedString(), (object)amount.Name);
+            string formattedModifier = "";
+            if (amount.Id == "HitPoints")
+            {
+                formattedModifier = $"{(this.modifier.Value> 0?"+":"-")}{this.modifier.Value.ToString()}";
+            }
+            else if (amount.displayer != null)
+            {
+                formattedModifier = amount.displayer.Formatter.GetFormattedModifier(this.modifier);
+            }
+            else
+            {
+                formattedModifier = this.modifier.GetFormattedString();
+            }
+            this.Name = string.Format((string)UI.ROLES_SCREEN.PERKS.ATTRIBUTE_EFFECT_FMT, (object)formattedModifier, (object)amount.Name);
 
             this.OnApply = (Action<MinionResume>)(identity =>
             {

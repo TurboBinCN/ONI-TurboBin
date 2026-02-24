@@ -71,32 +71,32 @@ namespace MutantContainmentProject
                 //小人属性
                 TbbDuplicantsAttributes.Initialize(mod, harmony)
                     .Add(MutanterAttributes.AttributeBravery, MutanterAttributes.AttributeBraveryID)
-                    .Add(MutanterAttributes.AttributeWillPower, MutanterAttributes.AttributeWillPowerID)
+                    .Add(MutanterAttributes.AttributeMentalResistance, MutanterAttributes.AttributeMentalResistanceID)
                     .Add(MutanterAttributes.AttributeSuccessRate, MutanterAttributes.AttributeSuccessRateID)
                     .Add(MutanterAttributes.AttributeWorkingSpeed, MutanterAttributes.AttributeWorkingSpeedID)
                     .Add(MutanterAttributes.AttributeAttackDamage, MutanterAttributes.AttributeAttackDamageID);
                 //ChoreGroups
                 TbbChoreGroups.Initialize(mod, harmony)
                     .Add(MutanterChoreGroups.ChoreGroupContain)
-                    .Add(MutanterChoreGroups.ChoreGroupWillPower)
+                    .Add(MutanterChoreGroups.ChoreGroupMentalResistance)
                     .Add(MutanterChoreGroups.ChoreGroupDiscipline)
                     .Add(MutanterChoreGroups.ChoreGroupRighteousness);
                 //ChoreType
                 TbbChoreTypes.Initialize(mod, harmony)
                     .Add(MutanterChoreTypes.ChoreTypeContain)
-                    .Add(MutanterChoreTypes.ChoreTypeWillPower)
+                    .Add(MutanterChoreTypes.ChoreTypeMentalResistance)
                     .Add(MutanterChoreTypes.ChoreTypeDiscipline)
                     .Add(MutanterChoreTypes.ChoreTypeRighteousness);
                 //SkillGroup
                 TbbSkillGroups.Initialize(mod, harmony)
                     .Add(MutanterSkillGroups.SkillGroupBravery)
-                    .Add(MutanterSkillGroups.SkillGroupWillPower)
+                    .Add(MutanterSkillGroups.SkillGroupMentalResistance)
                     .Add(MutanterSkillGroups.SkillGroupDiscipline)
-                    .Add(MutanterSkillGroups.SkillRighteousness);
+                    .Add(MutanterSkillGroups.SkillGroupRighteousness);
                 //SkillPerk 技能特性
                 TbbSkillPerks.Initialize(mod, harmony)
                     .Add(MutanterSkillPerks.SkillPerkContain)
-                    .Add(MutanterSkillPerks.SkillPerkWillPower)
+                    .Add(MutanterSkillPerks.SkillMentalResistancePower)
                     .Add(MutanterSkillPerks.SkillSuccessRatePower)
                     .Add(MutanterSkillPerks.SkillWorkingSpeedPower)
                     .Add(MutanterSkillPerks.SkillAttackDamagePower);
@@ -105,9 +105,9 @@ namespace MutantContainmentProject
                     .Add(MutanterSkills.SkillBraveryI)
                     .Add(MutanterSkills.SkillBraveryII)
                     .Add(MutanterSkills.SkillBraveryIII)
-                    .Add(MutanterSkills.SkillCautionI)
-                    .Add(MutanterSkills.SkillCautionII)
-                    .Add(MutanterSkills.SkillCautionIII)
+                    .Add(MutanterSkills.SkillMentalResistanceI)
+                    .Add(MutanterSkills.SkillMentalResistanceII)
+                    .Add(MutanterSkills.SkillMentalResistanceIII)
                     .Add(MutanterSkills.SkillDisciplineI)
                     .Add(MutanterSkills.SkillDisciplineII)
                     .Add(MutanterSkills.SkillDisciplineIII)
