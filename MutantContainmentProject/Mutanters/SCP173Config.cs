@@ -21,7 +21,7 @@ namespace MutantContainmentProject.Mutanters
 
             GameObject prefab = BaseMutanter.BaseGameObject(ID, name, desc, KANIM_NAME, KANIM_NAME, KANIM_EMOTES_NAME, null, 233.15f, 293.15f, 173.15f, 373.15f);
 
-            BaseMutanter.ExtendMutanterMove(prefab, "DreckoNavGrid");
+            BaseMutanter.ExtendMutanterMove(prefab, "WalkerNavGrid1x2");
 
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name,25);
 

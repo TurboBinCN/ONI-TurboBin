@@ -1,4 +1,4 @@
-﻿using KSerialization;
+using KSerialization;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -60,7 +60,8 @@ namespace MutantContainmentProject.MutanterComponent
             }
             else
             {
-                this.discoveredMutanters[speciesID]++;
+                // 确保计数不会超过1，每个tag只能有一个畸变体
+                this.discoveredMutanters[speciesID] = 1;
             }
         }
         public int GetMutanterSpeciesCount(Tag speciesID)
@@ -73,12 +74,20 @@ namespace MutantContainmentProject.MutanterComponent
         }
         public int GetMutanterSpeciesCount()
         {
-            return discoveredMutanters.Count;
+            int count = 0;
+            foreach (var entry in discoveredMutanters)
+            {
+                if (entry.Value >= 1)
+                {
+                    count++;
+                }
+            }
+            return count;
         }
 
         public bool IsMutanterSpeciesExists(Tag speciesID)
         {
-            return discoveredMutanters.ContainsKey(speciesID);
+            return discoveredMutanters.ContainsKey(speciesID) && discoveredMutanters[speciesID] >= 1;
         }
     }
 }

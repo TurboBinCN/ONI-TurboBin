@@ -162,12 +162,14 @@ namespace MutantContainmentProject
                     public static LocString NAME = "Agitated";
                     public static LocString TOOLTIP = "Unstable and agitated, will turn hostile soon.";
                     public static LocString NOTIFICATION_NAME = "Mutanter fall into AGITATED";
+                    public static LocString NOTIFICATION_TOOLTIP = "Mutanter fall into AGITATED";
                 }
                 public static class HOSTILE
                 {
                     public static LocString NAME = "Hostile";
                     public static LocString TOOLTIP = "Extremely dangerous, will attack on sight.";
                     public static LocString NOTIFICATION_NAME = "Mutanter fall into HOSTILE";
+                    public static LocString NOTIFICATION_TOOLTIP = "Mutanter fall into HOSTILE";
                 }
                 public static class SPECIALACTION
                 {
@@ -179,6 +181,7 @@ namespace MutantContainmentProject
                     public static LocString NAME = "Attacking";
                     public static LocString TOOLTIP = "The entity is attacking.";
                     public static LocString NOTIFICATION_NAME = "Mutanter is ATTACKING.";
+                    public static LocString NOTIFICATION_TOOLTIP = "Mutanter is ATTACKING.";
                 }
                 public static class MELEEATTACK
                 {
@@ -302,6 +305,12 @@ namespace MutantContainmentProject
                     global::STRINGS.UI.PST_KEYWORD,
                     "  to generate an Aberrant Entity"
                     });
+                }
+            }
+            public static class NOTIFICATIONS {
+                public static class GRAVITASMUTANTERFOUNDER{
+                    public static LocString NAME = "Mutanter Existed";
+                    public static LocString TOOLTIP = "The Mutanter {0} has existed in the world.Can Not be Spawn Again.";
                 }
             }
         }

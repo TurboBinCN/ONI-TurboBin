@@ -46,17 +46,35 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             .Enter(delegate (Instance smi)
             {
                 TbbDebuger.LogDebug($"[GravitasMutanterFounder] states:operational.idle");
-                smi.UpdateMeter(); // 更新进度条，显示已收集的物种
+                smi.UpdateMeter(); // 更新进度条，显示当前配方的满足数量
+                // 重置献祭品检测参数
+                smi.sm.sacrificeDetected.Set(false, smi, false);
             })
             .ToggleMainStatusItem(GravitasMutanterFounderBuildingStatusItems.Instance.GravitasMutanterFounderWaiting, null)
-            .ParamTransition(unlockConditionMet, operational.activating.pre, (Instance smi, bool met) =>
-            {
-                TbbDebuger.LogDebug($"[GravitasMutanterFounder] states:operational.idle unlockConditionMet");
-                return met;
-            })
+            // 检测到献祭品时转换到capture状态
+            .ParamTransition(sacrificeDetected, operational.capture, IsTrue)
             // 检查是否正在冷却
             .ParamTransition(cooldownTimer, operational.cooldown, IsGTZero);
-
+        operational.capture
+            .PlayAnim("working_capture", KAnim.PlayMode.Once)
+            .Enter((smi)=>{
+                // 重置献祭品检测参数
+                smi.sm.sacrificeDetected.Set(false, smi, false);
+                smi.CreatureStore();
+                // 更新进度条，显示当前配方的满足数量
+                smi.UpdateMeter();
+            })
+            .EventHandler(GameHashes.AnimQueueComplete, (smi, data) => {
+                // 检查激活条件
+                if (smi.CheckAndSetUnlockCondition())
+                {
+                    smi.GoTo(smi.sm.operational.activating.pre);
+                }
+                else
+                {
+                    smi.GoTo(smi.sm.operational.idle);
+                }
+            });
         // Activating Group:从准备激活到畸变体生成
         operational.activating
             .Enter((smi) => { TbbDebuger.LogDebug($"[GravitasMutanterFounder] states:operational.activating"); })
@@ -105,7 +123,6 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 //TODO 需要细化完善， 计算并设置冷却时间，基于激活等级
                 float cooldownDuration = smi.GetCooldownDurationForLevel(smi.ActivationLevel);
                 smi.sm.cooldownTimer.Set(cooldownDuration, smi, false);
-                smi.sm.unlockConditionMet.Set(false, smi, false);
             });
 
         // 添加冷却状态的进度条状态项
@@ -144,7 +161,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
 
     public FloatParameter activationTimer;
 
-    public BoolParameter unlockConditionMet;
+    public BoolParameter sacrificeDetected;
 
     public IntParameter activationLevel;
 
@@ -190,6 +207,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
         public State idle;
         public ActivatingStates activating;
         public State cooldown;
+        public State capture;
     }
 
     public new class Instance : GameInstance
@@ -207,7 +225,24 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
 
             m_largeCreaturePartitionEntry = GameScenePartitioner.Instance.Add("GravitasMutanterFounder.large", gameObject, Grid.CellLeft(pickupCell), GameScenePartitioner.Instance.pickupablesChangedLayer, new Action<object>(DetectLargeCreature));
 
-            m_progressMeter = new MeterController(GetComponent<KBatchedAnimController>(), "meter_target", "meter", Meter.Offset.UserSpecified, Grid.SceneLayer.TileFront, Array.Empty<string>());
+            m_progressMeter = new MeterController(GetComponent<KBatchedAnimController>(), "m_d", "meter", Meter.Offset.UserSpecified, Grid.SceneLayer.TileFront, Array.Empty<string>());
+            // 使用自定义插值函数，实现4帧3格动画的正确映射
+            m_progressMeter.interpolateFunction = (percentage, frames) => {
+                if (frames <= 1 || percentage <= 0f) return 0f;
+                if (percentage >= 1f) return 1f;
+                
+                // 4帧3格动画的映射：
+                // 0-33.33% → 第1-2帧 (0-0.3333)
+                // 33.33-66.66% → 第2-3帧 (0.3333-0.6666)
+                // 66.66-100% → 第3-4帧 (0.6666-1.0)
+                if (percentage < 1f/3f) {
+                    return percentage * 3f / (float)frames;
+                } else if (percentage < 2f/3f) {
+                    return (1f + (percentage - 1f/3f) * 3f) / (float)frames;
+                } else {
+                    return (2f + (percentage - 2f/3f) * 3f) / (float)frames;
+                }
+            };
 
 
             // 初始化献祭相关的集合
@@ -273,8 +308,81 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
 
         public void UpdateMeter()
         {
-            // 更新进度条，显示已献祭的不同物种数量 / 总需求数量
-            m_progressMeter.SetPositionPercent(Mathf.Clamp01(m_sacrificedSpecies.Count / (float)smi.def.numSpeciesToUnlockMorphMode));
+            // 更新进度条，显示当前配方的满足数量
+            float progress = 0f;
+            
+            // 检查是否有激活目标
+            if (m_activationTarget != Tag.Invalid && m_usedRecipe != null)
+            {
+                // 计算当前配方的满足比例
+                float totalRequired = 0f;
+                float totalAvailable = 0f;
+                
+                foreach (var ingredient in m_usedRecipe)
+                {
+                    Tag ingredientTag = ingredient.Key;
+                    int requiredCount = ingredient.Value;
+                    float availableCount = CountItemsInStorage(ingredientTag);
+                    
+                    TbbDebuger.LogDebug($"UpdateMeter: ingredient={ingredientTag}, required={requiredCount}, available={availableCount}");
+                    
+                    totalRequired += requiredCount;
+                    totalAvailable += Mathf.Min(availableCount, requiredCount);
+                }
+                
+                TbbDebuger.LogDebug($"UpdateMeter: totalRequired={totalRequired}, totalAvailable={totalAvailable}");
+                
+                if (totalRequired > 0)
+                {
+                    progress = totalAvailable / totalRequired;
+                }
+            }
+            else
+            {
+                // 检查所有配方的进度，显示最接近完成的那个
+                float maxProgress = 0f;
+                foreach (var recipePair in smi.def.sacrificeRecipes)
+                {
+                    Dictionary<Tag, int> possibleRecipe = recipePair.Value;
+                    float totalRequired = 0f;
+                    float totalAvailable = 0f;
+                    
+                    foreach (var ingredient in possibleRecipe)
+                    {
+                        Tag ingredientTag = ingredient.Key;
+                        int requiredCount = ingredient.Value;
+                        float availableCount = CountItemsInStorage(ingredientTag);
+                        
+                        totalRequired += requiredCount;
+                        totalAvailable += Mathf.Min(availableCount, requiredCount);
+                    }
+                    
+                    if (totalRequired > 0)
+                    {
+                        float recipeProgress = totalAvailable / totalRequired;
+                        if (recipeProgress > maxProgress)
+                        {
+                            maxProgress = recipeProgress;
+                        }
+                    }
+                }
+                
+                // 如果有配方在进行中，显示配方进度
+                if (maxProgress > 0)
+                {
+                    TbbDebuger.LogDebug($"UpdateMeter: no activation target, max recipe progress={maxProgress}");
+                    progress = maxProgress;
+                }
+                else
+                {
+                    // 否则显示已献祭的不同物种数量
+                    TbbDebuger.LogDebug($"UpdateMeter: no activation target, species count={m_sacrificedSpecies.Count}, required={smi.def.numSpeciesToUnlockMorphMode}");
+                    progress = Mathf.Clamp01(m_sacrificedSpecies.Count / (float)smi.def.numSpeciesToUnlockMorphMode);
+                }
+            }
+            TbbDebuger.LogDebug($"UpdateMeter: final progress=[{Mathf.Clamp01(progress)}]");
+            
+            m_progressMeter.SetPositionPercent(Mathf.Clamp01(progress));
         }
 
         public bool IsUnlocked
@@ -310,26 +418,39 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             List<GameObject> list = new();
             if (smi.IsInsideState(smi.sm.operational.idle) && (m_sacrificeContainer.Find(pickupable.gameObject.PrefabID(), list) == null || !list.Contains(pickupable.gameObject)))
             {
-                TbbDebuger.LogDebug($"[GravitasMutanterFounder] Store [{pickupable.gameObject.GetInstanceID()}]");
-                // 尝试将物品放入献祭容器
-                if (m_sacrificeContainer.Store(pickupable.gameObject, false, false, true, false))
-                {
-                    // 记录新物种
-                    var creatureBrain = pickupable.GetComponent<CreatureBrain>();
-                    if (creatureBrain != null)
-                    {
-                        m_sacrificedSpecies.Add(creatureBrain.species);
-                    }
-
-                    UpdateStatusItems();
-                    UpdateMeter();
-
-                    // 检查开启条件是否满足
-                    CheckAndSetUnlockCondition();
-                }
+                // 存储献祭品引用，供capture状态使用
+                m_currentSacrifice = pickupable;
+                // 设置献祭品检测参数
+                smi.sm.sacrificeDetected.Set(true, smi, false);
             }
         }
+        
+        private Pickupable m_currentSacrifice;
+        
+        public void CreatureStore() {
+            if (m_currentSacrifice == null)
+                return;
+                
+            TbbDebuger.LogDebug($"[GravitasMutanterFounder] Store [{m_currentSacrifice.gameObject.GetInstanceID()}]");
+            // 尝试将物品放入献祭容器
+            if (m_sacrificeContainer.Store(m_currentSacrifice.gameObject, false, false, true, false))
+            {
+                // 记录新物种
+                var creatureBrain = m_currentSacrifice.GetComponent<CreatureBrain>();
+                if (creatureBrain != null)
+                {
+                    m_sacrificedSpecies.Add(creatureBrain.species);
+                }
 
+                UpdateStatusItems();
+                // 检查激活条件，更新m_activationTarget和m_usedRecipe
+                CheckAndSetUnlockCondition();
+                UpdateMeter();
+            }
+            
+            // 清空当前献祭品引用
+            m_currentSacrifice = null;
+        }
         public bool IsSacrificeValid(KPrefabID kpid)
         {
             foreach (var recipePair in base.smi.def.sacrificeRecipes)
@@ -400,11 +521,10 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             }
             return count;
         }
-        private void CheckAndSetUnlockCondition()
+        public bool CheckAndSetUnlockCondition()
         {
             // 检查是否有足够的物品满足任意一个配方
             bool conditionMet = CanActivateAndSpawn(out m_activationTarget, out m_usedRecipe);
-            sm.unlockConditionMet.Set(conditionMet, this, false);
             if (conditionMet)
             {
                 // 添加 null 检查，防止在 m_usedRecipe 为 null 时调用 .Select()
@@ -413,6 +533,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                     : "没有匹配的配方或者发生错误";
                 TbbDebuger.LogDebug($"[GravitasMutanterFounder] 解锁0conditionmet! 准备生成{m_activationTarget}配方: {recipeDetails}");
             }
+            return conditionMet;
         }
 
         public void ConsumeSacrificeItems()
@@ -468,6 +589,12 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             // 清空缓存的配方信息
             m_usedRecipe = null;
             m_activationTarget = Tag.Invalid;
+            
+            // 清空已献祭的物种集合，确保进度条归零
+            m_sacrificedSpecies.Clear();
+            
+            // 调用UpdateMeter，确保进度条归零
+            UpdateMeter();
         }
 
         public float GetCooldownDurationForLevel(int level)
@@ -491,10 +618,10 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 TbbDebuger.LogWarning($"[GravitasMutanterFounder] 畸变体 {m_activationTarget} 已经存在，无法生成");
                 ShowMutanterExistsNotification(m_activationTarget);
                 // 清空献祭容器
-                if (m_sacrificeContainer != null)
-                {
-                    m_sacrificeContainer.DropAll();
-                }
+                //if (m_sacrificeContainer != null)
+                //{
+                //    m_sacrificeContainer.DropAll(offset:smi.def.dropOffset.ToVector3());
+                //}
                 return Tag.Invalid;
             }
 
@@ -721,12 +848,9 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
         {
             // 显示畸变体已存在的通知
             Notification notification = new Notification(
-                "畸变体已存在", 
-                NotificationType.Bad, 
-                (notifications, obj) => 
-                {
-                    return $"该畸变体 {species.ToString()} 已经存在于世界中，无法重复生成。";
-                }, 
+                BUILDINGS.NOTIFICATIONS.GRAVITASMUTANTERFOUNDER.NAME,
+                NotificationType.Bad,
+                (notifications, obj) => string.Format(BUILDINGS.NOTIFICATIONS.GRAVITASMUTANTERFOUNDER.TOOLTIP, species.ToString()), 
                 species.ToString().ToUpper(), 
                 false, 
                 clear_on_click: true

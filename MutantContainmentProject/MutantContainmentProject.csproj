@@ -89,8 +89,12 @@
     <Compile Include="Strings.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="anim\assets\containment_monitor_station\containment_monitor_station_anim.bytes" />
+    <None Include="anim\assets\containment_monitor_station\containment_monitor_station_build.bytes" />
     <None Include="anim\assets\containment_tile\containment_tile_anim.bytes" />
     <None Include="anim\assets\containment_tile\containment_tile_build.bytes" />
+    <None Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder_anim.bytes" />
+    <None Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder_build.bytes" />
     <None Include="anim\assets\SCP173\scp173_anim.bytes" />
     <None Include="anim\assets\SCP173\scp173_build.bytes" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP173.yaml" />
@@ -102,7 +106,9 @@
     <None Include="translations\zh.hjson" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="anim\assets\containment_monitor_station\containment_monitor_station.png" />
     <Content Include="anim\assets\containment_tile\containment_tile.png" />
+    <Content Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder.png" />
     <Content Include="anim\assets\SCP173\scp173.png" />
     <Content Include="assets\texture\containment_tile_solid.png" />
     <Content Include="developNotes.txt" />

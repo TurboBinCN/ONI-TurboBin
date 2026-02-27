@@ -90,7 +90,6 @@ namespace MutantContainmentProject.Room
                         
                         // 检查地面层的对象
                         GameObject foundationObj = Grid.Objects[boundaryCell, (int)ObjectLayer.FoundationTile];
-                        TbbDebuger.LogDebug($"Checking prefabID: {foundationObj?.GetComponent<KPrefabID>()?.name}");
                         if (foundationObj != null && foundationObj.GetComponent<KPrefabID>()?.HasTag(MutanterTags.MutanterBuildings) == true)
                         {
                             hasContainmentTile = true;
@@ -104,8 +103,8 @@ namespace MutantContainmentProject.Room
                     
                     return flag;
                 },
-                name: STRINGS.BUILDINGS.PREFABS.CONTAINMENTTILE.NAME,
-                description: "收容室的所有外墙必须是收容砖或门"
+                name: STRINGS.ROOMS.CRITERIA.CONTAINMENTMONITOREXTERIOR.NAME,
+                description: STRINGS.ROOMS.CRITERIA.CONTAINMENTMONITOREXTERIOR.DESCRIPTION
             );
 
             // --- 5. 创建房间类型 ---

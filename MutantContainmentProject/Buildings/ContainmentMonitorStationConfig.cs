@@ -12,10 +12,7 @@ namespace MutantContainmentProject.Buildings
 
         public override BuildingDef CreateBuildingDef()
         {
-            string id = ID;
-            int width = 2;
-            int height = 2;
-            string anim = "rancherstation_kanim"; // Replace with actual animation file
+            string anim = "containment_monitor_station_kanim"; // Replace with actual animation file
             int hitpoints = 100;
             float construction_time = 60f;
             float[] tier = TUNING.BUILDINGS.CONSTRUCTION_MASS_KG.TIER3; // Adjust cost tier
@@ -23,7 +20,7 @@ namespace MutantContainmentProject.Buildings
             float melting_point = 1600f;
             BuildLocationRule build_location_rule = BuildLocationRule.OnFloor;
             EffectorValues tier2 = NOISE_POLLUTION.NOISY.TIER2; // Adjust noise
-            BuildingDef buildingDef = BuildingTemplates.CreateBuildingDef(id, width, height, anim, hitpoints, construction_time, tier, all_METALS, melting_point, build_location_rule, TUNING.BUILDINGS.DECOR.PENALTY.TIER2, tier2, 0.2f);
+            BuildingDef buildingDef = BuildingTemplates.CreateBuildingDef(ID, 6, 4, anim, hitpoints, construction_time, tier, all_METALS, melting_point, build_location_rule, TUNING.BUILDINGS.DECOR.PENALTY.TIER2, tier2, 0.2f);
             buildingDef.RequiresPowerInput = true;
             buildingDef.EnergyConsumptionWhenActive = 120;
             buildingDef.ExhaustKilowattsWhenActive = 0f;

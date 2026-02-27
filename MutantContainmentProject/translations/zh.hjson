@@ -141,11 +141,13 @@
             NAME: 焦躁
             TOOLTIP: 情绪躁动，即将进入敌对状态
             NOTIFICATION_NAME: 畸变体进入敌对状态
+            NOTIFICATION_TOOLTIP: 畸变体进入敌对状态
         }
         HOSTILE:  {
             NAME: 敌对
             TOOLTIP: 极度危险，会主动发起攻击
             NOTIFICATION_NAME: 畸变体进入敌对状态
+            NOTIFICATION_TOOLTIP: 畸变体进入敌对状态
         }
         SPECIALACTION:  {
             NAME: 特殊行动
@@ -155,6 +157,7 @@
             NAME: 正在攻击
             TOOLTIP: 该实体正在攻击
             NOTIFICATION_NAME: 畸变体已经发起攻击
+            NOTIFICATION_TOOLTIP: 畸变体已经发起攻击
         }
         MELEEATTACK: {
             NAME: 近战攻击
@@ -225,6 +228,12 @@
         GRAVITASMUTANTERFOUNDERWORKING: {
             NAME: 汲取祭品能量
             TOOLTIP: "该祭坛正在从 <style=\"KKeyword\">祭品</style> 中汲取不稳定能量，用以生成畸变体"
+        }
+      }
+      NOTIFICATIONS: {
+        GRAVITASMUTANTERFOUNDER: {
+            NAME: 畸变体已存在
+            TOOLTIP: "该畸变体 {0} 已经存在于世界中，无法重复生成。"
         }
       }
     }

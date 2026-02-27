@@ -8,9 +8,7 @@ namespace MutantContainmentProject.Buildings
     {
         public override BuildingDef CreateBuildingDef()
         {
-            int width = 3;
-            int height = 4;
-            string anim = "gravitas_critter_manipulator_kanim";
+            string anim = "gravitas_mutanter_founder_kanim";
             int hitpoints = 250;
             float construction_time = 120f;
             float[] tier = TUNING.BUILDINGS.CONSTRUCTION_MASS_KG.TIER5;
@@ -18,7 +16,7 @@ namespace MutantContainmentProject.Buildings
             float melting_point = 3200f;
             BuildLocationRule build_location_rule = BuildLocationRule.OnFloor;
             EffectorValues tier2 = NOISE_POLLUTION.NOISY.TIER5;
-            BuildingDef buildingDef = BuildingTemplates.CreateBuildingDef(ID, width, height, anim, hitpoints, construction_time, tier, refined_METALS, melting_point, build_location_rule, TUNING.BUILDINGS.DECOR.BONUS.TIER2, tier2, 0.2f);
+            BuildingDef buildingDef = BuildingTemplates.CreateBuildingDef(ID, 7, 4, anim, hitpoints, construction_time, tier, refined_METALS, melting_point, build_location_rule, TUNING.BUILDINGS.DECOR.BONUS.TIER2, tier2, 0.2f);
 
             buildingDef.ExhaustKilowattsWhenActive = 0f;
             buildingDef.SelfHeatKilowattsWhenActive = 0f;
@@ -27,8 +25,9 @@ namespace MutantContainmentProject.Buildings
             buildingDef.Overheatable = false;
             buildingDef.AudioCategory = "Metal";
             buildingDef.AudioSize = "medium";
-            buildingDef.ForegroundLayer = Grid.SceneLayer.Ground;
-            buildingDef.ShowInBuildMenu = false;
+            buildingDef.SceneLayer = Grid.SceneLayer.BuildingBack;
+            buildingDef.ForegroundLayer = Grid.SceneLayer.BuildingFront;
+            //buildingDef.ShowInBuildMenu = false;
             return buildingDef;
         }
 
@@ -47,18 +46,12 @@ namespace MutantContainmentProject.Buildings
             activatable.SetWorkTime(30f);
 
             var def = go.AddOrGetDef<GravitasMutanterFounder.Def>();
-            def.pickupOffset = new CellOffset(-1, 0);
-            def.dropOffset = new CellOffset(1, 0);
+            def.pickupOffset = new CellOffset(-2, 0);
+            def.dropOffset = new CellOffset(2, 0);
             def.numSpeciesToUnlockMorphMode = 1;
             //def.workingDuration = 15f;
             //def.cooldownDuration = 540f;
 
-            MakeBaseSolid.Def def2 = go.AddOrGetDef<MakeBaseSolid.Def>();
-            def2.solidOffsets = new CellOffset[4];
-            for (int i = 0; i < 4; i++)
-            {
-                def2.solidOffsets[i] = new CellOffset(0, i);
-            }
             go.GetComponent<KPrefabID>().prefabInitFn += delegate (GameObject game_object)
             {
                 game_object.GetComponent<Activatable>().SetOffsets(OffsetGroups.LeftOrRight);
