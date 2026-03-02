@@ -109,7 +109,6 @@ namespace MutantContainmentProject.MutanterComponent
                 {
                     TbbDebuger.LogDebug($"[MutanterStateMachine] Entering AttackStates.pre");
                 })
-                .PlayAnim("attack_pre", KAnim.PlayMode.Once)
                 .OnAnimQueueComplete(attackStates.loop);
 
             // 攻击循环状态
@@ -118,7 +117,6 @@ namespace MutantContainmentProject.MutanterComponent
                 {
                     TbbDebuger.LogDebug($"[MutanterStateMachine] Entering AttackStates.loop");
                 })
-                .PlayAnim("attack_loop", KAnim.PlayMode.Loop)
                 .Update((smi, dt) => ExecuteAttack(smi, dt), UpdateRate.SIM_1000ms)//攻击循环状态中执行攻击逻辑
                 .ToggleStatusItem(MutanterStatusItems.Instance.AttackLoop)
                 .Transition(attackStates.pst, smi => smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue >= smi.def.sanityThresholdToStable);
@@ -129,12 +127,17 @@ namespace MutantContainmentProject.MutanterComponent
                 {
                     TbbDebuger.LogDebug($"[MutanterStateMachine] Entering AttackStates.pst");
                 })
-                .PlayAnim("attack_pst", KAnim.PlayMode.Once)
                 .OnAnimQueueComplete(stable);
         }
         public class StatesInstance : GameInstance
         {
             private EmotionMonitor.StatesInstance _emotionSMI;
+            private MutanterChaseMonitor.StatesInstance _chaseMonitorSMI;
+
+            public StatesInstance(IStateMachineTarget master, Def def) : base(master, def)
+            {
+            }
+
             public EmotionMonitor.StatesInstance EmotionSMI
             {
                 get
@@ -146,8 +149,16 @@ namespace MutantContainmentProject.MutanterComponent
                     return _emotionSMI;
                 }
             }
-            public StatesInstance(IStateMachineTarget master, Def def) : base(master, def)
+            public MutanterChaseMonitor.StatesInstance ChaseMonitorSMI
             {
+                get
+                {
+                    if (_chaseMonitorSMI == null)
+                    {
+                        _chaseMonitorSMI = master.gameObject.GetSMI<MutanterChaseMonitor.StatesInstance>();
+                    }
+                    return _chaseMonitorSMI;
+                }
             }
         }
         public class Def : BaseDef
@@ -174,6 +185,8 @@ namespace MutantContainmentProject.MutanterComponent
                     {
                         if (threater != null && threater.gameObject != null)
                         {
+                            // 播放攻击动画
+                            smi.master.gameObject.GetComponent<KBatchedAnimController>().Play("attack_once", KAnim.PlayMode.Once);
                             attackBehaviors.TryExecuteAttack(threater.gameObject, insanityValue);
                         }
                     }

@@ -46,6 +46,18 @@ contentContainers:
       - !CodexText
           stringKey: STRINGS.CODEX.MYLOG.DIVIDER
           style: Body
+  - contentLayout: Vertical
+    lockID: story_trait_mutanter_founder_mutanter_scp096
+    content:
+      - !CodexText
+          stringKey: STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_SCP096
+          style: Subtitle
+      - !CodexText
+          stringKey: STRINGS.CODEX.STORY_TRAITS.MUTANTER_FOUNDER.SPECIES_ENTRIES_EXPANDED.MUTANTER_SCP096
+          style: Body
+      - !CodexText
+          stringKey: STRINGS.CODEX.MYLOG.DIVIDER
+          style: Body
 #-----------------------------
   - contentLayout: Vertical
     lockID: story_trait_mutanter_founder_complete

@@ -19,14 +19,14 @@ namespace MutantContainmentProject.Mutanters
             string name = STRINGS.ENTITY.MUTANTER.MUTANTER_SCP173.NAME;
             string desc = STRINGS.ENTITY.MUTANTER.MUTANTER_SCP173.DESCRIPTION;
 
-            GameObject prefab = BaseMutanter.BaseGameObject(ID, name, desc, KANIM_NAME, KANIM_NAME, KANIM_EMOTES_NAME, null, 233.15f, 293.15f, 173.15f, 373.15f);
+            GameObject prefab = BaseMutanter.BaseGameObject(ID, name, desc,1,2, KANIM_NAME, KANIM_NAME, KANIM_EMOTES_NAME, null, 233.15f, 293.15f, 173.15f, 373.15f);
 
             BaseMutanter.ExtendMutanterMove(prefab, "WalkerNavGrid1x2");
 
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name,25);
 
             BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.TETH,faction:FactionManager.FactionID.Pest,attackTags:new List<Tag> { MutanterTags.PsychologicalAttack });
-
+            prefab.AddOrGetDef<MutanterMoltenMetalMonitor.Def>();//挂载：畸变体熔融金属监控SMI
             // 添加产出物
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Gold.CreateTag(), 1000f, 0.8f);
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Diamond.CreateTag(), 1000f, 0.4f);
@@ -40,12 +40,8 @@ namespace MutantContainmentProject.Mutanters
         public string[] GetAnyRequiredDlcIds() => null;
         public string[] GetDlcIds() => DlcManager.AVAILABLE_ALL_VERSIONS;
 
-        public void OnPrefabInit(GameObject inst)
-        {
-        }
+        public void OnPrefabInit(GameObject inst){}
 
-        public void OnSpawn(GameObject inst)
-        {
-        }
+        public void OnSpawn(GameObject inst){}
     }
 }

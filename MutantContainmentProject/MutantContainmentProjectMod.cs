@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using KMod;
 using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
@@ -57,7 +57,8 @@ namespace MutantContainmentProject
                     .Add(MutanterStoris.StoryGravitasMutanterFounder);
                 //百科词条
                 TbbCodexEntries.Initialize(mod, harmony)
-                    .ADD("SCP173", "Creatures");
+                    .ADD("SCP173", "Creatures")
+                    .ADD("SCP096", "Creatures");
                 //房间
                 TbbRoom.Initialize(mod, harmony)
                     .Add(ContainmentCharmberRoom.Register);
@@ -67,7 +68,8 @@ namespace MutantContainmentProject
                 //Effect
                 TbbEffect.Initialize(mod, harmony)
                     .Add(MutanterEffects.MutanterContainedEffect)
-                    .Add(MutanterEffects.MutanterWilledEffect);
+                    .Add(MutanterEffects.MutanterWilledEffect)
+                    .Add(MutanterEffects.MutanterChaseEffect);
                 //小人属性
                 TbbDuplicantsAttributes.Initialize(mod, harmony)
                     .Add(MutanterAttributes.AttributeBravery, MutanterAttributes.AttributeBraveryID)
@@ -126,7 +128,9 @@ namespace MutantContainmentProject
                     .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
                     .AddBuilding(ContainmentMonitorStationConfig.ID)
                     .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
-                    .AddBuilding(ContainmentTileConfig.ID);
+                    .AddBuilding(ContainmentTileConfig.ID)
+                    .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
+                    .AddBuilding(GravitasMutanterFounderConfig.ID);
                 //建筑StatusItems
                 TbbBuildingStatusItems.Initialize(mod, harmony)
                     .Add(GravitasMutanterFounderBuildingStatusItems.Instance.CreateStatusItems);

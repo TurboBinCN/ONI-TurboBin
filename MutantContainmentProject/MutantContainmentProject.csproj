@@ -55,6 +55,7 @@
     <Compile Include="MutanterCodexEntries\MutanterCodexEntry.cs" />
     <Compile Include="MutanterComponent\ErosionAttack.cs" />
     <Compile Include="MutanterComponent\MutanterBrain.cs" />
+    <Compile Include="MutanterComponent\MutanterChaseMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterCreature.cs" />
     <Compile Include="MutanterComponent\MutanterMoltenMetalMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterProductComponent.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="MutanterComponent\MutanterTags.cs" />
     <Compile Include="MutanterStoryStraits\MutanterStoris.cs" />
     <Compile Include="Mutanters\MutanterManager.cs" />
+    <Compile Include="Mutanters\SCP096Config.cs" />
     <Compile Include="MutanterTraits\MutanterTraitDb.cs" />
     <Compile Include="MutanterComponent\MutanterStateMachine.cs" />
     <Compile Include="MutanterComponent\PsychologicalAttack .cs" />
@@ -95,8 +97,11 @@
     <None Include="anim\assets\containment_tile\containment_tile_build.bytes" />
     <None Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder_anim.bytes" />
     <None Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder_build.bytes" />
+    <None Include="anim\assets\scp096\scp096_anim.bytes" />
+    <None Include="anim\assets\scp096\scp096_build.bytes" />
     <None Include="anim\assets\SCP173\scp173_anim.bytes" />
     <None Include="anim\assets\SCP173\scp173_build.bytes" />
+    <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP096.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP173.yaml" />
     <None Include="assets\codex\StoryTraits\DynamicCodexEntry_StoryTraitMutanterFounder.yaml" />
     <None Include="assets\templates\storytraits\mutanter_founder.yaml" />
@@ -109,6 +114,7 @@
     <Content Include="anim\assets\containment_monitor_station\containment_monitor_station.png" />
     <Content Include="anim\assets\containment_tile\containment_tile.png" />
     <Content Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder.png" />
+    <Content Include="anim\assets\scp096\scp096.png" />
     <Content Include="anim\assets\SCP173\scp173.png" />
     <Content Include="assets\texture\containment_tile_solid.png" />
     <Content Include="developNotes.txt" />

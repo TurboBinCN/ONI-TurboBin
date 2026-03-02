@@ -185,10 +185,17 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
         public List<Tag> requiredSacrificeTags; // 必需的献祭物品标签列表 (例如 ["Critter"], ["Meat"], ["SpecialItem"])
 
         // ---献祭配方字典 ---
-        public Dictionary<Tag, Dictionary<Tag, int>> sacrificeRecipes = new() {
+        public Dictionary<Tag, Dictionary<Tag, int>> sacrificeRecipes = new Dictionary<Tag, Dictionary<Tag, int>> {
             {
                 SCP173Config.ID, new Dictionary<Tag, int> {
                     { HatchConfig.ID, 3 }// 需要3个Hatch
+                }
+            },
+            {
+                SCP096Config.ID, new Dictionary<Tag, int>
+                {
+                    { HatchConfig.ID, 1},
+                    { PacuConfig.ID, 2}
                 }
             }
         };

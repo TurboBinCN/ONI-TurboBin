@@ -1,4 +1,4 @@
-﻿using Klei.AI;
+using Klei.AI;
 
 namespace MutantContainmentProject.MutanterEffect
 {
@@ -6,6 +6,7 @@ namespace MutantContainmentProject.MutanterEffect
     {
         public static readonly string MUTANTER_CONTAINED_EFFECT = "MutanterContained";
         public static readonly string MUTANTER_WILLED_EFFECT = "MutanterWilled";
+        public static readonly string MUTANTER_CHASE_EFFECT = "MutanterChase";
         public static void MutanterContainedEffect()
         {
             Effect mutanterContainedEffect = new(
@@ -31,6 +32,19 @@ namespace MutantContainmentProject.MutanterEffect
                 is_bad: false
             );
             Db.Get().effects.Add(mutanterWilledEffect);
+        }
+        public static void MutanterChaseEffect()
+        {
+            Effect mutanterChaseEffect = new(
+                id: MUTANTER_CHASE_EFFECT,
+                name: STRINGS.EFFECTS.MUTANTER_CHASE_EFFECT.NAME,
+                description: STRINGS.EFFECTS.MUTANTER_CHASE_EFFECT.DESCRIPTION,
+                duration: 3 * 600f,
+                show_in_ui: true,
+                trigger_floating_text: true,
+                is_bad: true
+            );
+            Db.Get().effects.Add(mutanterChaseEffect);
         }
     }
 }

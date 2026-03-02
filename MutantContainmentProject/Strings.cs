@@ -130,7 +130,11 @@ namespace MutantContainmentProject
         {
             public class FAMILY_PLURAL
             {
+                public static LocString MUTANTER_SPECIES = "MUTANTER_SPECIES";
+                public static LocString SCP173 = global::STRINGS.UI.FormatAsLink("SCP-173", SCP173Config.ID);
+                public static LocString SCP096 = global::STRINGS.UI.FormatAsLink("SCP-096", SCP096Config.ID);
                 public static LocString MUTANTER_SCP173 = global::STRINGS.UI.FormatAsLink("SCP-173", SCP173Config.ID);
+                public static LocString MUTANTER_SCP096 = global::STRINGS.UI.FormatAsLink("SCP-096", SCP173Config.ID);
             }
         }
         public static class MUTANTERS
@@ -203,10 +207,6 @@ namespace MutantContainmentProject
                     public static LocString NAME = "Soul Attack";
                     public static LocString TOOLTIP = "The entity is using soul attack.";
                 }
-            }
-            public class FAMILY_PLURAL
-            {
-                public static LocString SCP173 = global::STRINGS.UI.FormatAsLink("SCP-173", SCP173Config.ID);
             }
         }
         public static class MISC {
@@ -570,6 +570,11 @@ namespace MutantContainmentProject
                 public static LocString NAME = "Breach Containment";
                 public static LocString DESCRIPTION = "This entity breached containment.";
             }
+            public static class MUTANTER_CHASE_EFFECT
+            {
+                public static LocString NAME = "Chase Mode";
+                public static LocString DESCRIPTION = "This entity is chasing targets.";
+            }
         }
         public static class UI
         {
@@ -630,6 +635,11 @@ namespace MutantContainmentProject
                     public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-173", SCP173Config.ID);
                     public static LocString DESCRIPTION = "Item SCP-173 is to be kept in a locked container at all times.";
                 }
+                public static class MUTANTER_SCP096
+                {
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-096", SCP096Config.ID);
+                    public static LocString DESCRIPTION = "Item SCP-096 is to be kept in a locked container at all times.";
+                }
             }
         }
         public static class CODEX
@@ -665,11 +675,13 @@ namespace MutantContainmentProject
                     }
                     public class SPECIES_ENTRIES {
                         public static LocString MUTANTER_SCP173 = "Specimen attempted to disrupt the altar's energy core. Review data for more information.";
+                        public static LocString MUTANTER_SCP096 = "Specimen displayed extreme distress upon altar activation. Review data for more information.";
                         public static LocString UNKNOWN_TITLE = "ALERT FROM ALTAR CONTROL SYSTEM";
                         public static LocString UNKNOWN = "Sacrifice successfully processed.\n\nMutation function unavailable due to energy flux malfunction.\n\nPlease note that kicking the altar's exterior is unlikely to correct this issue and may result in permanent damage to the energy matrix.";
                     }
                     public class SPECIES_ENTRIES_EXPANDED {
                         public static LocString MUTANTER_SCP173 = "Specimen attempted to breach the altar's energy core casing. Sample is viable, though the containment apparatus may be somewhat mangled.\n\nAtomic force microscopy of the impact pattern reveals traces of goethite, a mineral notable for its exceptional strength and affinity for unstable aberrant energy.";
+                        public static LocString MUTANTER_SCP096 = "Specimen exhibited severe emotional distress upon exposure to altar's energy signature. Subject became highly aggressive and attempted to breach containment.\n\nNeural analysis shows abnormal activity in the amygdala and prefrontal cortex, suggesting a hyperactive fear response triggered by the altar's energy frequency.";
                     }
                 }
             }
@@ -682,6 +694,15 @@ namespace MutantContainmentProject
                     public static class BODY
                     {
                         public static LocString CONTAINER1 = "Item #: SCP-173\r\nObject Class: Euclid\r\nSpecial Containment Procedures: Item SCP-173 is to be kept in a locked container at all times. When personnel must enter SCP-173's container, no fewer than 3 may enter at any time and the door is to be relocked behind them. At all times, two persons must maintain direct eye contact with SCP-173 until all personnel have vacated and relocked the container.\r\nDescription: Moved to Site-19 1993. Origin is as of yet unknown. It is constructed from concrete and rebar with traces of Krylon brand spray paint. SCP-173 is animate and extremely hostile. The object cannot move while within a direct line of sight. Line of sight must not be broken at any time with SCP-173. Personnel assigned to enter container are instructed to alert one another before blinking. Object is reported to attack by snapping the neck at the base of the skull, or by strangulation. In the event of an attack, personnel are to observe Class 4 hazardous object containment procedures.\r\nPersonnel report sounds of scraping stone originating from within the container when no one is present inside. This is considered normal, and any change in this behaviour should be reported to the acting HMCL supervisor on duty.\r\nThe reddish-brown substance on the floor is a combination of feces and blood. Origin of these materials is unknown. On the floor there are always three pairs of footprints. They are always the same size, and have never been seen to move or change.\r\nAddendum 173-01: Personnel are no longer permitted to bring any recording devices into SCP-173's container. Any and all recordings made inside SCP-173's container are to be destroyed immediately. This order came into effect after the ██████ incident.";
+                    }
+                }
+                public static class MUTANTER_SCP096
+                {
+                    public static LocString TITLE = "SCP-096 The \"Shy Guy\"";
+                    public static LocString SUBTITLE = "SCP-173 The \"Shy Guy\"";
+                    public static class BODY
+                    {
+                        public static LocString CONTAINER1 = "Item #: SCP-096\r\nObject Class: Euclid\r\nSpecial Containment Procedures: SCP-096 is to be contained in its cell, a 5 m x 5 m x 5 m airtight steel cube, at all times. Weekly checks for any cracks or holes are mandatory. There are to be absolutely no video surveillance or optical tools of any kind inside SCP-096's cell. Security personnel will use pre-installed pressure sensors and laser detectors to ensure SCP-096's presence inside the cell.\r\nAny and all photos, video, or recordings of SCP-096's likeness are strictly forbidden without approval from Dr. ███ and O5-█.\r\nDescription: \r\nSCP-096 is a humanoid creature measuring approximately 2.38 meters in height. Subject shows very little muscle mass, with preliminary analysis of body mass suggesting mild malnutrition. Arms are grossly out of proportion with the rest of the subject's body, with an approximate length of 1.5 meters each. Skin is mostly devoid of pigmentation, with no sign of any body hair.\r\nSCP-096's jaw can open to four (4) times the norm of an average human. Other facial features remain similar to an average human, with the exception of the eyes, which are also devoid of pigmentation. It is not yet known whether SCP-096 is blind or not. It shows no signs of any higher brain functions, and is not considered to be sapient.\r\nSCP-096 is normally extremely docile, with pressure sensors inside its cell indicating it spends most of the day pacing by the eastern wall. However, when someone views SCP-096's face, whether it be directly, via video recording, or even a photograph, it will enter a stage of considerable emotional distress. SCP-096 will cover its face with its hands and begin screaming, crying, and babbling incoherently. Approximately one (1) to two (2) minutes after the first viewing, SCP-096 will begin running to the person who viewed its face (who will from this point on be referred to as SCP-096-1).\r\nDocumented speeds have varied from thirty-five (35) km/h to ███ km/h, and seems to depend on distance from SCP-096-1. At this point, no known material or method can impede SCP-096's progress. The actual position of SCP-096-1 does not seem to affect SCP-096's response; it seems to have an innate sense of SCP-096-1's location. Note: This reaction does not occur when viewing artistic depictions (see Document 096-1).\r\nUpon arriving at SCP-096-1's location, SCP-096 will proceed to kill and [DATA EXPUNGED] SCP-096-1. 100% of cases have left no traces of SCP-096-1. SCP-096 will then sit down for several minutes before regaining its composure and becoming docile once again. It will then attempt to make its way back to its natural habitat, [DATA REDACTED].\r\nAddenda\r\nDocument 096-1\r\nTest Log:\r\nTest 096-1: D-9031 shown photograph of SCP-096. SCP-096 entered distress, breached containment, and terminated D-9031.\r\nTest 096-2: D-9032 shown artistic painting of SCP-096. No reaction.\r\nTest 096-3: D-9033 shown low-resolution pixelated image of SCP-096's face. SCP-096 reacted and terminated D-9033.\r\nIncident 096-1-A\r\nDate: ██/██/████\r\nLocation: Research Area ██\r\nSummary: SCP-096 breached containment after a security camera feed was accidentally displayed on a public monitor. SCP-096 traveled ██ km, killing ██ personnel before being recontained. All footage of SCP-096's face was destroyed.";
                     }
                 }
             }

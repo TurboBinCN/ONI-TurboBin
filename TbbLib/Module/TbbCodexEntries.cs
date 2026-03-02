@@ -26,7 +26,7 @@ namespace TBB.He.TbbLib.Module
         }
         public TbbCodexEntries ADD(string entry, string category)
         {
-            entities.Add(category, entry);
+            entities.Add(entry,category);
             return Instance;
         }
         public static void CodexCache_CollectYAMLEntitries_Postfix(List<CategoryEntry> categories)
@@ -45,8 +45,8 @@ namespace TBB.He.TbbLib.Module
 
                 foreach (var kvp in instance.entities)
                 {
-                    var searchPath = Path.Combine(searchBasePath, $"{kvp.Key}/");
-                    var expectedFileName = $"{CODEX_FILE_PREFIX}{kvp.Value}.yaml";
+                    var searchPath = Path.Combine(searchBasePath, $"{kvp.Value}/");
+                    var expectedFileName = $"{CODEX_FILE_PREFIX}{kvp.Key}.yaml";
 
                     var searchPattern = Path.Combine(searchPath, expectedFileName);
                     var filesInThisCategory = new List<FileHandle>();
@@ -57,7 +57,7 @@ namespace TBB.He.TbbLib.Module
                     {
                         if (!fileCategoryMap.Exists(existingTuple => existingTuple.file.full_path == file.full_path))
                         {
-                            fileCategoryMap.Add((file, kvp.Key)); // 将文件和其类别绑定
+                            fileCategoryMap.Add((file, kvp.Value)); // 将文件和其类别绑定
                             TbbDebuger.LogDebug($"[TbbCodexEntries] 发现 Codex 文件: {expectedFileName} -> {file.full_path}");
                         }
                     }

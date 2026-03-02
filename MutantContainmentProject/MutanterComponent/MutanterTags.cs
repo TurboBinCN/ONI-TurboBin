@@ -9,6 +9,7 @@ namespace MutantContainmentProject.MutanterComponent
         public static readonly Tag Incapacitated = TagManager.Create("Incapacitated");
         public static readonly Tag MutanterBrain = TagManager.Create("MutanterBrain");
         //攻击类Tag
+        public static readonly Tag PhysicalAttack = TagManager.Create("PhysicalAttack");
         public static readonly Tag PsychologicalAttack = TagManager.Create("PsychologicalAttack");
         public static readonly Tag ErosionAttack = TagManager.Create("ErosionAttack");
         public static readonly Tag SoulAttack = TagManager.Create("SoulAttack");
@@ -16,7 +17,8 @@ namespace MutantContainmentProject.MutanterComponent
         {
             public static class Species
             {
-                public static readonly Tag SCP173 = TagManager.Create("SCP173", STRINGS.MUTANTERS.FAMILY_PLURAL.SCP173);
+                public static readonly Tag Mutanter = TagManager.Create("Mutanter_Species", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_SPECIES);
+                public static readonly Tag SCP173 = TagManager.Create("SCP173", STRINGS.CREATURES.FAMILY_PLURAL.SCP173);
             }
         }
     }

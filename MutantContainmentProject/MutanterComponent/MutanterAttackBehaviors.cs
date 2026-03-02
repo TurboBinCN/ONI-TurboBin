@@ -36,13 +36,13 @@ namespace MutantContainmentProject.MutanterComponent
             _behaviorLastExecutionTimes.Clear();
 
             // --- 根据标签添加攻击行为 ---
-            // 基础近战总是可用
-            _availableBehaviors.Add(new MeleeAttack());
-
             // 获取 KPrefabID 来检查标签
             var kPrefabID = GetComponent<KPrefabID>();
             if (kPrefabID != null)
             {
+                //物理攻击
+                if (kPrefabID.HasTag(MutanterTags.PhysicalAttack))
+                    _availableBehaviors.Add(new MeleeAttack());
                 // 心理攻击
                 if (kPrefabID.HasTag(MutanterTags.PsychologicalAttack))
                 {
@@ -61,6 +61,8 @@ namespace MutantContainmentProject.MutanterComponent
                     _availableBehaviors.Add(new SoulAttack());
                 }
             }
+            //默认添加物理攻击标签
+            if(_availableBehaviors.Count == 0) _availableBehaviors.Add(new MeleeAttack());
         }
 
         /// <summary>
