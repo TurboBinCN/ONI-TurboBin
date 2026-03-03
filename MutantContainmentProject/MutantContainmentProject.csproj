@@ -53,12 +53,15 @@
     <Compile Include="Duplicants\DuplicantsAttribute_Patch.cs" />
     <Compile Include="FunctionPatches\MiningNeutronium_Patches.cs" />
     <Compile Include="MutanterCodexEntries\MutanterCodexEntry.cs" />
+    <Compile Include="MutanterComponent\BaseItemsMutanter.cs" />
     <Compile Include="MutanterComponent\ErosionAttack.cs" />
     <Compile Include="MutanterComponent\MutanterBrain.cs" />
     <Compile Include="MutanterComponent\MutanterChaseMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterCreature.cs" />
     <Compile Include="MutanterComponent\MutanterMoltenMetalMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterProductComponent.cs" />
+    <Compile Include="MutanterComponent\SCP6621InstanceController.cs" />
+    <Compile Include="MutanterComponent\SCP662BellController.cs" />
     <Compile Include="MutanterComponent\SoulAttack.cs" />
     <Compile Include="MutanterEffect\MutanterEffects.cs" />
     <Compile Include="MutantContainmentProjectMod.cs" />
@@ -74,6 +77,8 @@
     <Compile Include="MutanterStoryStraits\MutanterStoris.cs" />
     <Compile Include="Mutanters\MutanterManager.cs" />
     <Compile Include="Mutanters\SCP096Config.cs" />
+    <Compile Include="Mutanters\SCP662Config.cs" />
+    <Compile Include="Mutanters\SCP662_1Config.cs" />
     <Compile Include="MutanterTraits\MutanterTraitDb.cs" />
     <Compile Include="MutanterComponent\MutanterStateMachine.cs" />
     <Compile Include="MutanterComponent\PsychologicalAttack .cs" />
@@ -101,8 +106,12 @@
     <None Include="anim\assets\scp096\scp096_build.bytes" />
     <None Include="anim\assets\SCP173\scp173_anim.bytes" />
     <None Include="anim\assets\SCP173\scp173_build.bytes" />
+    <None Include="anim\assets\scp662\scp662_anim.bytes" />
+    <None Include="anim\assets\scp662\scp662_build.bytes" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP096.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP173.yaml" />
+    <None Include="assets\codex\IndustrialIngredients\DynamicCodexEntry_SCP662.yaml" />
+    <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP662_1.yaml" />
     <None Include="assets\codex\StoryTraits\DynamicCodexEntry_StoryTraitMutanterFounder.yaml" />
     <None Include="assets\templates\storytraits\mutanter_founder.yaml" />
     <None Include="assets\worldgen\storytraits\MutanterFounder.yaml" />
@@ -116,11 +125,13 @@
     <Content Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder.png" />
     <Content Include="anim\assets\scp096\scp096.png" />
     <Content Include="anim\assets\SCP173\scp173.png" />
+    <Content Include="anim\assets\scp662\scp662.png" />
     <Content Include="assets\texture\containment_tile_solid.png" />
     <Content Include="developNotes.txt" />
     <Content Include="Directory.Build.props.user" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="anim\assets\SCP662_1\" />
     <Folder Include="Codex\" />
     <Folder Include="UI\" />
   </ItemGroup>

@@ -13,6 +13,10 @@ contentContainers:
           style: Subtitle
       - !CodexDividerLine
           preferredWidth: -1
+      - !CodexImage
+          batchedAnimPrefabSourceID: MUTANTER_SCP096
+          preferredWidth: 128
+          preferredHeight: 128
 #-----------------------------
   - contentLayout: Vertical
     content:

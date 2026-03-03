@@ -133,8 +133,12 @@ namespace MutantContainmentProject
                 public static LocString MUTANTER_SPECIES = "MUTANTER_SPECIES";
                 public static LocString SCP173 = global::STRINGS.UI.FormatAsLink("SCP-173", SCP173Config.ID);
                 public static LocString SCP096 = global::STRINGS.UI.FormatAsLink("SCP-096", SCP096Config.ID);
+                public static LocString SCP662 = global::STRINGS.UI.FormatAsLink("SCP-662", SCP662Config.ID);
+                public static LocString SCP662_1 = global::STRINGS.UI.FormatAsLink("SCP-662-1", SCP662_1Config.ID);
                 public static LocString MUTANTER_SCP173 = global::STRINGS.UI.FormatAsLink("SCP-173", SCP173Config.ID);
-                public static LocString MUTANTER_SCP096 = global::STRINGS.UI.FormatAsLink("SCP-096", SCP173Config.ID);
+                public static LocString MUTANTER_SCP096 = global::STRINGS.UI.FormatAsLink("SCP-096", SCP096Config.ID);
+                public static LocString MUTANTER_SCP662 = global::STRINGS.UI.FormatAsLink("SCP-662", SCP662Config.ID);
+                public static LocString MUTANTER_SCP662_1 = global::STRINGS.UI.FormatAsLink("SCP-662-1", SCP662_1Config.ID);
             }
         }
         public static class MUTANTERS
@@ -597,6 +601,12 @@ namespace MutantContainmentProject
                 public static class MUTANTER_CONTAIN_ACTION
                 {
                 }
+                public static class SCP662
+                {
+                    public static LocString SUMMON_BUTTON_TEXT = "Ring Bell";
+                    public static LocString SUMMON_BUTTON_TOOLTIP = "Summons SCP-662-1. Cooldown: {0}s";
+                    public static LocString SUMMON_BUTTON_COOLDOWN_TOOLTIP = "Summoning is on cooldown. Time remaining: {0}s";
+                }
             }
         }
         public static class ROOMS
@@ -640,6 +650,16 @@ namespace MutantContainmentProject
                     public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-096", SCP096Config.ID);
                     public static LocString DESCRIPTION = "Item SCP-096 is to be kept in a locked container at all times.";
                 }
+                public static class MUTANTER_SCP662
+                {
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-662", SCP662Config.ID);
+                    public static LocString DESCRIPTION = "SCP-662 is an ordinary-looking small silver bell, identical in size to a standard service bell. When rung, it summons a male entity identifying itself as Mr. Gerald.";
+                }
+                public static class MUTANTER_SCP662_1
+                {
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-662-1", SCP662_1Config.ID);
+                    public static LocString DESCRIPTION = "SCP-662-1 is a male entity summoned by SCP-662, identifying itself as Mr. Gerald. It appears as a middle-aged Caucasian male dressed in a black tailcoat and white gloves, with the demeanor of a traditional English butler.";
+                }
             }
         }
         public static class CODEX
@@ -676,12 +696,14 @@ namespace MutantContainmentProject
                     public class SPECIES_ENTRIES {
                         public static LocString MUTANTER_SCP173 = "Specimen attempted to disrupt the altar's energy core. Review data for more information.";
                         public static LocString MUTANTER_SCP096 = "Specimen displayed extreme distress upon altar activation. Review data for more information.";
+                        public static LocString MUTANTER_SCP662 = "Specimen manifested as a silver bell that summons a butler-like entity. The entity appears docile but requires monitoring.";
                         public static LocString UNKNOWN_TITLE = "ALERT FROM ALTAR CONTROL SYSTEM";
                         public static LocString UNKNOWN = "Sacrifice successfully processed.\n\nMutation function unavailable due to energy flux malfunction.\n\nPlease note that kicking the altar's exterior is unlikely to correct this issue and may result in permanent damage to the energy matrix.";
                     }
                     public class SPECIES_ENTRIES_EXPANDED {
                         public static LocString MUTANTER_SCP173 = "Specimen attempted to breach the altar's energy core casing. Sample is viable, though the containment apparatus may be somewhat mangled.\n\nAtomic force microscopy of the impact pattern reveals traces of goethite, a mineral notable for its exceptional strength and affinity for unstable aberrant energy.";
                         public static LocString MUTANTER_SCP096 = "Specimen exhibited severe emotional distress upon exposure to altar's energy signature. Subject became highly aggressive and attempted to breach containment.\n\nNeural analysis shows abnormal activity in the amygdala and prefrontal cortex, suggesting a hyperactive fear response triggered by the altar's energy frequency.";
+                        public static LocString MUTANTER_SCP662 = "Specimen manifested as a small silver bell with anomalous properties. When rung, it summons a humanoid entity identifying itself as 'Mr. Gerald', who appears as a traditional English butler.\n\nThe entity is completely obedient to the ringer and can perform various tasks within reasonable limits. It cannot be harmed by conventional means and disappears upon completing its task or being dismissed.\n\nEnergy analysis indicates the bell serves as a conduit to an extradimensional plane from which the butler entity is summoned. The connection appears stable but requires further study.";
                     }
                 }
             }
@@ -703,6 +725,24 @@ namespace MutantContainmentProject
                     public static class BODY
                     {
                         public static LocString CONTAINER1 = "Item #: SCP-096\r\nObject Class: Euclid\r\nSpecial Containment Procedures: SCP-096 is to be contained in its cell, a 5 m x 5 m x 5 m airtight steel cube, at all times. Weekly checks for any cracks or holes are mandatory. There are to be absolutely no video surveillance or optical tools of any kind inside SCP-096's cell. Security personnel will use pre-installed pressure sensors and laser detectors to ensure SCP-096's presence inside the cell.\r\nAny and all photos, video, or recordings of SCP-096's likeness are strictly forbidden without approval from Dr. ███ and O5-█.\r\nDescription: \r\nSCP-096 is a humanoid creature measuring approximately 2.38 meters in height. Subject shows very little muscle mass, with preliminary analysis of body mass suggesting mild malnutrition. Arms are grossly out of proportion with the rest of the subject's body, with an approximate length of 1.5 meters each. Skin is mostly devoid of pigmentation, with no sign of any body hair.\r\nSCP-096's jaw can open to four (4) times the norm of an average human. Other facial features remain similar to an average human, with the exception of the eyes, which are also devoid of pigmentation. It is not yet known whether SCP-096 is blind or not. It shows no signs of any higher brain functions, and is not considered to be sapient.\r\nSCP-096 is normally extremely docile, with pressure sensors inside its cell indicating it spends most of the day pacing by the eastern wall. However, when someone views SCP-096's face, whether it be directly, via video recording, or even a photograph, it will enter a stage of considerable emotional distress. SCP-096 will cover its face with its hands and begin screaming, crying, and babbling incoherently. Approximately one (1) to two (2) minutes after the first viewing, SCP-096 will begin running to the person who viewed its face (who will from this point on be referred to as SCP-096-1).\r\nDocumented speeds have varied from thirty-five (35) km/h to ███ km/h, and seems to depend on distance from SCP-096-1. At this point, no known material or method can impede SCP-096's progress. The actual position of SCP-096-1 does not seem to affect SCP-096's response; it seems to have an innate sense of SCP-096-1's location. Note: This reaction does not occur when viewing artistic depictions (see Document 096-1).\r\nUpon arriving at SCP-096-1's location, SCP-096 will proceed to kill and [DATA EXPUNGED] SCP-096-1. 100% of cases have left no traces of SCP-096-1. SCP-096 will then sit down for several minutes before regaining its composure and becoming docile once again. It will then attempt to make its way back to its natural habitat, [DATA REDACTED].\r\nAddenda\r\nDocument 096-1\r\nTest Log:\r\nTest 096-1: D-9031 shown photograph of SCP-096. SCP-096 entered distress, breached containment, and terminated D-9031.\r\nTest 096-2: D-9032 shown artistic painting of SCP-096. No reaction.\r\nTest 096-3: D-9033 shown low-resolution pixelated image of SCP-096's face. SCP-096 reacted and terminated D-9033.\r\nIncident 096-1-A\r\nDate: ██/██/████\r\nLocation: Research Area ██\r\nSummary: SCP-096 breached containment after a security camera feed was accidentally displayed on a public monitor. SCP-096 traveled ██ km, killing ██ personnel before being recontained. All footage of SCP-096's face was destroyed.";
+                    }
+                }
+                public static class MUTANTER_SCP662
+                {
+                    public static LocString TITLE = "SCP-662 Butler's Call Bell";
+                    public static LocString SUBTITLE = "SCP-662 Butler's Call Bell";
+                    public static class BODY
+                    {
+                        public static LocString CONTAINER1 = "Item #: SCP-662\r\nObject Class: Safe\r\nSpecial Containment Procedures: SCP-662 is to be kept in a standard low-risk item locker at Site-19. Personnel must submit a formal request before use and be monitored by at least one Level 2 security personnel during operation.\r\nDescription: \r\nSCP-662 is an ordinary-looking small silver bell, identical in size to a standard service bell. When rung, it summons a male entity identifying itself as Mr. Gerald.\r\nMr. Gerald appears as a middle-aged Caucasian male, dressed in a black tailcoat and white gloves, with the demeanor of a traditional English butler. He is completely obedient to the ringer and can perform most commands within reasonable limits, including but not limited to: preparing meals, organizing spaces, providing information, carrying out simple tasks, handling daily chores, etc.\r\nThe entity cannot be harmed or destroyed by conventional means. It disappears upon completing a task or being dismissed. Its abilities have clear limits: it cannot violate physical laws, directly harm others, grant impossible wishes, or carry out suicidal or highly dangerous commands.\r\nSCP-662 itself is indestructible. The butler entity only serves the current ringer, and a new user overrides all previous commands.";
+                    }
+                }
+                public static class MUTANTER_SCP662_1
+                {
+                    public static LocString TITLE = "SCP-662-1 Mr. Gerald";
+                    public static LocString SUBTITLE = "SCP-662-1 Mr. Gerald";
+                    public static class BODY
+                    {
+                        public static LocString CONTAINER1 = "Item #: SCP-662-1\r\nObject Class: Safe\r\nSpecial Containment Procedures: SCP-662-1 does not require specific containment procedures as it only manifests when SCP-662 is rung and disappears after completing its task or being dismissed.\r\nDescription: \r\nSCP-662-1 is a male entity summoned by SCP-662, identifying itself as Mr. Gerald. It appears as a middle-aged Caucasian male dressed in a black tailcoat and white gloves, with the demeanor of a traditional English butler.\r\nSCP-662-1 is completely obedient to the ringer of SCP-662 and can perform most commands within reasonable limits, including but not limited to: preparing meals, organizing spaces, providing information, carrying out simple tasks, handling daily chores, etc.\r\nThe entity cannot be harmed or destroyed by conventional means. It disappears upon completing a task or being dismissed. Its abilities have clear limits: it cannot violate physical laws, directly harm others, grant impossible wishes, or carry out suicidal or highly dangerous commands.\r\nSCP-662-1 only serves the current ringer of SCP-662, and a new user overrides all previous commands.";
                     }
                 }
             }

@@ -27,7 +27,7 @@ namespace MutantContainmentProject.Mutanters
 
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name, 25);
 
-            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.TETH, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack });
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack });
             prefab.AddOrGetDef<MutanterChaseMonitor.Def>();
 
             // 添加产出物

@@ -10,11 +10,11 @@ namespace MutantContainmentProject.MutanterComponent
 {
     public enum MutanterDangerLevel
     {
-        ZAYIN = 1,//ZAYIN级（低危）
-        TETH = 2,//TETH级（低危）
-        HE = 3,//HE级（中危）
-        WAW = 4,//WAW级（高危）
-        ALEPH = 5//ALEPH级（灾难级）
+        Safe = 1,//Safe级（安全级）
+        Euclid = 2,//Euclid级（欧几里得级）
+        Keter = 3,//Keter级（刻托级）
+        Thaumiel = 4,//Thaumiel级（奇术级）
+        Neutralized = 5//Neutralized级（失效级
 
     }
     public class BaseMutanter
