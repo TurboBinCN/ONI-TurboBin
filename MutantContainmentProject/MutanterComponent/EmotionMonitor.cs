@@ -228,10 +228,10 @@ namespace MutantContainmentProject.MutanterComponent
             }
             public StatesInstance(IStateMachineTarget master, Def def) : base(master, def)
             {
-                if (smi.def.considerDecor)
+                if (def.considerDecor)
                 {
                     //master.gameObject.AddOrGetDef<CreatureDecorMonitor.Def>()
-                    //    .DecorValueTreshold = smi.def.DecorValueTreshold;
+                    //    .DecorValueTreshold = def.DecorValueTreshold;
 
                     Subscribe((int)GameHashes.CreatureLowDecor, (_) => _highDecor = false);
                     Subscribe((int)GameHashes.CreatureHighDecor, (_) => _highDecor = true);
@@ -250,6 +250,10 @@ namespace MutantContainmentProject.MutanterComponent
             public List<KPrefabID> GetThreaters()
             {
                 return sm.threaters;
+            }
+            public List<KPrefabID> GetBuildings()
+            {
+                return sm.buildings;
             }
         }
         public class Def : BaseDef

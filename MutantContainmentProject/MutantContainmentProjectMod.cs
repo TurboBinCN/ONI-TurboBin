@@ -60,7 +60,9 @@ namespace MutantContainmentProject
                     .ADD("SCP173", "Creatures")
                     .ADD("SCP096", "Creatures")
                     .ADD("SCP662", "IndustrialIngredients")
-                    .ADD("SCP662_1", "Creatures");
+                    .ADD("SCP662_1", "Creatures")
+                    .ADD("SCP049", "Creatures")
+                    .ADD("SCP049_2", "Creatures");
                 //房间
                 TbbRoom.Initialize(mod, harmony)
                     .Add(ContainmentCharmberRoom.Register);

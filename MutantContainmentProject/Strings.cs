@@ -135,10 +135,14 @@ namespace MutantContainmentProject
                 public static LocString SCP096 = global::STRINGS.UI.FormatAsLink("SCP-096", SCP096Config.ID);
                 public static LocString SCP662 = global::STRINGS.UI.FormatAsLink("SCP-662", SCP662Config.ID);
                 public static LocString SCP662_1 = global::STRINGS.UI.FormatAsLink("SCP-662-1", SCP662_1Config.ID);
+                public static LocString SCP049 = global::STRINGS.UI.FormatAsLink("SCP-049", SCP049Config.ID);
+                public static LocString SCP049_2 = global::STRINGS.UI.FormatAsLink("SCP-049-2", SCP049_2Config.ID);
                 public static LocString MUTANTER_SCP173 = global::STRINGS.UI.FormatAsLink("SCP-173", SCP173Config.ID);
                 public static LocString MUTANTER_SCP096 = global::STRINGS.UI.FormatAsLink("SCP-096", SCP096Config.ID);
                 public static LocString MUTANTER_SCP662 = global::STRINGS.UI.FormatAsLink("SCP-662", SCP662Config.ID);
                 public static LocString MUTANTER_SCP662_1 = global::STRINGS.UI.FormatAsLink("SCP-662-1", SCP662_1Config.ID);
+                public static LocString MUTANTER_SCP049 = global::STRINGS.UI.FormatAsLink("SCP-049", SCP049Config.ID);
+                public static LocString MUTANTER_SCP049_2 = global::STRINGS.UI.FormatAsLink("SCP-049-2", SCP049_2Config.ID);
             }
         }
         public static class MUTANTERS
@@ -210,6 +214,13 @@ namespace MutantContainmentProject
                 {
                     public static LocString NAME = "Soul Attack";
                     public static LocString TOOLTIP = "The entity is using soul attack.";
+                }
+                public static class HEALING
+                {
+                    public static LocString NAME = "Healing";
+                    public static LocString TOOLTIP = "The entity is performing healing on a target.";
+                    public static LocString NOTIFICATION_NAME = "SCP-049 is performing healing.";
+                    public static LocString NOTIFICATION_TOOLTIP = "SCP-049 is using its healing hands to cure diseases and injuries, but at the cost of maximum stress.";
                 }
             }
         }
@@ -660,6 +671,16 @@ namespace MutantContainmentProject
                     public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-662-1", SCP662_1Config.ID);
                     public static LocString DESCRIPTION = "SCP-662-1 is a male entity summoned by SCP-662, identifying itself as Mr. Gerald. It appears as a middle-aged Caucasian male dressed in a black tailcoat and white gloves, with the demeanor of a traditional English butler.";
                 }
+                public static class MUTANTER_SCP049
+                {
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-049", SCP049Config.ID);
+                    public static LocString DESCRIPTION = "SCP-049 is a humanoid entity, approximately 1.9 meters in height, bearing the appearance of a medieval plague doctor. While it appears to wear thick robes and the characteristic ceramic beaked mask, these garments have grown from its body over time and are now nearly indistinguishable from its underlying form.";
+                }
+                public static class MUTANTER_SCP049_2
+                {
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-049-2", SCP049_2Config.ID);
+                    public static LocString DESCRIPTION = "SCP-049-2 refers to reanimated cadavers modified by SCP-049's surgery. They are equipped with a disposable battery (180 kJ) that allows them to operate for 10 cycles. After shutting down, they can be dismantled and recycled by duplicants.";
+                }
             }
         }
         public static class CODEX
@@ -743,6 +764,24 @@ namespace MutantContainmentProject
                     public static class BODY
                     {
                         public static LocString CONTAINER1 = "Item #: SCP-662-1\r\nObject Class: Safe\r\nSpecial Containment Procedures: SCP-662-1 does not require specific containment procedures as it only manifests when SCP-662 is rung and disappears after completing its task or being dismissed.\r\nDescription: \r\nSCP-662-1 is a male entity summoned by SCP-662, identifying itself as Mr. Gerald. It appears as a middle-aged Caucasian male dressed in a black tailcoat and white gloves, with the demeanor of a traditional English butler.\r\nSCP-662-1 is completely obedient to the ringer of SCP-662 and can perform most commands within reasonable limits, including but not limited to: preparing meals, organizing spaces, providing information, carrying out simple tasks, handling daily chores, etc.\r\nThe entity cannot be harmed or destroyed by conventional means. It disappears upon completing a task or being dismissed. Its abilities have clear limits: it cannot violate physical laws, directly harm others, grant impossible wishes, or carry out suicidal or highly dangerous commands.\r\nSCP-662-1 only serves the current ringer of SCP-662, and a new user overrides all previous commands.";
+                    }
+                }
+                public static class MUTANTER_SCP049
+                {
+                    public static LocString TITLE = "SCP-049 The Plague Doctor";
+                    public static LocString SUBTITLE = "SCP-049 The Plague Doctor";
+                    public static class BODY
+                    {
+                        public static LocString CONTAINER1 = "Item #: SCP-049\r\nObject Class: Euclid\r\nSpecial Containment Procedures: SCP-049 is contained within a Standard Secure Humanoid Containment Cell in Research Sector-02 at Site-19. All interaction with SCP-049 must be supervised by at least two Level 4 security personnel. Direct skin contact with SCP-049 is strictly prohibited under all circumstances. In the event SCP-049 becomes hostile or attempts containment breach, the cell's sedative gas system is to be activated immediately, and Mobile Task Force Gamma-12 (\"Cutters\") is to be deployed for recontainment.\r\nDescription: \r\nSCP-049 is a humanoid entity, approximately 1.9 meters in height, bearing the appearance of a medieval plague doctor. While SCP-049 appears to wear thick robes and the characteristic ceramic beaked mask, these garments have grown from its body over time and are now nearly indistinguishable from its underlying form. X-rays confirm a humanoid skeletal structure beneath the outer layer.\r\nSCP-049 is capable of speech in multiple languages, preferring English or medieval French. It is generally cordial and cooperative with Foundation personnel, but becomes irritable and aggressive when it perceives the presence of what it calls the \"Pestilence\".\r\nSCP-049 will turn hostile toward individuals it deems infected and attempt to kill them: direct skin contact instantaneously ceases all biological functions; the mechanism is unknown, and autopsies of victims are consistently inconclusive.\r\nPost-kill, SCP-049 often expresses frustration or remorse, claiming the act did little to stop the Pestilence. It will then perform crude surgery on the corpse using implements from a black medical bag it carries at all times, frequently resulting in instances of SCP-049-2 (reanimated cadavers).\r\nSCP-049 firmly believes it is \"curing\" the Pestilence, though its definition differs entirely from Foundation understanding, and it refuses to elaborate.";
+                    }
+                }
+                public static class MUTANTER_SCP049_2
+                {
+                    public static LocString TITLE = "SCP-049-2 Reanimated Cadavers";
+                    public static LocString SUBTITLE = "SCP-049-2 Reanimated Cadavers";
+                    public static class BODY
+                    {
+                        public static LocString CONTAINER1 = "Item #: SCP-049-2\r\nObject Class: Euclid\r\nSpecial Containment Procedures: SCP-049-2 instances require separate containment or termination. They are to be kept in standard humanoid containment cells when not being studied.\r\nDescription: \r\nSCP-049-2 refers to reanimated cadavers modified by SCP-049's surgery. They lack autonomous consciousness and follow only SCP-049's commands.\r\nSCP-049-2 instances possess anomalous physiology, surviving indefinitely without nutrition or oxygen. They are hostile to non-049 humans and will attack on sight.\r\nWhen SCP-049 is neutralized or contained, SCP-049-2 instances typically become inactive and expire within 24 hours.";
                     }
                 }
             }
