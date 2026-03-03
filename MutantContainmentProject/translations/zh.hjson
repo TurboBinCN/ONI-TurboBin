@@ -455,6 +455,14 @@
         NAME: 追击模式
         DESCRIPTION: 此单位正在追击目标。
       }
+      MUTANTER_ATTACK_RESTRICTED_EFFECT: {
+        NAME: 攻击限制
+        DESCRIPTION: 此单位的攻击能力受到限制。
+      }
+      MUTANTER_ATTACK_ENHANCED_EFFECT: {
+        NAME: 攻击增强
+        DESCRIPTION: 此单位的攻击能力得到增强。
+      }
     }
     UI: {
       UISIDESCREENS: {

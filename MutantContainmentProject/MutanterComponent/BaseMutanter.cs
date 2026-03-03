@@ -40,7 +40,7 @@ namespace MutantContainmentProject.MutanterComponent
             template.AddOrGet<TbbRangeVisualizer>();//挂载：威胁范围显示
             
             // 挂载：攻击能力，并传递攻击标签
-            var attackBehaviors = template.AddOrGet<MutanterAttackBehaviors>();
+            var attackSystem = template.AddOrGet<MutanterAttackSystem>();
             if (attackTags != null)
             {
                 foreach (var tag in attackTags)

@@ -30,19 +30,41 @@ namespace MutantContainmentProject.MutanterComponent
 
         public bool Execute(IStateMachineTarget attacker, GameObject target)
         {
+            return Execute(attacker, target, 1.0f);
+        }
+
+        public bool Execute(IStateMachineTarget attacker, GameObject target, float effectImpact)
+        {
             if (!CanExecute(attacker, target)) return false;
 
             Debug.Log($"[MeleeAttack] {attacker.name} is attacking {target.name} with melee!");
 
-            // 这里调用实际的伤害逻辑，例如：
+            // 使用MutanterAttackSystem执行攻击
+            var attackSystem = GetAttackSystem(attacker.gameObject);
+            if (attackSystem != null)
+            {
+                float damage = _baseDamage * effectImpact;
+                bool success = attackSystem.ExecuteHealthAttack(target, damage);
+                _lastExecutedTime = Time.time;
+                return success;
+            }
+
+            // 降级处理：直接执行攻击
             var health = target.GetComponent<Health>();
             if (health != null)
             {
-                health.Damage(_baseDamage);
+                float damage = _baseDamage * effectImpact;
+                health.Damage(damage);
+                _lastExecutedTime = Time.time;
+                return true;
             }
 
-            _lastExecutedTime = Time.time;
-            return true;
+            return false;
+        }
+
+        private MutanterAttackSystem GetAttackSystem(GameObject gameObject)
+        {
+            return gameObject.GetComponent<MutanterAttackSystem>();
         }
 
     }

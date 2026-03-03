@@ -33,32 +33,58 @@ namespace MutantContainmentProject.MutanterComponent
 
         public bool Execute(IStateMachineTarget attacker, GameObject target)
         {
+            return Execute(attacker, target, 1.0f);
+        }
+
+        public bool Execute(IStateMachineTarget attacker, GameObject target, float effectImpact)
+        {
             if (!CanExecute(attacker, target)) return false;
 
             TbbDebuger.LogDebug($"[ErosionAttack] {attacker.name} is eroding {target.name}!");
+            bool success = false;
+            // 使用MutanterAttackSystem执行攻击
+            var attackSystem = GetAttackSystem(attacker.gameObject);
+            if (attackSystem != null)
+            {
+                float damage = _damageAmount * effectImpact;
+                float stressAmount = _stressAmount * effectImpact;
+                success = attackSystem.ExecuteCombinedAttack(target, damage, stressAmount);
+                _lastExecutedTime = Time.time;
+                return success;
+            }
 
+            // 降级处理：直接执行攻击
             // 1. 减少目标的生命值
             var health = target.GetComponent<Health>();
             if (health != null)
             {
-                health.Damage(_damageAmount);
-                TbbDebuger.LogDebug($"[ErosionAttack] {target.name} took {_damageAmount} damage");
+                float damage = _damageAmount * effectImpact;
+                health.Damage(damage);
+                TbbDebuger.LogDebug($"[ErosionAttack] {target.name} took {damage} damage (effect impact: {effectImpact})");
+                success = true;
             }
 
             // 2. 增加目标的压力值
             var amounts = target.GetAmounts();
             if (amounts != null)
             {
-                var stressAmount = amounts.Get(Db.Get().Amounts.Stress);
-                if (stressAmount != null)
+                var stressAmountComp = amounts.Get(Db.Get().Amounts.Stress);
+                if (stressAmountComp != null)
                 {
-                    stressAmount.value = Mathf.Min(stressAmount.value + _stressAmount, 100f);
-                    TbbDebuger.LogDebug($"[ErosionAttack] {target.name} stress increased to {stressAmount.value}%");
+                    float stressIncrease = _stressAmount * effectImpact;
+                    stressAmountComp.value = Mathf.Min(stressAmountComp.value + stressIncrease, 100f);
+                    TbbDebuger.LogDebug($"[ErosionAttack] {target.name} stress increased to {stressAmountComp.value}% (effect impact: {effectImpact})");
+                    success = true;
                 }
             }
 
             _lastExecutedTime = Time.time;
-            return true;
+            return success;
+        }
+
+        private MutanterAttackSystem GetAttackSystem(GameObject gameObject)
+        {
+            return gameObject.GetComponent<MutanterAttackSystem>();
         }
     }
 }

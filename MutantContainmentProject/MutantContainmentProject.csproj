@@ -55,6 +55,7 @@
     <Compile Include="MutanterCodexEntries\MutanterCodexEntry.cs" />
     <Compile Include="MutanterComponent\BaseItemsMutanter.cs" />
     <Compile Include="MutanterComponent\ErosionAttack.cs" />
+    <Compile Include="MutanterComponent\MutanterAttackSystem.cs" />
     <Compile Include="MutanterComponent\MutanterBrain.cs" />
     <Compile Include="MutanterComponent\MutanterChaseMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterCreature.cs" />
@@ -71,7 +72,6 @@
     <Compile Include="MutanterComponent\EmotionMonitor.cs" />
     <Compile Include="MutanterComponent\IMutanterAttackBehavior.cs" />
     <Compile Include="MutanterComponent\MeleeAttack.cs" />
-    <Compile Include="MutanterComponent\MutanterAttackBehaviors.cs" />
     <Compile Include="MutanterComponent\MutanterSpeciesCatalog.cs" />
     <Compile Include="MutanterComponent\MutanterStatusItems.cs" />
     <Compile Include="MutanterComponent\MutanterTags.cs" />

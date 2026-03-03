@@ -17,8 +17,16 @@ namespace MutantContainmentProject.MutanterComponent
     
     public class SCP049Controller : KMonoBehaviour, ISim1000ms
     {
-        [MyCmpReq]
-        private MutanterAttackBehaviors attackBehaviors;
+        private MutanterAttackSystem _attackSystem;
+
+        private MutanterAttackSystem attackSystem{
+            get{
+                if(_attackSystem == null){
+                    _attackSystem = gameObject.GetComponent<MutanterAttackSystem>();
+                }
+                return _attackSystem;
+            }
+        }
 
         private EmotionMonitor.StatesInstance _emotionMonitorSMI;
 
@@ -74,13 +82,6 @@ namespace MutantContainmentProject.MutanterComponent
 
         private void CheckForPlague()
         {
-            // 检查是否有已收容Effect，如果有就抑制攻击行为
-            var effects = gameObject.GetComponent<Effects>();
-            if (effects != null && effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
-            {
-                return;
-            }
-
             // 使用EmotionMonitor中的threaters列表
             var threaters = emotionMonitorInstance.GetThreaters();
             foreach (var threater in threaters)
@@ -199,18 +200,11 @@ namespace MutantContainmentProject.MutanterComponent
         private void AttackTarget(GameObject target)
         {
             // 尝试执行攻击行为
-            attackBehaviors.TryExecuteAttack(target);
+            attackSystem.TryExecuteAttack(target);
         }
 
         private void CheckForContact()
         {
-            // 检查是否有已收容Effect，如果有就抑制即死攻击
-            var effects = gameObject.GetComponent<Effects>();
-            if (effects != null && effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
-            {
-                return;
-            }
-
             // 使用EmotionMonitor中的threaters列表
             var threaters = emotionMonitorInstance.GetThreaters();
             foreach (var threater in threaters)
@@ -228,21 +222,21 @@ namespace MutantContainmentProject.MutanterComponent
 
         private void InstantKill(GameObject target)
         {
-            // 获取目标的Health组件
-            var targetHealth = target.GetComponent<Health>();
-            if (targetHealth != null)
+            // 使用攻击系统执行即死攻击
+            var health = target.GetComponent<Health>();
+            if (health != null)
             {
-                // 瞬间杀死目标
-                targetHealth.hitPoints = 0;
-                TbbDebuger.LogDebug($"[SCP049] Instantly killed {target.name} via skin contact");
-                
-                // 强制更新Health状态
-                targetHealth.OnHealthChanged(-targetHealth.maxHitPoints);
-                
-                // 将尸体添加到列表中，以便后续进行手术
-                if (!deadBodies.Contains(target))
+                // 计算需要的伤害值（确保杀死目标）
+                float damage = health.hitPoints;
+                if (attackSystem.ExecuteHealthAttack(target, damage))
                 {
-                    deadBodies.Add(target);
+                    TbbDebuger.LogDebug($"[SCP049] Instantly killed {target.name} via skin contact");
+                    
+                    // 将尸体添加到列表中，以便后续进行手术
+                    if (!deadBodies.Contains(target))
+                    {
+                        deadBodies.Add(target);
+                    }
                 }
             }
         }

@@ -590,6 +590,16 @@ namespace MutantContainmentProject
                 public static LocString NAME = "Chase Mode";
                 public static LocString DESCRIPTION = "This entity is chasing targets.";
             }
+            public static class MUTANTER_ATTACK_RESTRICTED_EFFECT
+            {
+                public static LocString NAME = "Attack Restricted";
+                public static LocString DESCRIPTION = "This entity's attack capabilities are restricted.";
+            }
+            public static class MUTANTER_ATTACK_ENHANCED_EFFECT
+            {
+                public static LocString NAME = "Attack Enhanced";
+                public static LocString DESCRIPTION = "This entity's attack capabilities are enhanced.";
+            }
         }
         public static class UI
         {

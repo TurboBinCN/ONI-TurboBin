@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace MutantContainmentProject
@@ -14,16 +13,19 @@ namespace MutantContainmentProject
         protected override void OnSpawn()
         {
             base.OnSpawn();
-            
+
             // Get TreeFilterable and Storage components from SCP-662-1
             treeFilterable = base.GetComponent<TreeFilterable>();
             storage = base.GetComponent<Storage>();
-            
+
             if (treeFilterable != null)
             {
                 treeFilterable.OnFilterChanged += OnFilterChanged;
                 selectedTags = treeFilterable.GetTags();
             }
+
+            // Discover all items
+            DicoveryAllItems();
         }
 
         protected override void OnCleanUp()
@@ -33,19 +35,38 @@ namespace MutantContainmentProject
             {
                 treeFilterable.OnFilterChanged -= OnFilterChanged;
             }
-        }
 
+        }
+        private void DicoveryAllItems()
+        {
+            var allFood = EdiblesManager.GetAllFoodTypes();
+
+            foreach (EdiblesManager.FoodInfo food in allFood)
+            {
+                try
+                {
+                    if ((double)food.CaloriesPerUnit == 0.0)
+                        DiscoveredResources.Instance.Discover(food.Id.ToTag(), GameTags.CookingIngredient);
+                    else
+                        DiscoveredResources.Instance.Discover(food.Id.ToTag(), GameTags.Edible);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.Log("Unpossible to load " + food.Id);
+                }
+            }
+        }
         private void OnFilterChanged(HashSet<Tag> tags)
         {
             // Update selectedTags to the latest tags
             selectedTags = new HashSet<Tag>(tags);
-            
+
             // Only process if there are selected tags
             if (selectedTags != null && selectedTags.Count > 0 && storage != null)
             {
                 // Generate and store selected elements
                 GenerateAndStoreElements();
-                
+
                 // Destroy SCP-662-1 after generating items
                 base.gameObject.DeleteObject();
             }
@@ -72,7 +93,7 @@ namespace MutantContainmentProject
                     {
                         primaryElement.Mass = 100f;
                     }
-                    
+
                     // Add the item to storage
                     storage.Store(item);
                 }

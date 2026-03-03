@@ -33,7 +33,19 @@ namespace MutantContainmentProject.MutanterComponent
         {
             public EmotionMonitor.StatesInstance emotionMonitorSMI;
             public MutanterStateMachine.StatesInstance mutanterStateMachineSMI;
-            public MutanterAttackBehaviors attackBehaviors;
+            private MutanterAttackSystem _attackSystem;
+
+            private MutanterAttackSystem attackSystem
+            {
+                get
+                {
+                    if (_attackSystem == null)
+                    {
+                        _attackSystem = master.gameObject.GetComponent<MutanterAttackSystem>();
+                    }
+                    return _attackSystem;
+                }
+            }
             public Effects effects;
             public Navigator navigator;
             public List<KPrefabID> storedThreaters = new();
@@ -44,7 +56,6 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 emotionMonitorSMI = master.gameObject.GetSMI<EmotionMonitor.StatesInstance>();
                 mutanterStateMachineSMI = master.gameObject.GetSMI<MutanterStateMachine.StatesInstance>();
-                attackBehaviors = master.GetComponent<MutanterAttackBehaviors>();
                 effects = master.GetComponent<Effects>();
                 navigator = master.GetComponent<Navigator>();
             }
@@ -138,10 +149,9 @@ namespace MutantContainmentProject.MutanterComponent
                 }
 
                 // 尝试攻击目标
-                if (attackBehaviors != null)
+                if (attackSystem != null)
                 {
-                    float insanityValue = emotionMonitorSMI?.GetINSANITY() ?? 100f;
-                    attackBehaviors.TryExecuteAttack(currentTarget.gameObject, insanityValue);
+                    attackSystem.TryExecuteAttack(currentTarget.gameObject);
 
                     // 检查目标是否被击败
                     if (IsTargetDefeated(currentTarget))

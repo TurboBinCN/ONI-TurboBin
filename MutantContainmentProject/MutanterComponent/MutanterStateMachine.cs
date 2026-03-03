@@ -173,10 +173,9 @@ namespace MutantContainmentProject.MutanterComponent
         // 执行攻击逻辑
         private void ExecuteAttack(StatesInstance smi, float dt)
         {
-            var attackBehaviors = smi.master.gameObject.GetComponent<MutanterAttackBehaviors>();
-            if (attackBehaviors != null && smi.EmotionSMI != null)
+            var attackSystem = smi.master.gameObject.GetComponent<MutanterAttackSystem>();
+            if (attackSystem != null && smi.EmotionSMI != null)
             {
-                float insanityValue = smi.EmotionSMI.INSANITYValue;
                 var threaters = smi.EmotionSMI.GetThreaters();
                 
                 if (threaters != null && threaters.Count > 0)
@@ -187,7 +186,7 @@ namespace MutantContainmentProject.MutanterComponent
                         {
                             // 播放攻击动画
                             smi.master.gameObject.GetComponent<KBatchedAnimController>().Play("attack_once", KAnim.PlayMode.Once);
-                            attackBehaviors.TryExecuteAttack(threater.gameObject, insanityValue);
+                            attackSystem.TryExecuteAttack(threater.gameObject);
                         }
                     }
                 }

@@ -30,22 +30,48 @@ namespace MutantContainmentProject.MutanterComponent
 
         public bool Execute(IStateMachineTarget attacker, GameObject target)
         {
+            return Execute(attacker, target, 1.0f);
+        }
+
+        public bool Execute(IStateMachineTarget attacker, GameObject target, float effectImpact)
+        {
             if (!CanExecute(attacker, target)) return false;
 
             TbbDebuger.LogDebug($"[SoulAttack] {attacker.name} is attacking {target.name}'s soul!");
 
-            // 按百分比扣减生命值
+            // 计算伤害值
+            float damageAmount = 0f;
             var health = target.GetComponent<Health>();
             if (health != null)
             {
                 float maxHitPoints = health.maxHitPoints;
-                float damageAmount = maxHitPoints * _damagePercentage;
-                health.Damage(damageAmount);
-                TbbDebuger.LogDebug($"[SoulAttack] {target.name} took {damageAmount} damage ({_damagePercentage * 100}% of max HP)");
+                damageAmount = maxHitPoints * _damagePercentage * effectImpact;
             }
 
-            _lastExecutedTime = Time.time;
-            return true;
+            // 使用MutanterAttackSystem执行攻击
+            var attackSystem = GetAttackSystem(attacker.gameObject);
+            if (attackSystem != null)
+            {
+                bool success = attackSystem.ExecuteHealthAttack(target, damageAmount);
+                _lastExecutedTime = Time.time;
+                return success;
+            }
+
+            // 降级处理：直接执行攻击
+            if (health != null)
+            {
+                health.Damage(damageAmount);
+                TbbDebuger.LogDebug($"[SoulAttack] {target.name} took {damageAmount} damage ({_damagePercentage * 100 * effectImpact}% of max HP, effect impact: {effectImpact})");
+                _lastExecutedTime = Time.time;
+                return true;
+            }
+
+            return false;
+        }
+
+        private MutanterAttackSystem GetAttackSystem(GameObject gameObject)
+        {
+            return gameObject.GetComponent<MutanterAttackSystem>();
         }
     }
 }

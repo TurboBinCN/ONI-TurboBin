@@ -31,42 +31,54 @@ namespace MutantContainmentProject.MutanterComponent
 
         public bool Execute(IStateMachineTarget attacker, GameObject target)
         {
+            return Execute(attacker, target, 1.0f);
+        }
+
+        public bool Execute(IStateMachineTarget attacker, GameObject target, float effectImpact)
+        {
             if (!CanExecute(attacker, target)) return false;
 
             Debug.Log($"[PsychologicalAttack] {attacker.name} is psychologically attacking {target.name}!");
 
-            // 增加目标的压力值
+            // 使用MutanterAttackSystem执行攻击
+            var attackSystem = attacker.gameObject.GetComponent<MutanterAttackSystem>();
+            if (attackSystem != null)
+            {
+                float stressAmount = _stressAmount * effectImpact;
+                bool success = attackSystem.ExecuteStressAttack(target, stressAmount);
+                _lastExecutedTime = Time.time;
+                return success;
+            }
+
+            // 降级处理：直接执行攻击
             var amounts = target.GetAmounts();
             if (amounts != null)
             {
-                var stressAmount = amounts.Get(Db.Get().Amounts.Stress);
-                if (stressAmount != null)
+                var stressAmountComp = amounts.Get(Db.Get().Amounts.Stress);
+                if (stressAmountComp != null)
                 {
                     // 计算精神抗性影响
                     float mentalResistanceFactor = 1f;
-                    
-                    // 从目标的属性中获取MentalResistance值作为精神抗性
                     var attributes = target.GetAttributes();
                     if (attributes != null)
                     {
                         var mentalResistanceAttribute = attributes.Get("MentalResistance");
                         if (mentalResistanceAttribute != null)
                         {
-                            // MentalResistance值越高，精神抗性越强，压力增长越慢
                             float mentalResistanceValue = mentalResistanceAttribute.GetTotalValue();
                             mentalResistanceFactor = Mathf.Max(0.1f, 1f - (mentalResistanceValue * 0.1f));
                         }
                     }
                     
-                    // 应用精神抗性
-                    float effectiveStressAmount = _stressAmount * mentalResistanceFactor;
-                    stressAmount.value = Mathf.Min(stressAmount.value + effectiveStressAmount, 100f);
-                    TbbDebuger.LogDebug($"[PsychologicalAttack] {target.name} stress increased to {stressAmount.value}%, effective amount: {effectiveStressAmount}, resistance factor: {mentalResistanceFactor}");
+                    float effectiveStressAmount = _stressAmount * mentalResistanceFactor * effectImpact;
+                    stressAmountComp.value = Mathf.Min(stressAmountComp.value + effectiveStressAmount, 100f);
+                    TbbDebuger.LogDebug($"[PsychologicalAttack] {target.name} stress increased to {stressAmountComp.value}%, effective amount: {effectiveStressAmount}");
+                    _lastExecutedTime = Time.time;
+                    return true;
                 }
             }
 
-            _lastExecutedTime = Time.time;
-            return true;
+            return false;
         }
     }
 }

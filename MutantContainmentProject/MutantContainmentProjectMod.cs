@@ -73,7 +73,9 @@ namespace MutantContainmentProject
                 TbbEffect.Initialize(mod, harmony)
                     .Add(MutanterEffects.MutanterContainedEffect)
                     .Add(MutanterEffects.MutanterWilledEffect)
-                    .Add(MutanterEffects.MutanterChaseEffect);
+                    .Add(MutanterEffects.MutanterChaseEffect)
+                    .Add(MutanterEffects.MutanterAttackRestrictedEffect)
+                    .Add(MutanterEffects.MutanterAttackEnhancedEffect);
                 //小人属性
                 TbbDuplicantsAttributes.Initialize(mod, harmony)
                     .Add(MutanterAttributes.AttributeBravery, MutanterAttributes.AttributeBraveryID)
