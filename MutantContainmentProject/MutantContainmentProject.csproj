@@ -58,12 +58,13 @@
     <Compile Include="MutanterComponent\MutanterAttackSystem.cs" />
     <Compile Include="MutanterComponent\MutanterBrain.cs" />
     <Compile Include="MutanterComponent\MutanterChaseMonitor.cs" />
-    <Compile Include="MutanterComponent\MutanterCreature.cs" />
     <Compile Include="MutanterComponent\MutanterMoltenMetalMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterProductComponent.cs" />
     <Compile Include="MutanterComponent\SCP049Controller.cs" />
     <Compile Include="MutanterComponent\SCP662BellController.cs" />
     <Compile Include="MutanterComponent\SCP662_1Controller.cs" />
+    <Compile Include="MutanterComponent\SCP939Amnesia.cs" />
+    <Compile Include="MutanterComponent\SCP939Controller.cs" />
     <Compile Include="MutanterComponent\SoulAttack.cs" />
     <Compile Include="MutanterEffect\MutanterEffects.cs" />
     <Compile Include="MutantContainmentProjectMod.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Mutanters\SCP662_1Config.cs" />
     <Compile Include="Mutanters\SCP049Config.cs" />
     <Compile Include="Mutanters\SCP049_2Config.cs" />
+    <Compile Include="Mutanters\SCP939Config.cs" />
     <Compile Include="MutanterTraits\MutanterTraitDb.cs" />
     <Compile Include="MutanterComponent\MutanterStateMachine.cs" />
     <Compile Include="MutanterComponent\PsychologicalAttack .cs" />
@@ -115,6 +117,7 @@
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP049_2.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP096.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP173.yaml" />
+    <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP939.yaml" />
     <None Include="assets\codex\IndustrialIngredients\DynamicCodexEntry_SCP662.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP662_1.yaml" />
     <None Include="assets\codex\StoryTraits\DynamicCodexEntry_StoryTraitMutanterFounder.yaml" />

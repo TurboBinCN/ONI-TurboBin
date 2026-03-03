@@ -216,8 +216,6 @@ namespace MutantContainmentProject.MutanterComponent
             float defaultTemperature = (warnLowTemp + warnHighTemp) / 2f;
             GameObject gameObject = EntityTemplates.CreatePlacedEntity(id, name, desc, mass, anim, initialAnim, sceneLayer, width, height, decor, default(EffectorValues), SimHashes.Creature, null, defaultTemperature);
 
-            gameObject.AddOrGet<MutanterCreature>();
-
             ExtendEntityToBasicCreature(false, gameObject, anim_file, anim_build_file, null, warnLowTemp, warnHighTemp, lethalLowTemp, lethalHighTemp);
             if (!string.IsNullOrEmpty(symbol_override_prefix))
             {

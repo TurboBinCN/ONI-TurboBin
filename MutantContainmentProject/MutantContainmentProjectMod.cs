@@ -62,7 +62,8 @@ namespace MutantContainmentProject
                     .ADD("SCP662", "IndustrialIngredients")
                     .ADD("SCP662_1", "Creatures")
                     .ADD("SCP049", "Creatures")
-                    .ADD("SCP049_2", "Creatures");
+                    .ADD("SCP049_2", "Creatures")
+                    .ADD("SCP939", "Creatures");
                 //房间
                 TbbRoom.Initialize(mod, harmony)
                     .Add(ContainmentCharmberRoom.Register);
@@ -75,7 +76,8 @@ namespace MutantContainmentProject
                     .Add(MutanterEffects.MutanterWilledEffect)
                     .Add(MutanterEffects.MutanterChaseEffect)
                     .Add(MutanterEffects.MutanterAttackRestrictedEffect)
-                    .Add(MutanterEffects.MutanterAttackEnhancedEffect);
+                    .Add(MutanterEffects.MutanterAttackEnhancedEffect)
+                    .Add(MutanterEffects.SCP939AmnesiaEffect);
                 //小人属性
                 TbbDuplicantsAttributes.Initialize(mod, harmony)
                     .Add(MutanterAttributes.AttributeBravery, MutanterAttributes.AttributeBraveryID)

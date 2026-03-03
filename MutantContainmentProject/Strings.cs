@@ -143,6 +143,8 @@ namespace MutantContainmentProject
                 public static LocString MUTANTER_SCP662_1 = global::STRINGS.UI.FormatAsLink("SCP-662-1", SCP662_1Config.ID);
                 public static LocString MUTANTER_SCP049 = global::STRINGS.UI.FormatAsLink("SCP-049", SCP049Config.ID);
                 public static LocString MUTANTER_SCP049_2 = global::STRINGS.UI.FormatAsLink("SCP-049-2", SCP049_2Config.ID);
+                public static LocString SCP939 = global::STRINGS.UI.FormatAsLink("SCP-939", SCP939Config.ID);
+                public static LocString MUTANTER_SCP939 = global::STRINGS.UI.FormatAsLink("SCP-939", SCP939Config.ID);
             }
         }
         public static class MUTANTERS
@@ -600,6 +602,11 @@ namespace MutantContainmentProject
                 public static LocString NAME = "Attack Enhanced";
                 public static LocString DESCRIPTION = "This entity's attack capabilities are enhanced.";
             }
+            public static class SCP939_AMNESIA_EFFECT
+            {
+                public static LocString NAME = "Memory Erase";
+                public static LocString DESCRIPTION = "Exposed to SCP-939's memory-erasing aerosol, causing anterograde amnesia and possible sudden sleep within one cycle.";
+            }
         }
         public static class UI
         {
@@ -691,6 +698,11 @@ namespace MutantContainmentProject
                     public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-049-2", SCP049_2Config.ID);
                     public static LocString DESCRIPTION = "SCP-049-2 refers to reanimated cadavers modified by SCP-049's surgery. They are equipped with a disposable battery (180 kJ) that allows them to operate for 10 cycles. After shutting down, they can be dismantled and recycled by duplicants.";
                 }
+                public static class MUTANTER_SCP939
+                {
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-939", SCP939Config.ID);
+                    public static LocString DESCRIPTION = "SCP-939 are endothermic pack-based predators with systemic atrophy typical of troglobitic organisms. They can mimic human voices to lure prey and release memory-erasing aerosol.";
+                }
             }
         }
         public static class CODEX
@@ -765,6 +777,15 @@ namespace MutantContainmentProject
                     public static class BODY
                     {
                         public static LocString CONTAINER1 = "Item #: SCP-662\r\nObject Class: Safe\r\nSpecial Containment Procedures: SCP-662 is to be kept in a standard low-risk item locker at Site-19. Personnel must submit a formal request before use and be monitored by at least one Level 2 security personnel during operation.\r\nDescription: \r\nSCP-662 is an ordinary-looking small silver bell, identical in size to a standard service bell. When rung, it summons a male entity identifying itself as Mr. Gerald.\r\nMr. Gerald appears as a middle-aged Caucasian male, dressed in a black tailcoat and white gloves, with the demeanor of a traditional English butler. He is completely obedient to the ringer and can perform most commands within reasonable limits, including but not limited to: preparing meals, organizing spaces, providing information, carrying out simple tasks, handling daily chores, etc.\r\nThe entity cannot be harmed or destroyed by conventional means. It disappears upon completing a task or being dismissed. Its abilities have clear limits: it cannot violate physical laws, directly harm others, grant impossible wishes, or carry out suicidal or highly dangerous commands.\r\nSCP-662 itself is indestructible. The butler entity only serves the current ringer, and a new user overrides all previous commands.";
+                    }
+                }
+                public static class MUTANTER_SCP939
+                {
+                    public static LocString TITLE = "SCP-939 The Many-Voiced Beast";
+                    public static LocString SUBTITLE = "SCP-939 The Many-Voiced Beast";
+                    public static class BODY
+                    {
+                        public static LocString CONTAINER1 = "Item #: SCP-939\r\nObject Class: Keter\r\nType: Endothermic pack-based predators with systemic atrophy typical of troglobitic organisms, adapted to the closed underground ecosystem in Oxygen Not Included, often ambushing prey in dark areas.\r\nCommon Alias: The Many-Voiced Beast\r\nPhysical Appearance\r\n1. Size: Approximately 2.2 meters tall when standing upright, with an average weight of 250 kilograms; each limb ends in three clawed digits plus an opposable fourth, covered in setae that enhance climbing ability, allowing them to move nimbly through pipes, rock walls, and narrow spaces in the Oxygen Not Included base, adapting to the vertical underground environment.\r\n2. Head and Senses: The head is elongated, lacking eyes, eye sockets, and cranial casing; the jaws bear 6 cm-long, faintly luminescent red fangs, surrounded by heat-sensitive pit organs that can accurately capture the body temperature signals emitted by Duplicants; light-sensitive eye spots run along spined dorsal ridges (up to 16 cm long), which can detect changes in air pressure and flow, being extremely sensitive to gas flow in the Oxygen Not Included base (such as oxygen leakage and carbon dioxide accumulation); they are intensely photophobic, showing restlessness and escape behavior when exposed to base lighting or natural light.\r\n3. Special Physiology: They lack central nervous, circulatory, and digestive systems; the respiratory system functions solely to expel the memory-erasing aerosol (AMN-C227); they have no need to feed, and ingested substances (including Duplicant remains and base waste) accumulate in the respiratory cavities and are regurgitated; they can still reproduce via live birth, and no male individuals have been identified so far. The reproductive process does not require additional resources, adapting to the resource cycle logic of biological survival in Oxygen Not Included.\r\nAnomalous Properties\r\n1. Voice Mimicry: As the primary hunting method, it can accurately imitate the human voices of past victims—even without hearing them speak. It often lures prey with phrases that fit the daily life of Duplicants in Oxygen Not Included, such as cries for help, pleas, and requests for base equipment maintenance; its voiceprint is completely consistent with real humans and cannot be distinguished by any base detection method. Therefore, it will continuously attract nearby Duplicants to its hiding area, and launch an attack once they approach, posing a great threat to the safety of base personnel.\r\n2. Bite Force and Hunting: Its bite force exceeds 35 MPa, typically killing Duplicants with a single cranial or cervical bite; it hunts in packs, excelling in ambushing using the complex terrain of the Oxygen Not Included base (such as pipe gaps, abandoned cabins, and rock depressions). It prioritizes attacking Duplicants who act alone and are separated from the group, avoiding direct conflicts with multiple Duplicants.\r\n3. AMN-C227 Memory-Erasing Aerosol: It releases a colorless and odorless Class C amnestic through respiration, causing temporary anterograde amnesia (inhibits memory formation during exposure and 30 minutes post-exposure). After Duplicants leave the aerosol environment, they will fall into an unprovoked sleep state within one cycle (consistent with the \"cycle\" time unit in Oxygen Not Included, synchronized with the Duplicants' metabolism and sleep cycle). During sleep, they cannot execute any work orders and will lose all memories related to SCP-939. After waking up, they may still be lured again by its voice mimicry. At the same time, the sleep state will reduce the efficiency of Duplicants' physical recovery, increasing the pressure on base survival.\r\nAddenda\r\n- 09-20-1991: A containment breach (\"Silent Night\") at Site-06 released nine specimens into the deep area of the base. A large number of Duplicants were lured by their voices, resulting in casualties and sleep phenomena, which led to the stagnation of base oxygen circulation and resource collection work; the Foundation launched an emergency lockdown on the grounds of \"internal base gas leakage\", evacuated Duplicants in the affected area, and dispatched armed recovery teams to complete the containment.\r\n- 02-20-1992: The use of AMN-C227 as a general amnestic was suspended indefinitely due to multiple accidents such as unprovoked sleep of Duplicants and paralysis of the work system.\r\n- In-Game Performance: Consistent with the survival logic of Oxygen Not Included, it is a high-risk hostile creature in the deep area of the base, often hiding in dark rock walls or abandoned cabins. It interferes with base operations by imitating Duplicants' voices. The memory-erasing aerosol it releases will cause Duplicants to interrupt their work, and the sleep state will also occupy base medical resources, bringing great challenges to players' base management.";
                     }
                 }
                 public static class MUTANTER_SCP662_1

@@ -9,6 +9,7 @@ namespace MutantContainmentProject.MutanterEffect
         public static readonly string MUTANTER_CHASE_EFFECT = "MutanterChase";
         public static readonly string MUTANTER_ATTACK_RESTRICTED_EFFECT = "MutanterAttackRestricted";
         public static readonly string MUTANTER_ATTACK_ENHANCED_EFFECT = "MutanterAttackEnhanced";
+        public static readonly string SCP939_AMNESIA_EFFECT = "SCP939Amnesia";
         
         public static void MutanterContainedEffect()
         {
@@ -74,6 +75,21 @@ namespace MutantContainmentProject.MutanterEffect
                 is_bad: false
             );
             Db.Get().effects.Add(mutanterAttackEnhancedEffect);
+        }
+        public static void SCP939AmnesiaEffect()
+        {
+            Effect scp939AmnesiaEffect = new(
+                id: SCP939_AMNESIA_EFFECT,
+                name: STRINGS.EFFECTS.SCP939_AMNESIA_EFFECT.NAME,
+                description: STRINGS.EFFECTS.SCP939_AMNESIA_EFFECT.DESCRIPTION,
+                duration: 1800f, // 30分钟
+                show_in_ui: true,
+                trigger_floating_text: true,
+                is_bad: true
+            );
+            // 添加效果修改器，降低体力恢复效率
+            //scp939AmnesiaEffect.Add(new AttributeModifier(Db.Get().Attributes.StaminaDelta.Id, -0.5f, "SCP-939 Amnesia"));
+            Db.Get().effects.Add(scp939AmnesiaEffect);
         }
     }
 }
