@@ -9,8 +9,7 @@ namespace MutantContainmentProject.Mutanters
     {
         public static string ID = "MUTANTER_SCP662_1";
         public static readonly string TRAIT_ID = "MutanterSCP662_1Trait";
-        public static readonly string KANIM_NAME = "SCP173_kanim";
-        public static readonly string KANIM_BUILD_NAME = "chameleo_build_kanim";
+        public static readonly string KANIM_NAME = "scp662_1_kanim";
         public static readonly string KANIM_EMOTES_NAME = "chameleo_emotes_kanim";
 
         public GameObject CreatePrefab()
@@ -24,7 +23,7 @@ namespace MutantContainmentProject.Mutanters
 
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name, 15);
 
-            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Safe, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PsychologicalAttack });
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Safe, considerDecor: false, useEmotionMonitor: false, faction: FactionManager.FactionID.Pest, attackTags: null);
 
             var storage = prefab.AddOrGet<Storage>();
             storage.storageFilters = STORAGEFILTERS.FOOD;

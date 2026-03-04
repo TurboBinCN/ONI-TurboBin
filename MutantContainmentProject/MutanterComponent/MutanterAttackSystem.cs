@@ -62,7 +62,7 @@ namespace MutantContainmentProject.MutanterComponent
                 }
             }
             //默认添加物理攻击标签
-            if(_availableBehaviors.Count == 0) _availableBehaviors.Add(new MeleeAttack());
+            //if(_availableBehaviors.Count == 0) _availableBehaviors.Add(new MeleeAttack());
         }
 
         /// <summary>

@@ -107,12 +107,16 @@
     <None Include="anim\assets\containment_tile\containment_tile_build.bytes" />
     <None Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder_anim.bytes" />
     <None Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder_build.bytes" />
+    <None Include="anim\assets\scp049\scp049_anim.bytes" />
+    <None Include="anim\assets\scp049\scp049_build.bytes" />
     <None Include="anim\assets\scp096\scp096_anim.bytes" />
     <None Include="anim\assets\scp096\scp096_build.bytes" />
     <None Include="anim\assets\SCP173\scp173_anim.bytes" />
     <None Include="anim\assets\SCP173\scp173_build.bytes" />
     <None Include="anim\assets\scp662\scp662_anim.bytes" />
     <None Include="anim\assets\scp662\scp662_build.bytes" />
+    <None Include="anim\assets\SCP662_1\scp662_1_anim.bytes" />
+    <None Include="anim\assets\SCP662_1\scp662_1_build.bytes" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP049.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP049_2.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP096.yaml" />
@@ -131,17 +135,17 @@
     <Content Include="anim\assets\containment_monitor_station\containment_monitor_station.png" />
     <Content Include="anim\assets\containment_tile\containment_tile.png" />
     <Content Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder.png" />
+    <Content Include="anim\assets\scp049\scp049.png" />
     <Content Include="anim\assets\scp096\scp096.png" />
     <Content Include="anim\assets\SCP173\scp173.png" />
     <Content Include="anim\assets\scp662\scp662.png" />
+    <Content Include="anim\assets\SCP662_1\scp662_1.png" />
     <Content Include="assets\texture\containment_tile_solid.png" />
     <Content Include="developNotes.txt" />
     <Content Include="Directory.Build.props.user" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="anim\assets\scp049\" />
     <Folder Include="anim\assets\scp049_2\" />
-    <Folder Include="anim\assets\SCP662_1\" />
     <Folder Include="Codex\" />
     <Folder Include="UI\" />
   </ItemGroup>

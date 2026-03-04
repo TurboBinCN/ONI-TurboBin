@@ -1,5 +1,4 @@
-﻿using PeterHan.PLib.Core;
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -57,7 +56,7 @@ namespace TBB.He.TbbLib.Debuger
         {
             Assembly callingAssembly = Assembly.GetCallingAssembly();
             string fileName = Path.GetFileName(filePath); // 只获取文件名，去掉路径
-            string logPrefix = $"{callingAssembly.GetNameSafe()}:{fileName}:{memberName}({lineNumber})";
+            string logPrefix = $"{callingAssembly?.GetName()?.Name}:{fileName}:{memberName}({lineNumber})";
             WriteLog(LogLevel.Debug, LogType.Log, $"[DEBUG] {message}", logPrefix);
         }
         public static void LogWarning(object message,
@@ -67,7 +66,7 @@ namespace TBB.He.TbbLib.Debuger
         {
             Assembly callingAssembly = Assembly.GetCallingAssembly();
             string fileName = Path.GetFileName(filePath); // 只获取文件名，去掉路径
-            string logPrefix = $"{callingAssembly.GetNameSafe()}:{fileName}:{memberName}({lineNumber})";
+            string logPrefix = $"{callingAssembly?.GetName()?.Name}:{fileName}:{memberName}({lineNumber})";
             WriteLog(LogLevel.Warning, LogType.Log, $"[WARNING] {message}", logPrefix);
         }
         public static void LogError(object message,
@@ -77,7 +76,7 @@ namespace TBB.He.TbbLib.Debuger
         {
             Assembly callingAssembly = Assembly.GetCallingAssembly();
             string fileName = Path.GetFileName(filePath); // 只获取文件名，去掉路径
-            string logPrefix = $"{callingAssembly.GetNameSafe()}:{fileName}:{memberName}({lineNumber})";
+            string logPrefix = $"{callingAssembly?.GetName()?.Name}:{fileName}:{memberName}({lineNumber})";
             var errorMsg = $"[ERROR] {message}";
             if (EnableErrorStackTrace)
             {
@@ -87,15 +86,15 @@ namespace TBB.He.TbbLib.Debuger
         }
         public static void LogForce(string message)
         {
-            WriteLog(LogLevel.None, LogType.Log, $"[FORCE] {message}", Assembly.GetCallingAssembly().GetNameSafe() ?? "?", ignoreLevel: true);
+            WriteLog(LogLevel.None, LogType.Log, $"[FORCE] {message}", Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?", ignoreLevel: true);
         }
         public static void LogTrace()
         {
-            WriteLog(LogLevel.Debug, LogType.Log, Environment.StackTrace, Assembly.GetCallingAssembly().GetNameSafe() ?? "?");
+            WriteLog(LogLevel.Debug, LogType.Log, Environment.StackTrace, Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?");
         }
         public static void LogGameObjectFullInfo(GameObject rootObj, int indentLevel = 4)
         {
-            WriteLog(LogLevel.Debug, LogType.Log, GetGameObjectFullInfoString(rootObj, indentLevel), Assembly.GetCallingAssembly().GetNameSafe() ?? "?");
+            WriteLog(LogLevel.Debug, LogType.Log, GetGameObjectFullInfoString(rootObj, indentLevel), Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?");
         }
         /// <summary>
         /// 打印GameObject的完整信息（自身+所有组件+所有子物体）

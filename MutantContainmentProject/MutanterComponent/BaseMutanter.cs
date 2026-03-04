@@ -20,20 +20,23 @@ namespace MutantContainmentProject.MutanterComponent
     public class BaseMutanter
     {
         //畸变体基础设置：情绪管理、威胁管理、攻击方式管理
-        public static GameObject ExtendToBaseMutanter(GameObject template, MutanterDangerLevel dangerLevel, bool considerDecor = true, FactionManager.FactionID faction = FactionManager.FactionID.Prey, List<Tag> attackTags = null)
+        public static GameObject ExtendToBaseMutanter(GameObject template, MutanterDangerLevel dangerLevel, bool considerDecor = true, bool useEmotionMonitor = true, FactionManager.FactionID faction = FactionManager.FactionID.Prey, List<Tag> attackTags = null)
         {
             template.AddOrGetDef<MutanterStateMachine.Def>();//挂载：畸变体基础组件
             template.AddOrGetDef<MutanterSecurableMonitor.Def>();//挂载：畸变体安全控制监控SMI
 
             //template.AddOrGetDef<ThreatMonitor.Def>().fleethresholdState = Health.HealthState.Dead;
             //template.AddWeapon(1f, 1f, AttackProperties.DamageType.Standard, AttackProperties.TargetType.Single, 1, 0f);
-            var emotionMonitorDef = template.AddOrGetDef<EmotionMonitor.Def>();//挂载：畸变体情绪或理智SMI
-            if (considerDecor)
+            if (useEmotionMonitor)
             {
-                template.AddOrGetDef<CreatureDecorMonitor.Def>();
-                emotionMonitorDef.considerDecor = true;
-                emotionMonitorDef.considerPlantFactors = true;
-                emotionMonitorDef.considerEnvironmentalFactors = true;
+                var emotionMonitorDef = template.AddOrGetDef<EmotionMonitor.Def>();//挂载：畸变体情绪或理智SMI
+                if (considerDecor)
+                {
+                    template.AddOrGetDef<CreatureDecorMonitor.Def>();
+                    emotionMonitorDef.considerDecor = true;
+                    emotionMonitorDef.considerPlantFactors = true;
+                    emotionMonitorDef.considerEnvironmentalFactors = true;
+                }
             }
             template.AddOrGet<FactionAlignment>().Alignment = faction; //挂载：阵营
             template.AddOrGet<RangedAttackable>(); //跟FactionAlignment相互依赖. 需要修改

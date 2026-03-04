@@ -53,7 +53,6 @@
 			-->
 		</ItemGroup>
 	</Target>
-	<!-- дегенерация публицизированых длл игры -->
 	<Target Name="PubliciseMkdir" BeforeTargets="Publicise" Condition=" '$(DistributeMod)' == 'true' And '$(UsesPublicise)' == 'true' " >
 		<MakeDir Directories="$(PublicisedFolder)" Condition = "!Exists('$(PublicisedFolder)')" />
 		<ItemGroup>

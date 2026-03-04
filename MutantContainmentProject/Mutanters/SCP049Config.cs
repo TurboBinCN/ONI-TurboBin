@@ -8,7 +8,7 @@ namespace MutantContainmentProject.Mutanters
     {
         public static string ID = "MUTANTER_SCP049";
         public static readonly string TRAIT_ID = "MutanterSCP049Trait";
-        public static readonly string KANIM_NAME = "SCP173_kanim";
+        public static readonly string KANIM_NAME = "SCP049_kanim";
         public static readonly string KANIM_EMOTES_NAME = "chameleo_emotes_kanim";
 
 
