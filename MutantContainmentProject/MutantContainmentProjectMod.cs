@@ -9,11 +9,13 @@ using MutantContainmentProject.Room;
 using MutantContainmentProject.SideScreen;
 using MutantContainmentProject.Skills;
 using PeterHan.PLib.Core;
+using System.IO;
 using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.Module;
 using TBB.He.TbbLib.SingleToneInstance;
 using TBB.He.TbbLib.UI;
 using TBB.He.TbbLib.Utils;
+using UnityEngine;
 using static GravitasMutanterFounder;
 
 namespace MutantContainmentProject
@@ -31,6 +33,25 @@ namespace MutantContainmentProject
                 PUtil.InitLibrary();
 
                 TbbAssetsUtils.Initialize(mod, harmony);
+
+                AssetBundle assetBundle = TbbAssetBundle.LoadAssetBundle("", "mutant_containment_project", Path.Combine(mod.ContentPath, "assets/assetsBundle"));
+
+                TbbAssets.Initialize(mod, harmony)
+                    .AddSprite(("gravitas_mutanter_founder_image"), assetBundle)
+                    .AddSprite(("gravitas_mutanter_founder_icon"), assetBundle)
+                    .AddSprite(("skillbadge_role_bravery1"), assetBundle)
+                    .AddSprite(("skillbadge_role_bravery2"), assetBundle)
+                    .AddSprite(("skillbadge_role_bravery3"), assetBundle)
+                    .AddSprite(("skillbadge_role_discipline1"), assetBundle)
+                    .AddSprite(("skillbadge_role_discipline2"), assetBundle)
+                    .AddSprite(("skillbadge_role_discipline3"), assetBundle)
+                    .AddSprite(("skillbadge_role_metal_resistance1"), assetBundle)
+                    .AddSprite(("skillbadge_role_metal_resistance2"), assetBundle)
+                    .AddSprite(("skillbadge_role_metal_resistance3"), assetBundle)
+                    .AddSprite(("skillbadge_role_righteousness1"), assetBundle)
+                    .AddSprite(("skillbadge_role_righteousness2"), assetBundle)
+                    .AddSprite(("skillbadge_role_righteousness3"), assetBundle);
+
                 //语言本地化
                 TbbLocalization.Initialize(mod, harmony)
                     .RegisterLoad(typeof(STRINGS))
@@ -136,9 +157,7 @@ namespace MutantContainmentProject
                     .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
                     .AddBuilding(ContainmentMonitorStationConfig.ID)
                     .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
-                    .AddBuilding(ContainmentTileConfig.ID)
-                    .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
-                    .AddBuilding(GravitasMutanterFounderConfig.ID);
+                    .AddBuilding(ContainmentTileConfig.ID);
                 //建筑StatusItems
                 TbbBuildingStatusItems.Initialize(mod, harmony)
                     .Add(GravitasMutanterFounderBuildingStatusItems.Instance.CreateStatusItems);

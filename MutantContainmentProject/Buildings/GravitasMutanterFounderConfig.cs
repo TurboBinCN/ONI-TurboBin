@@ -27,7 +27,7 @@ namespace MutantContainmentProject.Buildings
             buildingDef.AudioSize = "medium";
             buildingDef.SceneLayer = Grid.SceneLayer.BuildingBack;
             buildingDef.ForegroundLayer = Grid.SceneLayer.BuildingFront;
-            //buildingDef.ShowInBuildMenu = false;
+            buildingDef.ShowInBuildMenu = false;
             return buildingDef;
         }
 

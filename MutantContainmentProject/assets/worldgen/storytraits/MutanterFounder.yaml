@@ -1,6 +1,6 @@
 name: STRINGS.CODEX.STORY_TRAITS.MUTANTER_FOUNDER.NAME
 description: STRINGS.CODEX.STORY_TRAITS.MUTANTER_FOUNDER.DESCRIPTION
-icon: CritterManipulator_icon
+icon: gravitas_mutanter_founder_icon
 colorHex: FFFFFF
 
 additionalWorldTemplateRules:

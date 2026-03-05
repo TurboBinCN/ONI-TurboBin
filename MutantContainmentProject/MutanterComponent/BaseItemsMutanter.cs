@@ -6,7 +6,7 @@ namespace MutantContainmentProject.MutanterComponent
     public class BaseItemsMutanter
     {
         // 创建物品类型畸变体的基础游戏对象
-        public static GameObject CreateItemsMutanter(string id, string name, string description, float mass, string anim_file, string initial_anim, Grid.SceneLayer scene_layer, EntityTemplates.CollisionShape collision_shape, float width, float height, bool is_pickupable = true)
+        public static GameObject CreateItemsMutanter(string id, string name, string description, float mass, string anim_file, string initial_anim, Grid.SceneLayer scene_layer, EntityTemplates.CollisionShape collision_shape, float width, float height, bool is_pickupable = true,int MaxColonySize = 1)
         {
             // 创建松散实体
             GameObject prefab = EntityTemplates.CreateLooseEntity(
@@ -29,6 +29,10 @@ namespace MutantContainmentProject.MutanterComponent
             prefab.AddOrGet<KPrefabID>().AddTag(GameTags.IndustrialProduct);
             // 添加耐久度组件
             prefab.AddOrGet<Durability>();
+            // 添加产出物组件
+            prefab.AddOrGet<MutanterProductComponent>();
+            // 添加畸变体群落组件
+            prefab.AddOrGet<MutanterColonyComponent>().MaxColonySize = MaxColonySize;
 
             return prefab;
         }

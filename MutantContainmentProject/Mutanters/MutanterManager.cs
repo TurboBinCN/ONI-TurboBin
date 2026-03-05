@@ -13,8 +13,16 @@ namespace MutantContainmentProject.Mutanters
             GameObject prefab = Assets.GetPrefab(speciesID);
             if (prefab != null)
             {
-                GameObject instance = GameUtil.KInstantiate(prefab, position, Grid.SceneLayer.Creatures);
-                MutanterSpeciesCatalog.Instance.RegisterMutanterSpecies(instance.PrefabID());
+                Tag speciesTag = prefab.GetComponent<KPrefabID>().PrefabID();
+                if (MutanterSpeciesCatalog.Instance.CanSpawnMutanter(speciesTag))
+                {
+                    GameObject instance = GameUtil.KInstantiate(prefab, position, Grid.SceneLayer.Creatures);
+                    MutanterSpeciesCatalog.Instance.RegisterMutanterSpecies(instance.PrefabID());
+                }
+                else
+                {
+                    TbbDebuger.LogDebug($"已达到该畸变体种类的最大数量限制: {speciesID}");
+                }
             }
             else
             {

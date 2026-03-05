@@ -4,6 +4,7 @@ using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
 using MutantContainmentProject.Mutanters;
 using MutantContainmentProject.MutanterStoryStraits;
+using MutantContainmentProject.FunctionPatches;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -288,18 +289,10 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
         }
         private void OnBuildingSelect(object obj)
         {
-            if (!((Boxed<bool>)obj).value)
-            {
-                return;
-            }
-            if (!m_introPopupSeen)
-            {
-                ShowIntroNotification();
-            }
-            if (m_endNotification != null)
-            {
-                m_endNotification.customClickCallback(m_endNotification.customClickData);
-            }
+            if (!((Boxed<bool>)obj).value) return;
+            if (!m_introPopupSeen) ShowIntroNotification();
+            if (m_endNotification == null) return;
+            m_endNotification.customClickCallback(m_endNotification.customClickData);
         }
         public void Initialize()
         {
@@ -662,7 +655,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                     MutanterSpeciesCatalog.Instance.RegisterMutanterSpecies(m_activationTarget);
                     
                     // 执行迷雾揭开和镜头操作
-                    StartRevealSequence(mutantGO, spawnPos);
+                    //StartRevealSequence(mutantGO, spawnPos);
                     
                     return m_activationTarget;
                 }
@@ -804,19 +797,20 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
         {
             Game.Instance.unlocks.Unlock(GravitasMutanterFounderConfig.INITIAL_LORE_UNLOCK_ID, true);
             m_introPopupSeen = true;
-            EventInfoScreen.ShowPopup(EventInfoDataHelper.GenerateStoryTraitData(CODEX.STORY_TRAITS.MUTANTER_FOUNDER.BEGIN_POPUP.NAME, CODEX.STORY_TRAITS.MUTANTER_FOUNDER.BEGIN_POPUP.DESCRIPTION, CODEX.STORY_TRAITS.CLOSE_BUTTON, "crittermanipulatoractivate_kanim", EventInfoDataHelper.PopupType.BEGIN, null, null, null));
+            EventInfoScreen.ShowPopup(EventInfoDataHelper_GenerateStoryTraitData_Patches.GenerateStoryTraitDataWithAnim(CODEX.STORY_TRAITS.MUTANTER_FOUNDER.BEGIN_POPUP.NAME, CODEX.STORY_TRAITS.MUTANTER_FOUNDER.BEGIN_POPUP.DESCRIPTION, CODEX.STORY_TRAITS.CLOSE_BUTTON, "gravitas_mutanter_founder_kanim", EventInfoDataHelper.PopupType.BEGIN, "event_active"));
         }
         public void TryShowCompletedNotification()
         {
             if (MutanterSpeciesCatalog.Instance.GetMutanterSpeciesCount() < smi.def.numSpeciesToUnlockMorphMode || IsMorphMode)
                 return;
 
-            //TODO 需要完成显示信息界面
-            eventInfo = EventInfoDataHelper.GenerateStoryTraitData((string)CODEX.STORY_TRAITS.MUTANTER_FOUNDER.END_POPUP.NAME, (string)CODEX.STORY_TRAITS.MUTANTER_FOUNDER.END_POPUP.DESCRIPTION, (string)CODEX.STORY_TRAITS.MUTANTER_FOUNDER.END_POPUP.BUTTON, "crittermanipulatormorphmode_kanim", EventInfoDataHelper.PopupType.COMPLETE);
+            eventInfo = EventInfoDataHelper_GenerateStoryTraitData_Patches.GenerateStoryTraitDataWithAnim((string)CODEX.STORY_TRAITS.MUTANTER_FOUNDER.END_POPUP.NAME, (string)CODEX.STORY_TRAITS.MUTANTER_FOUNDER.END_POPUP.DESCRIPTION, (string)CODEX.STORY_TRAITS.MUTANTER_FOUNDER.END_POPUP.BUTTON, "gravitas_mutanter_founder_kanim", EventInfoDataHelper.PopupType.COMPLETE, "event_completed");
 
+            //EventInfoScreen.ShowPopup(eventInfo);
             m_endNotification = EventInfoScreen.CreateNotification(eventInfo, new Notification.ClickCallback(UnlockMorphMode));
             gameObject.AddOrGet<Notifier>().Add(m_endNotification);
             gameObject.GetComponent<KSelectable>().AddStatusItem(Db.Get().MiscStatusItems.AttentionRequired, smi);
+
         }
         public void ShowNotification(Tag species)
         {
@@ -881,6 +875,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             {
                 gameObject.AddOrGet<Notifier>().Remove(m_endNotification);
             }
+            EventInfoScreen.ShowPopup(eventInfo);
             m_morphModeUnlocked = true;
             UpdateStatusItems();
             ClearEndNotification();
@@ -898,7 +893,6 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
         }
         private void OnStorySequenceComplete()
         {
-            //TODO 
             Vector3 keepsakeSpawnPosition = Grid.CellToPosCCC(Grid.OffsetCell(Grid.PosToCell(smi), new CellOffset(-1, 1)), Grid.SceneLayer.Ore);
             StoryManager.Instance.CompleteStoryEvent(Db.Get().Stories.Get(MutanterStoris.GravitasMutanterFounderID), keepsakeSpawnPosition);
             eventInfo = null;

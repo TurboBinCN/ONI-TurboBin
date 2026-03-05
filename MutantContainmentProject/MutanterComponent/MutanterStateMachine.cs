@@ -169,7 +169,6 @@ namespace MutantContainmentProject.MutanterComponent
             public float sanityThresholdToStable = 70;
             public int threatenRange = 10;
         }
-
         // 执行攻击逻辑
         private void ExecuteAttack(StatesInstance smi, float dt)
         {
@@ -182,7 +181,7 @@ namespace MutantContainmentProject.MutanterComponent
                 {
                     foreach (var threater in threaters)
                     {
-                        if (threater != null && threater.gameObject != null)
+                        if (threater != null && threater.gameObject != null && threater.gameObject.GetComponent<Health>()?.State != Health.HealthState.Dead)
                         {
                             // 播放攻击动画
                             smi.master.gameObject.GetComponent<KBatchedAnimController>().Play("attack_once", KAnim.PlayMode.Once);

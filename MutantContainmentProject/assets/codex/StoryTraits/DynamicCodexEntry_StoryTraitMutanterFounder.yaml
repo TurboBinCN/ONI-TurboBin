@@ -1,13 +1,13 @@
 id: "StoryTraitMutanterFounder"
 title: STRINGS.CODEX.STORY_TRAITS.MUTANTER_FOUNDER.NAME
 parentId: STORYTRAITS
-iconAssetName: critter_manipulator_codex_icon
+iconAssetName: gravitas_mutanter_founder_icon
 contentContainers:
 #-----------------------------
   - contentLayout: Vertical
     content:
       - !CodexImage
-          spriteName: "CritterManipulator_image"
+          spriteName: "gravitas_mutanter_founder_image"
 #-----------------------------
   - contentLayout: Vertical
     content:

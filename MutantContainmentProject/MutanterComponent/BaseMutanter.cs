@@ -20,7 +20,7 @@ namespace MutantContainmentProject.MutanterComponent
     public class BaseMutanter
     {
         //畸变体基础设置：情绪管理、威胁管理、攻击方式管理
-        public static GameObject ExtendToBaseMutanter(GameObject template, MutanterDangerLevel dangerLevel, bool considerDecor = true, bool useEmotionMonitor = true, FactionManager.FactionID faction = FactionManager.FactionID.Prey, List<Tag> attackTags = null)
+        public static GameObject ExtendToBaseMutanter(GameObject template, MutanterDangerLevel dangerLevel, int MaxColonySize = 1, bool considerDecor = true, bool useEmotionMonitor = true, FactionManager.FactionID faction = FactionManager.FactionID.Prey, List<Tag> attackTags = null)
         {
             template.AddOrGetDef<MutanterStateMachine.Def>();//挂载：畸变体基础组件
             template.AddOrGetDef<MutanterSecurableMonitor.Def>();//挂载：畸变体安全控制监控SMI
@@ -59,6 +59,9 @@ namespace MutantContainmentProject.MutanterComponent
 
             // 添加产出物组件
             template.AddOrGet<MutanterProductComponent>();
+            
+            // 添加畸变体群落组件
+            template.AddOrGet<MutanterColonyComponent>().MaxColonySize = MaxColonySize;
 
             return template;
         }

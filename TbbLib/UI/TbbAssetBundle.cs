@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
 namespace TBB.He.TbbLib.UI
@@ -44,7 +45,7 @@ namespace TBB.He.TbbLib.UI
             AssetBundle assetBundle2 = AssetBundle.LoadFromFile(path);
             if (assetBundle2 == null)
             {
-                Debug.LogWarning("Failed to load AssetBundle from path " + path);
+                TbbDebuger.LogWarning("Failed to load AssetBundle from path " + path);
                 return null;
             }
             return assetBundle2;

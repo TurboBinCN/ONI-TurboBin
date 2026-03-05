@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
-using System.IO;
 using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.Module;
 using TBB.He.TbbLib.Utils;
@@ -18,10 +17,20 @@ namespace TBB.He.TbbLib.UI
             sprites.Add(key, sprite);
             return this;
         }
-
+        public TbbAssets AddImageSprite(string image_name) {
+            if (TbbAssetsUtils.Instance == null) TbbAssetsUtils.Initialize(Mod, Harmony);
+            var sprite = TbbAssetsUtils.Instance.LoadIamgeSprite(image_name);
+            sprites.Add(sprite.name, sprite);
+            return this;
+        }
         public TbbAssets AddSprite(Sprite sprite)
         {
             sprites.Add(sprite.name, sprite);
+            return this;
+        }
+        public TbbAssets AddSprite(string name, AssetBundle assetBundle)
+        {
+            AddSprite(assetBundle.LoadAsset<Sprite>(name));
             return this;
         }
 
@@ -53,6 +62,7 @@ namespace TBB.He.TbbLib.UI
             foreach (var kv in Instance.sprites)
             {
                 Assets.Sprites.Add(new HashedString(kv.Key), kv.Value);
+                TbbDebuger.LogDebug($"[TbbAssets]添加Sprite [{kv.Key}] [{kv.Value.name}]");
             }
             foreach (var kv in Instance.tintedSprites)
             {

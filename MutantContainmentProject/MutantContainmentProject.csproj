@@ -39,6 +39,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>G:\Program Files (x86)\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buildings\ContainmentMonitorWorkable.cs" />
@@ -51,6 +54,7 @@
     <Compile Include="Buildings\MutanterSecurableMonitor.cs" />
     <Compile Include="Duplicants\AttackMutanterWeapon.cs" />
     <Compile Include="Duplicants\DuplicantsAttribute_Patch.cs" />
+    <Compile Include="FunctionPatches\EventInfoDataHelper_Patches.cs" />
     <Compile Include="FunctionPatches\MiningNeutronium_Patches.cs" />
     <Compile Include="MutanterCodexEntries\MutanterCodexEntry.cs" />
     <Compile Include="MutanterComponent\BaseItemsMutanter.cs" />
@@ -58,6 +62,7 @@
     <Compile Include="MutanterComponent\MutanterAttackSystem.cs" />
     <Compile Include="MutanterComponent\MutanterBrain.cs" />
     <Compile Include="MutanterComponent\MutanterChaseMonitor.cs" />
+    <Compile Include="MutanterComponent\MutanterColonyComponent.cs" />
     <Compile Include="MutanterComponent\MutanterMoltenMetalMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterProductComponent.cs" />
     <Compile Include="MutanterComponent\SCP049Controller.cs" />
@@ -117,6 +122,7 @@
     <None Include="anim\assets\scp662\scp662_build.bytes" />
     <None Include="anim\assets\SCP662_1\scp662_1_anim.bytes" />
     <None Include="anim\assets\SCP662_1\scp662_1_build.bytes" />
+    <None Include="assets\assetsBundle\mutant_containment_project" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP049.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP049_2.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP096.yaml" />
@@ -140,12 +146,27 @@
     <Content Include="anim\assets\SCP173\scp173.png" />
     <Content Include="anim\assets\scp662\scp662.png" />
     <Content Include="anim\assets\SCP662_1\scp662_1.png" />
+    <Content Include="assets\sprite\gravitas_mutanter_founder_icon.png" />
+    <Content Include="assets\sprite\gravitas_mutanter_founder_image.png" />
+    <Content Include="assets\sprite\skillbadge_role_bravery1.png" />
+    <Content Include="assets\sprite\skillbadge_role_bravery2.png" />
+    <Content Include="assets\sprite\skillbadge_role_bravery3.png" />
+    <Content Include="assets\sprite\skillbadge_role_discipline1.png" />
+    <Content Include="assets\sprite\skillbadge_role_discipline2.png" />
+    <Content Include="assets\sprite\skillbadge_role_discipline3.png" />
+    <Content Include="assets\sprite\skillbadge_role_metal_resistance1.png" />
+    <Content Include="assets\sprite\skillbadge_role_metal_resistance2.png" />
+    <Content Include="assets\sprite\skillbadge_role_metal_resistance3.png" />
+    <Content Include="assets\sprite\skillbadge_role_righteousness1.png" />
+    <Content Include="assets\sprite\skillbadge_role_righteousness2.png" />
+    <Content Include="assets\sprite\skillbadge_role_righteousness3.png" />
     <Content Include="assets\texture\containment_tile_solid.png" />
     <Content Include="developNotes.txt" />
     <Content Include="Directory.Build.props.user" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="anim\assets\scp049_2\" />
+    <Folder Include="anim\assets\scp939\" />
     <Folder Include="Codex\" />
     <Folder Include="UI\" />
   </ItemGroup>

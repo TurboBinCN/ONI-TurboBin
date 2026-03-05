@@ -9,6 +9,8 @@ namespace MutantContainmentProject.MutanterComponent
         private static MutanterSpeciesCatalog _instance;
         [Serialize]
         private Dictionary<Tag, int> discoveredMutanters = new();
+        [Serialize]
+        private Dictionary<Tag, int> maxMutanterCounts = new();
 
         public static MutanterSpeciesCatalog Instance
         {
@@ -50,7 +52,43 @@ namespace MutantContainmentProject.MutanterComponent
                 {
                     this.discoveredMutanters[speciesID] = 0;
                 }
+                if (!this.maxMutanterCounts.ContainsKey(speciesID))
+                {
+                    this.maxMutanterCounts[speciesID] = int.MaxValue; // 默认无限制
+                }
             }
+        }
+        public void SetMaxMutanterCount(Tag speciesID, int maxCount)
+        {
+            this.maxMutanterCounts[speciesID] = maxCount;
+        }
+        public int GetMaxMutanterCount(Tag speciesID)
+        {
+            // 首先检查是否在maxMutanterCounts中设置了值
+            if (maxMutanterCounts.TryGetValue(speciesID, out int maxCount))
+            {
+                return maxCount;
+            }
+            
+            // 然后尝试从MutanterColonyComponent中读取
+            GameObject prefab = Assets.GetPrefab(speciesID.Name);
+            if (prefab != null)
+            {
+                MutanterColonyComponent colonyComponent = prefab.GetComponent<MutanterColonyComponent>();
+                if (colonyComponent != null)
+                {
+                    return colonyComponent.MaxColonySize;
+                }
+            }
+            
+            // 默认无限制
+            return int.MaxValue;
+        }
+        public bool CanSpawnMutanter(Tag speciesID)
+        {
+            int currentCount = GetMutanterSpeciesCount(speciesID);
+            int maxCount = GetMaxMutanterCount(speciesID);
+            return currentCount < maxCount;
         }
         public void RegisterMutanterSpecies(Tag speciesID)
         {
@@ -60,8 +98,10 @@ namespace MutantContainmentProject.MutanterComponent
             }
             else
             {
-                // 确保计数不会超过1，每个tag只能有一个畸变体
-                this.discoveredMutanters[speciesID] = 1;
+                if (CanSpawnMutanter(speciesID))
+                {
+                    this.discoveredMutanters[speciesID]++;
+                }
             }
         }
         public int GetMutanterSpeciesCount(Tag speciesID)
