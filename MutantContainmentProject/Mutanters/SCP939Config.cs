@@ -8,7 +8,7 @@ namespace MutantContainmentProject.Mutanters
     {
         public static string ID = "MUTANTER_SCP939";
         public static readonly string TRAIT_ID = "MutanterSCP939Trait";
-        public static readonly string KANIM_NAME = "SCP173_kanim";
+        public static readonly string KANIM_NAME = "SCP939_kanim";
         public static readonly string KANIM_EMOTES_NAME = "chameleo_emotes_kanim";
 
 
@@ -17,9 +17,12 @@ namespace MutantContainmentProject.Mutanters
             string name = STRINGS.ENTITY.MUTANTER.MUTANTER_SCP939.NAME;
             string desc = STRINGS.ENTITY.MUTANTER.MUTANTER_SCP939.DESCRIPTION;
 
-            GameObject prefab = BaseMutanter.BaseGameObject(ID, name, desc, 1, 2, KANIM_NAME, KANIM_NAME, KANIM_EMOTES_NAME, null, 233.15f, 293.15f, 173.15f, 373.15f);
+            GameObject prefab = BaseMutanter.BaseGameObject(ID, name, desc, 2, 2, KANIM_NAME, KANIM_NAME, KANIM_EMOTES_NAME, null, 233.15f, 293.15f, 173.15f, 373.15f);
+            KBoxCollider2D kboxCollider2D = prefab.AddOrGet<KBoxCollider2D>();
+            kboxCollider2D.offset = (Vector2)new Vector2f(0.0f, kboxCollider2D.offset.y);
+            prefab.GetComponent<KBatchedAnimController>().Offset = new Vector3(0.0f, 0.0f, 0.0f);
 
-            BaseMutanter.ExtendMutanterMove(prefab, "WalkerNavGrid1x2");
+            BaseMutanter.ExtendMutanterMove(prefab, "WalkerNavGrid2x2");
 
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name, 50);
 
@@ -27,6 +30,9 @@ namespace MutantContainmentProject.Mutanters
 
             // 添加SCP-939特有的组件
             prefab.AddOrGet<SCP939Controller>();
+            
+            // 添加动画调试组件
+            //prefab.AddOrGet<MutanterAnimationDebugger>();
 
             return prefab;
         }
