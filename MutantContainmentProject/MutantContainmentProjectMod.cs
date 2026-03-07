@@ -50,7 +50,15 @@ namespace MutantContainmentProject
                     .AddSprite(("skillbadge_role_metal_resistance3"), assetBundle)
                     .AddSprite(("skillbadge_role_righteousness1"), assetBundle)
                     .AddSprite(("skillbadge_role_righteousness2"), assetBundle)
-                    .AddSprite(("skillbadge_role_righteousness3"), assetBundle);
+                    .AddSprite(("skillbadge_role_righteousness3"), assetBundle)
+                    .AddSprite(("icon_errand_righteousness"), assetBundle)
+                    .AddSprite(("icon_errand_discipline"), assetBundle)
+                    .AddSprite(("icon_errand_metal_resistance"), assetBundle)
+                    .AddSprite(("icon_errand_bravery"), assetBundle)
+                    .AddSprite(("icon_archetype_bravery"), assetBundle)
+                    .AddSprite(("icon_archetype_metal_resistance"), assetBundle)
+                    .AddSprite(("icon_archetype_discipline"), assetBundle)
+                    .AddSprite(("icon_archetype_righteousness"), assetBundle);
 
                 //语言本地化
                 TbbLocalization.Initialize(mod, harmony)
@@ -62,10 +70,7 @@ namespace MutantContainmentProject
                     .RegisterAddStrings(typeof(STRINGS.MUTANTERS))
                     .RegisterAddStrings(typeof(STRINGS.CREATURES))
                     .RegisterAddStrings(typeof(STRINGS.DUPLICANTS))
-                    .RegisterAddStrings(typeof(STRINGS.CHOREGROUPS))
-                    .RegisterAddStrings(typeof(STRINGS.CHORES))
                     .RegisterAddStrings(typeof(STRINGS.SKILLS))
-                    .RegisterAddStrings(typeof(STRINGS.SKILLGROUP))
                     .RegisterAddStrings(typeof(STRINGS.ENTITY))
                     .RegisterAddStrings(typeof(STRINGS.EFFECTS))
                     .RegisterAddStrings(typeof(STRINGS.BUILDINGS))
@@ -109,6 +114,7 @@ namespace MutantContainmentProject
                 //ChoreGroups
                 TbbChoreGroups.Initialize(mod, harmony)
                     .Add(MutanterChoreGroups.ChoreGroupContain)
+                    .Add(MutanterChoreGroups.ChoreGroupBravery)
                     .Add(MutanterChoreGroups.ChoreGroupMentalResistance)
                     .Add(MutanterChoreGroups.ChoreGroupDiscipline)
                     .Add(MutanterChoreGroups.ChoreGroupRighteousness);
@@ -145,6 +151,7 @@ namespace MutantContainmentProject
                     .Add(MutanterSkills.SkillRighteousnessI)
                     .Add(MutanterSkills.SkillRighteousnessII)
                     .Add(MutanterSkills.SkillRighteousnessIII);
+
                 //UI布局
                 TbbSideScreen.Initialize(mod, harmony)
                     .CopyAndCreate<GeneticAnalysisStationSideScreen, ContainmentMonitorSideScreen>();

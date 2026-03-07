@@ -1,73 +1,120 @@
-﻿using Database;
+using Database;
+using Klei.AI;
 using System.Collections.Generic;
+using TUNING;
 
 namespace MutantContainmentProject.Skills
 {
     public class MutanterSkillGroups
     {
+        public static SkillGroup Bravery;
+        public static SkillGroup MentalResistance;
+        public static SkillGroup Discipline;
+        public static SkillGroup Righteousness;
+
         public static string SkillGroupBraveryID = "Bravery";
         public static string SkillGroupMentalResistanceID = "MentalResistance";
         public static string SkillGroupDisciplineID = "Discipline";
         public static string SkillGroupRighteousnessID = "Righteousness";
         public static SkillGroup SkillGroupBravery()
         {
-            var skillgroup = new SkillGroup(SkillGroupBraveryID, MutanterChoreTypes.ChoreTypeContainID, STRINGS.SKILLGROUP.CONTAIN.NAME, "icon_errand_dig", "icon_archetype_dig");
-
-            skillgroup.relevantAttributes = new List<Klei.AI.Attribute>
+            Bravery = new MutanterSkillGroup(SkillGroupBraveryID, "Bravery", STRINGS.DUPLICANTS.SKILLGROUPS.BRAVERY.NAME, "icon_errand_bravery", "icon_archetype_bravery");
+            Bravery.relevantAttributes = new List<Attribute>()
             {
-                Db.Get().ChoreGroups.TryGet(MutanterChoreGroups.ChoreGroupContainID).attribute
+                Db.Get().Attributes.Get(MutanterAttributes.AttributeBraveryID)
             };
-            skillgroup.requiredChoreGroups = new List<string>
-            {
-                MutanterChoreGroups.ChoreGroupContainID
-            };
+            Bravery.requiredChoreGroups = new List<string>();
+            Bravery.allowAsAptitude = true;
 
-            return skillgroup;
+            if (!DUPLICANTSTATS.ARCHETYPE_TRAIT_EXCLUSIONS.ContainsKey(SkillGroupBraveryID))
+            {
+                DUPLICANTSTATS.ARCHETYPE_TRAIT_EXCLUSIONS.Add(SkillGroupBraveryID, new List<string>());
+            }
+
+            // 添加技能组到ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY
+            // 为空列表，表示这些技能组与仿生小人的特质不兼容，不会在仿生小人上生成
+            if (!DUPLICANTSTATS.ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY.ContainsKey(SkillGroupBraveryID))
+            {
+                DUPLICANTSTATS.ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY.Add(SkillGroupBraveryID, new List<string>());
+            }
+
+            return Bravery;
         }
+
         public static SkillGroup SkillGroupMentalResistance()
         {
-            var skillgroup = new SkillGroup(SkillGroupMentalResistanceID, MutanterChoreTypes.ChoreTypeMentalResistanceID, STRINGS.SKILLGROUP.MENTALRESISTANCE.NAME, "icon_errand_dig", "icon_archetype_dig");
-
-            skillgroup.relevantAttributes = new List<Klei.AI.Attribute>
+            MentalResistance = new MutanterSkillGroup(SkillGroupMentalResistanceID, MutanterChoreGroups.ChoreGroupMentalResistanceID, STRINGS.DUPLICANTS.SKILLGROUPS.MENTALRESISTANCE.NAME, "icon_errand_metal_resistance", "icon_archetype_metal_resistance");
+            MentalResistance.relevantAttributes = new List<Attribute>()
             {
-                Db.Get().ChoreGroups.TryGet(MutanterChoreGroups.ChoreGroupMentalResistanceID).attribute
+                Db.Get().Attributes.Get(MutanterAttributes.AttributeMentalResistanceID)
             };
-            skillgroup.requiredChoreGroups = new List<string>
-            {
-                MutanterChoreGroups.ChoreGroupMentalResistanceID
-            };
+            MentalResistance.requiredChoreGroups = new List<string>();
+            MentalResistance.allowAsAptitude = true;
 
-            return skillgroup;
+            // 为精神抗性技能组添加排除特质
+            if (!DUPLICANTSTATS.ARCHETYPE_TRAIT_EXCLUSIONS.ContainsKey(SkillGroupMentalResistanceID))
+            {
+                DUPLICANTSTATS.ARCHETYPE_TRAIT_EXCLUSIONS.Add(SkillGroupMentalResistanceID, new List<string>());
+            }
+
+            // 添加技能组到ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY
+            // 为空列表，表示这些技能组与仿生小人的特质不兼容，不会在仿生小人上生成
+            if (!DUPLICANTSTATS.ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY.ContainsKey(SkillGroupMentalResistanceID))
+            {
+                DUPLICANTSTATS.ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY.Add(SkillGroupMentalResistanceID, new List<string>());
+            }
+            return MentalResistance;
         }
+
         public static SkillGroup SkillGroupDiscipline()
         {
-            var skillgroup = new SkillGroup(SkillGroupDisciplineID, MutanterChoreTypes.ChoreTypeDisciplineID, STRINGS.SKILLGROUP.DISCIPLINE.NAME, "icon_errand_dig", "icon_archetype_dig");
-
-            skillgroup.relevantAttributes = new List<Klei.AI.Attribute>
+            Discipline = new MutanterSkillGroup(SkillGroupDisciplineID, MutanterChoreGroups.ChoreGroupDisciplineID, STRINGS.DUPLICANTS.SKILLGROUPS.DISCIPLINE.NAME, "icon_errand_discipline", "icon_archetype_discipline");
+            Discipline.relevantAttributes = new List<Attribute>()
             {
-                Db.Get().ChoreGroups.TryGet(MutanterChoreGroups.ChoreGroupDisciplineID).attribute
+                Db.Get().Attributes.Get(MutanterAttributes.AttributeSuccessRateID),
+                Db.Get().Attributes.Get(MutanterAttributes.AttributeWorkingSpeedID)
             };
-            skillgroup.requiredChoreGroups = new List<string>
-            {
-                MutanterChoreGroups.ChoreGroupDisciplineID
-            };
+            Discipline.requiredChoreGroups = new List<string>();
+            Discipline.allowAsAptitude = true;
 
-            return skillgroup;
+            // 为自律技能组添加排除特质
+            if (!DUPLICANTSTATS.ARCHETYPE_TRAIT_EXCLUSIONS.ContainsKey(SkillGroupDisciplineID))
+            {
+                DUPLICANTSTATS.ARCHETYPE_TRAIT_EXCLUSIONS.Add(SkillGroupDisciplineID, new List<string>());
+            }
+
+            // 添加技能组到ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY
+            // 为空列表，表示这些技能组与仿生小人的特质不兼容，不会在仿生小人上生成
+            if (!DUPLICANTSTATS.ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY.ContainsKey(SkillGroupDisciplineID))
+            {
+                DUPLICANTSTATS.ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY.Add(SkillGroupDisciplineID, new List<string>());
+            }
+            return Discipline;
         }
+
         public static SkillGroup SkillGroupRighteousness()
         {
-            var skillgroup = new SkillGroup(SkillGroupRighteousnessID, MutanterChoreTypes.ChoreTypeRighteousnessID, STRINGS.SKILLGROUP.RIGHTEOUSNESS.NAME, "icon_errand_dig", "icon_archetype_dig");
-
-            skillgroup.relevantAttributes = new List<Klei.AI.Attribute>
+            Righteousness = new MutanterSkillGroup(SkillGroupRighteousnessID, MutanterChoreGroups.ChoreGroupRighteousnessID, STRINGS.DUPLICANTS.SKILLGROUPS.RIGHTEOUSNESS.NAME, "icon_errand_righteousness", "icon_archetype_righteousness");
+            Righteousness.relevantAttributes = new List<Attribute>()
             {
-                Db.Get().ChoreGroups.TryGet(MutanterChoreGroups.ChoreGroupRighteousnessID).attribute
+                Db.Get().Attributes.Get(MutanterAttributes.AttributeAttackDamageID)
             };
-            skillgroup.requiredChoreGroups = new List<string>
-            {
-                MutanterChoreGroups.ChoreGroupRighteousnessID
-            };
+            Righteousness.requiredChoreGroups = new List<string>();
+            Righteousness.allowAsAptitude = true;
 
-            return skillgroup;
+            // 为正义技能组添加排除特质
+            if (!DUPLICANTSTATS.ARCHETYPE_TRAIT_EXCLUSIONS.ContainsKey(SkillGroupRighteousnessID))
+            {
+                DUPLICANTSTATS.ARCHETYPE_TRAIT_EXCLUSIONS.Add(SkillGroupRighteousnessID, new List<string>());
+            }
+
+            // 添加技能组到ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY
+            // 为空列表，表示这些技能组与仿生小人的特质不兼容，不会在仿生小人上生成
+            if (!DUPLICANTSTATS.ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY.ContainsKey(SkillGroupRighteousnessID))
+            {
+                DUPLICANTSTATS.ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY.Add(SkillGroupRighteousnessID, new List<string>());
+            }
+            return Righteousness;
         }
     }
 }

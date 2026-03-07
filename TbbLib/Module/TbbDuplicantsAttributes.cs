@@ -12,10 +12,10 @@ namespace TBB.He.TbbLib.Module
         protected override void Initialized()
         {
             Harmony.Patch(AccessTools.Constructor(typeof(Attributes), new[] { typeof(ResourceSet) }),
-                postfix: new HarmonyMethod(typeof(TbbDuplicantsAttributes), nameof(Attributes_Constructor_Postfix)));
+                postfix: new HarmonyMethod(typeof(TbbDuplicantsAttributes), nameof(Attributes_Constructor_Postfix)) { priority = 9999 });
 
             Harmony.Patch(typeof(MinionStartingStats), "GenerateAttributes",
-                prefix: new HarmonyMethod(typeof(TbbDuplicantsAttributes), nameof(MinionStartingStats_GenerateAttributes_Prefix)));
+                prefix: new HarmonyMethod(typeof(TbbDuplicantsAttributes), nameof(MinionStartingStats_GenerateAttributes_Prefix)) { priority = 9999 });
         }
 
         public static void MinionStartingStats_GenerateAttributes_Prefix(MinionStartingStats __instance, int pointsDelta, List<ChoreGroup> disabled_chore_groups)

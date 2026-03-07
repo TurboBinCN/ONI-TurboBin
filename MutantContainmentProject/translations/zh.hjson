@@ -260,18 +260,23 @@
       ATTRIBUTES: {
         BRAVERY: {
           NAME: 勇气
+          DESC: 增加生命值
         }
         MENTALRESISTANCE: {
           NAME: 精神抗性
+          DESC: 减少精神攻击带来的压力
         }
         SUCCESSRATE: {
           NAME: 成功率
+          DESC: 增加任务成功率
         }
         WORKINGSPEED: {
           NAME: 工作速度
+          DESC: 增加工作速度
         }
         ATTACKDAMAGE: {
           NAME: 攻击伤害
+          DESC: 增加对畸变体的攻击伤害
         }
       }
       ROLES: {
@@ -321,55 +326,76 @@
           NAME: 精神抗性III
         }
       }
-    }
-    SKILLGROUP: {
-      CONTAIN: {
-        NAME: 收容
+      CHOREGROUPS: {
+        CONTAIN: {
+          NAME: 收容
+          ARCHETYPE_NAME: 收容者
+          DESC: 与收容畸变体、维护收容设施相关的任务
+        }
+        BRAVERY: {
+          NAME: 勇气
+          ARCHETYPE_NAME: 守护者
+          DESC: 需要勇气执行的任务；处理畸变体时可提升最大生命值
+        }
+        MENTALRESISTANCE: {
+          NAME: 精神抗性
+          ARCHETYPE_NAME: 心灵守卫
+          DESC: 需要精神韧性执行的任务；提升对畸变体精神攻击的抗性
+        }
+        DISCIPLINE: {
+          NAME: 自律
+          ARCHETYPE_NAME: 执行官
+          DESC: 需要严格自律执行的任务；保证收容操作的稳定执行效率
+        }
+        RIGHTEOUSNESS: {
+          NAME: 正义
+          ARCHETYPE_NAME: 裁决者
+          DESC: 需要道德信念执行的任务；提升畸变体收容措施的工作速度/成功率，以及对畸变体的攻击伤害
+        }
       }
-      MENTALRESISTANCE: {
-        NAME: 精神抗性
+      SKILLGROUPS: {
+        CONTAIN: {
+          NAME: 收容
+          DESC: 与收容畸变体、维护收容设施相关的任务
+        }
+        BRAVERY: {
+          NAME: 勇气
+          DESC: 需要勇气执行的任务；处理畸变体时可提升最大生命值
+        }
+        MENTALRESISTANCE: {
+          NAME: 精神抗性
+          DESC: 需要精神韧性执行的任务；提升对畸变体精神攻击的抗性
+        }
+        DISCIPLINE: {
+          NAME: 自律
+          DESC: 需要严格自律执行的任务；保证收容操作的稳定执行效率
+        }
+        RIGHTEOUSNESS: {
+          NAME: 正义
+          DESC: 需要道德信念执行的任务；提升畸变体收容措施的工作速度/成功率，以及对畸变体的攻击伤害
+        }
       }
-      DISCIPLINE: {
-        NAME: 自律
-      }
-      RIGHTEOUSNESS: {
-        NAME: 正义
-      }
-    }
-    CHOREGROUPS: {
-      CONTAIN: {
-        NAME: 收容
-      }
-      MENTALRESISTANCE: {
-        NAME: 精神抗性
-      }
-      DISCIPLINE: {
-        NAME: 自律
-      }
-      RIGHTEOUSNESS: {
-        NAME: 正义
-      }
-    }
-    CHORES: {
-      CONTAIN: {
-        NAME: 收容
-        STATUS: 正在进行收容
-        TOOLTIP: 收容这个实体
-      }
-      MENTALRESISTANCE: {
-        NAME: 精神抗性
-        STATUS: 正在进行精神抗性训练
-        TOOLTIP: 减少精神攻击带来的压力
-      }
-      DISCIPLINE: {
-        NAME: 自律
-        STATUS: 正在进行收容
-        TOOLTIP: 收容这个实体
-      }
-      RIGHTEOUSNESS: {
-        NAME: 正义
-        STATUS: 正在进行收容
-        TOOLTIP: 收容这个实体
+      CHORES: {
+        CONTAIN: {
+          NAME: 收容
+          STATUS: 正在进行收容
+          TOOLTIP: 收容这个实体
+        }
+        MENTALRESISTANCE: {
+          NAME: 精神抗性
+          STATUS: 正在进行精神抗性训练
+          TOOLTIP: 减少精神攻击带来的压力
+        }
+        DISCIPLINE: {
+          NAME: 自律
+          STATUS: 正在进行收容
+          TOOLTIP: 收容这个实体
+        }
+        RIGHTEOUSNESS: {
+          NAME: 正义
+          STATUS: 正在进行收容
+          TOOLTIP: 收容这个实体
+        }
       }
     }
     SKILLS: {

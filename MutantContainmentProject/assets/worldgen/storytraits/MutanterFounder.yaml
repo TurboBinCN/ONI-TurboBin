@@ -7,7 +7,7 @@ additionalWorldTemplateRules:
   - names:
       - mod__storytraits/mutanter_founder
     listRule: GuaranteeOne
-    priority: 200
+    priority: 201
     useRelaxedFiltering: true
     allowedCellsFilter:
       - command: All

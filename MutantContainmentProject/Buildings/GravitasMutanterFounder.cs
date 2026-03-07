@@ -205,6 +205,13 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                     { HatchConfig.ID, 2},
                     { PacuConfig.ID, 1}
                 }
+            },
+            {
+                SCP939Config.ID, new Dictionary<Tag, int>
+                {
+                    { CrabConfig.ID, 2},
+                    { PacuConfig.ID, 1}
+                }
             }
         };
 

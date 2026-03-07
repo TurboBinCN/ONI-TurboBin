@@ -337,23 +337,28 @@ namespace MutantContainmentProject
             {
                 public static class BRAVERY
                 {
-                    public static LocString NAME = "Bavery";
+                    public static LocString NAME = "Bravery";
+                    public static LocString DESC = "Increases hit points";
                 }
                 public static class MENTALRESISTANCE
                 {
                     public static LocString NAME = "Mental Resistance";
+                    public static LocString DESC = "Reduces stress from psychological attacks";
                 }
                 public static class SUCCESSRATE
                 {
                     public static LocString NAME = "Success Rate";
+                    public static LocString DESC = "Increases success rate for tasks";
                 }
                 public static class WORKINGSPEED
                 {
                     public static LocString NAME = "Working Speed";
+                    public static LocString DESC = "Increases working speed";
                 }
                 public static class ATTACKDAMAGE
                 {
                     public static LocString NAME = "Attack Damage";
+                    public static LocString DESC = "Increases attack damage against mutanters";
                 }
             }
             public static class ROLES
@@ -419,70 +424,94 @@ namespace MutantContainmentProject
                     public static LocString NAME = "AttackDamageIII";
                 }
             }
-        }
-        public static class SKILLGROUP
-        {
-            public static class CONTAIN
+            public static class CHOREGROUPS
             {
-                public static LocString NAME = "Contain";
+                public static class CONTAIN
+                {
+                    public static LocString NAME = "Contain";
+                    public static LocString ARCHETYPE_NAME = "Container";
+                    public static LocString DESC = "Tasks related to containing aberrant entities and maintaining containment facilities";
+                }
+                public static class BRAVERY
+                {
+                    public static LocString NAME = "Bravery";
+                    public static LocString ARCHETYPE_NAME = "Guardian";
+                    public static LocString DESC = "Tasks that require courage; increases maximum health when handling aberrant entities";
+                }
+                public static class MENTALRESISTANCE
+                {
+                    public static LocString NAME = "Mental Resistance";
+                    public static LocString ARCHETYPE_NAME = "Psyche Ward";
+                    public static LocString DESC = "Tasks that require mental fortitude; increases resistance to psychological attacks from aberrant entities";
+                }
+                public static class DISCIPLINE
+                {
+                    public static LocString NAME = "Discipline";
+                    public static LocString ARCHETYPE_NAME = "Enforcer";
+                    public static LocString DESC = "Tasks that require strict self-discipline; ensures consistent performance in containment operations";
+
+                }
+                public static class RIGHTEOUSNESS
+                {
+                    public static LocString NAME = "Righteousness";
+                    public static LocString ARCHETYPE_NAME = "Judicator";
+                    public static LocString DESC = "Tasks that require moral conviction; increases work speed/success rate for aberrant containment measures and attack damage against aberrant entities";
+                }
             }
-            public static class MENTALRESISTANCE
+            public static class SKILLGROUPS
             {
-                public static LocString NAME = "Mental Resistance";
+                public static class CONTAIN
+                {
+                    public static LocString NAME = "Contain";
+                    public static LocString DESC = "Skills related to containing mutanters";
+                }
+                public static class BRAVERY
+                {
+                    public static LocString NAME = "Bravery";
+                    public static LocString DESC = "Skills related to bravery";
+                }
+                public static class MENTALRESISTANCE
+                {
+                    public static LocString NAME = "Mental Resistance";
+                    public static LocString DESC = "Skills related to mental resistance";
+                }
+                public static class DISCIPLINE
+                {
+                    public static LocString NAME = "Discipline";
+                    public static LocString DESC = "Skills related to self-discipline";
+                }
+                public static class RIGHTEOUSNESS
+                {
+                    public static LocString NAME = "Righteousness";
+                    public static LocString DESC = "Skills related to righteousness";
+                }
             }
-            public static class DISCIPLINE
+            public static class CHORES
             {
-                public static LocString NAME = "Discipline";
-            }
-            public static class RIGHTEOUSNESS
-            {
-                public static LocString NAME = "Righteousness";
-            }
-        }
-        public static class CHOREGROUPS
-        {
-            public static class CONTAIN
-            {
-                public static LocString NAME = "Contain";
-            }
-            public static class MENTALRESISTANCE
-            {
-                public static LocString NAME = "Mental Resistance";
-            }
-            public static class DISCIPLINE
-            {
-                public static LocString NAME = "Discipline";
-            }
-            public static class RIGHTEOUSNESS
-            {
-                public static LocString NAME = "Righteousness";
-            }
-        }
-        public static class CHORES
-        {
-            public static class CONTAIN
-            {
-                public static LocString NAME = "Contain";
-                public static LocString STATUS = "Go to Containing...";
-                public static LocString TOOLTIP = "Contain the entity.";
-            }
-            public static class MENTALRESISTANCE
-            {
-                public static LocString NAME = "Mental Resistance";
-                public static LocString STATUS = "Mental Resistance";
-                public static LocString TOOLTIP = "Reduce stress from psychological attacks.";
-            }
-            public static class DISCIPLINE
-            {
-                public static LocString NAME = "Discipline";
-                public static LocString STATUS = "Self-Discipline";
-                public static LocString TOOLTIP = "Contain the entity.";
-            }
-            public static class RIGHTEOUSNESS
-            {
-                public static LocString NAME = "Righteousness";
-                public static LocString STATUS = "Righteousness";
-                public static LocString TOOLTIP = "Contain the entity.";
+                public static class CONTAIN
+                {
+                    public static LocString NAME = "Contain";
+                    public static LocString STATUS = "Go to Containing...";
+                    public static LocString TOOLTIP = "Contain the entity.";
+                }
+                public static class MENTALRESISTANCE
+                {
+                    public static LocString NAME = "Mental Resistance";
+                    public static LocString STATUS = "Mental Resistance";
+                    public static LocString TOOLTIP = "Reduce stress from psychological attacks.";
+                }
+                public static class DISCIPLINE
+                {
+                    public static LocString NAME = "Discipline";
+                    public static LocString STATUS = "Self-Discipline";
+                    public static LocString TOOLTIP = "Contain the entity.";
+                }
+                public static class RIGHTEOUSNESS
+                {
+                    public static LocString NAME = "Righteousness";
+                    public static LocString STATUS = "Righteousness";
+                    public static LocString TOOLTIP = "Contain the entity.";
+                }
             }
         }
         public static class SKILLS

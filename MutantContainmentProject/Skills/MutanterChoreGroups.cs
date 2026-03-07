@@ -1,4 +1,4 @@
-﻿using Database;
+using Database;
 using TBB.He.TbbLib.Utils;
 
 namespace MutantContainmentProject.Skills
@@ -6,6 +6,7 @@ namespace MutantContainmentProject.Skills
     public class MutanterChoreGroups
     {
         public static readonly string ChoreGroupContainID = "Contain";
+        public static readonly string ChoreGroupBraveryID = "Bravery";
         public static readonly string ChoreGroupMentalResistanceID = "MentalResistance";
         public static readonly string ChoreGroupDisciplineID = "Discipline";
         public static readonly string ChoreGroupRighteousnessID = "Righteousness";
@@ -13,32 +14,40 @@ namespace MutantContainmentProject.Skills
         {
             object choregroupObj;
             bool success = TbbHarmonyExtension.InvokeMethod(out choregroupObj, __instance, "Add", new object[] {
-                ChoreGroupContainID, STRINGS.CHOREGROUPS.CONTAIN.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeBraveryID),
-                "icon_errand_dig",2, true
+                ChoreGroupContainID, STRINGS.DUPLICANTS.CHOREGROUPS.CONTAIN.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeBraveryID),
+                "icon_errand_bravery",2, true
+            });
+        }
+        public static void ChoreGroupBravery(ChoreGroups __instance)
+        {
+            object choregroupObj;
+            bool success = TbbHarmonyExtension.InvokeMethod(out choregroupObj, __instance, "Add", new object[] {
+                ChoreGroupBraveryID, STRINGS.DUPLICANTS.CHOREGROUPS.BRAVERY.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeBraveryID),
+                "icon_errand_bravery",2, true
             });
         }
         public static void ChoreGroupMentalResistance(ChoreGroups __instance)
         {
             object choregroupObj;
             bool success = TbbHarmonyExtension.InvokeMethod(out choregroupObj, __instance, "Add", new object[] {
-                ChoreGroupMentalResistanceID, STRINGS.CHOREGROUPS.MENTALRESISTANCE.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeMentalResistanceID),
-                "icon_errand_dig",2, true
+                ChoreGroupMentalResistanceID, STRINGS.DUPLICANTS.CHOREGROUPS.MENTALRESISTANCE.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeMentalResistanceID),
+                "icon_errand_metal_resistance",2, true
             });
         }
         public static void ChoreGroupDiscipline(ChoreGroups __instance)
         {
             object choregroupObj;
             bool success = TbbHarmonyExtension.InvokeMethod(out choregroupObj, __instance, "Add", new object[] {
-                ChoreGroupDisciplineID, STRINGS.CHOREGROUPS.DISCIPLINE.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeSuccessRateID),
-                "icon_errand_dig",2, true
+                ChoreGroupDisciplineID, STRINGS.DUPLICANTS.CHOREGROUPS.DISCIPLINE.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeSuccessRateID),
+                "icon_errand_discipline",2, true
             });
         }
         public static void ChoreGroupRighteousness(ChoreGroups __instance)
         {
             object choregroupObj;
             bool success = TbbHarmonyExtension.InvokeMethod(out choregroupObj, __instance, "Add", new object[] {
-                ChoreGroupRighteousnessID, STRINGS.CHOREGROUPS.RIGHTEOUSNESS.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeAttackDamageID),
-                "icon_errand_dig",2, true
+                ChoreGroupRighteousnessID, STRINGS.DUPLICANTS.CHOREGROUPS.RIGHTEOUSNESS.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeAttackDamageID),
+                "icon_errand_righteousness",2, true
             });
         }
     }
