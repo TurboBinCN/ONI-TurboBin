@@ -17,33 +17,37 @@ namespace TBB.He.TbbLib.Utils
         /// <returns>构成连通房间的格子坐标的列表。</returns>
         public static List<int> BuildRoom(int startCell, int maxCellDistance)
         {
-            if (!Grid.IsValidCell(startCell) || IsCavityBoundary(startCell))
+            if (!Grid.IsValidCell(startCell))
             {
-                //TbbDebuger.LogDebug($"LimitedRoomSpaceBuilder: 起始格子 {startCell} 无效或为边界。");
+                //TbbDebuger.LogDebug($"LimitedRoomSpaceBuilder: 起始格子 {startCell} 无效。");
                 return new List<int>();
             }
-
+            
+            // 即使起始格子是边界，也处理它
+            List<int> roomCells = new List<int>();
+            HashSet<int> visited = new HashSet<int>();
+            Queue<(int cellId, int x, int y, int distFromStart)> queue = new Queue<(int cellId, int x, int y, int distFromStart)>();
+            
             // 获取起始坐标
             Grid.CellToXY(startCell, out int startX, out int startY);
-
-            var roomCells = new List<int>();
-            var visited = new HashSet<int>();
-            var queue = new Queue<(int cellId, int x, int y, int distFromStart)>();
-
-            // 将起始信息入队
-            queue.Enqueue((startCell, startX, startY, 0));
+            
+            // 将起始格子加入访问集合和房间
             visited.Add(startCell);
-
+            roomCells.Add(startCell);
+            
+            // 如果起始格子不是边界，则将其加入队列，继续扩展
+            if (!IsCavityBoundary(startCell))
+            {
+                queue.Enqueue((startCell, startX, startY, 0));
+            }
+            
             // 定义四个方向的偏移量
             var offsets = new (int dx, int dy)[] { (0, -1), (0, 1), (-1, 0), (1, 0) };
-
+            
             while (queue.Count > 0)
             {
                 var (currentCell, currentX, currentY, currentDist) = queue.Dequeue();
-
-                // 将当前格子加入房间
-                roomCells.Add(currentCell);
-
+                
                 // 探索四个方向的邻居
                 foreach (var (dx, dy) in offsets)
                 {
@@ -62,16 +66,20 @@ namespace TBB.He.TbbLib.Utils
                     if (newDistance > maxCellDistance)
                         continue;
 
-                    // 如果邻居是边界（固体、地基或门），则跳过
-                    if (IsCavityBoundary(neighborCell))
-                        continue;
-
-                    // 否则，将邻居信息加入队列和已访问集合
-                    queue.Enqueue((neighborCell, neighborX, neighborY, newDistance));
+                    // 将邻居格子加入访问集合
                     visited.Add(neighborCell);
+                    
+                    // 将邻居格子加入房间
+                    roomCells.Add(neighborCell);
+                    
+                    // 如果邻居不是边界，则将其加入队列，继续扩展
+                    if (!IsCavityBoundary(neighborCell))
+                    {
+                        queue.Enqueue((neighborCell, neighborX, neighborY, newDistance));
+                    }
                 }
             }
-
+            
             return roomCells;
         }
 

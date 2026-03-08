@@ -111,6 +111,10 @@ namespace MutantContainmentProject
                     .Add(MutanterAttributes.AttributeSuccessRate, MutanterAttributes.AttributeSuccessRateID)
                     .Add(MutanterAttributes.AttributeWorkingSpeed, MutanterAttributes.AttributeWorkingSpeedID)
                     .Add(MutanterAttributes.AttributeAttackDamage, MutanterAttributes.AttributeAttackDamageID);
+                
+                //属性转换器
+                TbbAttributeConverters.Initialize(mod,harmony)
+                    .Add(MutanterAttributeConverters.RegisterAttributeConverters);
                 //ChoreGroups
                 TbbChoreGroups.Initialize(mod, harmony)
                     .Add(MutanterChoreGroups.ChoreGroupContain)
@@ -167,7 +171,8 @@ namespace MutantContainmentProject
                     .AddBuilding(ContainmentTileConfig.ID);
                 //建筑StatusItems
                 TbbBuildingStatusItems.Initialize(mod, harmony)
-                    .Add(GravitasMutanterFounderBuildingStatusItems.Instance.CreateStatusItems);
+                    .Add(GravitasMutanterFounderBuildingStatusItems.Instance.CreateStatusItems)
+                    .Add(ContainmentMonitorBuildingStatusItems.Instance.CreateStatusItems);
                 //全局单例
                 TbbSingleTone.Initialize(mod, harmony)
                     .Add<MutanterSpeciesCatalog>();

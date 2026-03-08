@@ -1,4 +1,4 @@
-﻿using Klei.AI;
+using Klei.AI;
 using MutantContainmentProject.MutanterEffect;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;

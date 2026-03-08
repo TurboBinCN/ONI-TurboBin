@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="Debuger\TbbDebuger.cs" />
+    <Compile Include="Module\TbbAttributeConverters.cs" />
     <Compile Include="Module\TbbAttributes.cs" />
     <Compile Include="Module\TbbBuilding.cs" />
     <Compile Include="Module\TbbBuildingStatusItems.cs" />

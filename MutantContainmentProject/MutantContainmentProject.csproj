@@ -52,16 +52,16 @@
     <Compile Include="Buildings\GravitasMutanterFounderConfig.cs" />
     <Compile Include="Buildings\SecureTermDb.cs" />
     <Compile Include="Buildings\MutanterSecurableMonitor.cs" />
-    <Compile Include="Duplicants\AttackMutanterWeapon.cs" />
-    <Compile Include="Duplicants\DuplicantsAttribute_Patch.cs" />
     <Compile Include="FunctionPatches\EventInfoDataHelper_Patches.cs" />
     <Compile Include="FunctionPatches\MiningNeutronium_Patches.cs" />
     <Compile Include="MutanterCodexEntries\MutanterCodexEntry.cs" />
     <Compile Include="MutanterComponent\BaseItemsMutanter.cs" />
     <Compile Include="MutanterComponent\ErosionAttack.cs" />
     <Compile Include="MutanterComponent\MutanterAnimationDebugger.cs" />
+    <Compile Include="MutanterComponent\MutanterAttackable.cs" />
     <Compile Include="MutanterComponent\MutanterAttackSystem.cs" />
     <Compile Include="MutanterComponent\MutanterBrain.cs" />
+    <Compile Include="MutanterComponent\MutanterBuildingDestruction.cs" />
     <Compile Include="MutanterComponent\MutanterChaseMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterColonyComponent.cs" />
     <Compile Include="MutanterComponent\MutanterMoltenMetalMonitor.cs" />
@@ -97,6 +97,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Room\ContainmentCharmberRoom.cs" />
     <Compile Include="SideScreen\ContainmentMonitorSideScreen.cs" />
+    <Compile Include="Skills\MutanterAttributeConverters.cs" />
     <Compile Include="Skills\MutanterAttributes.cs" />
     <Compile Include="Skills\MutanterChoreGroups.cs" />
     <Compile Include="Skills\MutanterChoreTypes.cs" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <Folder Include="anim\assets\scp049_2\" />
     <Folder Include="Codex\" />
+    <Folder Include="Duplicants\" />
     <Folder Include="UI\" />
   </ItemGroup>
   <ItemGroup>

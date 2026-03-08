@@ -24,9 +24,8 @@ namespace MutantContainmentProject.MutanterComponent
         {
             template.AddOrGetDef<MutanterStateMachine.Def>();//挂载：畸变体基础组件
             template.AddOrGetDef<MutanterSecurableMonitor.Def>();//挂载：畸变体安全控制监控SMI
+            template.AddOrGetDef<MutanterBuildingDestruction.Def>();//挂载：畸变体建筑破坏监控SMI
 
-            //template.AddOrGetDef<ThreatMonitor.Def>().fleethresholdState = Health.HealthState.Dead;
-            //template.AddWeapon(1f, 1f, AttackProperties.DamageType.Standard, AttackProperties.TargetType.Single, 1, 0f);
             if (useEmotionMonitor)
             {
                 var emotionMonitorDef = template.AddOrGetDef<EmotionMonitor.Def>();//挂载：畸变体情绪或理智SMI
@@ -38,8 +37,15 @@ namespace MutantContainmentProject.MutanterComponent
                     emotionMonitorDef.considerEnvironmentalFactors = true;
                 }
             }
+            //收容逻辑：暴动后收容逻辑，被攻击、生命扣减低于1，封包
+            template.AddOrGet<Health>().isCritter = true;//挂载：健康检测
+            template.AddOrGet<MutanterAttackable>(); //挂载：畸变体可攻击组件，关联到正义属性和攻击伤害
+            
+            //畸变体被攻击的相关组件
             template.AddOrGet<FactionAlignment>().Alignment = faction; //挂载：阵营
-            template.AddOrGet<RangedAttackable>(); //跟FactionAlignment相互依赖. 需要修改
+            template.AddOrGetDef<ThreatMonitor.Def>().fleethresholdState = Health.HealthState.Dead;
+
+
             template.AddOrGet<TbbRangeVisualizer>();//挂载：威胁范围显示
             
             // 挂载：攻击能力，并传递攻击标签
@@ -51,17 +57,18 @@ namespace MutantContainmentProject.MutanterComponent
                     template.GetComponent<KPrefabID>().AddTag(tag);
                 }
             }
-
-            //收容逻辑：暴动后收容逻辑，被攻击、生命扣减低于1，封包
-            template.AddOrGet<Health>().isCritter = true;//挂载：健康检测
             EntityTemplates.CreateAndRegisterBaggedCreature(template, true, false, false);//挂载：被击败后打包
             template.AddOrGetDef<DefeatStates.Def>();//挂载：击败状态监控
 
             // 添加产出物组件
             template.AddOrGet<MutanterProductComponent>();
             
+            // 添加过度拥挤监控器，这会将生物添加到房间的creatures集合中
+            var overcrowdingMonitorDef = template.AddOrGetDef<OvercrowdingMonitor.Def>();
+            overcrowdingMonitorDef.spaceRequiredPerCreature = 20; // 设置每个畸变体需要的空间
+            
             // 添加畸变体群落组件
-            template.AddOrGet<MutanterColonyComponent>().MaxColonySize = MaxColonySize;
+            template.AddOrGet<MutanterColonyComponent>().SetParameters(dangerLevel, MaxColonySize);
 
             return template;
         }
@@ -163,7 +170,7 @@ namespace MutantContainmentProject.MutanterComponent
             
             template.AddOrGet<Prioritizable>();
             template.AddOrGet<Effects>();
-            template.AddOrGetDef<CritterEmoteMonitor.Def>();//TODO 可能需要针对畸变体修正
+            //TODO 畸变体表情SMI
             template.AddOrGetDef<CreatureDebugGoToMonitor.Def>();
             template.AddOrGetDef<CreatureThoughtGraph.Def>();
             template.AddOrGetDef<AnimInterruptMonitor.Def>();
@@ -236,6 +243,7 @@ namespace MutantContainmentProject.MutanterComponent
 
             ChoreTable.Builder chore_table = new ChoreTable.Builder()
                 .Add(new DeathStates.Def(), true, -1).Add(new AnimInterruptStates.Def(), true, -1)
+                .Add(new AnimInterruptStates.Def(), true, -1)
                 .Add(new BaggedStates.Def(), true, -1)
                 .Add(new FallStates.Def(), true, -1).Add(new StunnedStates.Def(), true, -1)
                 .Add(new DrowningStates.Def(), true, -1).Add(new DebugGoToStates.Def(), true, -1)

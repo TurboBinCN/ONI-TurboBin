@@ -1,9 +1,11 @@
-﻿using MutantContainmentProject.MutanterComponent;
+using Database;
+using MutantContainmentProject.MutanterComponent;
 using MutantContainmentProject.Room;
 using System;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
+using static MutantContainmentProject.STRINGS.BUILDINGS.STATUSITEMS;
 
 namespace MutantContainmentProject.Buildings
 {
@@ -39,8 +41,6 @@ namespace MutantContainmentProject.Buildings
                         smi.FindMutanter(smi);
                     }, UpdateRate.SIM_1000ms, false);
         }
-
-
 
         public class Instance : GameInstance
         {
@@ -138,13 +138,6 @@ namespace MutantContainmentProject.Buildings
             }
             public void FindMutanter(Instance instance)
             {
-                if (_mutanterContainer == null) return;
-
-                if (this.targetSecurable.Count == 2)
-                {
-                    return;
-                }
-
                 if (_mutantersInRoom == null) findMutanterInRoom();
                 //TbbDebuger.LogDebug($"[畸变收容所] _mutantersInRoom:[{_mutantersInRoom.Count}]");
                 foreach (var kprefabID in _mutantersInRoom)
@@ -167,4 +160,81 @@ namespace MutantContainmentProject.Buildings
         }
         public class Def : BaseDef { }
     }
+
+    public class ContainmentMonitorBuildingStatusItems
+    {
+        public StatusItem ContainmentSuccess;
+        public StatusItem ContainmentFailure;
+
+        private static ContainmentMonitorBuildingStatusItems _instance;
+        public static ContainmentMonitorBuildingStatusItems Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new ContainmentMonitorBuildingStatusItems();
+                }
+                return _instance;
+            }
+        }
+
+        public void CreateStatusItems(BuildingStatusItems buildingStatusItems)
+        {
+            ContainmentSuccess = buildingStatusItems.Add(new StatusItem("ContainmentSuccess", "BUILDINGS", "", StatusItem.IconType.Info, NotificationType.Good, false, OverlayModes.None.ID, true, 129022, null));
+            ContainmentSuccess.resolveStringCallback = delegate (string str, object data)
+            {
+                return STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR.SUCCESS.NAME;
+            };
+            ContainmentSuccess.resolveTooltipCallback = delegate (string str, object data)
+            {
+                int workerSubtasks = 0;
+                int mutanterSubtasks = 0;
+                
+                // 检查data类型
+                if (data is ContainmentMonitorWorkable workable)
+                {
+                    // 兼容旧的方式
+                    workerSubtasks = workable.WorkerCompletedSubtasks;
+                    mutanterSubtasks = workable.MutanterCompletedSubtasks;
+                }
+                else if (data is System.Tuple<int, int> tuple)
+                {
+                    // 处理Tuple类型
+                    workerSubtasks = tuple.Item1;
+                    mutanterSubtasks = tuple.Item2;
+                }
+                
+                return string.Format(STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR.SUCCESS.TOOLTIP, workerSubtasks, mutanterSubtasks);
+            };
+
+            ContainmentFailure = buildingStatusItems.Add(new StatusItem("ContainmentFailure", "BUILDINGS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, false, OverlayModes.None.ID, true, 129022, null));
+            ContainmentFailure.resolveStringCallback = delegate (string str, object data)
+            {
+                return STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR.FAILURE.NAME;
+            };
+            ContainmentFailure.resolveTooltipCallback = delegate (string str, object data)
+            {
+                int workerSubtasks = 0;
+                int mutanterSubtasks = 0;
+                
+                // 检查data类型
+                if (data is ContainmentMonitorWorkable workable)
+                {
+                    // 兼容旧的方式
+                    workerSubtasks = workable.WorkerCompletedSubtasks;
+                    mutanterSubtasks = workable.MutanterCompletedSubtasks;
+                }
+                else if (data is System.Tuple<int, int> tuple)
+                {
+                    // 处理Tuple类型
+                    workerSubtasks = tuple.Item1;
+                    mutanterSubtasks = tuple.Item2;
+                }
+                
+                return string.Format(STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR.FAILURE.TOOLTIP, workerSubtasks, mutanterSubtasks);
+            };
+        }
+    }
+
 }

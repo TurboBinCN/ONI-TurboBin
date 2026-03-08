@@ -27,7 +27,7 @@ namespace TBB.He.TbbLib.SingleToneInstance
             {
                 if (ModSingletonManagerGameObject.GetComponent(t) == null)
                 {
-                    TbbDebuger.LogDebug($"[TbbSingleTone] 注册单例:[{nameof(t.Name)}]");
+                    TbbDebuger.LogDebug($"[TbbSingleTone] 注册单例:[{t.FullName}]");
                     ModSingletonManagerGameObject.AddComponent(t);
                 }
             }

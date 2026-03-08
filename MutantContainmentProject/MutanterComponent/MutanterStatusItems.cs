@@ -18,6 +18,7 @@ namespace MutantContainmentProject.MutanterComponent
         public StatusItem PsychologicalAttack;// (精神攻击): 畸变体正在使用精神攻击。
         public StatusItem ErosionAttack;// (侵蚀攻击): 畸变体正在使用侵蚀攻击。
         public StatusItem SoulAttack;// (灵魂攻击): 畸变体正在使用灵魂攻击。
+        public StatusItem BuildingDestruction;// (建筑破坏): 畸变体正在破坏建筑。
 
         private static MutanterStatusItems _instance;
         public static MutanterStatusItems Instance { get => _instance; }
@@ -92,6 +93,9 @@ namespace MutantContainmentProject.MutanterComponent
             ErosionAttack = CreateStatusItem("ErosionAttack", "MUTANTERS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, allow_multiples: false, OverlayModes.None.ID);
             
             SoulAttack = CreateStatusItem("SoulAttack", "MUTANTERS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, allow_multiples: false, OverlayModes.None.ID);
+            
+            BuildingDestruction = CreateStatusItem("BuildingDestruction", "MUTANTERS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, allow_multiples: false, OverlayModes.None.ID);
+            BuildingDestruction.AddNotification();
         }
     }
 }

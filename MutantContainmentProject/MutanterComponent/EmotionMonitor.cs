@@ -2,6 +2,7 @@ using Klei.AI;
 using MutantContainmentProject.MutanterEffect;
 using System;
 using System.Collections.Generic;
+using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.UI;
 using TBB.He.TbbLib.Utils;
 using UnityEngine;
@@ -26,12 +27,6 @@ namespace MutantContainmentProject.MutanterComponent
         // --- 常量定义 ---
         public const float MAX_INSANITY = 100f;
         public const float MIN_INSANITY = 0f;
-
-        // 从 MutanterStateMachine 获取探测范围，不再使用硬编码常量
-        public List<KPrefabID> threaters = new();
-        public List<KPrefabID> buildings = new();
-        public List<KPrefabID> plants = new();
-        public List<KPrefabID> creatures = new();
 
         public override void InitializeStates(out BaseState default_state)
         {
@@ -68,7 +63,7 @@ namespace MutantContainmentProject.MutanterComponent
 
         private void CalculateNewINSANITY(StatesInstance smi, float dt)
         {
-            SpaceProbe(smi, dt);
+            smi.SpaceProbe(smi, dt);
             float positiveImpact = 0f;
             float negativeImpact = 0f;
 
@@ -137,37 +132,7 @@ namespace MutantContainmentProject.MutanterComponent
             return impact;
         }
 
-        private void SpaceProbe(StatesInstance smi, float dt)
-        {
-            var BaseCell = Grid.PosToCell(smi);
-            //根据probelayer找到对应的植物、小人、建筑、动物等
-            if (smi.tbbRangeVisualizer == null || smi.MutanterStateMachineDef == null) return;
-            List<int> list_cells = TbbLimitedRoomSpaceBuilder.BuildRoom(BaseCell, smi.MutanterStateMachineDef.threatenRange);
-            //TbbDebuger.LogDebug($"[畸变收容所]SpaceProbe cell count:[{list_cells.Count}]");
-            //用于可视化显示威胁区域
-            smi.tbbRangeVisualizer.SetTargetCells(list_cells);
-            creatures.Clear();
-            threaters.Clear();
-            plants.Clear();
-            buildings.Clear();
-            for (int i = 0; i < list_cells.Count; i++)
-            {
-                //小动物
-                GameObject obj_gameobject = null;
-                if ((obj_gameobject = Grid.Objects[list_cells[i], (int)ObjectLayer.Pickupables]) != null && obj_gameobject.GetComponent<KPrefabID>() != smi.gameObject.GetComponent<KPrefabID>())
-                    creatures.Add(obj_gameobject.GetComponent<KPrefabID>());
-                //小人
-                if ((obj_gameobject = Grid.Objects[list_cells[i], (int)ObjectLayer.Minion]) != null)
-                    threaters.Add(obj_gameobject.GetComponent<KPrefabID>());
-                //植物
-                if ((obj_gameobject = Grid.Objects[list_cells[i], (int)ObjectLayer.Plants]) != null)
-                    plants.Add(obj_gameobject.GetComponent<KPrefabID>());
-                //建筑
-                if ((obj_gameobject = Grid.Objects[list_cells[i], (int)ObjectLayer.Building]) != null)
-                    buildings.Add(obj_gameobject.GetComponent<KPrefabID>());
-            }
 
-        }
         private float EvaluateNearbyCreatures(StatesInstance smi)
         {
             float impact = 0f;
@@ -179,7 +144,7 @@ namespace MutantContainmentProject.MutanterComponent
         private float EvaluateThreaters(StatesInstance smi)
         {
             float impact = 0f;
-            if (threaters.Count > 0)
+            if (smi.GetThreaters().Count > 0)
             {
                 impact += 2f;
                 var effects = smi.master.gameObject.GetComponent<Effects>();
@@ -226,6 +191,12 @@ namespace MutantContainmentProject.MutanterComponent
                     return mutanterStateMachineDef;
                 }
             }
+            
+            // 实例级别的列表，每个实例都有自己的列表
+            private List<KPrefabID> threaters = new();
+            private List<KPrefabID> buildings = new();
+            private List<KPrefabID> plants = new();
+            private List<KPrefabID> creatures = new();
             public StatesInstance(IStateMachineTarget master, Def def) : base(master, def)
             {
                 if (def.considerDecor)
@@ -249,11 +220,42 @@ namespace MutantContainmentProject.MutanterComponent
 
             public List<KPrefabID> GetThreaters()
             {
-                return sm.threaters;
+                return threaters;
             }
             public List<KPrefabID> GetBuildings()
             {
-                return sm.buildings;
+                return buildings;
+            }
+            public void SpaceProbe(StatesInstance smi, float dt)
+            {
+                var BaseCell = Grid.PosToCell(smi);
+                //根据probelayer找到对应的植物、小人、建筑、动物等
+                if (smi.tbbRangeVisualizer == null || smi.MutanterStateMachineDef == null) return;
+                List<int> list_cells = TbbLimitedRoomSpaceBuilder.BuildRoom(BaseCell, smi.MutanterStateMachineDef.threatenRange);
+                //用于可视化显示威胁区域
+                smi.tbbRangeVisualizer.SetTargetCells(list_cells);
+                smi.creatures.Clear();
+                smi.threaters.Clear();
+                smi.plants.Clear();
+                smi.buildings.Clear();
+                for (int i = 0; i < list_cells.Count; i++)
+                {
+                    //小动物
+                    GameObject obj_gameobject = null;
+                    if ((obj_gameobject = Grid.Objects[list_cells[i], (int)ObjectLayer.Pickupables]) != null && obj_gameobject.GetComponent<KPrefabID>() != smi.gameObject.GetComponent<KPrefabID>() && !smi.creatures.Contains(obj_gameobject.GetComponent<KPrefabID>()))
+                        smi.creatures.Add(obj_gameobject.GetComponent<KPrefabID>());
+                    //小人
+                    if ((obj_gameobject = Grid.Objects[list_cells[i], (int)ObjectLayer.Minion]) != null && !smi.threaters.Contains(obj_gameobject.GetComponent<KPrefabID>()))
+                        smi.threaters.Add(obj_gameobject.GetComponent<KPrefabID>());
+                    //植物
+                    if ((obj_gameobject = Grid.Objects[list_cells[i], (int)ObjectLayer.Plants]) != null && !smi.plants.Contains(obj_gameobject.GetComponent<KPrefabID>()))
+                        smi.plants.Add(obj_gameobject.GetComponent<KPrefabID>());
+                    //建筑
+                    if ((obj_gameobject = Grid.Objects[list_cells[i], (int)ObjectLayer.Building]) != null && !smi.buildings.Contains(obj_gameobject.GetComponent<KPrefabID>()))
+                    {
+                        smi.buildings.Add(obj_gameobject.GetComponent<KPrefabID>());
+                    }
+                }
             }
         }
         public class Def : BaseDef

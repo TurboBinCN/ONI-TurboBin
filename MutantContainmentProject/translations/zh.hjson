@@ -182,6 +182,13 @@
             NAME: 灵魂攻击
             TOOLTIP: 该实体正在使用灵魂攻击
         }
+        BUILDINGDESTRUCTION: {
+            NAME: 建筑破坏
+            TOOLTIP: 此建筑正在被畸变体破坏
+            NOTIFICATION_NAME: 畸变体正在破坏建筑
+            NOTIFICATION_TOOLTIP: 一个畸变体正在破坏建筑
+            POP_STRING: 畸变体破坏
+        }
         HEALING: {
             NAME: 治愈
             TOOLTIP: 该实体正在对目标执行治愈
@@ -247,6 +254,16 @@
         GRAVITASMUTANTERFOUNDERWORKING: {
             NAME: 汲取祭品能量
             TOOLTIP: "该祭坛正在从 <style=\"KKeyword\">祭品</style> 中汲取不稳定能量，用以生成畸变体"
+        }
+        CONTAINMENTMONITOR: {
+            SUCCESS: {
+                NAME: "收容措施执行成功"
+                TOOLTIP: "措施执行成功，进程：{0}/{1}"
+            }
+            FAILURE: {
+                NAME: "收容措施执行失败"
+                TOOLTIP: "措施执行失败，进程：{0}/{1}"
+            }
         }
       }
       NOTIFICATIONS: {
@@ -534,6 +551,10 @@
         CONTAINMENTMONITOREXTERIOR: {
           NAME: 中子质收容护壁
           DESCRIPTION: 房间需要中子质收容护壁
+        }
+        MUTANTER_COUNT: {
+          NAME: 只能容纳1只畸变体
+          DESCRIPTION: 收容室只能容纳1只畸变体
         }
       }
     }

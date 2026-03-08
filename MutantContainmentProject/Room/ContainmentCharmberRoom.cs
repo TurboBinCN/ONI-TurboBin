@@ -48,63 +48,82 @@ namespace MutantContainmentProject.Room
                 room_criteria: (global::Room room) =>
                 {
                     bool flag = true;
-                    HashSet<int> boundaryCells = new HashSet<int>();
+                    var cavity = room.cavity;
                     
-                    // 遍历房间的所有内部单元格，找到其相邻的边界单元格
-                    foreach (int cell in room.cavity.cells)
+                    // 遍历房间内的所有单元格，检查每个单元格的相邻单元格是否为边界
+                    for (int y = cavity.minY; flag && y <= cavity.maxY; y++)
                     {
-                        if (!Grid.IsValidCell(cell))
-                            continue;
-                        
-                        // 检查四个方向的相邻单元格
-                        int[] adjacentCells = new int[]
+                        for (int x = cavity.minX; flag && x <= cavity.maxX; x++)
                         {
-                            Grid.XYToCell(Grid.CellToXY(cell).x - 1, Grid.CellToXY(cell).y), // 左
-                            Grid.XYToCell(Grid.CellToXY(cell).x + 1, Grid.CellToXY(cell).y), // 右
-                            Grid.XYToCell(Grid.CellToXY(cell).x, Grid.CellToXY(cell).y - 1), // 下
-                            Grid.XYToCell(Grid.CellToXY(cell).x, Grid.CellToXY(cell).y + 1)  // 上
-                        };
-                        
-                        // 添加相邻的边界单元格到集合中
-                        foreach (int adjCell in adjacentCells)
-                        {
-                            if (Grid.IsValidCell(adjCell) && IsCavityBoundary(adjCell))
+                            int cell = Grid.XYToCell(x, y);
+                            // 只检查房间内的单元格
+                            if (cavity.cells.Contains(cell))
                             {
-                                boundaryCells.Add(adjCell);
+                                // 检查四个方向的相邻单元格
+                                int[] adjacentCells = new int[]
+                                {
+                                    Grid.XYToCell(x + 1, y), // 右
+                                    Grid.XYToCell(x - 1, y), // 左
+                                    Grid.XYToCell(x, y + 1), // 上
+                                    Grid.XYToCell(x, y - 1)  // 下
+                                };
+                                
+                                foreach (int adjCell in adjacentCells)
+                                {
+                                    // 检查相邻单元格是否有效且不在房间内
+                                    if (Grid.IsValidCell(adjCell) && !cavity.cells.Contains(adjCell))
+                                    {
+                                        // 这是一个边界单元格，检查是否为有效边界
+                                        if (!CheckBoundaryCell(adjCell))
+                                        {
+                                            flag = false;
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                     
-                    // 检查所有边界单元格是否是收容砖或门
-                    foreach (int boundaryCell in boundaryCells)
+                    return flag;
+                    
+                    bool CheckBoundaryCell(int cell)
                     {
-                        if (!flag)
-                            break;
-                        
                         // 检查该单元格是否有门
-                        if (Grid.HasDoor[boundaryCell])
-                            continue; // 门是有效的
+                        if (Grid.HasDoor[cell])
+                            return true; // 门是有效的
                         
                         // 检查该单元格是否有收容砖（只检查FoundationTile层，因为ContainmentTileConfig是FoundationTile）
-                        bool hasContainmentTile = false;
-                        
-                        // 检查地面层的对象
-                        GameObject foundationObj = Grid.Objects[boundaryCell, (int)ObjectLayer.FoundationTile];
-                        if (foundationObj != null && foundationObj.GetComponent<KPrefabID>()?.HasTag(MutanterTags.MutanterBuildings) == true)
-                        {
-                            hasContainmentTile = true;
-                        }
-                        
-                        if (!hasContainmentTile)
-                        {
-                            flag = false;
-                        }
+                        GameObject foundationObj = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
+                        return foundationObj != null && foundationObj.GetComponent<KPrefabID>()?.HasTag(MutanterTags.MutanterBuildings) == true;
                     }
-                    
-                    return flag;
                 },
                 name: STRINGS.ROOMS.CRITERIA.CONTAINMENTMONITOREXTERIOR.NAME,
                 description: STRINGS.ROOMS.CRITERIA.CONTAINMENTMONITOREXTERIOR.DESCRIPTION
+            );
+            
+            // --- 添加畸变体数量约束 --- 检查房间内只能有1只畸变体
+            var mutanterCountConstraint = new RoomConstraints.Constraint(
+                building_criteria: null,
+                room_criteria: (global::Room room) =>
+                {
+                    int mutanterCount = 0;
+                    
+                    // 遍历房间内的所有生物
+                    foreach (KPrefabID creature in room.creatures)
+                    {
+                        if (creature != null && creature.HasTag(MutanterTags.Mutanter))
+                        {
+                            mutanterCount++;
+                            if (mutanterCount > 1)
+                                break; // 超过1只，直接返回false
+                        }
+                    }
+                    
+                    return mutanterCount == 1;
+                },
+                name: STRINGS.ROOMS.CRITERIA.MUTANTER_COUNT.NAME,
+                description: STRINGS.ROOMS.CRITERIA.MUTANTER_COUNT.DESCRIPTION
             );
 
             // --- 5. 创建房间类型 ---
@@ -120,7 +139,8 @@ namespace MutantContainmentProject.Room
                 {
                     RoomConstraints.MINIMUM_SIZE_12,
                     RoomConstraints.MAXIMUM_SIZE_64,
-                    containmentWallConstraint
+                    containmentWallConstraint,
+                    mutanterCountConstraint
                 },
                 display_details: new RoomDetails.Detail[]
                     {
