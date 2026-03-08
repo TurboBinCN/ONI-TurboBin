@@ -5,6 +5,7 @@ using MutantContainmentProject.MutanterComponent;
 using MutantContainmentProject.MutanterEffect;
 using MutantContainmentProject.MutanterStoryStraits;
 using MutantContainmentProject.MutanterTraits;
+using MutantContainmentProject.Patches;
 using MutantContainmentProject.Room;
 using MutantContainmentProject.SideScreen;
 using MutantContainmentProject.Skills;
@@ -107,10 +108,9 @@ namespace MutantContainmentProject
                 //小人属性
                 TbbDuplicantsAttributes.Initialize(mod, harmony)
                     .Add(MutanterAttributes.AttributeBravery, MutanterAttributes.AttributeBraveryID)
-                    .Add(MutanterAttributes.AttributeMentalResistance, MutanterAttributes.AttributeMentalResistanceID)
-                    .Add(MutanterAttributes.AttributeSuccessRate, MutanterAttributes.AttributeSuccessRateID)
-                    .Add(MutanterAttributes.AttributeWorkingSpeed, MutanterAttributes.AttributeWorkingSpeedID)
-                    .Add(MutanterAttributes.AttributeAttackDamage, MutanterAttributes.AttributeAttackDamageID);
+                    .Add(MutanterAttributes.AttributeDefense, MutanterAttributes.AttributeDefenseID)
+                    .Add(MutanterAttributes.AttributeDiscipline, MutanterAttributes.AttributeDisciplineID)
+                    .Add(MutanterAttributes.AttributeRighteousness, MutanterAttributes.AttributeRighteousnessID);
                 
                 //属性转换器
                 TbbAttributeConverters.Initialize(mod,harmony)
@@ -119,36 +119,35 @@ namespace MutantContainmentProject
                 TbbChoreGroups.Initialize(mod, harmony)
                     .Add(MutanterChoreGroups.ChoreGroupContain)
                     .Add(MutanterChoreGroups.ChoreGroupBravery)
-                    .Add(MutanterChoreGroups.ChoreGroupMentalResistance)
+                    .Add(MutanterChoreGroups.ChoreGroupDefense)
                     .Add(MutanterChoreGroups.ChoreGroupDiscipline)
                     .Add(MutanterChoreGroups.ChoreGroupRighteousness);
                 //ChoreType
                 TbbChoreTypes.Initialize(mod, harmony)
                     .Add(MutanterChoreTypes.ChoreTypeContain)
-                    .Add(MutanterChoreTypes.ChoreTypeMentalResistance)
+                    .Add(MutanterChoreTypes.ChoreTypeDefense)
                     .Add(MutanterChoreTypes.ChoreTypeDiscipline)
                     .Add(MutanterChoreTypes.ChoreTypeRighteousness);
                 //SkillGroup
                 TbbSkillGroups.Initialize(mod, harmony)
                     .Add(MutanterSkillGroups.SkillGroupBravery)
-                    .Add(MutanterSkillGroups.SkillGroupMentalResistance)
+                    .Add(MutanterSkillGroups.SkillGroupDefense)
                     .Add(MutanterSkillGroups.SkillGroupDiscipline)
                     .Add(MutanterSkillGroups.SkillGroupRighteousness);
                 //SkillPerk 技能特性
                 TbbSkillPerks.Initialize(mod, harmony)
                     .Add(MutanterSkillPerks.SkillPerkContain)
-                    .Add(MutanterSkillPerks.SkillMentalResistancePower)
-                    .Add(MutanterSkillPerks.SkillSuccessRatePower)
-                    .Add(MutanterSkillPerks.SkillWorkingSpeedPower)
-                    .Add(MutanterSkillPerks.SkillAttackDamagePower);
+                    .Add(MutanterSkillPerks.SkillDefensePower)
+                    .Add(MutanterSkillPerks.SkillDisciplinePower)
+                    .Add(MutanterSkillPerks.SkillRighteousnessPower);
                 //技能
                 TbbSkills.Initialize(mod, harmony)
                     .Add(MutanterSkills.SkillBraveryI)
                     .Add(MutanterSkills.SkillBraveryII)
                     .Add(MutanterSkills.SkillBraveryIII)
-                    .Add(MutanterSkills.SkillMentalResistanceI)
-                    .Add(MutanterSkills.SkillMentalResistanceII)
-                    .Add(MutanterSkills.SkillMentalResistanceIII)
+                    .Add(MutanterSkills.SkillDefenseI)
+                    .Add(MutanterSkills.SkillDefenseII)
+                    .Add(MutanterSkills.SkillDefenseIII)
                     .Add(MutanterSkills.SkillDisciplineI)
                     .Add(MutanterSkills.SkillDisciplineII)
                     .Add(MutanterSkills.SkillDisciplineIII)

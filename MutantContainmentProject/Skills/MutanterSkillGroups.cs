@@ -8,12 +8,12 @@ namespace MutantContainmentProject.Skills
     public class MutanterSkillGroups
     {
         public static SkillGroup Bravery;
-        public static SkillGroup MentalResistance;
+        public static SkillGroup Defense;
         public static SkillGroup Discipline;
         public static SkillGroup Righteousness;
 
         public static string SkillGroupBraveryID = "Bravery";
-        public static string SkillGroupMentalResistanceID = "MentalResistance";
+        public static string SkillGroupDefenseID = "Defense";
         public static string SkillGroupDisciplineID = "Discipline";
         public static string SkillGroupRighteousnessID = "Righteousness";
         public static SkillGroup SkillGroupBravery()
@@ -41,38 +41,37 @@ namespace MutantContainmentProject.Skills
             return Bravery;
         }
 
-        public static SkillGroup SkillGroupMentalResistance()
+        public static SkillGroup SkillGroupDefense()
         {
-            MentalResistance = new MutanterSkillGroup(SkillGroupMentalResistanceID, MutanterChoreGroups.ChoreGroupMentalResistanceID, STRINGS.DUPLICANTS.SKILLGROUPS.MENTALRESISTANCE.NAME, "icon_errand_metal_resistance", "icon_archetype_metal_resistance");
-            MentalResistance.relevantAttributes = new List<Attribute>()
+            Defense = new MutanterSkillGroup(SkillGroupDefenseID, MutanterChoreGroups.ChoreGroupDefenseID, STRINGS.DUPLICANTS.SKILLGROUPS.DEFENSE.NAME, "icon_errand_metal_resistance", "icon_archetype_metal_resistance");
+            Defense.relevantAttributes = new List<Attribute>()
             {
-                Db.Get().Attributes.Get(MutanterAttributes.AttributeMentalResistanceID)
+                Db.Get().Attributes.Get(MutanterAttributes.AttributeDefenseID)
             };
-            MentalResistance.requiredChoreGroups = new List<string>();
-            MentalResistance.allowAsAptitude = true;
+            Defense.requiredChoreGroups = new List<string>();
+            Defense.allowAsAptitude = true;
 
-            // 为精神抗性技能组添加排除特质
-            if (!DUPLICANTSTATS.ARCHETYPE_TRAIT_EXCLUSIONS.ContainsKey(SkillGroupMentalResistanceID))
+            // 为防御技能组添加排除特质
+            if (!DUPLICANTSTATS.ARCHETYPE_TRAIT_EXCLUSIONS.ContainsKey(SkillGroupDefenseID))
             {
-                DUPLICANTSTATS.ARCHETYPE_TRAIT_EXCLUSIONS.Add(SkillGroupMentalResistanceID, new List<string>());
+                DUPLICANTSTATS.ARCHETYPE_TRAIT_EXCLUSIONS.Add(SkillGroupDefenseID, new List<string>());
             }
 
             // 添加技能组到ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY
             // 为空列表，表示这些技能组与仿生小人的特质不兼容，不会在仿生小人上生成
-            if (!DUPLICANTSTATS.ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY.ContainsKey(SkillGroupMentalResistanceID))
+            if (!DUPLICANTSTATS.ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY.ContainsKey(SkillGroupDefenseID))
             {
-                DUPLICANTSTATS.ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY.Add(SkillGroupMentalResistanceID, new List<string>());
+                DUPLICANTSTATS.ARCHETYPE_BIONIC_TRAIT_COMPATIBILITY.Add(SkillGroupDefenseID, new List<string>());
             }
-            return MentalResistance;
+            return Defense;
         }
 
         public static SkillGroup SkillGroupDiscipline()
         {
             Discipline = new MutanterSkillGroup(SkillGroupDisciplineID, MutanterChoreGroups.ChoreGroupDisciplineID, STRINGS.DUPLICANTS.SKILLGROUPS.DISCIPLINE.NAME, "icon_errand_discipline", "icon_archetype_discipline");
-            Discipline.relevantAttributes = new List<Attribute>()
+            Discipline.relevantAttributes = new List<Attribute>
             {
-                Db.Get().Attributes.Get(MutanterAttributes.AttributeSuccessRateID),
-                Db.Get().Attributes.Get(MutanterAttributes.AttributeWorkingSpeedID)
+                Db.Get().Attributes.Get(MutanterAttributes.AttributeDisciplineID)
             };
             Discipline.requiredChoreGroups = new List<string>();
             Discipline.allowAsAptitude = true;
@@ -95,9 +94,9 @@ namespace MutantContainmentProject.Skills
         public static SkillGroup SkillGroupRighteousness()
         {
             Righteousness = new MutanterSkillGroup(SkillGroupRighteousnessID, MutanterChoreGroups.ChoreGroupRighteousnessID, STRINGS.DUPLICANTS.SKILLGROUPS.RIGHTEOUSNESS.NAME, "icon_errand_righteousness", "icon_archetype_righteousness");
-            Righteousness.relevantAttributes = new List<Attribute>()
+            Righteousness.relevantAttributes = new List<Attribute>
             {
-                Db.Get().Attributes.Get(MutanterAttributes.AttributeAttackDamageID)
+                Db.Get().Attributes.Get(MutanterAttributes.AttributeRighteousnessID)
             };
             Righteousness.requiredChoreGroups = new List<string>();
             Righteousness.allowAsAptitude = true;

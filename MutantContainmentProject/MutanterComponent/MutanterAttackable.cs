@@ -25,15 +25,37 @@ namespace MutantContainmentProject.MutanterComponent
             this.skillExperienceMultiplier = SKILLS.MOST_DAY_EXPERIENCE;
         }
 
+        // 获取攻击速度倍数
+        public float GetAttackSpeedMultiplier()
+        {
+            if (this.worker != null)
+            {
+                var attackSpeedConverter = Db.Get().AttributeConverters.Get(MutanterAttributeConverters.AttributeAttackSpeedConverterID);
+                if (attackSpeedConverter != null)
+                {
+                    var converterInstance = attackSpeedConverter.Lookup(this.worker.gameObject);
+                    if (converterInstance != null)
+                    {
+                        return Mathf.Max(0.1f, 1f + converterInstance.Evaluate());
+                    }
+                }
+            }
+            return 1f;
+        }
+
         public override float GetEfficiencyMultiplier(WorkerBase worker)
         {
             // 计算攻击效率倍数，基于小人的攻击伤害属性
             if (worker != null)
             {
-                var attribute = Db.Get().Attributes.Get(MutanterAttributes.AttributeAttackDamageID);
-                if (attribute != null)
+                var attackDamageConverter = Db.Get().AttributeConverters.Get(MutanterAttributeConverters.AttributeAttackDamageConverterID);
+                if (attackDamageConverter != null)
                 {
-                    return Mathf.Max(1f + worker.GetAttributeConverter(attribute.Id).Evaluate(), 0.1f);
+                    var converterInstance = attackDamageConverter.Lookup(worker.gameObject);
+                    if (converterInstance != null)
+                    {
+                        return Mathf.Max(1f + converterInstance.Evaluate(), 0.1f);
+                    }
                 }
             }
             return 1f;
@@ -44,10 +66,14 @@ namespace MutantContainmentProject.MutanterComponent
             // 计算伤害倍数，基于小人的攻击伤害属性
             if (this.worker != null)
             {
-                var attribute = Db.Get().Attributes.Get(MutanterAttributes.AttributeAttackDamageID);
-                if (attribute != null)
+                var attackDamageConverter = Db.Get().AttributeConverters.Get(MutanterAttributeConverters.AttributeAttackDamageConverterID);
+                if (attackDamageConverter != null)
                 {
-                    return Mathf.Max(1f + this.worker.GetAttributeConverter(attribute.Id).Evaluate(), 0.1f);
+                    var converterInstance = attackDamageConverter.Lookup(this.worker.gameObject);
+                    if (converterInstance != null)
+                    {
+                        return Mathf.Max(1f + converterInstance.Evaluate(), 0.1f);
+                    }
                 }
             }
             return 1f;

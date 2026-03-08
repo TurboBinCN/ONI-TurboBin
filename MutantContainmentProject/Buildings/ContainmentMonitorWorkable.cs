@@ -44,10 +44,10 @@ namespace MutantContainmentProject.Buildings
             synchronizeAnims = true;
 
             // 设置属性转换器为工作速度
-            attributeConverter = Db.Get().AttributeConverters.Get(MutanterAttributeConverters.AttributeWorkingSpeedConverterID);
+            attributeConverter = Db.Get().AttributeConverters.Get(MutanterAttributeConverters.AttributeContainmentSpeedConverterID);
             // 添加log验证转换器是否正常工作
             TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 属性转换器: {attributeConverter?.Id ?? "null"}");
-            TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 转换器ID: {MutanterAttributeConverters.AttributeWorkingSpeedConverterID}");
+            TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 转换器ID: {MutanterAttributeConverters.AttributeContainmentSpeedConverterID}");
             attributeExperienceMultiplier = DUPLICANTSTATS.ATTRIBUTE_LEVELING.MOST_DAY_EXPERIENCE;
             skillExperienceSkillGroup = MutanterSkillGroups.SkillGroupDisciplineID;
             skillExperienceMultiplier = SKILLS.MOST_DAY_EXPERIENCE;
@@ -94,20 +94,40 @@ namespace MutantContainmentProject.Buildings
             Modifiers modifiers = workerGameObject.GetComponent<Modifiers>();
             if (modifiers != null)
             {
-                var workingSpeedInstance = modifiers.attributes.Get(MutanterAttributes.AttributeWorkingSpeedID);
-                var successRateInstance = modifiers.attributes.Get(MutanterAttributes.AttributeSuccessRateID);
+                var disciplineInstance = modifiers.attributes.Get(MutanterAttributes.AttributeDisciplineID);
                 
-                // 检查属性值
-                float workingSpeedValue = workingSpeedInstance.GetTotalValue();
-                float successRateValue = successRateInstance.GetTotalValue();
+                // 获取转换器实例
+                var containmentSpeedConverter = Db.Get().AttributeConverters.Get(MutanterAttributeConverters.AttributeContainmentSpeedConverterID);
+                var safetyMeasureSuccessRateConverter = Db.Get().AttributeConverters.Get(MutanterAttributeConverters.AttributeSafetyMeasureSuccessRateConverterID);
                 
-                Debug.Log($"[ContainmentMonitorWorkable] 原始属性值 - 工作速度: {workingSpeedValue}, 成功率: {successRateValue}");
-                Debug.Log($"[ContainmentMonitorWorkable] maxGainLevel: {maxGainLevel}");
+                // 计算收容速度因子
+                float containmentSpeedFactor = 1f;
+                if (containmentSpeedConverter != null)
+                {
+                    var converterInstance = containmentSpeedConverter.Lookup(worker.gameObject);
+                    if (converterInstance != null)
+                    {
+                        containmentSpeedFactor = Mathf.Max(0.5f, 1f + converterInstance.Evaluate());
+                    }
+                }
                 
-                workerWorkingSpeedFactor = workingSpeedValue / maxGainLevel;
-                workerWorkingSpeedFactor = Mathf.Max(0.5f, workerWorkingSpeedFactor); // 确保最小工作速度
-                workerSuccessRateFactor = successRateValue / maxGainLevel;
-                workerSuccessRateFactor = Mathf.Max(0.5f, workerSuccessRateFactor); // 提高最小成功率
+                // 计算安全措施成功率因子
+                float safetyMeasureSuccessRateFactor = 1f;
+                if (safetyMeasureSuccessRateConverter != null)
+                {
+                    var converterInstance = safetyMeasureSuccessRateConverter.Lookup(worker.gameObject);
+                    if (converterInstance != null)
+                    {
+                        safetyMeasureSuccessRateFactor = Mathf.Max(0.5f, 0.5f + converterInstance.Evaluate());
+                    }
+                }
+                
+                // 综合计算最终因子
+                workerWorkingSpeedFactor = containmentSpeedFactor;
+                workerSuccessRateFactor = safetyMeasureSuccessRateFactor;
+                
+                Debug.Log($"[ContainmentMonitorWorkable] 工作速度因子: {workerWorkingSpeedFactor}, 成功率因子: {workerSuccessRateFactor}");
+                Debug.Log($"[ContainmentMonitorWorkable] 收容速度: {containmentSpeedFactor}, 安全措施成功率: {safetyMeasureSuccessRateFactor}");
 
                 // 调试日志
                 Debug.Log($"[ContainmentMonitorWorkable] 工作速度因子: {workerWorkingSpeedFactor}, 成功率因子: {workerSuccessRateFactor}");

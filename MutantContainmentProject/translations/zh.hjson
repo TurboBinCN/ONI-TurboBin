@@ -279,21 +279,17 @@
           NAME: 勇气
           DESC: 增加生命值
         }
-        MENTALRESISTANCE: {
-          NAME: 精神抗性
-          DESC: 减少精神攻击带来的压力
+        DEFENSE: {
+          NAME: 防御
+          DESC: 减少物理和精神攻击带来的伤害
         }
-        SUCCESSRATE: {
-          NAME: 成功率
-          DESC: 增加任务成功率
+        DISCIPLINE: {
+          NAME: 自律
+          DESC: 增加收容速度和安全措施成功率
         }
-        WORKINGSPEED: {
-          NAME: 工作速度
-          DESC: 增加工作速度
-        }
-        ATTACKDAMAGE: {
-          NAME: 攻击伤害
-          DESC: 增加对畸变体的攻击伤害
+        RIGHTEOUSNESS: {
+          NAME: 正义
+          DESC: 增加对畸变体的攻击伤害和攻击速度
         }
       }
       ROLES: {
@@ -306,41 +302,41 @@
         BAVERYIII: {
           NAME: 勇气III
         }
-        MENTALRESISTANCEI: {
-          NAME: 精神抗性I
+        DEFENSEI: {
+          NAME: 防御I
         }
-        MENTALRESISTANCEII: {
-          NAME: 精神抗性II
+        DEFENSEII: {
+          NAME: 防御II
         }
-        MENTALRESISTANCEIII: {
-          NAME: 精神抗性III
+        DEFENSEIII: {
+          NAME: 防御III
         }
-        SUCCESSRATEI: {
-          NAME: 成功率I
+        DISCIPLINEI: {
+          NAME: 自律I
         }
-        SUCCESSRATEII: {
-          NAME: 成功率II
+        DISCIPLINEII: {
+          NAME: 自律II
         }
-        SUCCESSRATEIII: {
-          NAME: 成功率III
+        DISCIPLINEIII: {
+          NAME: 自律III
         }
-        WORKINGSPEEDI: {
-          NAME: 工作速度I
+        RIGHTEOUSNESSI: {
+          NAME: 正义I
         }
-        WORKINGSPEEDII: {
-          NAME: 工作速度II
+        RIGHTEOUSNESSII: {
+          NAME: 正义II
         }
-        WORKINGSPEEDIII: {
-          NAME: 工作速度III
+        RIGHTEOUSNESSIII: {
+          NAME: 正义III
         }
-        MENTALRESISTANCEI: {
-          NAME: 精神抗性I
+        ATTACKSPEEDI: {
+          NAME: 攻击速度I
         }
-        MENTALRESISTANCEII: {
-          NAME: 精神抗性II
+        ATTACKSPEEDII: {
+          NAME: 攻击速度II
         }
-        MENTALRESISTANCEIII: {
-          NAME: 精神抗性III
+        ATTACKSPEEDIII: {
+          NAME: 攻击速度III
         }
       }
       CHOREGROUPS: {
@@ -354,10 +350,10 @@
           ARCHETYPE_NAME: 守护者
           DESC: 需要勇气执行的任务；处理畸变体时可提升最大生命值
         }
-        MENTALRESISTANCE: {
-          NAME: 精神抗性
-          ARCHETYPE_NAME: 心灵守卫
-          DESC: 需要精神韧性执行的任务；提升对畸变体精神攻击的抗性
+        DEFENSE: {
+          NAME: 防御
+          ARCHETYPE_NAME: 守护者
+          DESC: 需要防御能力执行的任务；提升对畸变体物理和精神攻击的抗性
         }
         DISCIPLINE: {
           NAME: 自律
@@ -379,9 +375,9 @@
           NAME: 勇气
           DESC: 需要勇气执行的任务；处理畸变体时可提升最大生命值
         }
-        MENTALRESISTANCE: {
-          NAME: 精神抗性
-          DESC: 需要精神韧性执行的任务；提升对畸变体精神攻击的抗性
+        DEFENSE: {
+          NAME: 防御
+          DESC: 需要防御能力执行的任务；提升对畸变体物理和精神攻击的抗性
         }
         DISCIPLINE: {
           NAME: 自律
@@ -398,10 +394,10 @@
           STATUS: 正在进行收容
           TOOLTIP: 收容这个实体
         }
-        MENTALRESISTANCE: {
-          NAME: 精神抗性
-          STATUS: 正在进行精神抗性训练
-          TOOLTIP: 减少精神攻击带来的压力
+        DEFENSE: {
+          NAME: 防御
+          STATUS: 正在进行防御训练
+          TOOLTIP: 减少物理和精神攻击带来的伤害
         }
         DISCIPLINE: {
           NAME: 自律
@@ -428,42 +424,49 @@
         NAME: 勇气 III
         DESCRIPTION: 增加10点生命值
       }
-      MENTALRESISTANCEI: {
-        NAME: 精神抗性 I
-        DESCRIPTION: 精神抗性 I 减少精神攻击带来的压力
+      DEFENSEI: {
+        NAME: 防御 I
+        DESCRIPTION: 防御 I 减少物理和精神攻击带来的伤害
       }
-      MENTALRESISTANCEII: {
-        NAME: 精神抗性 II
-        DESCRIPTION: 精神抗性 II 减少精神攻击带来的压力
+      DEFENSEII: {
+        NAME: 防御 II
+        DESCRIPTION: 防御 II 减少物理和精神攻击带来的伤害
       }
-      MENTALRESISTANCEIII: {
-        NAME: 精神抗性 III
-        DESCRIPTION: 精神抗性 III 减少精神攻击带来的压力
+      DEFENSEIII: {
+        NAME: 防御 III
+        DESCRIPTION: 防御 III 减少物理和精神攻击带来的伤害
       }
       DISCIPLINEI: {
         NAME: 自律 I
-        DESCRIPTION: 自律 I 增加成功率/工作速度
+        DESCRIPTION: 自律 I 增加收容速度和安全措施成功率
       }
       DISCIPLINEII: {
         NAME: 自律 II
-        DESCRIPTION: 自律 II 增加成功率/工作速度
+        DESCRIPTION: 自律 II 增加收容速度和安全措施成功率
       }
       DISCIPLINEIII: {
         NAME: 自律 III
-        DESCRIPTION: 自律 III 增加成功率/工作速度
+        DESCRIPTION: 自律 III 增加收容速度和安全措施成功率
       }
       RIGHTEOUSNESSI: {
         NAME: 正义 I
-        DESCRIPTION: 正义 I 增加攻击伤害
+        DESCRIPTION: 正义 I 增加对畸变体的攻击伤害和攻击速度
       }
       RIGHTEOUSNESSII: {
         NAME: 正义 II
-        DESCRIPTION: 正义 II 增加攻击伤害
+        DESCRIPTION: 正义 II 增加对畸变体的攻击伤害和攻击速度
       }
       RIGHTEOUSNESSIII: {
         NAME: 正义 III
-        DESCRIPTION: 正义 III 增加攻击伤害
+        DESCRIPTION: 正义 III 增加对畸变体的攻击伤害和攻击速度
       }
+      CONVERTED_ATTRIBUTES: 转换属性
+      PHYSICAL_DEFENSE: 物理防御
+      MENTAL_DEFENSE: 精神防御
+      CONTAINMENT_SPEED: 收容速度
+      SAFETY_MEASURE_SUCCESS_RATE: 安全措施成功率
+      ATTACK_DAMAGE: 攻击伤害
+      ATTACK_SPEED: 攻击速度
     }
     TRAITS: {
       PHYSICAL: {

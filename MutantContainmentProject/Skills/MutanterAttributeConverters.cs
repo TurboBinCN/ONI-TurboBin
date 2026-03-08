@@ -5,61 +5,105 @@ namespace MutantContainmentProject.Skills
 {
     public class MutanterAttributeConverters
     {
-        public static string AttributeWorkingSpeedConverterID = "WorkingSpeedConverter";
         public static string AttributeAttackDamageConverterID = "AttackDamageConverter";
+        public static string AttributeAttackSpeedConverterID = "AttackSpeedConverter";
+        public static string AttributePhysicalDefenseConverterID = "PhysicalDefenseConverter";
+        public static string AttributeMentalDefenseConverterID = "MentalDefenseConverter";
+        public static string AttributeContainmentSpeedConverterID = "ContainmentSpeedConverter";
+        public static string AttributeSafetyMeasureSuccessRateConverterID = "SafetyMeasureSuccessRateConverter";
 
         public static void RegisterAttributeConverters(AttributeConverters __instance)
         {
-            Debug.Log("[MutanterAttributeConverters] RegisterAttributeConverters called");
-            
             // 获取属性
-            var workingSpeedAttribute = Db.Get().Attributes.Get(MutanterAttributes.AttributeWorkingSpeedID);
-            var attackDamageAttribute = Db.Get().Attributes.Get(MutanterAttributes.AttributeAttackDamageID);
-
-            Debug.Log("[MutanterAttributeConverters] workingSpeedAttribute: " + (workingSpeedAttribute != null ? workingSpeedAttribute.Id : "null"));
-            Debug.Log("[MutanterAttributeConverters] attackDamageAttribute: " + (attackDamageAttribute != null ? attackDamageAttribute.Id : "null"));
+            var disciplineAttribute = Db.Get().Attributes.Get(MutanterAttributes.AttributeDisciplineID);
+            var righteousnessAttribute = Db.Get().Attributes.Get(MutanterAttributes.AttributeRighteousnessID);
+            var defenseAttribute = Db.Get().Attributes.Get(MutanterAttributes.AttributeDefenseID);
 
             // 创建百分比格式化器
             var percentFormatter = new ToPercentAttributeFormatter(1f);
 
-            // 创建工作速度转换器
-            if (workingSpeedAttribute != null)
+            // 创建物理防御转换器
+            if (defenseAttribute != null)
             {
-                Debug.Log("[MutanterAttributeConverters] Creating WorkingSpeedConverter");
                 __instance.Create(
-                    AttributeWorkingSpeedConverterID,
-                    "Working Speed",
-                    "Increases containment work speed",
-                    workingSpeedAttribute,
-                    0.1f, // 每级增加10%工作速度
+                    AttributePhysicalDefenseConverterID,
+                    STRINGS.SKILLS.PHYSICAL_DEFENSE,
+                    "Reduces physical damage taken",
+                    defenseAttribute,
+                    0.05f, // 每级减少5%物理伤害
                     0.0f,
                     percentFormatter
                 );
-                Debug.Log("[MutanterAttributeConverters] WorkingSpeedConverter created");
             }
-            else
+
+            // 创建精神防御转换器
+            if (defenseAttribute != null)
             {
-                Debug.Log("[MutanterAttributeConverters] workingSpeedAttribute is null, skipping WorkingSpeedConverter creation");
+                __instance.Create(
+                    AttributeMentalDefenseConverterID,
+                    STRINGS.SKILLS.MENTAL_DEFENSE,
+                    "Reduces mental damage taken",
+                    defenseAttribute,
+                    0.07f, // 每级减少7%精神伤害
+                    0.0f,
+                    percentFormatter
+                );
+            }
+
+            // 创建收容速度转换器
+            if (disciplineAttribute != null)
+            {
+                __instance.Create(
+                    AttributeContainmentSpeedConverterID,
+                    STRINGS.SKILLS.CONTAINMENT_SPEED,
+                    "Increases containment work speed",
+                    disciplineAttribute,
+                    0.06f, // 每级增加6%收容速度
+                    0.0f,
+                    percentFormatter
+                );
+            }
+
+            // 创建安全措施成功率转换器
+            if (disciplineAttribute != null)
+            {
+                __instance.Create(
+                    AttributeSafetyMeasureSuccessRateConverterID,
+                    STRINGS.SKILLS.SAFETY_MEASURE_SUCCESS_RATE,
+                    "Increases safety measure success rate",
+                    disciplineAttribute,
+                    0.08f, // 每级增加8%安全措施成功率
+                    0.0f,
+                    percentFormatter
+                );
             }
 
             // 创建攻击伤害转换器
-            if (attackDamageAttribute != null)
+            if (righteousnessAttribute != null)
             {
-                Debug.Log("[MutanterAttributeConverters] Creating AttackDamageConverter");
                 __instance.Create(
                     AttributeAttackDamageConverterID,
-                    "Attack Damage",
+                    STRINGS.SKILLS.ATTACK_DAMAGE,
                     "Increases damage against mutanters",
-                    attackDamageAttribute,
+                    righteousnessAttribute,
                     0.1f, // 每级增加10%攻击伤害
                     0.0f,
                     percentFormatter
                 );
-                Debug.Log("[MutanterAttributeConverters] AttackDamageConverter created");
             }
-            else
+
+            // 创建攻击速度转换器
+            if (righteousnessAttribute != null)
             {
-                Debug.Log("[MutanterAttributeConverters] attackDamageAttribute is null, skipping AttackDamageConverter creation");
+                __instance.Create(
+                    AttributeAttackSpeedConverterID,
+                    STRINGS.SKILLS.ATTACK_SPEED,
+                    "Increases attack speed against mutanters",
+                    righteousnessAttribute,
+                    0.08f, // 每级增加8%攻击速度
+                    0.0f,
+                    percentFormatter
+                );
             }
         }
     }

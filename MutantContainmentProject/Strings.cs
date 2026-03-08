@@ -217,6 +217,15 @@ namespace MutantContainmentProject
                     public static LocString NAME = "Soul Attack";
                     public static LocString TOOLTIP = "The entity is using soul attack.";
                 }
+                public static class BUILDINGDESTRUCTION
+                {
+                    public static LocString NAME = "Building Destruction";
+                    public static LocString TOOLTIP = "This building is being destroyed by a mutanter.";
+                    public static LocString NOTIFICATION_NAME = "Mutanter is destroying a building";
+                    public static LocString NOTIFICATION_TOOLTIP = "A mutanter is destroying a building.";
+                    public static string SOURCE = "MutanterDestruction";
+                    public static LocString POP_STRING = "Mutanter Destruction";
+                }
                 public static class HEALING
                 {
                     public static LocString NAME = "Healing";
@@ -323,6 +332,19 @@ namespace MutantContainmentProject
                     "  to generate an Aberrant Entity"
                     });
                 }
+                public static class CONTAINMENTMONITOR
+                {
+                    public static class SUCCESS
+                    {
+                        public static LocString NAME = "收容措施执行成功";
+                        public static LocString TOOLTIP = "措施执行成功，进程：{0}/{1}";
+                    }
+                    public static class FAILURE
+                    {
+                        public static LocString NAME = "收容措施执行失败";
+                        public static LocString TOOLTIP = "措施执行失败，进程：{0}/{1}";
+                    }
+                }
             }
             public static class NOTIFICATIONS {
                 public static class GRAVITASMUTANTERFOUNDER{
@@ -340,25 +362,20 @@ namespace MutantContainmentProject
                     public static LocString NAME = "Bravery";
                     public static LocString DESC = "Increases hit points";
                 }
-                public static class MENTALRESISTANCE
+                public static class DEFENSE
                 {
-                    public static LocString NAME = "Mental Resistance";
-                    public static LocString DESC = "Reduces stress from psychological attacks";
+                    public static LocString NAME = "Defense";
+                    public static LocString DESC = "Reduces damage from physical and psychological attacks";
                 }
-                public static class SUCCESSRATE
+                public static class DISCIPLINE
                 {
-                    public static LocString NAME = "Success Rate";
-                    public static LocString DESC = "Increases success rate for tasks";
+                    public static LocString NAME = "Discipline";
+                    public static LocString DESC = "Increases containment speed and safety measure success rate";
                 }
-                public static class WORKINGSPEED
+                public static class RIGHTEOUSNESS
                 {
-                    public static LocString NAME = "Working Speed";
-                    public static LocString DESC = "Increases working speed";
-                }
-                public static class ATTACKDAMAGE
-                {
-                    public static LocString NAME = "Attack Damage";
-                    public static LocString DESC = "Increases attack damage against mutanters";
+                    public static LocString NAME = "Righteousness";
+                    public static LocString DESC = "Increases attack damage and attack speed against mutanters";
                 }
             }
             public static class ROLES
@@ -375,53 +392,53 @@ namespace MutantContainmentProject
                 {
                     public static LocString NAME = "BaveryIII";
                 }
-                public static class MENTALRESISTANCEI
+                public static class DEFENSEI
                 {
-                    public static LocString NAME = "MentalResistanceI";
+                    public static LocString NAME = "DefenseI";
                 }
-                public static class MENTALRESISTANCEII
+                public static class DEFENSEII
                 {
-                    public static LocString NAME = "MentalResistanceII";
+                    public static LocString NAME = "DefenseII";
                 }
-                public static class MENTALRESISTANCEIII
+                public static class DEFENSEIII
                 {
-                    public static LocString NAME = "MentalResistanceIII";
+                    public static LocString NAME = "DefenseIII";
                 }
-                public static class SUCCESSRATEI
+                public static class DISCIPLINEI
                 {
-                    public static LocString NAME = "SuccessRateI";
+                    public static LocString NAME = "DisciplineI";
                 }
-                public static class SUCCESSRATEII
+                public static class DISCIPLINEII
                 {
-                    public static LocString NAME = "SuccessRateII";
+                    public static LocString NAME = "DisciplineII";
                 }
-                public static class SUCCESSRATEIII
+                public static class DISCIPLINEIII
                 {
-                    public static LocString NAME = "SuccessRateIII";
+                    public static LocString NAME = "DisciplineIII";
                 }
-                public static class WORKINGSPEEDI
+                public static class RIGHTEOUSNESSI
                 {
-                    public static LocString NAME = "WorkingSpeedI";
+                    public static LocString NAME = "RighteousnessI";
                 }
-                public static class WORKINGSPEEDII
+                public static class RIGHTEOUSNESSII
                 {
-                    public static LocString NAME = "WorkingSpeedII";
+                    public static LocString NAME = "RighteousnessII";
                 }
-                public static class WORKINGSPEEDIII
+                public static class RIGHTEOUSNESSIII
                 {
-                    public static LocString NAME = "WorkingSpeedIII";
+                    public static LocString NAME = "RighteousnessIII";
                 }
-                public static class ATTACKDAMAGEI
+                public static class ATTACKSPEEDI
                 {
-                    public static LocString NAME = "AttackDamageI";
+                    public static LocString NAME = "AttackSpeedI";
                 }
-                public static class ATTACKDAMAGEII
+                public static class ATTACKSPEEDII
                 {
-                    public static LocString NAME = "AttackDamageII";
+                    public static LocString NAME = "AttackSpeedII";
                 }
-                public static class ATTACKDAMAGEIII
+                public static class ATTACKSPEEDIII
                 {
-                    public static LocString NAME = "AttackDamageIII";
+                    public static LocString NAME = "AttackSpeedIII";
                 }
             }
             public static class CHOREGROUPS
@@ -438,11 +455,11 @@ namespace MutantContainmentProject
                     public static LocString ARCHETYPE_NAME = "Guardian";
                     public static LocString DESC = "Tasks that require courage; increases maximum health when handling aberrant entities";
                 }
-                public static class MENTALRESISTANCE
+                public static class DEFENSE
                 {
-                    public static LocString NAME = "Mental Resistance";
-                    public static LocString ARCHETYPE_NAME = "Psyche Ward";
-                    public static LocString DESC = "Tasks that require mental fortitude; increases resistance to psychological attacks from aberrant entities";
+                    public static LocString NAME = "Defense";
+                    public static LocString ARCHETYPE_NAME = "Defender";
+                    public static LocString DESC = "Tasks that require defensive capabilities; increases resistance to physical and psychological attacks from aberrant entities";
                 }
                 public static class DISCIPLINE
                 {
@@ -470,10 +487,10 @@ namespace MutantContainmentProject
                     public static LocString NAME = "Bravery";
                     public static LocString DESC = "Skills related to bravery";
                 }
-                public static class MENTALRESISTANCE
+                public static class DEFENSE
                 {
-                    public static LocString NAME = "Mental Resistance";
-                    public static LocString DESC = "Skills related to mental resistance";
+                    public static LocString NAME = "Defense";
+                    public static LocString DESC = "Skills related to defense against physical and psychological attacks";
                 }
                 public static class DISCIPLINE
                 {
@@ -494,11 +511,11 @@ namespace MutantContainmentProject
                     public static LocString STATUS = "Go to Containing...";
                     public static LocString TOOLTIP = "Contain the entity.";
                 }
-                public static class MENTALRESISTANCE
+                public static class DEFENSE
                 {
-                    public static LocString NAME = "Mental Resistance";
-                    public static LocString STATUS = "Mental Resistance";
-                    public static LocString TOOLTIP = "Reduce stress from psychological attacks.";
+                    public static LocString NAME = "Defense";
+                    public static LocString STATUS = "Defense";
+                    public static LocString TOOLTIP = "Reduce damage from physical and psychological attacks.";
                 }
                 public static class DISCIPLINE
                 {
@@ -531,51 +548,58 @@ namespace MutantContainmentProject
                 public static LocString NAME = "Bravery III";
                 public static LocString DESCRIPTION = "Increase 10 hit points";
             }
-            public static class MENTALRESISTANCEI
+            public static class DEFENSEI
             {
-                public static LocString NAME = "Mental Resistance I";
-                public static LocString DESCRIPTION = "Mental Resistance I. Reduce stress from psychological attacks.";
+                public static LocString NAME = "Defense I";
+                public static LocString DESCRIPTION = "Defense I. Reduce damage from physical and psychological attacks.";
             }
-            public static class MENTALRESISTANCEII
+            public static class DEFENSEII
             {
-                public static LocString NAME = "Mental Resistance II";
-                public static LocString DESCRIPTION = "Mental Resistance II. Reduce stress from psychological attacks.";
+                public static LocString NAME = "Defense II";
+                public static LocString DESCRIPTION = "Defense II. Reduce damage from physical and psychological attacks.";
             }
-            public static class MENTALRESISTANCEIII
+            public static class DEFENSEIII
             {
-                public static LocString NAME = "Mental Resistance III";
-                public static LocString DESCRIPTION = "Mental Resistance III. Reduce stress from psychological attacks.";
+                public static LocString NAME = "Defense III";
+                public static LocString DESCRIPTION = "Defense III. Reduce damage from physical and psychological attacks.";
             }
             public static class DISCIPLINEI
             {
-                public static LocString NAME = "Self-Discipline I";
-                public static LocString DESCRIPTION = "Self-Discipline III.Increase Success Rate/Working Speed";
+                public static LocString NAME = "Discipline I";
+                public static LocString DESCRIPTION = "Discipline I. Increase containment speed and safety measure success rate.";
             }
             public static class DISCIPLINEII
             {
-                public static LocString NAME = "Self-Discipline II";
-                public static LocString DESCRIPTION = "Self-Discipline III.Increase Success Rate/Working Speed";
+                public static LocString NAME = "Discipline II";
+                public static LocString DESCRIPTION = "Discipline II. Increase containment speed and safety measure success rate.";
             }
             public static class DISCIPLINEIII
             {
-                public static LocString NAME = "Self-Discipline III";
-                public static LocString DESCRIPTION = "Self-Discipline III.Increase Success Rate/Working Speed";
+                public static LocString NAME = "Discipline III";
+                public static LocString DESCRIPTION = "Discipline III. Increase containment speed and safety measure success rate.";
             }
             public static class RIGHTEOUSNESSI
             {
                 public static LocString NAME = "Righteousness I";
-                public static LocString DESCRIPTION = "Righteousness I.Increase Attack Damage";
+                public static LocString DESCRIPTION = "Righteousness I. Increase attack damage and attack speed against mutanters.";
             }
             public static class RIGHTEOUSNESSII
             {
                 public static LocString NAME = "Righteousness II";
-                public static LocString DESCRIPTION = "Righteousness II.Increase Attack Damage";
+                public static LocString DESCRIPTION = "Righteousness II. Increase attack damage and attack speed against mutanters.";
             }
             public static class RIGHTEOUSNESSIII
             {
                 public static LocString NAME = "Righteousness III";
-                public static LocString DESCRIPTION = "Righteousness III.Increase Attack Damage";
+                public static LocString DESCRIPTION = "Righteousness III. Increase attack damage and attack speed against mutanters.";
             }
+            public static LocString CONVERTED_ATTRIBUTES = "Converted Attributes";
+            public static LocString PHYSICAL_DEFENSE = "Physical Defense";
+            public static LocString MENTAL_DEFENSE = "Mental Defense";
+            public static LocString CONTAINMENT_SPEED = "Containment Speed";
+            public static LocString SAFETY_MEASURE_SUCCESS_RATE = "Safety Measure Success Rate";
+            public static LocString ATTACK_DAMAGE = "Attack Damage";
+            public static LocString ATTACK_SPEED = "Attack Speed";
         }
         public static class TRAITS
         {
@@ -690,6 +714,11 @@ namespace MutantContainmentProject
                 {
                     public static LocString NAME = "Neutronium Containment Plating";
                     public static LocString DESCRIPTION = "Requires EXTERIOR WALL 'Neutronium Containment Plating'";
+                }
+                public static class MUTANTER_COUNT
+                {
+                    public static LocString NAME = "Only one mutanter allowed";
+                    public static LocString DESCRIPTION = "Containment chamber can only hold one mutanter";
                 }
             }
         }

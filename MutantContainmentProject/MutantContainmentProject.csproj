@@ -106,6 +106,7 @@
     <Compile Include="Skills\MutanterSkillPerks.cs" />
     <Compile Include="Skills\MutanterSkills.cs" />
     <Compile Include="Skills\SkillAmountPerk.cs" />
+    <Compile Include="Skills\SkillMinionWidgetPatch.cs" />
     <Compile Include="Strings.cs" />
   </ItemGroup>
   <ItemGroup>

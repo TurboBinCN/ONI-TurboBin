@@ -1,5 +1,6 @@
 using Klei.AI;
 using MutantContainmentProject.MutanterEffect;
+using MutantContainmentProject.Skills;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
@@ -372,8 +373,31 @@ namespace MutantContainmentProject.MutanterComponent
             var health = target.GetComponent<Health>();
             if (health != null)
             {
-                health.Damage(damage);
-                TbbDebuger.LogDebug($"[MutanterAttackSystem] Health attack: {target.name} took {damage} damage");
+                // 计算物理防御影响
+                float physicalDefenseFactor = 1f;
+                var attributes = target.GetAttributes();
+                if (attributes != null)
+                {
+                    var defenseAttribute = attributes.Get(MutanterAttributes.AttributeDefenseID);
+                    if (defenseAttribute != null)
+                    {
+                        // 获取物理防御转换器
+                        var physicalDefenseConverter = Db.Get().AttributeConverters.Get(MutanterAttributeConverters.AttributePhysicalDefenseConverterID);
+                        if (physicalDefenseConverter != null)
+                        {
+                            var converterInstance = physicalDefenseConverter.Lookup(target);
+                            if (converterInstance != null)
+                            {
+                                float physicalDefenseValue = converterInstance.Evaluate();
+                                physicalDefenseFactor = Mathf.Max(0.1f, 1f - physicalDefenseValue);
+                            }
+                        }
+                    }
+                }
+
+                float effectiveDamage = damage * physicalDefenseFactor;
+                health.Damage(effectiveDamage);
+                TbbDebuger.LogDebug($"[MutanterAttackSystem] Health attack: {target.name} took {effectiveDamage} damage (original: {damage}, defense factor: {physicalDefenseFactor})");
                 return true;
             }
 
@@ -400,20 +424,29 @@ namespace MutantContainmentProject.MutanterComponent
                 var stressAmountComp = amounts.Get(Db.Get().Amounts.Stress);
                 if (stressAmountComp != null)
                 {
-                    // 计算精神抗性影响
-                    float mentalResistanceFactor = 1f;
+                    // 计算精神防御影响
+                    float mentalDefenseFactor = 1f;
                     var attributes = target.GetAttributes();
                     if (attributes != null)
                     {
-                        var mentalResistanceAttribute = attributes.Get("MentalResistance");
-                        if (mentalResistanceAttribute != null)
+                        var defenseAttribute = attributes.Get(MutanterAttributes.AttributeDefenseID);
+                        if (defenseAttribute != null)
                         {
-                            float mentalResistanceValue = mentalResistanceAttribute.GetTotalValue();
-                            mentalResistanceFactor = Mathf.Max(0.1f, 1f - (mentalResistanceValue * 0.1f));
+                            // 获取精神防御转换器
+                            var mentalDefenseConverter = Db.Get().AttributeConverters.Get(MutanterAttributeConverters.AttributeMentalDefenseConverterID);
+                            if (mentalDefenseConverter != null)
+                            {
+                                var converterInstance = mentalDefenseConverter.Lookup(target);
+                                if (converterInstance != null)
+                                {
+                                    float mentalDefenseValue = converterInstance.Evaluate();
+                                    mentalDefenseFactor = Mathf.Max(0.1f, 1f - mentalDefenseValue);
+                                }
+                            }
                         }
                     }
                     
-                    float effectiveStressAmount = stressAmount * mentalResistanceFactor;
+                    float effectiveStressAmount = stressAmount * mentalDefenseFactor;
                     stressAmountComp.value = Mathf.Min(stressAmountComp.value + effectiveStressAmount, 100f);
                     TbbDebuger.LogDebug($"[MutanterAttackSystem] Stress attack: {target.name} stress increased to {stressAmountComp.value}%, effective amount: {effectiveStressAmount}");
                     return true;

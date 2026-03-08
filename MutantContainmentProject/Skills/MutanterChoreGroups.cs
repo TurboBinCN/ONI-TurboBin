@@ -7,7 +7,7 @@ namespace MutantContainmentProject.Skills
     {
         public static readonly string ChoreGroupContainID = "Contain";
         public static readonly string ChoreGroupBraveryID = "Bravery";
-        public static readonly string ChoreGroupMentalResistanceID = "MentalResistance";
+        public static readonly string ChoreGroupDefenseID = "Defense";
         public static readonly string ChoreGroupDisciplineID = "Discipline";
         public static readonly string ChoreGroupRighteousnessID = "Righteousness";
         public static void ChoreGroupContain(ChoreGroups __instance)
@@ -26,11 +26,11 @@ namespace MutantContainmentProject.Skills
                 "icon_errand_bravery",2, true
             });
         }
-        public static void ChoreGroupMentalResistance(ChoreGroups __instance)
+        public static void ChoreGroupDefense(ChoreGroups __instance)
         {
             object choregroupObj;
             bool success = TbbHarmonyExtension.InvokeMethod(out choregroupObj, __instance, "Add", new object[] {
-                ChoreGroupMentalResistanceID, STRINGS.DUPLICANTS.CHOREGROUPS.MENTALRESISTANCE.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeMentalResistanceID),
+                ChoreGroupDefenseID, STRINGS.DUPLICANTS.CHOREGROUPS.DEFENSE.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeDefenseID),
                 "icon_errand_metal_resistance",2, true
             });
         }
@@ -38,7 +38,7 @@ namespace MutantContainmentProject.Skills
         {
             object choregroupObj;
             bool success = TbbHarmonyExtension.InvokeMethod(out choregroupObj, __instance, "Add", new object[] {
-                ChoreGroupDisciplineID, STRINGS.DUPLICANTS.CHOREGROUPS.DISCIPLINE.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeSuccessRateID),
+                ChoreGroupDisciplineID, STRINGS.DUPLICANTS.CHOREGROUPS.DISCIPLINE.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeDisciplineID),
                 "icon_errand_discipline",2, true
             });
         }
@@ -46,7 +46,7 @@ namespace MutantContainmentProject.Skills
         {
             object choregroupObj;
             bool success = TbbHarmonyExtension.InvokeMethod(out choregroupObj, __instance, "Add", new object[] {
-                ChoreGroupRighteousnessID, STRINGS.DUPLICANTS.CHOREGROUPS.RIGHTEOUSNESS.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeAttackDamageID),
+                ChoreGroupRighteousnessID, STRINGS.DUPLICANTS.CHOREGROUPS.RIGHTEOUSNESS.NAME.ToString(),Db.Get().Attributes.TryGet(MutanterAttributes.AttributeRighteousnessID),
                 "icon_errand_righteousness",2, true
             });
         }
