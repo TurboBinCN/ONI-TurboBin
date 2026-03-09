@@ -16,17 +16,22 @@ namespace MutantContainmentProject.SideScreen
 
         private ContainmentMonitor.Instance target;
         private List<HierarchyReferences> rows = new List<HierarchyReferences>();
-
-        private static Dictionary<string, SecureAction> _actionButtons = new();
+        public class ButtonInfo
+        {
+            public string Text { get; set; }
+            public string Sprite_icon { get; set; }
+            public SecureAction Action { get; set; }
+        }
+        private static List<ButtonInfo> _actionButtons = new();
 
         protected override void OnSpawn()
         {
             base.OnSpawn();
             //按钮：本能/沟通/洞察/压迫
-            _actionButtons.Add(STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.ACTION_INSTINCT, SecureAction.Instinct);
-            _actionButtons.Add(STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.ACTION_COMMUNICATION, SecureAction.Communicate);
-            _actionButtons.Add(STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.ACTION_RECONNAISSANCE, SecureAction.Reconnaissance);
-            _actionButtons.Add(STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.ACTION_INTIMIDATION, SecureAction.Intimidation);
+            _actionButtons.Add(new ButtonInfo() { Text=STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.ACTION_INSTINCT, Action = SecureAction.Instinct, Sprite_icon = "icon_benneng" });
+            _actionButtons.Add(new ButtonInfo() { Text = STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.ACTION_COMMUNICATION, Action = SecureAction.Communicate, Sprite_icon = "icon_goutong" });
+            _actionButtons.Add(new ButtonInfo() { Text = STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.ACTION_RECONNAISSANCE, Action = SecureAction.Reconnaissance, Sprite_icon = "icon_dongcha" });
+            _actionButtons.Add(new ButtonInfo() { Text = STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.ACTION_INTIMIDATION, Action = SecureAction.Intimidation, Sprite_icon = "icon_yapo" });
 
             this.Refresh();
         }
@@ -52,7 +57,7 @@ namespace MutantContainmentProject.SideScreen
         private void DrawActionMenu()
         {
             int num = 0;
-            foreach (var kvp in _actionButtons)
+            foreach (var buttonInfo in _actionButtons)
             {
                 HierarchyReferences hierarchyReferences;
                 if (num < this.rows.Count)
@@ -64,7 +69,7 @@ namespace MutantContainmentProject.SideScreen
                     hierarchyReferences = Util.KInstantiateUI<HierarchyReferences>(this.rowPrefab.gameObject, this.rowContainer, false);
                     this.rows.Add(hierarchyReferences);
                 }
-                this.ConfigureButton(hierarchyReferences, kvp.Key);
+                this.ConfigureButton(hierarchyReferences, buttonInfo);
                 this.rows[num].gameObject.SetActive(true);
                 num++;
             }
@@ -76,7 +81,7 @@ namespace MutantContainmentProject.SideScreen
             this.message.text = STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.ACTION;
             this.contents.gameObject.SetActive(true);
         }
-        private void ConfigureButton(HierarchyReferences button, string text)
+        private void ConfigureButton(HierarchyReferences button, ButtonInfo buttonInfo)
         {
             TMP_Text reference = button.GetReference<LocText>("Label");
             Image reference2 = button.GetReference<Image>("Icon");
@@ -84,9 +89,9 @@ namespace MutantContainmentProject.SideScreen
             button.GetReference<ToolTip>("ToolTip");
 
 
-            reference.text = text;
-            //reference2.sprite = Def.GetUISprite(seedID, "ui", false).first;
-            bool isActive = (this.target.CurrentAction == _actionButtons[text]);
+            reference.text = buttonInfo.Text;
+            reference2.sprite = Assets.GetSprite(buttonInfo.Sprite_icon);
+            bool isActive = (this.target.CurrentAction == buttonInfo.Action);
             reference3.text = isActive ? STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.ACTION_ON : STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.ACTION_OFF;
 
             KToggle component = button.GetComponent<KToggle>();
@@ -95,7 +100,7 @@ namespace MutantContainmentProject.SideScreen
             component.ClearOnClick();
             component.onClick += delegate ()
             {
-                this.target.CurrentAction = _actionButtons[text];
+                this.target.CurrentAction = buttonInfo.Action;
                 this.Refresh();
             };
         }

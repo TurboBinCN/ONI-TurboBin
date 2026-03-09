@@ -43,17 +43,14 @@ namespace MutantContainmentProject.Buildings
             overrideAnims = new KAnimFile[] { Assets.GetAnim("anim_interacts_genetic_analysisstation_kanim") };
             synchronizeAnims = true;
 
-            // 设置属性转换器为工作速度
             attributeConverter = Db.Get().AttributeConverters.Get(MutanterAttributeConverters.AttributeContainmentSpeedConverterID);
-            // 添加log验证转换器是否正常工作
-            TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 属性转换器: {attributeConverter?.Id ?? "null"}");
-            TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 转换器ID: {MutanterAttributeConverters.AttributeContainmentSpeedConverterID}");
+
             attributeExperienceMultiplier = DUPLICANTSTATS.ATTRIBUTE_LEVELING.MOST_DAY_EXPERIENCE;
             skillExperienceSkillGroup = MutanterSkillGroups.SkillGroupDisciplineID;
             skillExperienceMultiplier = SKILLS.MOST_DAY_EXPERIENCE;
 
-            //shouldShowSkillPerkStatusItem = true;
-            //requiredSkillPerk = Db.Get().SkillPerks.CanIdentifyMutantSeeds.Id;
+            shouldShowSkillPerkStatusItem = true;
+            requiredSkillPerk = Db.Get().SkillPerks.Get(MutanterSkillPerks.CanSecureMutanter).Id;
 
             showProgressBar = true;
             lightEfficiencyBonus = true;

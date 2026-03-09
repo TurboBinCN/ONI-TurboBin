@@ -428,6 +428,14 @@ namespace MutantContainmentProject
                 {
                     public static LocString NAME = "RighteousnessIII";
                 }
+                public static class CANMUTANTERBEATTACKED
+                {
+                    public static LocString NAME = "Can Attack Mutanter";
+                }
+                public static class CANSECUREMUTANTER
+                {
+                    public static LocString NAME = "Can Secure Mutanter";
+                }
                 public static class ATTACKSPEEDI
                 {
                     public static LocString NAME = "AttackSpeedI";
@@ -594,6 +602,7 @@ namespace MutantContainmentProject
                 public static LocString DESCRIPTION = "Righteousness III. Increase attack damage and attack speed against mutanters.";
             }
             public static LocString CONVERTED_ATTRIBUTES = "Converted Attributes";
+            public static LocString SPECIAL_PERKS = "Special Perks";
             public static LocString PHYSICAL_DEFENSE = "Physical Defense";
             public static LocString MENTAL_DEFENSE = "Mental Defense";
             public static LocString CONTAINMENT_SPEED = "Containment Speed";
@@ -675,6 +684,20 @@ namespace MutantContainmentProject
                     public static LocString ACTION_RECONNAISSANCE = "Reconnaissance";
                     public static LocString ACTION_COMMUNICATION = "Communication";
                     public static LocString ACTION_INTIMIDATION = "Intimidation";
+                }
+            }
+            public static class ROLES_SCREEN
+            {
+                public static class PERKS
+                {
+                    public static class CAN_MUTANTER_BE_ATTACKED
+                    {
+                        public static LocString DESCRIPTION = "Allows duplicants to attack mutanters";
+                    }
+                    public static class CAN_SECURE_MUTANTER
+                    {
+                        public static LocString DESCRIPTION = "Allows duplicants to secure mutanters";
+                    }
                 }
             }
             public static class USERMENUACTIONS

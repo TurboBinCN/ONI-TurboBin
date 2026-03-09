@@ -39,11 +39,12 @@ namespace MutantContainmentProject.MutanterComponent
             }
             //收容逻辑：暴动后收容逻辑，被攻击、生命扣减低于1，封包
             template.AddOrGet<Health>().isCritter = true;//挂载：健康检测
-            template.AddOrGet<MutanterAttackable>(); //挂载：畸变体可攻击组件，关联到正义属性和攻击伤害
-            
+             
             //畸变体被攻击的相关组件
-            template.AddOrGet<FactionAlignment>().Alignment = faction; //挂载：阵营
-            template.AddOrGetDef<ThreatMonitor.Def>().fleethresholdState = Health.HealthState.Dead;
+            template.AddOrGet<MutanterAttackable>(); //挂载：畸变体可攻击组件，关联到正义属性和攻击伤害
+            var factionAlignment = template.AddOrGet<FactionAlignment>();
+            factionAlignment.Alignment = faction; //挂载：阵营
+            factionAlignment.canBePlayerTargeted = true; //确保可以被玩家标记为攻击目标
 
 
             template.AddOrGet<TbbRangeVisualizer>();//挂载：威胁范围显示

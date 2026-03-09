@@ -59,7 +59,11 @@ namespace MutantContainmentProject
                     .AddSprite(("icon_archetype_bravery"), assetBundle)
                     .AddSprite(("icon_archetype_metal_resistance"), assetBundle)
                     .AddSprite(("icon_archetype_discipline"), assetBundle)
-                    .AddSprite(("icon_archetype_righteousness"), assetBundle);
+                    .AddSprite(("icon_archetype_righteousness"), assetBundle)
+                    .AddSprite(("icon_benneng"), assetBundle)
+                    .AddSprite(("icon_dongcha"), assetBundle)
+                    .AddSprite(("icon_goutong"), assetBundle)
+                    .AddSprite(("icon_yapo"), assetBundle);
 
                 //语言本地化
                 TbbLocalization.Initialize(mod, harmony)

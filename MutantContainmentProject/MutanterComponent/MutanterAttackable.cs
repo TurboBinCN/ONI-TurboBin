@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent
 {
-    public class MutanterAttackable : AttackableBase
+    public class MutanterAttackable : RangedAttackable
     {
         protected override void OnPrefabInit()
         {
@@ -23,8 +23,19 @@ namespace MutantContainmentProject.MutanterComponent
             this.skillExperienceSkillGroup = MutanterSkillGroups.SkillGroupRighteousnessID;
             // 设置技能经验倍数
             this.skillExperienceMultiplier = SKILLS.MOST_DAY_EXPERIENCE;
-        }
 
+            // this.showProgressBar = true;
+            // this.shouldShowSkillPerkStatusItem = true;
+            // this.requiredSkillPerk = Db.Get().SkillPerks.Get(MutanterSkillPerks.CanMutanterBeAttacked).Id;
+            
+            // 更新状态项，确保技能 perk 状态显示
+            this.UpdateStatusItem();
+        }
+        protected override void OnStartWork(WorkerBase worker)
+        {
+            base.OnStartWork(worker);
+            this.UpdateStatusItem();
+        }
         // 获取攻击速度倍数
         public float GetAttackSpeedMultiplier()
         {

@@ -338,6 +338,12 @@
         ATTACKSPEEDIII: {
           NAME: 攻击速度III
         }
+        CANMUTANTERBEATTACKED: {
+          NAME: 可攻击畸变体
+        }
+        CANSECUREMUTANTER: {
+          NAME: 可对畸变体进行安全措施
+        }
       }
       CHOREGROUPS: {
         CONTAIN: {
@@ -527,6 +533,16 @@
           ACTION_RECONNAISSANCE: 洞察
           ACTION_COMMUNICATION: 沟通
           ACTION_INTIMIDATION: 压迫
+        }
+      }
+      ROLES_SCREEN: {
+        PERKS: {
+          CAN_MUTANTER_BE_ATTACKED: {
+            DESCRIPTION: 允许复制人攻击畸变体
+          }
+          CAN_SECURE_MUTANTER: {
+            DESCRIPTION: 允许复制人对畸变体进行安全措施
+          }
         }
       }
       USERMENUACTIONS: {

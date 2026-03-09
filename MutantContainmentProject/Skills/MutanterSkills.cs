@@ -80,7 +80,8 @@ namespace MutantContainmentProject.Skills
         {
             var skill = new Skill(SkillDisciplineIID, STRINGS.SKILLS.DISCIPLINEI.NAME, STRINGS.SKILLS.DISCIPLINEI.DESCRIPTION, 0, hat: "hat_role_mining1", badge: "skillbadge_role_discipline1", skillGroup: MutanterSkillGroups.SkillGroupDisciplineID, new List<SkillPerk>
             {
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseDisciplineSmall)
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseDisciplineSmall),
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.CanSecureMutanter)
             }, null, "Minion", null, null);
             return skill;
         }
@@ -104,7 +105,8 @@ namespace MutantContainmentProject.Skills
         {
             var skill = new Skill(SkillRighteousnessIID, STRINGS.SKILLS.RIGHTEOUSNESSI.NAME, STRINGS.SKILLS.RIGHTEOUSNESSI.DESCRIPTION, 0, hat: "hat_role_mining1", badge: "skillbadge_role_righteousness1", skillGroup: MutanterSkillGroups.SkillGroupRighteousnessID, new List<SkillPerk>
             {
-                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseRighteousnessSmall)
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.IncreaseRighteousnessSmall),
+                Db.Get().SkillPerks.TryGet(MutanterSkillPerks.CanMutanterBeAttacked)
             }, null, "Minion", null, null);
             return skill;
         }
