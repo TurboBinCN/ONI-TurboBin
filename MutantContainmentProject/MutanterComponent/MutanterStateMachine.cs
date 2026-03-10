@@ -1,4 +1,7 @@
-﻿using TBB.He.TbbLib.Debuger;
+using TBB.He.TbbLib.Debuger;
+using MutantContainmentProject.MutanterEffect;
+using Klei.AI;
+using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent
 {
@@ -48,7 +51,7 @@ namespace MutantContainmentProject.MutanterComponent
                 .ToggleStatusItem(MutanterStatusItems.Instance.Idle)
                 .Update("CheckSanityForStability", (smi, dt) =>
                 {
-                    if (smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue <= smi.def.sanityThresholdToAgitate)
+                    if (!smi.IsContained && smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue <= smi.def.sanityThresholdToAgitate)
                     {
                         smi.GoTo(smi.sm.agitated);
                     }
@@ -63,11 +66,15 @@ namespace MutantContainmentProject.MutanterComponent
                 })
                 .Update("CheckSanityForAgitation", (smi, dt) =>
                 {
-                    if (smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue <= smi.def.sanityThresholdToHostile)
+                    if (smi.IsContained)
+                    {
+                        smi.GoTo(stable);
+                    }
+                    else if (smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue <= smi.def.sanityThresholdToHostile)
                     {
                         smi.GoTo(hostile);
                     }
-                    else if (smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue > smi.def.sanityThresholdToAgitate)
+                    else if (smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue > smi.def.sanityThresholdToAgitate + 5) // 添加滞后效果
                     {
                         smi.GoTo(stable);
                     }
@@ -81,7 +88,11 @@ namespace MutantContainmentProject.MutanterComponent
                 })
                 .Update("CheckSanityForHostility", (smi, dt) =>
                 {
-                    if (smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue > smi.def.sanityThresholdToAgitate)
+                    if (smi.IsContained)
+                    {
+                        smi.GoTo(stable);
+                    }
+                    else if (smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue > smi.def.sanityThresholdToAgitate + 5) // 添加滞后效果
                     {
                         smi.GoTo(agitated);
                     }
@@ -133,9 +144,51 @@ namespace MutantContainmentProject.MutanterComponent
         {
             private EmotionMonitor.StatesInstance _emotionSMI;
             private MutanterChaseMonitor.StatesInstance _chaseMonitorSMI;
+            private MutanterAttackSystem _attackSystem;
+
+            private bool _isContained = false;
+            public bool IsContained { get => _isContained; }
 
             public StatesInstance(IStateMachineTarget master, Def def) : base(master, def)
             {
+                // 初始化时检查当前的收容状态
+                Effects effects = gameObject.GetComponent<Effects>();
+                if (effects != null && effects.HasEffect(MutanterEffect.MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+                {
+                    _isContained = true;
+                    TbbDebuger.LogDebug($"[MutanterStateMachine] {gameObject.name} initialized with containment effect, IsContained = true");
+                }
+                
+                // 订阅事件来更新IsContained属性
+                Subscribe((int)MutanterGameHashes.MutanterContained, OnContained);
+                Subscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
+            }
+
+            private void OnContained(object data)
+            {
+                GameObject mutanterObj = data as GameObject;
+                if (mutanterObj == gameObject)
+                {
+                    _isContained = true;
+                    TbbDebuger.LogDebug($"[MutanterStateMachine] {gameObject.name} received MutanterContained event, IsContained = true");
+                }
+            }
+
+            private void OnBreachContained(object data)
+            {
+                GameObject mutanterObj = data as GameObject;
+                if (mutanterObj == gameObject)
+                {
+                    _isContained = false;
+                    TbbDebuger.LogDebug($"[MutanterStateMachine] {gameObject.name} received MutanterBreachContained event, IsContained = false");
+                }
+            }
+
+            protected override void OnCleanUp()
+            {
+                Unsubscribe((int)MutanterGameHashes.MutanterContained, OnContained);
+                Unsubscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
+                base.OnCleanUp();
             }
 
             public EmotionMonitor.StatesInstance EmotionSMI
@@ -160,6 +213,17 @@ namespace MutantContainmentProject.MutanterComponent
                     return _chaseMonitorSMI;
                 }
             }
+            public MutanterAttackSystem AttackSystem
+            {
+                get
+                {
+                    if (_attackSystem == null)
+                    {
+                        _attackSystem = master.gameObject.GetComponent<MutanterAttackSystem>();
+                    }
+                    return _attackSystem;
+                }
+            }
         }
         public class Def : BaseDef
         {
@@ -176,7 +240,7 @@ namespace MutantContainmentProject.MutanterComponent
             if (attackSystem != null && smi.EmotionSMI != null)
             {
                 var threaters = smi.EmotionSMI.GetThreaters();
-                
+
                 if (threaters != null && threaters.Count > 0)
                 {
                     foreach (var threater in threaters)

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
-using static MutantContainmentProject.STRINGS.BUILDINGS.STATUSITEMS;
 
 namespace MutantContainmentProject.Buildings
 {
@@ -42,6 +41,8 @@ namespace MutantContainmentProject.Buildings
                     }, UpdateRate.SIM_1000ms, false);
         }
 
+
+
         public class Instance : GameInstance
         {
             [SerializeField]
@@ -60,6 +61,9 @@ namespace MutantContainmentProject.Buildings
             {
                 get { return targetSecurable; }
             }
+
+
+
             public Instance(IStateMachineTarget master, Def def) : base(master, def)
             {
                 onRoomUpdatedHandle = Subscribe(144050788, new Action<object>(OnRoomUpdated));
@@ -90,6 +94,8 @@ namespace MutantContainmentProject.Buildings
                     findMutanterInRoom();
                 }
             }
+
+
             public void findMutanterInRoom()
             {
                 foreach (int cell in _mutanterContainer.cavity.cells)
@@ -108,7 +114,7 @@ namespace MutantContainmentProject.Buildings
                 for (int i = targetSecurable.Count - 1; i >= 0; i--)
                 {
                     MutanterSecurableMonitor.Instance instance = targetSecurable[i];
-                    if (instance.IsNullOrStopped() || instance.States.IsNullOrStopped())
+                    if (instance.IsNullOrStopped())
                     {
                         targetSecurable.RemoveAt(i);
                     }
@@ -146,7 +152,7 @@ namespace MutantContainmentProject.Buildings
                     if (smi == null) continue;
                     if (!targetSecurable.Contains(smi))
                     {
-                        smi.States.SetContainmentMonitor(this);
+                        smi.SetContainmentMonitor(this);
                         targetSecurable.Add(smi);
                     }
                     //TbbDebuger.LogDebug($"[畸变收容所] 畸变体:name[{kprefabID.name}] ShouldBeSecured: [{smi.ShouldBeSecured()}] RemoteDockChore:[{instance.remoteChore.RemoteDockChore}] RemoteDockChore.Complete:[{instance.remoteChore.RemoteDockChore?.isComplete}]");
@@ -165,6 +171,9 @@ namespace MutantContainmentProject.Buildings
     {
         public StatusItem ContainmentSuccess;
         public StatusItem ContainmentFailure;
+        public StatusItem CorrosionWarning;
+        public StatusItem HighCorrosionWarning;
+        public StatusItem CorrosionOverflow;
 
         private static ContainmentMonitorBuildingStatusItems _instance;
         public static ContainmentMonitorBuildingStatusItems Instance
@@ -190,7 +199,7 @@ namespace MutantContainmentProject.Buildings
             {
                 int workerSubtasks = 0;
                 int mutanterSubtasks = 0;
-                
+
                 // 检查data类型
                 if (data is ContainmentMonitorWorkable workable)
                 {
@@ -204,7 +213,7 @@ namespace MutantContainmentProject.Buildings
                     workerSubtasks = tuple.Item1;
                     mutanterSubtasks = tuple.Item2;
                 }
-                
+
                 return string.Format(STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR.SUCCESS.TOOLTIP, workerSubtasks, mutanterSubtasks);
             };
 
@@ -217,7 +226,7 @@ namespace MutantContainmentProject.Buildings
             {
                 int workerSubtasks = 0;
                 int mutanterSubtasks = 0;
-                
+
                 // 检查data类型
                 if (data is ContainmentMonitorWorkable workable)
                 {
@@ -231,9 +240,18 @@ namespace MutantContainmentProject.Buildings
                     workerSubtasks = tuple.Item1;
                     mutanterSubtasks = tuple.Item2;
                 }
-                
+
                 return string.Format(STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR.FAILURE.TOOLTIP, workerSubtasks, mutanterSubtasks);
             };
+
+            // 腐蚀预警状态项
+            CorrosionWarning = buildingStatusItems.Add(new StatusItem("CorrosionWarning", "BUILDINGS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, false, OverlayModes.None.ID, true, 129022, null));
+
+            // 高腐蚀预警状态项
+            HighCorrosionWarning = buildingStatusItems.Add(new StatusItem("HighCorrosionWarning", "BUILDINGS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, false, OverlayModes.None.ID, true, 129022, null));
+
+            // 溢流突破状态项
+            CorrosionOverflow = buildingStatusItems.Add(new StatusItem("CorrosionOverflow", "BUILDINGS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, false, OverlayModes.None.ID, true, 129022, null));
         }
     }
 

@@ -171,14 +171,17 @@ namespace MutantContainmentProject
                     .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
                     .AddBuilding(ContainmentMonitorStationConfig.ID)
                     .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
-                    .AddBuilding(ContainmentTileConfig.ID);
+                    .AddBuilding(ContainmentTileConfig.ID)
+                    .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
+                    .AddBuilding(GlobalErosionPlanelConfig.ID);
                 //建筑StatusItems
                 TbbBuildingStatusItems.Initialize(mod, harmony)
                     .Add(GravitasMutanterFounderBuildingStatusItems.Instance.CreateStatusItems)
                     .Add(ContainmentMonitorBuildingStatusItems.Instance.CreateStatusItems);
                 //全局单例
                 TbbSingleTone.Initialize(mod, harmony)
-                    .Add<MutanterSpeciesCatalog>();
+                    .Add<MutanterSpeciesCatalog>()
+                    .Add<GlobalErosionManager>();
 
             }
         }

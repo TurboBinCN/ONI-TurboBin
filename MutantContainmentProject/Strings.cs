@@ -261,6 +261,11 @@ namespace MutantContainmentProject
                     public static LocString DESC = "Forged from neutronium, this reinforced plating forms the structural barrier of the Aberrant Containment Chamber. It resists physical breaches and suppresses unstable energy emissions from contained entities.";
                     public static LocString EFFECT = "Provides impenetrable physical containment and energy suppression for aberrant entities within the Aberrant Containment Chamber.";
                 }
+                public static class GLOBALEROSIONPLANEL {
+                    public static LocString NAME = "Global Erosion Panel";
+                    public static LocString DESC = "A monitoring panel that displays the global erosion level and provides visual alerts for containment status.";
+                    public static LocString EFFECT = "Displays the current global erosion level and potential containment risks.";
+                }
             }
             public static class STATUSITEMS
             {
@@ -336,13 +341,74 @@ namespace MutantContainmentProject
                 {
                     public static class SUCCESS
                     {
-                        public static LocString NAME = "收容措施执行成功";
-                        public static LocString TOOLTIP = "措施执行成功，进程：{0}/{1}";
+                        public static LocString NAME = "Containment Measure Successful";
+                        public static LocString TOOLTIP = "Measure executed successfully, progress: {0}/{1}";
                     }
                     public static class FAILURE
                     {
-                        public static LocString NAME = "收容措施执行失败";
-                        public static LocString TOOLTIP = "措施执行失败，进程：{0}/{1}";
+                        public static LocString NAME = "Containment Measure Failed";
+                        public static LocString TOOLTIP = "Measure execution failed, progress: {0}/{1}";
+                    }
+                    public static class CORROSIONWARNING
+                    {
+                        public static LocString NAME = "Corrosion Warning";
+                        public static LocString TOOLTIP = "Corrosion: {0}/100, output reduced by 50%, duplicant stress increases when nearby";
+                    }
+                    public static class HIGHCORROSIONWARNING
+                    {
+                        public static LocString NAME = "High Corrosion Warning";
+                        public static LocString TOOLTIP = "Corrosion: {0}/100, local overflow alert, 10 cycle countdown, breach on timeout";
+                    }
+                    public static class CORROSIONOVERFLOW
+                    {
+                        public static LocString NAME = "Overflow Breach";
+                        public static LocString TOOLTIP = "Corrosion: {0}/100, mutanter breached containment, triggering destructive effects";
+                    }
+                    public static class CORROSION
+                    {
+                        public static class STABLE
+                        {
+                            public static LocString NAME = "Stable State";
+                            public static LocString TOOLTIP = "Stable state, normal output";
+                        }
+                        public static class WARNING
+                        {
+                            public static LocString NAME = "Corrosion Warning";
+                            public static LocString TOOLTIP = "Output reduced by 50%, duplicant stress increases when nearby";
+                        }
+                        public static class HIGH
+                        {
+                            public static LocString NAME = "High Corrosion";
+                            public static LocString TOOLTIP = "Local overflow alert, 10 cycle countdown, breach on timeout";
+                        }
+                        public static class OVERFLOW
+                        {
+                            public static LocString NAME = "Overflow Breach";
+                            public static LocString TOOLTIP = "Mutanter breached containment, triggering destructive effects";
+                        }
+                    }
+                    public static class EROSION
+                    {
+                        public static class SAFE
+                        {
+                            public static LocString NAME = "Safe";
+                            public static LocString TOOLTIP = "Global erosion level: Level 1, everything normal, no abnormal alerts";
+                        }
+                        public static class ALERT
+                        {
+                            public static LocString NAME = "Alert";
+                            public static LocString TOOLTIP = "Global erosion level: Level 2, some containment chamber warnings, slight duplicant stress increase";
+                        }
+                        public static class CRISIS
+                        {
+                            public static LocString NAME = "Crisis";
+                            public static LocString TOOLTIP = "Global erosion level: Level 3, base-wide alert, radiation, duplicant stress increase, minor facility damage";
+                        }
+                        public static class DISASTER
+                        {
+                            public static LocString NAME = "Disaster";
+                            public static LocString TOOLTIP = "Global erosion level: Level 4, base-wide red alert, power outages, pollution, extensive facility damage";
+                        }
                     }
                 }
             }

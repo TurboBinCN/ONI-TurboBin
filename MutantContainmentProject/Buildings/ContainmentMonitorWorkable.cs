@@ -32,7 +32,20 @@ namespace MutantContainmentProject.Buildings
         private float workerSuccessRateFactor = 1f;
 
         private ContainmentMonitor.Instance _containmentMonitorSMI;
+        private CorrosionManager _corrosionManager;
         private GameObject workerGameObject;
+
+        private CorrosionManager CorrosionManagerComp
+        {
+            get
+            {
+                if (_corrosionManager == null)
+                {
+                    _corrosionManager = gameObject.GetComponent<CorrosionManager>();
+                }
+                return _corrosionManager;
+            }
+        }
 
         protected override void OnPrefabInit()
         {
@@ -73,6 +86,13 @@ namespace MutantContainmentProject.Buildings
         protected override void OnStartWork(WorkerBase worker)
         {
             base.OnStartWork(worker);
+
+            // 标记操作开始，防止操作过程中更新腐蚀值
+            if (CorrosionManagerComp != null)
+            {
+                CorrosionManagerComp.StartOperation();
+                Debug.Log("[ContainmentMonitorWorkable] 标记操作开始");
+            }
 
             // 重置工作状态
             ResetWorkState();
@@ -303,6 +323,13 @@ namespace MutantContainmentProject.Buildings
                 {
                     Debug.Log("[ContainmentMonitorWorkable] 未找到ContainmentMonitor SMI");
                 }
+
+                // 处理管控成功（基于执行次数，而非子任务数）
+                if (CorrosionManagerComp != null)
+                {
+                    CorrosionManagerComp.HandleContainmentSuccess();
+                    Debug.Log("[ContainmentMonitorWorkable] 执行成功，调用HandleContainmentSuccess");
+                }
             }
             else
             {
@@ -324,6 +351,20 @@ namespace MutantContainmentProject.Buildings
                 {
                     Debug.Log("[ContainmentMonitorWorkable] 工人对象为空");
                 }
+
+                // 处理管控失败（基于执行次数，而非子任务数）
+                if (CorrosionManagerComp != null)
+                {
+                    CorrosionManagerComp.HandleContainmentFailure();
+                    Debug.Log("[ContainmentMonitorWorkable] 执行失败，调用HandleContainmentFailure");
+                }
+            }
+
+            // 标记操作结束，恢复腐蚀值更新
+            if (CorrosionManagerComp != null)
+            {
+                CorrosionManagerComp.EndOperation();
+                Debug.Log("[ContainmentMonitorWorkable] 标记操作结束");
             }
 
         }
@@ -446,6 +487,13 @@ namespace MutantContainmentProject.Buildings
         {
             base.OnStopWork(worker);
             ResetWorkState();
+            
+            // 标记操作结束，恢复腐蚀值更新
+            if (CorrosionManagerComp != null)
+            {
+                CorrosionManagerComp.EndOperation();
+                Debug.Log("[ContainmentMonitorWorkable] 标记操作结束（工作停止）");
+            }
         }
 
     }

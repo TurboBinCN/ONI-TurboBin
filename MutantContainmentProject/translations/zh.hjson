@@ -228,6 +228,11 @@
           DESC: 由中子质锻造而成的强化护壁，构成畸变体收容室的核心结构屏障。可抵御物理突破，并抑制收容实体释放的不稳定能量。
           EFFECT: 为畸变体收容室内的畸变体提供无法穿透的物理收容防护与能量抑制效果。
         }
+        GLOBALEROSIONPLANEL: {
+          NAME: 全局侵蚀面板
+          DESC: 一个监控面板，显示全局侵蚀等级并为收容状态提供视觉警报。
+          EFFECT: 显示当前全局侵蚀等级和潜在的收容风险。
+        }
       }
       STATUSITEMS: {
         GRAVITAS_MUTANTER_FOUNDER_COOLDOWN: {
@@ -263,6 +268,36 @@
             FAILURE: {
                 NAME: "收容措施执行失败"
                 TOOLTIP: "措施执行失败，进程：{0}/{1}"
+            }
+            CORROSIONWARNING: {
+                NAME: "腐蚀预警"
+                TOOLTIP: "产出降50%，小人靠近压力上升"
+            }
+            HIGHCORROSIONWARNING: {
+                NAME: "高腐蚀预警"
+                TOOLTIP: "局部溢流警报，10周期倒计时，超时突破"
+            }
+            CORROSIONOVERFLOW: {
+                NAME: "溢流突破"
+                TOOLTIP: "畸变体突破收容，触发破坏效果"
+            }
+        }
+        EROSION: {
+            SAFE: {
+                NAME: "安全"
+                TOOLTIP: "全局侵蚀等级：1级，一切正常，无异常警报"
+            }
+            ALERT: {
+                NAME: "警报"
+                TOOLTIP: "全局侵蚀等级：2级，部分收容室警告，复制人压力轻微增加"
+            }
+            CRISIS: {
+                NAME: "危机"
+                TOOLTIP: "全局侵蚀等级：3级，基地范围警报，辐射，复制人压力增加，设施轻微损坏"
+            }
+            DISASTER: {
+                NAME: "灾难"
+                TOOLTIP: "全局侵蚀等级：4级，基地范围红色警报，电力中断，污染，设施大面积损坏"
             }
         }
       }

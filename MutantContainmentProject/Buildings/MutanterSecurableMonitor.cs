@@ -10,38 +10,31 @@ namespace MutantContainmentProject.Buildings
         public override void InitializeStates(out StateMachine.BaseState default_state)
         {
             default_state = this.root;
-            //this.root.ToggleBehaviour(MutanterTags.ShouldBeSeCured, (smi) => smi.ShouldBeSecured(), null);
         }
         public class Instance : GameInstance
         {
             public ContainmentMonitor.Instance _targetContainmentMonitor;
-            private Instance states;
             private const float timeRemainningWarning = 200f;
 
-            public Instance States
-            {
-                get
-                {
-                    if (states == null)
-                    {
-                        states = controller.GetSMI<Instance>();
-                    }
-                    return states;
-                }
-            }
             public Instance(IStateMachineTarget master, Def def) : base(master, def)
             {
 
             }
+
             public void GoInToContaiment()
             {
-                //TODO 添加收容Effect
                 ApplyEffect(gameObject, MutanterEffects.MUTANTER_CONTAINED_EFFECT);
+                // 使用GameObject级别的事件系统
+                gameObject.Trigger((int)MutanterGameHashes.MutanterContained, gameObject);
+                TbbDebuger.LogDebug($"[{gameObject.name}] Triggered MutanterContained event");
             }
+
             public void GoOutOfContainment()
             {
-                //TODO 移除收容effect
                 RemoveEffect(gameObject, MutanterEffects.MUTANTER_CONTAINED_EFFECT);
+                // 使用GameObject级别的事件系统
+                gameObject.Trigger((int)MutanterGameHashes.MutanterBreachContained, gameObject);
+                TbbDebuger.LogDebug($"[{gameObject.name}] Triggered MutanterBreachContained event");
             }
             private void ApplyEffect(GameObject mutanter, string effect_id)
             {
@@ -95,7 +88,12 @@ namespace MutantContainmentProject.Buildings
 
                 return false;
             }
-
+            public bool IsSecured()
+            {
+                Effects effects = gameObject.GetComponent<Effects>();
+                EffectInstance effectInstance = effects.Get(MutanterEffects.MUTANTER_CONTAINED_EFFECT);
+                return effectInstance != null;
+            }
             internal void SetContainmentMonitor(ContainmentMonitor.Instance instance)
             {
                 _targetContainmentMonitor = instance;

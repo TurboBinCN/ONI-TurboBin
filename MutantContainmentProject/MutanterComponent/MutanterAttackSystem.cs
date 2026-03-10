@@ -9,17 +9,14 @@ namespace MutantContainmentProject.MutanterComponent
 {
     public class MutanterAttackSystem : KMonoBehaviour
     {
-        // 存储所有可用的攻击行为实例
         private List<IMutanterAttackBehavior> _availableBehaviors = new List<IMutanterAttackBehavior>();
-
-        // 记录每个行为的最后执行时间，用于冷却管理
         private Dictionary<IMutanterAttackBehavior, float> _behaviorLastExecutionTimes = new Dictionary<IMutanterAttackBehavior, float>();
-        
-        // 效果组件
+
         private Effects _effects;
-        
-        // 情绪监控器
         private EmotionMonitor.StatesInstance _emotionMonitorSMI;
+
+        private bool _isContained = false;
+        public bool IsContained { get => _isContained; }
 
         protected override void OnSpawn()
         {
@@ -27,6 +24,45 @@ namespace MutantContainmentProject.MutanterComponent
             _effects = GetComponent<Effects>();
             _emotionMonitorSMI = gameObject.GetSMI<EmotionMonitor.StatesInstance>();
             InitializeBehaviors();
+
+            // 初始化时检查当前的收容状态
+            if (_effects != null && _effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+            {
+                _isContained = true;
+                TbbDebuger.LogDebug($"[MutanterAttackSystem] {gameObject.name} initialized with containment effect, IsContained = true");
+            }
+
+            // 使用Klei原生事件系统订阅事件
+            Subscribe((int)MutanterGameHashes.MutanterContained, OnContained);
+            Subscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
+        }
+
+        protected override void OnCleanUp()
+        {
+            // 使用Klei原生事件系统取消订阅
+            Unsubscribe((int)MutanterGameHashes.MutanterContained, OnContained);
+            Unsubscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
+            base.OnCleanUp();
+        }
+
+        private void OnContained(object data)
+        {
+            GameObject mutanterObj = data as GameObject;
+            if (mutanterObj == gameObject)
+            {
+                _isContained = true;
+                TbbDebuger.LogDebug($"[MutanterAttackSystem] {gameObject.name} received MutanterContained event");
+            }
+        }
+
+        private void OnBreachContained(object data)
+        {
+            GameObject mutanterObj = data as GameObject;
+            if (mutanterObj == gameObject)
+            {
+                _isContained = false;
+                TbbDebuger.LogDebug($"[MutanterAttackSystem] {gameObject.name} received MutanterBreachContained event");
+            }
         }
 
         /// <summary>
@@ -296,7 +332,7 @@ namespace MutantContainmentProject.MutanterComponent
 
             // 根据理智值选择攻击类型
             IMutanterAttackBehavior selectedBehavior = null;
-            
+
             if (insanityValue < 20f)
             {
                 // 理智值低，使用物理攻击
@@ -445,7 +481,7 @@ namespace MutantContainmentProject.MutanterComponent
                             }
                         }
                     }
-                    
+
                     float effectiveStressAmount = stressAmount * mentalDefenseFactor;
                     stressAmountComp.value = Mathf.Min(stressAmountComp.value + effectiveStressAmount, 100f);
                     TbbDebuger.LogDebug($"[MutanterAttackSystem] Stress attack: {target.name} stress increased to {stressAmountComp.value}%, effective amount: {effectiveStressAmount}");

@@ -1,4 +1,4 @@
-﻿using TUNING;
+using TUNING;
 using UnityEngine;
 using static MutantContainmentProject.STRINGS;
 

@@ -1,4 +1,4 @@
-﻿using MutantContainmentProject.MutanterComponent;
+using MutantContainmentProject.MutanterComponent;
 using MutantContainmentProject.Room;
 using TUNING;
 using UnityEngine;
@@ -55,6 +55,7 @@ namespace MutantContainmentProject.Buildings
 
             go.AddOrGetDef<ContainmentMonitor.Def>();
             go.AddOrGet<ContainmentMonitorWorkable>();
+            go.AddOrGet<CorrosionManager>();
         }
 
         public override void DoPostConfigureComplete(GameObject go)

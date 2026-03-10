@@ -1,6 +1,8 @@
 using Klei.AI;
 using MutantContainmentProject.MutanterEffect;
 using System.Collections.Generic;
+using TBB.He.TbbLib.Debuger;
+using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent
 {
@@ -19,14 +21,13 @@ namespace MutantContainmentProject.MutanterComponent
 
             root
                 .Enter(smi => smi.StopChase())
-                .Update((smi, dt) => smi.CheckChaseCondition(), UpdateRate.SIM_1000ms)
-                .Transition(chasing, smi => smi.emotionMonitorSMI != null && smi.effects != null && !smi.effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT) && smi.storedThreaters.Count > 0);
+                .Transition(chasing, smi => !smi.IsContained && smi.storedThreaters.Count > 0);
 
             chasing
                 .Enter(smi => smi.StartChase())
                 .Update((smi, dt) => smi.UpdateChase(), UpdateRate.SIM_200ms)
                 .Exit(smi => smi.StopChase())
-                .Transition(root, smi => !smi.effects.HasEffect(MutanterEffects.MUTANTER_CHASE_EFFECT) || smi.emotionMonitorSMI == null || (smi.effects != null && smi.effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT)) || smi.storedThreaters.Count == 0);
+                .Transition(root, smi => smi.IsContained || smi.storedThreaters.Count == 0);
         }
 
         public class StatesInstance : GameInstance
@@ -52,12 +53,55 @@ namespace MutantContainmentProject.MutanterComponent
             public KPrefabID currentTarget;
             public int currentTargetIndex = 0;
 
+            private bool _isContained = false;
+            public bool IsContained { get => _isContained; }
+
             public StatesInstance(IStateMachineTarget master, Def def) : base(master, def)
             {
                 emotionMonitorSMI = master.gameObject.GetSMI<EmotionMonitor.StatesInstance>();
                 mutanterStateMachineSMI = master.gameObject.GetSMI<MutanterStateMachine.StatesInstance>();
                 effects = master.GetComponent<Effects>();
                 navigator = master.GetComponent<Navigator>();
+
+                // 初始化时检查当前的收容状态
+                if (effects != null && effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+                {
+                    _isContained = true;
+                    TbbDebuger.LogDebug($"[MutanterChaseMonitor] {gameObject.name} initialized with containment effect, IsContained = true");
+                }
+
+                // 使用Klei原生事件系统订阅事件
+                Subscribe((int)MutanterGameHashes.MutanterContained, OnContained);
+                Subscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
+            }
+
+            private void OnContained(object data)
+            {
+                GameObject mutanterObj = data as GameObject;
+                if (mutanterObj == gameObject)
+                {
+                    _isContained = true;
+                    StopChase();
+                    TbbDebuger.LogDebug($"[MutanterChaseMonitor] {gameObject.name} received MutanterContained event, stopping chase");
+                }
+            }
+
+            private void OnBreachContained(object data)
+            {
+                GameObject mutanterObj = data as GameObject;
+                if (mutanterObj == gameObject)
+                {
+                    _isContained = false;
+                    TbbDebuger.LogDebug($"[MutanterChaseMonitor] {gameObject.name} received MutanterBreachContained event");
+                }
+            }
+
+            protected override void OnCleanUp()
+            {
+                // 使用Klei原生事件系统取消订阅
+                Unsubscribe((int)MutanterGameHashes.MutanterContained, OnContained);
+                Unsubscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
+                base.OnCleanUp();
             }
 
             public void CheckChaseCondition()
@@ -97,8 +141,7 @@ namespace MutantContainmentProject.MutanterComponent
 
             public void StartChase()
             {
-                // 检查是否有MUTANTER_CONTAINED_EFFECT，如果有，不执行追击
-                if (effects != null && effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+                if (IsContained)
                 {
                     return;
                 }
@@ -110,37 +153,33 @@ namespace MutantContainmentProject.MutanterComponent
                     effects.Add(MutanterEffects.MUTANTER_CHASE_EFFECT, true);
                 }
 
-                // 将EmotionMonitor的理智值修改到hostile的理智值，触发状态流转到hostile
                 if (emotionMonitorSMI != null && mutanterStateMachineSMI != null)
                 {
                     emotionMonitorSMI.INSANITYValue = mutanterStateMachineSMI.def.sanityThresholdToAttack;
                 }
 
+                UpdateStoredThreaters();
                 SetNextTarget();
             }
 
             public void UpdateChase()
             {
-                // 检查是否有MUTANTER_CONTAINED_EFFECT，如果有，不执行追击
-                if (effects != null && effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+                if (IsContained)
                 {
                     GoTo(sm.root);
                     return;
                 }
 
-                // 检查当前目标是否有效
                 if (!IsTargetValid(currentTarget))
                 {
                     SetNextTarget();
                     return;
                 }
 
-                // 追踪目标
                 if (navigator != null && currentTarget != null && currentTarget.gameObject != null)
                 {
                     int targetCell = Grid.PosToCell(currentTarget.gameObject);
 
-                    // 先停止旧的导航，再开始新的导航
                     if (navigator.GetNavigationCost(targetCell) > 50)
                     {
                         navigator.Stop();
@@ -163,14 +202,12 @@ namespace MutantContainmentProject.MutanterComponent
 
             public void SetNextTarget()
             {
-                // 检查是否有MUTANTER_CONTAINED_EFFECT，如果有，不执行追击
-                if (effects != null && effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+                if (IsContained)
                 {
                     GoTo(sm.root);
                     return;
                 }
 
-                // 更新存储的Threaters队列
                 UpdateStoredThreaters();
 
                 if (storedThreaters.Count == 0)
@@ -179,11 +216,9 @@ namespace MutantContainmentProject.MutanterComponent
                     return;
                 }
 
-                // 循环选择下一个目标
                 currentTargetIndex = (currentTargetIndex + 1) % storedThreaters.Count;
                 currentTarget = storedThreaters[currentTargetIndex];
 
-                // 如果当前目标无效，继续寻找下一个
                 if (!IsTargetValid(currentTarget))
                 {
                     SetNextTarget();

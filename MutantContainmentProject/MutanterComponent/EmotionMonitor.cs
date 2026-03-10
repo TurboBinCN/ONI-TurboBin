@@ -1,6 +1,5 @@
 using Klei.AI;
 using MutantContainmentProject.MutanterEffect;
-using System;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.UI;
@@ -69,15 +68,15 @@ namespace MutantContainmentProject.MutanterComponent
 
             // 处理所有影响因素，分离正负值
             AddImpact(EvaluateThreaters(smi), ref positiveImpact, ref negativeImpact);
-            
+
             if (smi.def.considerEnvironmentalFactors)
                 AddImpact(EvaluateEnvironment(smi), ref positiveImpact, ref negativeImpact);
-            
+
             AddImpact(EvaluateNearbyCreatures(smi), ref positiveImpact, ref negativeImpact);
-            
+
             if (smi.def.considerPlantFactors)
                 AddImpact(EvaluateNearbyPlants(smi), ref positiveImpact, ref negativeImpact);
-            
+
             AddImpact(smi.def.timeBasedINSANITYDriftPerSecond * dt, ref positiveImpact, ref negativeImpact);
 
             // 应用Effect影响：对正值加成、负值削弱
@@ -95,7 +94,7 @@ namespace MutantContainmentProject.MutanterComponent
             UpdateThreateArea(smi, dt);
             //TbbDebuger.LogDebug($"[EmotionMonitor] {smi.master.name} 理智值更新: {smi.INSANITYValue:F2}");
         }
-        
+
         // 辅助方法：分离并累加正负影响
         private void AddImpact(float impact, ref float positiveImpact, ref float negativeImpact)
         {
@@ -191,7 +190,10 @@ namespace MutantContainmentProject.MutanterComponent
                     return mutanterStateMachineDef;
                 }
             }
-            
+
+            private bool _isContained = false;
+            public bool IsContained { get => _isContained; }
+
             // 实例级别的列表，每个实例都有自己的列表
             private List<KPrefabID> threaters = new();
             private List<KPrefabID> buildings = new();
@@ -201,20 +203,52 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 if (def.considerDecor)
                 {
-                    //master.gameObject.AddOrGetDef<CreatureDecorMonitor.Def>()
-                    //    .DecorValueTreshold = def.DecorValueTreshold;
-
                     Subscribe((int)GameHashes.CreatureLowDecor, (_) => _highDecor = false);
                     Subscribe((int)GameHashes.CreatureHighDecor, (_) => _highDecor = true);
                 }
                 tbbRangeVisualizer = master.gameObject.GetComponent<TbbRangeVisualizer>();
-
                 mutanterStateMachineDef = gameObject.GetComponent<MutanterStateMachine.Def>();
+
+                // 初始化时检查当前的收容状态
+                Effects effects = gameObject.GetComponent<Effects>();
+                if (effects != null && effects.HasEffect(MutanterEffect.MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+                {
+                    _isContained = true;
+                    TbbDebuger.LogDebug($"[EmotionMonitor] {gameObject.name} initialized with containment effect, IsContained = true");
+                }
+
+                // 使用Klei原生事件系统订阅事件
+                Subscribe((int)MutanterGameHashes.MutanterContained, OnContained);
+                Subscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
             }
+
+            private void OnContained(object data)
+            {
+                GameObject mutanterObj = data as GameObject;
+                if (mutanterObj == gameObject)
+                {
+                    _isContained = true;
+                    TbbDebuger.LogDebug($"[EmotionMonitor] {gameObject.name} received MutanterContained event");
+                }
+            }
+
+            private void OnBreachContained(object data)
+            {
+                GameObject mutanterObj = data as GameObject;
+                if (mutanterObj == gameObject)
+                {
+                    _isContained = false;
+                    TbbDebuger.LogDebug($"[EmotionMonitor] {gameObject.name} received MutanterBreachContained event");
+                }
+            }
+
             protected override void OnCleanUp()
             {
                 Unsubscribe((int)GameHashes.CreatureLowDecor);
                 Unsubscribe((int)GameHashes.CreatureHighDecor);
+                // 使用Klei原生事件系统取消订阅
+                Unsubscribe((int)MutanterGameHashes.MutanterContained, OnContained);
+                Unsubscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
                 base.OnCleanUp();
             }
 

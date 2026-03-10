@@ -86,169 +86,289 @@ cells:
   temperature: 1
   location_x: 8
   location_y: -3
-- element: Vacuum
+- element: Oxygen
+  mass: 0.887915492
+  temperature: 293.052887
   location_x: -7
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 0.964128673
+  temperature: 293.053955
   location_x: -6
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 1.34460461
+  temperature: 293.080383
   location_x: -5
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 1.66892397
+  temperature: 293.083771
   location_x: -4
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 1.93407357
+  temperature: 293.049286
   location_x: -3
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.2112987
+  temperature: 293.049255
   location_x: -2
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.05184507
+  temperature: 293.049347
   location_x: -1
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.47004867
+  temperature: 293.049194
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.38394475
+  temperature: 293.049225
   location_x: 1
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.51208186
+  temperature: 293.049255
   location_x: 2
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.51845002
+  temperature: 293.049255
   location_x: 3
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.48672605
+  temperature: 293.032928
   location_x: 4
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.42333841
+  temperature: 293.041992
   location_x: 5
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.29684758
+  temperature: 293.014008
   location_x: 6
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.13232446
+  temperature: 293.058502
   location_x: 7
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 1.93276238
+  temperature: 292.990509
   location_x: 8
   location_y: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 0.833115578
+  temperature: 293.051636
   location_x: -7
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 1.09018445
+  temperature: 293.056854
   location_x: -6
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 1.37754035
+  temperature: 293.059235
   location_x: -5
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 1.73992908
+  temperature: 293.049286
   location_x: -4
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 1.93283451
+  temperature: 293.049286
   location_x: -3
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.02318978
+  temperature: 293.052673
   location_x: -2
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.2307694
+  temperature: 293.049255
   location_x: -1
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.39065742
+  temperature: 293.048859
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.47391772
+  temperature: 293.049225
   location_x: 1
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.51445389
+  temperature: 293.049225
   location_x: 2
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.5196135
+  temperature: 293.049194
   location_x: 3
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.4928627
+  temperature: 293.047302
   location_x: 4
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.42282629
+  temperature: 293.040161
   location_x: 5
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.29342628
+  temperature: 293.032257
   location_x: 6
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.12405443
+  temperature: 292.994568
   location_x: 7
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 1.92173386
+  temperature: 292.990601
   location_x: 8
   location_y: -1
-- element: Vacuum
+- element: Oxygen
+  mass: 0.999649107
+  temperature: 293.052185
   location_x: -7
-- element: Vacuum
+- element: Oxygen
+  mass: 1.11145353
+  temperature: 293.052948
   location_x: -6
-- element: Vacuum
+- element: Oxygen
+  mass: 1.47448587
+  temperature: 293.055115
   location_x: -5
-- element: Vacuum
+- element: Oxygen
+  mass: 1.75336492
+  temperature: 293.049347
   location_x: -4
-- element: Vacuum
+- element: Oxygen
+  mass: 1.8476665
+  temperature: 293.05011
   location_x: -3
-- element: Vacuum
+- element: Oxygen
+  mass: 2.04424214
+  temperature: 293.049347
   location_x: -2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.27708864
+  temperature: 293.049347
   location_x: -1
-- element: Vacuum
-- element: Vacuum
+- element: Oxygen
+  mass: 2.39442587
+  temperature: 293.049255
+- element: Oxygen
+  mass: 2.46443748
+  temperature: 293.048462
   location_x: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.52607751
+  temperature: 293.049164
   location_x: 2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.54151225
+  temperature: 293.048767
   location_x: 3
-- element: Vacuum
+- element: Oxygen
+  mass: 2.46736956
+  temperature: 293.048523
   location_x: 4
-- element: Vacuum
+- element: Oxygen
+  mass: 2.2963326
+  temperature: 293.038208
   location_x: 5
-- element: Vacuum
+- element: Oxygen
+  mass: 2.52648687
+  temperature: 293.018555
   location_x: 6
-- element: Vacuum
+- element: Oxygen
+  mass: 2.11885238
+  temperature: 292.996033
   location_x: 7
-- element: Vacuum
+- element: Oxygen
+  mass: 1.9093399
+  temperature: 292.98996
   location_x: 8
 - element: Unobtanium
   mass: 20000
   temperature: 1
   location_x: -7
   location_y: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 1.36520469
+  temperature: 293.060333
   location_x: -6
   location_y: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 1.60374653
+  temperature: 293.067627
   location_x: -5
   location_y: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 1.69240534
+  temperature: 293.066162
   location_x: -4
   location_y: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 1.85884762
+  temperature: 293.051971
   location_x: -3
   location_y: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.08976364
+  temperature: 293.051819
   location_x: -2
   location_y: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.28798246
+  temperature: 293.051788
   location_x: -1
   location_y: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.37762427
+  temperature: 293.051544
   location_y: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.47103071
+  temperature: 293.050354
   location_x: 1
   location_y: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.5413754
+  temperature: 293.050171
   location_x: 2
   location_y: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.57302022
+  temperature: 293.050659
   location_x: 3
   location_y: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.57788086
+  temperature: 293.050415
   location_x: 4
   location_y: 1
-- element: Vacuum
+- element: Oxygen
+  mass: 2.5833509
+  temperature: 293.053375
   location_x: 5
   location_y: 1
 - element: Unobtanium
@@ -276,38 +396,58 @@ cells:
   temperature: 1
   location_x: -6
   location_y: 2
-- element: Vacuum
+- element: Oxygen
+  mass: 1.44905376
+  temperature: 293.110077
   location_x: -5
   location_y: 2
-- element: Vacuum
+- element: Oxygen
+  mass: 1.77457511
+  temperature: 293.119263
   location_x: -4
   location_y: 2
-- element: Vacuum
+- element: Oxygen
+  mass: 1.84002566
+  temperature: 293.113647
   location_x: -3
   location_y: 2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.1125803
+  temperature: 293.109406
   location_x: -2
   location_y: 2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.39954138
+  temperature: 293.125336
   location_x: -1
   location_y: 2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.28753543
+  temperature: 293.135101
   location_y: 2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.49419665
+  temperature: 293.147156
   location_x: 1
   location_y: 2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.56101584
+  temperature: 293.121735
   location_x: 2
   location_y: 2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.60449576
+  temperature: 293.136566
   location_x: 3
   location_y: 2
-- element: Unobtanium
-  mass: 20000
-  temperature: 1
+- element: Oxygen
+  mass: 2.62013459
+  temperature: 293.129059
   location_x: 4
   location_y: 2
-- element: Vacuum
+- element: Oxygen
+  mass: 2.63108492
+  temperature: 293.132477
   location_x: 5
   location_y: 2
 - element: Unobtanium
@@ -318,7 +458,9 @@ cells:
 - element: Vacuum
   location_x: 7
   location_y: 2
-- element: Vacuum
+- element: Oxygen
+  mass: 0.0545029603
+  temperature: 292.965912
   location_x: 8
   location_y: 2
 - element: Vacuum
@@ -329,7 +471,9 @@ cells:
   temperature: 1
   location_x: -6
   location_y: 3
-- element: Vacuum
+- element: Unobtanium
+  mass: 20000
+  temperature: 1
   location_x: -5
   location_y: 3
 - element: Unobtanium
@@ -376,335 +520,369 @@ cells:
   temperature: 1
   location_x: 4
   location_y: 3
-- element: Vacuum
+- element: Unobtanium
+  mass: 20000
+  temperature: 1
   location_x: 5
   location_y: 3
-- element: Vacuum
+- element: Unobtanium
+  mass: 20000
+  temperature: 1
   location_x: 6
   location_y: 3
 - element: Vacuum
   location_x: 7
   location_y: 3
-- element: Vacuum
+- element: Oxygen
+  mass: 0.0114270225
+  temperature: 292.9664
   location_x: 8
   location_y: 3
 buildings:
+- id: ExteriorWall
+  location_x: 4
+  location_y: 2
+  element: Obsidian
+  temperature: 293.134308
+- id: GlobalErosionPlanel
+  location_x: 4
+  location_y: -2
+  element: Copper
+  temperature: 293.046478
 - id: GravitasMutanterFounder
   location_y: -2
   element: Copper
-  temperature: 293.149994
+  temperature: 293.049683
 - id: ExteriorWall
   location_y: -2
   element: Obsidian
-  temperature: 293.934662
+  temperature: 293.044006
 - id: ExteriorWall
   location_y: -1
   element: Obsidian
-  temperature: 293.160248
+  temperature: 293.043945
 - id: GravitasDoor
   location_x: -7
   location_y: -2
   element: Aluminum
-  temperature: 245.260605
+  temperature: 293.051239
 - id: ExteriorWall
   location_x: 4
   element: Obsidian
-  temperature: 293.677765
+  temperature: 293.035309
 - id: ExteriorWall
   location_x: 3
   location_y: 2
   element: Obsidian
-  temperature: 293.150665
+  temperature: 293.13382
 - id: ExteriorWall
   location_x: -6
   location_y: -2
   element: Obsidian
-  temperature: 262.620453
+  temperature: 293.048401
 - id: ExteriorWall
   location_x: -6
   location_y: -1
   element: Obsidian
-  temperature: 266.692444
+  temperature: 293.045624
 - id: ExteriorWall
   location_x: -6
   element: Obsidian
-  temperature: 268.125397
+  temperature: 293.046234
 - id: ExteriorWall
   location_x: -6
   location_y: 1
   element: Obsidian
-  temperature: 267.556274
+  temperature: 293.056183
 - id: ExteriorWall
   location_x: -2
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.043671
 - id: ExteriorWall
   location_x: 1
   location_y: -2
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.044037
 - id: ExteriorWall
   location_x: -5
   location_y: -2
   element: Obsidian
-  temperature: 271.771332
+  temperature: 293.055695
 - id: ExteriorWall
   location_x: -5
   location_y: -1
   element: Obsidian
-  temperature: 275.527344
+  temperature: 293.046478
 - id: ExteriorWall
   location_x: -5
   element: Obsidian
-  temperature: 278.441284
+  temperature: 293.046021
 - id: ExteriorWall
   location_x: -5
   location_y: 1
   element: Obsidian
-  temperature: 278.296539
+  temperature: 293.056244
 - id: ExteriorWall
   location_x: -5
   location_y: 2
   element: Obsidian
-  temperature: 276.598358
+  temperature: 293.098999
 - id: ExteriorWall
   location_x: -4
   location_y: -2
   element: Obsidian
-  temperature: 284.724915
+  temperature: 293.047821
 - id: ExteriorWall
   location_x: -4
   location_y: -1
   element: Obsidian
-  temperature: 283.873627
+  temperature: 293.044647
 - id: ExteriorWall
   location_x: -4
   element: Obsidian
-  temperature: 284.619354
+  temperature: 293.044922
 - id: ExteriorWall
   location_x: -4
   location_y: 1
   element: Obsidian
-  temperature: 285.597809
+  temperature: 293.055145
 - id: ExteriorWall
   location_x: -4
   location_y: 2
   element: Obsidian
-  temperature: 287.99054
+  temperature: 293.104034
 - id: ExteriorWall
   location_x: 2
   location_y: -2
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.042389
 - id: ExteriorWall
   element: Obsidian
-  temperature: 293.160248
+  temperature: 293.044067
 - id: ExteriorWall
   location_x: 7
   location_y: -1
   element: Obsidian
-  temperature: 295.421112
+  temperature: 292.998108
 - id: ExteriorWall
   location_x: -2
   location_y: 1
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.047607
 - id: ExteriorWall
   location_x: 1
   location_y: 1
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.046204
 - id: ExteriorWall
   location_x: 4
   location_y: 1
   element: Obsidian
-  temperature: 293.387207
+  temperature: 293.04953
 - id: ExteriorWall
   location_x: -3
   location_y: 2
   element: Obsidian
-  temperature: 293.970734
+  temperature: 293.111664
 - id: ExteriorWall
   location_x: 2
   location_y: -1
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.04364
 - id: ExteriorWall
   location_y: 1
   element: Obsidian
-  temperature: 293.190979
+  temperature: 293.046478
 - id: ExteriorWall
   location_x: 7
   location_y: -2
   element: Obsidian
-  temperature: 297.05191
+  temperature: 293.002472
 - id: ExteriorWall
   location_x: 5
   location_y: 1
   element: Obsidian
-  temperature: 298.407898
+  temperature: 293.060913
 - id: ExteriorWall
   location_x: 6
   location_y: -2
   element: Obsidian
-  temperature: 296.851257
+  temperature: 293.017975
 - id: ExteriorWall
   location_x: 2
   location_y: 1
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.046112
 - id: ExteriorWall
   location_x: -2
   location_y: 2
   element: Obsidian
-  temperature: 296.939911
+  temperature: 293.120209
 - id: ExteriorWall
   location_x: 3
   location_y: -1
   element: Obsidian
-  temperature: 293.150024
+  temperature: 293.040497
 - id: ExteriorWall
   location_x: 1
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.04422
 - id: ExteriorWall
   location_x: -1
   location_y: 1
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.046783
 - id: ExteriorWall
   location_x: -2
   location_y: -1
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.043518
 - id: ExteriorWall
   location_x: 5
   element: Obsidian
-  temperature: 295.215973
+  temperature: 293.027802
 - id: ExteriorWall
   location_x: -3
   location_y: 1
   element: Obsidian
-  temperature: 293.150177
+  temperature: 293.049194
 - id: ExteriorWall
   location_x: -3
   location_y: -1
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.043549
 - id: ExteriorWall
   location_x: 3
   location_y: -2
   element: Obsidian
-  temperature: 293.150024
+  temperature: 293.040283
 - id: ExteriorWall
   location_x: -1
   location_y: 2
   element: Obsidian
-  temperature: 298.78009
+  temperature: 293.128265
 - id: ExteriorWall
   location_x: 3
   element: Obsidian
-  temperature: 293.150177
+  temperature: 293.042877
 - id: ExteriorWall
   location_x: 1
   location_y: -1
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.044159
 - id: ExteriorWall
   location_x: -3
   location_y: -2
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.043915
 - id: ExteriorWall
   location_x: 5
   location_y: -1
   element: Obsidian
-  temperature: 296.090424
+  temperature: 293.022308
 - id: ExteriorWall
   location_x: 7
   element: Obsidian
-  temperature: 296.925537
+  temperature: 293.005615
 - id: GravitasDoor
   location_x: 8
   location_y: -2
   element: Aluminum
-  temperature: 300.120544
+  temperature: 292.989777
 - id: ExteriorWall
   location_x: -2
   location_y: -2
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.04364
 - id: ExteriorWall
   location_y: 2
   element: Obsidian
-  temperature: 299.784668
+  temperature: 293.141174
 - id: ExteriorWall
   location_x: 3
   location_y: 1
   element: Obsidian
-  temperature: 293.15094
+  temperature: 293.047058
 - id: ExteriorWall
   location_x: 2
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.044281
 - id: ExteriorWall
   location_x: -1
   location_y: -1
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.043732
 - id: ExteriorWall
   location_x: 5
   location_y: -2
   element: Obsidian
-  temperature: 297.775879
+  temperature: 293.031586
 - id: ExteriorWall
   location_x: -1
   location_y: -2
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.043732
 - id: ExteriorWall
   location_x: 6
   location_y: -1
   element: Obsidian
-  temperature: 295.287262
+  temperature: 293.013489
 - id: ExteriorWall
   location_x: -1
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.043884
 - id: ExteriorWall
   location_x: 2
   location_y: 2
   element: Obsidian
-  temperature: 299.726379
+  temperature: 293.135742
 - id: ExteriorWall
   location_x: 1
   location_y: 2
   element: Obsidian
-  temperature: 299.85788
+  temperature: 293.13739
 - id: ExteriorWall
   location_x: 6
   element: Obsidian
-  temperature: 295.835815
+  temperature: 293.017761
 - id: ExteriorWall
   location_x: -3
   element: Obsidian
-  temperature: 293.149994
+  temperature: 293.043945
 - id: ExteriorWall
   location_x: 4
   location_y: -2
   element: Obsidian
-  temperature: 293.7771
+  temperature: 293.03244
 - id: ExteriorWall
   location_x: 4
   location_y: -1
   element: Obsidian
-  temperature: 293.494934
+  temperature: 293.031616
+- id: ExteriorWall
+  location_x: 5
+  location_y: 2
+  element: Obsidian
+  temperature: 293.137024
 otherEntities:
-- id: PropDesk
-  location_x: 6
+- id: PropTallPlant
+  location_x: -5
   location_y: -2
+  element: Polypropylene
+  temperature: 294.063354
+  units: 1
+  type: Other
+- id: PropLight
+  location_x: -3
+  location_y: 2
   element: Steel
-  temperature: 294.149994
+  temperature: 293.908081
+  units: 1
+  type: Other
+- id: PropLight
+  location_y: 2
+  element: Steel
+  temperature: 293.945129
   units: 1
   type: Other
 - id: PropClock
@@ -713,23 +891,10 @@ otherEntities:
   temperature: 294.149994
   units: 1
   type: Other
-- id: PropLight
-  location_y: 2
-  element: Steel
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLight
-  location_x: -3
-  location_y: 2
-  element: Steel
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropTallPlant
-  location_x: -5
+- id: PropDesk
+  location_x: 6
   location_y: -2
-  element: Polypropylene
-  temperature: 294.149994
+  element: Steel
+  temperature: 293.907043
   units: 1
   type: Other
