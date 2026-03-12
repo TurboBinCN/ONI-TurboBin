@@ -77,11 +77,15 @@ namespace MutantContainmentProject.Buildings
         {
             base.OnSpawn();
             _containmentMonitorSMI = gameObject.GetSMI<ContainmentMonitor.Instance>();
+            // 注册站点到管理器
+            ContainmentMonitorStationManager.RegisterStation(gameObject);
         }
 
         protected override void OnCleanUp()
         {
             base.OnCleanUp();
+            // 从管理器中注销站点
+            ContainmentMonitorStationManager.UnregisterStation(gameObject);
         }
         protected override void OnStartWork(WorkerBase worker)
         {
@@ -104,6 +108,7 @@ namespace MutantContainmentProject.Buildings
             {
                 selectable.RemoveStatusItem(ContainmentMonitorBuildingStatusItems.Instance.ContainmentSuccess);
                 selectable.RemoveStatusItem(ContainmentMonitorBuildingStatusItems.Instance.ContainmentFailure);
+                selectable.RemoveStatusItem(ContainmentMonitorBuildingStatusItems.Instance.WorkerDamage);
                 Debug.Log("[ContainmentMonitorWorkable] 之前的状态项已清除");
             }
 
@@ -124,7 +129,7 @@ namespace MutantContainmentProject.Buildings
                     var converterInstance = containmentSpeedConverter.Lookup(worker.gameObject);
                     if (converterInstance != null)
                     {
-                        containmentSpeedFactor = Mathf.Max(0.5f, 1f + converterInstance.Evaluate());
+                        containmentSpeedFactor = Mathf.Max(0.1f, 1f + converterInstance.Evaluate());
                     }
                 }
                 
@@ -135,7 +140,7 @@ namespace MutantContainmentProject.Buildings
                     var converterInstance = safetyMeasureSuccessRateConverter.Lookup(worker.gameObject);
                     if (converterInstance != null)
                     {
-                        safetyMeasureSuccessRateFactor = Mathf.Max(0.5f, 0.5f + converterInstance.Evaluate());
+                        safetyMeasureSuccessRateFactor = Mathf.Max(0.1f, 0.5f + converterInstance.Evaluate());
                     }
                 }
                 
@@ -246,10 +251,59 @@ namespace MutantContainmentProject.Buildings
             // 例如，播放动画、给予奖励、更新UI等
         }
 
+        // 固定伤害值
+        private const float MUTANTER_DAMAGE_AMOUNT = 10f;
+
         private void HandleMutantSuccess()
         {
             // 实现畸变体成功的具体逻辑
             // 例如，触发负面效果、更新状态等
+            if (workerGameObject != null)
+            {
+                // 找到当前房间中的畸变体，获取其攻击系统
+                if (_containmentMonitorSMI != null)
+                {
+                    foreach (var securable in _containmentMonitorSMI.TargetSecurables)
+                    {
+                        if (securable != null && securable.gameObject != null)
+                        {
+                            MutanterAttackSystem attackSystem = securable.gameObject.GetComponent<MutanterAttackSystem>();
+                            if (attackSystem != null)
+                            {
+                                // 执行攻击
+                                bool attackSuccess = attackSystem.TryExecuteAttack(workerGameObject);
+                                if (attackSuccess)
+                                {
+                                    // 显示工人受伤状态项
+                                    ShowWorkerDamageStatusItem(MUTANTER_DAMAGE_AMOUNT, "Mutant Attack");
+                                }
+                                break; // 只让第一个畸变体攻击
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // 如果没有找到攻击系统，默认执行物理伤害
+                    Health health = workerGameObject.GetComponent<Health>();
+                    if (health != null)
+                    {
+                        health.Damage(MUTANTER_DAMAGE_AMOUNT);
+                        // 显示工人受伤状态项
+                        ShowWorkerDamageStatusItem(MUTANTER_DAMAGE_AMOUNT, "Physical");
+                    }
+                }
+            }
+        }
+
+        private void ShowWorkerDamageStatusItem(float damage, string damageType)
+        {
+            KSelectable selectable = gameObject.GetComponent<KSelectable>();
+            if (selectable != null)
+            {
+                // 显示工人受伤状态项
+                selectable.AddStatusItem(ContainmentMonitorBuildingStatusItems.Instance.WorkerDamage, new System.Tuple<float, string>(damage, damageType));
+            }
         }
         private void ResetWorkState()
         {
@@ -339,7 +393,7 @@ namespace MutantContainmentProject.Buildings
                     Health health = worker.gameObject.GetComponent<Health>();
                     if (health != null)
                     {
-                        health.Damage(health.maxHitPoints); // 扣减所有生命值
+                        // health.Damage(health.maxHitPoints); // 扣减所有生命值
                         Debug.Log($"[ContainmentMonitorWorkable] 工人 {worker.name} 受到致命伤害");
                     }
                     else

@@ -233,6 +233,17 @@
           DESC: 一个监控面板，显示全局侵蚀等级并为收容状态提供视觉警报。
           EFFECT: 显示当前全局侵蚀等级和潜在的收容风险。
         }
+        CONTROLDEPARTMENTCONSOLE: {
+          NAME: 控制部操作台
+          DESC: 中央控制控制台，管理收容系统并为选定的复制人提供速度提升。防止低等级畸变体突破收容。
+          EFFECT: 防止欧几里得级以下的畸变体突破收容，并为选定的复制人提供移动速度提升。
+          LOGIC_PORT: 控制状态
+          LOGIC_PORT_ACTIVE: 激活
+          LOGIC_PORT_INACTIVE: 未激活
+          SELECT_DUPES_TITLE: 选择复制人进行速度提升（最多5个）
+          SELECT_DUPES_TOOLTIP: 点击选择以获得速度提升
+          SELECTED_DUPES_TOOLTIP: 已选择获得速度提升
+        }
       }
       STATUSITEMS: {
         GRAVITAS_MUTANTER_FOUNDER_COOLDOWN: {
@@ -280,6 +291,10 @@
             CORROSIONOVERFLOW: {
                 NAME: "溢流突破"
                 TOOLTIP: "畸变体突破收容，触发破坏效果"
+            }
+            WORKER_DAMAGE: {
+                NAME: "员工受伤"
+                TOOLTIP: "员工受到 {0} 点伤害（{1} 攻击）"
             }
         }
         EROSION: {
@@ -556,6 +571,14 @@
         NAME: 记忆消除
         DESCRIPTION: 暴露于SCP-939的记忆消除气雾中，会导致顺行性失忆，并有几率在一周期内无征兆进入沉睡状态。
       }
+      MUTANTER_CONTROL_SPEED_EFFECT: {
+        NAME: 控制部速度加成
+        DESCRIPTION: 控制部操作台提供的全局速度提升，增加移动速度。
+      }
+      MUTANTER_CONTROL_SUPPRESSION_EFFECT: {
+        NAME: 控制部抑制
+        DESCRIPTION: 控制部操作台提供的抑制效果，限制腐蚀增长。
+      }
     }
     UI: {
       UISIDESCREENS: {
@@ -568,6 +591,9 @@
           ACTION_RECONNAISSANCE: 洞察
           ACTION_COMMUNICATION: 沟通
           ACTION_INTIMIDATION: 压迫
+        }
+        CONTROLDEPARTMENTCONSOLE: {
+          NOTHING: 未选择任何复制人
         }
       }
       ROLES_SCREEN: {
@@ -587,6 +613,11 @@
           SUMMON_BUTTON_COOLDOWN_TOOLTIP: 召唤正在冷却中。剩余时间：{0}秒
         }
       }
+      RESEARCHSCREEN: {
+        FILTER_BUTTONS:{
+            MUTANTER: 畸变体
+        }
+      }
     }
     ROOMS: {
       CATEGORY: {
@@ -596,6 +627,13 @@
           DESCRIPTION: 一个用于收容畸变体的特殊房间。
           TOOLTIP: 在此房间内的畸变体会受到行为限制。需要一个特殊的收容建筑。
         }
+        CONTROL_DEPARTMENT: {
+          CATE_NAME: 控制部
+          NAME: 控制部
+          DESCRIPTION: 专用于控制部操作台的房间，用于管理收容系统并为选定的复制人提供速度提升。
+          TOOLTIP: 控制部：需要控制部操作台和适当的照明。
+        }
+
       }
       CRITERIA: {
         CONTAINMENTMONITOR: {
@@ -609,6 +647,14 @@
         MUTANTER_COUNT: {
           NAME: 只能容纳1只畸变体
           DESCRIPTION: 收容室只能容纳1只畸变体
+        }
+        CONTROL_DEPARTMENT_CONSOLE: {
+          NAME: 需要控制部操作台
+          DESCRIPTION: 房间内必须包含一个控制部操作台
+        }
+        CONTROL_DEPARTMENT_LIGHT: {
+          NAME: 需要照明
+          DESCRIPTION: 房间内必须至少有一个光源
         }
       }
     }
@@ -641,6 +687,25 @@
         MUTANTER_SCP939: {
           NAME: <link="MUTANTER_SCP939">SCP-939</link>
           DESCRIPTION: SCP-939是温血群居掠食生物，呈现典型穴居生物的系统退化特征，常潜藏于阴暗区域伏击猎物。
+        }
+      }
+    }
+    RESEARCH: {
+      TREES: {
+        TITLE_MUTANT_CONTAINMENT: 畸变体收容
+      }
+      TECHS: {
+        MUTANT_CONTAINMENT: {
+          NAME: 畸变体收容
+          DESC: 研究收容和管理异常实体的技术
+        }
+        MUTANT_CONTAINMENT_BASIC: {
+          NAME: 基础畸变体收容
+          DESC: 解锁基础的收容设施，用于收容畸变体实体
+        }
+        MUTANT_CONTAINMENT_ADVANCED: {
+          NAME: 进阶畸变体收容
+          DESC: 解锁进阶的收容设施，用于收容畸变体实体
         }
       }
     }

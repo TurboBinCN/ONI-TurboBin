@@ -86,9 +86,9 @@ namespace MutantContainmentProject.Skills
                     STRINGS.SKILLS.ATTACK_DAMAGE,
                     "Increases damage against mutanters",
                     righteousnessAttribute,
-                    0.1f, // 每级增加10%攻击伤害
+                    0.1f, // 每级增加10%攻击伤害（保持与原来相同的百分比）
                     0.0f,
-                    percentFormatter
+                    percentFormatter // 使用百分比格式化器
                 );
             }
 

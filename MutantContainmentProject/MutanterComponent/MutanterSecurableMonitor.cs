@@ -1,9 +1,10 @@
 using Klei.AI;
+using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterEffect;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
-namespace MutantContainmentProject.Buildings
+namespace MutantContainmentProject.MutanterComponent
 {
     public class MutanterSecurableMonitor : GameStateMachine<MutanterSecurableMonitor, MutanterSecurableMonitor.Instance, IStateMachineTarget, MutanterSecurableMonitor.Def>
     {
@@ -97,6 +98,29 @@ namespace MutantContainmentProject.Buildings
             internal void SetContainmentMonitor(ContainmentMonitor.Instance instance)
             {
                 _targetContainmentMonitor = instance;
+            }
+
+            public void ApplyControlStationEffect()
+            {
+                // 检查畸变体的危险等级
+                MutanterColonyComponent mutanterColony = gameObject.GetComponent<MutanterColonyComponent>();
+                if (mutanterColony != null && mutanterColony.DangerLevel <= MutanterDangerLevel.Euclid)
+                {
+                    // 应用控制效果，防止突破收容
+                    ApplyEffect(gameObject, MutanterEffects.MUTANTER_CONTROL_SUPPRESSION_EFFECT);
+                    TbbDebuger.LogDebug($"[控制站] 应用控制效果到 {gameObject?.name}");
+                }
+            }
+
+            public void RemoveControlStationEffect()
+            {
+                // 移除控制效果
+                Effects effects = gameObject.GetComponent<Effects>();
+                if (effects != null && effects.HasEffect(MutanterEffects.MUTANTER_CONTROL_SUPPRESSION_EFFECT))
+                {
+                    effects.Remove(MutanterEffects.MUTANTER_CONTROL_SUPPRESSION_EFFECT);
+                    TbbDebuger.LogDebug($"[控制站] 移除控制效果从 {gameObject?.name}");
+                }
             }
         }
         public class Def : BaseDef { }

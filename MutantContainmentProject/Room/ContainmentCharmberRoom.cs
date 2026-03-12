@@ -1,7 +1,4 @@
 using MutantContainmentProject.MutanterComponent;
-using rail;
-using System;
-using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
@@ -49,7 +46,7 @@ namespace MutantContainmentProject.Room
                 {
                     bool flag = true;
                     var cavity = room.cavity;
-                    
+
                     // 遍历房间内的所有单元格，检查每个单元格的相邻单元格是否为边界
                     for (int y = cavity.minY; flag && y <= cavity.maxY; y++)
                     {
@@ -67,7 +64,7 @@ namespace MutantContainmentProject.Room
                                     Grid.XYToCell(x, y + 1), // 上
                                     Grid.XYToCell(x, y - 1)  // 下
                                 };
-                                
+
                                 foreach (int adjCell in adjacentCells)
                                 {
                                     // 检查相邻单元格是否有效且不在房间内
@@ -84,15 +81,15 @@ namespace MutantContainmentProject.Room
                             }
                         }
                     }
-                    
+
                     return flag;
-                    
+
                     bool CheckBoundaryCell(int cell)
                     {
                         // 检查该单元格是否有门
                         if (Grid.HasDoor[cell])
                             return true; // 门是有效的
-                        
+
                         // 检查该单元格是否有收容砖（只检查FoundationTile层，因为ContainmentTileConfig是FoundationTile）
                         GameObject foundationObj = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
                         return foundationObj != null && foundationObj.GetComponent<KPrefabID>()?.HasTag(MutanterTags.MutanterBuildings) == true;
@@ -101,14 +98,14 @@ namespace MutantContainmentProject.Room
                 name: STRINGS.ROOMS.CRITERIA.CONTAINMENTMONITOREXTERIOR.NAME,
                 description: STRINGS.ROOMS.CRITERIA.CONTAINMENTMONITOREXTERIOR.DESCRIPTION
             );
-            
+
             // --- 添加畸变体数量约束 --- 检查房间内只能有1只畸变体
             var mutanterCountConstraint = new RoomConstraints.Constraint(
                 building_criteria: null,
                 room_criteria: (global::Room room) =>
                 {
                     int mutanterCount = 0;
-                    
+
                     // 遍历房间内的所有生物
                     foreach (KPrefabID creature in room.creatures)
                     {
@@ -119,7 +116,7 @@ namespace MutantContainmentProject.Room
                                 break; // 超过1只，直接返回false
                         }
                     }
-                    
+
                     return mutanterCount == 1;
                 },
                 name: STRINGS.ROOMS.CRITERIA.MUTANTER_COUNT.NAME,
@@ -162,14 +159,12 @@ namespace MutantContainmentProject.Room
                 TbbDebuger.LogDebug($"Added Room Type: {ContainmentChamber.Id}");
             }
         }
-        
+
         private static bool IsCavityBoundary(int cell)
         {
             // 参考RoomProber.IsCavityBoundary的实现
             return (Grid.BuildMasks[cell] & (Grid.BuildFlags.Solid | Grid.BuildFlags.Foundation)) != 0 || Grid.HasDoor[cell];
         }
-
-
 
         public static void RegisterRoomCategory()
         {
@@ -178,7 +173,7 @@ namespace MutantContainmentProject.Room
             var containmentCategory = new RoomTypeCategory(
                 id: CATEGORY_ID, // 唯一的分类ID
                 name: STRINGS.ROOMS.CATEGORY.MUTANTER_CONTAINER.CATE_NAME,
-                colorName: "roomBathroom", // TODO: 定义颜色或使用现有颜色名，例如 "roomNone"
+                colorName: "mutanter_containment_room", // TODO: 定义颜色或使用现有颜色名，例如 "roomNone"
                 icon: "ui_room_hospital" // TODO: 提供图标路径，例如 "ui_room_food"
             );
 

@@ -1,3 +1,4 @@
+using Klei.AI;
 using MutantContainmentProject.MutanterComponent;
 using System;
 using System.Collections.Generic;
@@ -157,6 +158,20 @@ namespace MutantContainmentProject.Buildings
                 return;
             }
 
+            // 检查是否有控制部抑制效果
+            bool hasControlSuppressionEffect = false;
+            Effects effects = gameObject.GetComponent<Effects>();
+            if (effects != null && effects.HasEffect(MutanterEffect.MutanterEffects.MUTANTER_CONTROL_SUPPRESSION_EFFECT))
+            {
+                hasControlSuppressionEffect = true;
+                // 如果腐蚀值已经达到或超过高腐蚀阈值，不继续增长
+                if (CorrosionValue >= CORROSION_HIGH_THRESHOLD)
+                {
+                    TbbDebuger.LogDebug($"[腐蚀管理] 有控制部抑制效果，腐蚀值已达到高腐蚀阈值，停止增长");
+                    return;
+                }
+            }
+
             float corrosionChange = 0f;
 
             // 基础腐蚀速率
@@ -176,7 +191,7 @@ namespace MutantContainmentProject.Buildings
             baseRate *= DANGER_LEVEL_MULTIPLIERS[dangerLevel];
 
             // 是否被收容
-            if (!SecurableMonitor.IsSecured())
+            if (!SecurableMonitor?.IsSecured() == true)
             {
                 corrosionChange += CORROSION_INCREASE_UNATTENDED;
             }
@@ -185,6 +200,14 @@ namespace MutantContainmentProject.Buildings
 
             // 应用腐蚀变化
             CorrosionValue += corrosionChange;
+            
+            // 如果有控制部抑制效果，确保腐蚀值不超过高腐蚀阈值
+            if (hasControlSuppressionEffect && CorrosionValue > CORROSION_HIGH_THRESHOLD)
+            {
+                CorrosionValue = CORROSION_HIGH_THRESHOLD;
+                TbbDebuger.LogDebug($"[腐蚀管理] 有控制部抑制效果，腐蚀值被限制在高腐蚀阈值: {CORROSION_HIGH_THRESHOLD}");
+            }
+            
             // 检查腐蚀状态变化
             CheckCorrosionStateChange();
             

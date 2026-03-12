@@ -183,12 +183,9 @@ namespace TBB.He.TbbLib.Debuger
             // 5. 返回构建好的字符串
             return outputBuilder.ToString();
         }
-    }
-    // --- 辅助函数：获取 Transform 的完整路径 (可选，用于调试) ---
-    static class TransformExtensions
-    {
-        // --- 辅助函数：递归查找子对象 ---
-        private static Transform FindChildByName(Transform parent, string name)
+
+
+        public static Transform FindChildByName(Transform parent, string name)
         {
             if (parent.name == name)
                 return parent;

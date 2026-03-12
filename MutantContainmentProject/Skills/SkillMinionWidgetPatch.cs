@@ -1,8 +1,6 @@
 using HarmonyLib;
-using MutantContainmentProject;
 using MutantContainmentProject.Skills;
 using UnityEngine;
-using Klei.AI;
 
 namespace MutantContainmentProject.Patches
 {
@@ -30,7 +28,7 @@ namespace MutantContainmentProject.Patches
                 {
                     // 直接添加到现有的tooltip内容中，而不是清除它
                     tooltip.AddMultiStringTooltip("\n" + STRINGS.SKILLS.CONVERTED_ATTRIBUTES + "\n\n", null);
-                    
+
                     // 防御属性转换
                     DisplayAttributeConverter(tooltip, resume.gameObject, MutanterAttributeConverters.AttributePhysicalDefenseConverterID);
                     DisplayAttributeConverter(tooltip, resume.gameObject, MutanterAttributeConverters.AttributeMentalDefenseConverterID);
@@ -62,9 +60,13 @@ namespace MutantContainmentProject.Patches
                     if (converterInstance != null)
                     {
                         float value = converterInstance.Evaluate();
-                        string colorPrefix = value > 0 ? "<color=#00ff00>" : "<color=#ff0000>";
+                        string colorPrefix = AttributeConverterDisplayHelper.GetColorPrefix(value);
                         string colorSuffix = "</color>";
-                        tooltip.AddMultiStringTooltip($"    • {converter.Name}: {colorPrefix}{converter.formatter.GetFormattedValue(value, GameUtil.TimeSlice.None)}{colorSuffix}", null);
+
+                        // 获取格式化显示值
+                        string formattedValue = AttributeConverterDisplayHelper.GetFormattedValue(converter, converterID, value);
+
+                        tooltip.AddMultiStringTooltip($"    • {converter.Name}: {colorPrefix}{formattedValue}{colorSuffix}", null);
                     }
                 }
             }

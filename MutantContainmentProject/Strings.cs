@@ -266,6 +266,17 @@ namespace MutantContainmentProject
                     public static LocString DESC = "A monitoring panel that displays the global erosion level and provides visual alerts for containment status.";
                     public static LocString EFFECT = "Displays the current global erosion level and potential containment risks.";
                 }
+                public static class CONTROLDEPARTMENTCONSOLE {
+                    public static LocString NAME = "Control Department Console";
+                    public static LocString DESC = "A central control console that manages containment systems and provides speed boosts to selected dupes. Prevents low-level mutanters from breaking containment.";
+                    public static LocString EFFECT = "Prevents mutanters below Euclid class from breaking containment and provides movement speed boost to selected dupes.";
+                    public static LocString LOGIC_PORT = "Control Status";
+                    public static LocString LOGIC_PORT_ACTIVE = "Active";
+                    public static LocString LOGIC_PORT_INACTIVE = "Inactive";
+                    public static LocString SELECT_DUPES_TITLE = "Select Dupes for Speed Boost (Max 5)";
+                    public static LocString SELECT_DUPES_TOOLTIP = "Click to select for speed boost";
+                    public static LocString SELECTED_DUPES_TOOLTIP = "Selected for speed boost";
+                }
             }
             public static class STATUSITEMS
             {
@@ -363,6 +374,11 @@ namespace MutantContainmentProject
                     {
                         public static LocString NAME = "Overflow Breach";
                         public static LocString TOOLTIP = "Corrosion: {0}/100, mutanter breached containment, triggering destructive effects";
+                    }
+                    public static class WORKER_DAMAGE
+                    {
+                        public static LocString NAME = "Duplicants Damaged";
+                        public static LocString TOOLTIP = "The Duplicant received {0} damage from mutanter ({1} attack)";
                     }
                     public static class CORROSION
                     {
@@ -735,6 +751,16 @@ namespace MutantContainmentProject
                 public static LocString NAME = "Memory Erase";
                 public static LocString DESCRIPTION = "Exposed to SCP-939's memory-erasing aerosol, causing anterograde amnesia and possible sudden sleep within one cycle.";
             }
+            public static class MUTANTER_CONTROL_SPEED_EFFECT
+            {
+                public static LocString NAME = "Control Department Speed Boost Buff";
+                public static LocString DESCRIPTION = "Global speed boost from Control Department Console, increasing movement speed.";
+            }
+            public static class MUTANTER_CONTROL_SUPPRESSION_EFFECT
+            {
+                public static LocString NAME = "Control Department Suppression";
+                public static LocString DESCRIPTION = "Suppression effect from Control Department Console, limiting corrosion growth.";
+            }
         }
         public static class UI
         {
@@ -750,6 +776,10 @@ namespace MutantContainmentProject
                     public static LocString ACTION_RECONNAISSANCE = "Reconnaissance";
                     public static LocString ACTION_COMMUNICATION = "Communication";
                     public static LocString ACTION_INTIMIDATION = "Intimidation";
+                }
+                public static class CONTROLDEPARTMENTCONSOLE
+                {
+                    public static LocString NOTHING = "No Select Any dups";
                 }
             }
             public static class ROLES_SCREEN
@@ -778,6 +808,13 @@ namespace MutantContainmentProject
                     public static LocString SUMMON_BUTTON_COOLDOWN_TOOLTIP = "Summoning is on cooldown. Time remaining: {0}s";
                 }
             }
+            public static class RESEARCHSCREEN
+            {
+                public static class FILTER_BUTTONS
+                {
+                    public static LocString MUTANTER = "Mutanter";
+                }
+            }
         }
         public static class ROOMS
         {
@@ -789,6 +826,13 @@ namespace MutantContainmentProject
                     public static LocString NAME = "Mutanter Containment Chamber";
                     public static LocString DESCRIPTION = "Mutanter Containment Chamber";
                     public static LocString TOOLTIP = "Mutanter Containment Chamber";
+                }
+                public static class CONTROL_DEPARTMENT
+                {
+                    public static LocString CATE_NAME = "ControlDepartment";
+                    public static LocString NAME = "Control Department";
+                    public static LocString DESCRIPTION = "A dedicated room for the Control Department Console, used to manage containment systems and provide speed boosts to selected dupes.";
+                    public static LocString TOOLTIP = "Control Department: Requires Control Department Console and proper lighting.";
                 }
 
             }
@@ -808,6 +852,16 @@ namespace MutantContainmentProject
                 {
                     public static LocString NAME = "Only one mutanter allowed";
                     public static LocString DESCRIPTION = "Containment chamber can only hold one mutanter";
+                }
+                public static class CONTROL_DEPARTMENT_CONSOLE
+                {
+                    public static LocString NAME = "Require Control Department Console";
+                    public static LocString DESCRIPTION = "Requires one 'Control Department Console' Building";
+                }
+                public static class CONTROL_DEPARTMENT_LIGHT
+                {
+                    public static LocString NAME = "Require Lighting";
+                    public static LocString DESCRIPTION = "Requires at least one light source";
                 }
             }
         }
@@ -849,6 +903,31 @@ namespace MutantContainmentProject
                 {
                     public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-939", SCP939Config.ID);
                     public static LocString DESCRIPTION = "SCP-939 are endothermic pack-based predators with systemic atrophy typical of troglobitic organisms. They can mimic human voices to lure prey and release memory-erasing aerosol.";
+                }
+            }
+        }
+        public static class RESEARCH
+        {
+            public static class TREES
+            {
+                public static LocString TITLE_MUTANT_CONTAINMENT = "Mutant Containment";
+            }
+            public static class TECHS
+            {
+                public static class MUTANT_CONTAINMENT
+                {
+                    public static LocString NAME = "Mutant Containment";
+                    public static LocString DESC = "Research into containing and managing aberrant entities";
+                }
+                public static class MUTANT_CONTAINMENT_BASIC
+                {
+                    public static LocString NAME = "Basic Mutant Containment";
+                    public static LocString DESC = "Unlocks basic facilities for containing mutant entities";
+                }
+                public static class MUTANT_CONTAINMENT_ADVANCED
+                {
+                    public static LocString NAME = "Advanced Mutant Containment";
+                    public static LocString DESC = "Unlocks advanced facilities for containing mutant entities, including enhanced containment measures and monitoring systems";
                 }
             }
         }

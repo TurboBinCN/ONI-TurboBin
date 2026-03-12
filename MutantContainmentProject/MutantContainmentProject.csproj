@@ -44,10 +44,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buildings\ContainmentMonitorStationManager.cs" />
     <Compile Include="Buildings\ContainmentMonitorWorkable.cs" />
     <Compile Include="Buildings\ContainmentMonitorStationConfig.cs" />
     <Compile Include="Buildings\ContainmentMonitor.cs" />
     <Compile Include="Buildings\ContainmentTileConfig.cs" />
+    <Compile Include="Buildings\ControlDepartmentConsole.cs" />
+    <Compile Include="Buildings\ControlDepartmentConsoleConfig.cs" />
+    <Compile Include="Buildings\ControlDepartmentConsoleWorkable.cs" />
     <Compile Include="Buildings\CorrosionManager.cs" />
     <Compile Include="Buildings\GlobalErosionManager.cs" />
     <Compile Include="Buildings\GlobalErosionPlanel.cs" />
@@ -55,7 +59,7 @@
     <Compile Include="Buildings\GravitasMutanterFounder.cs" />
     <Compile Include="Buildings\GravitasMutanterFounderConfig.cs" />
     <Compile Include="Buildings\SecureTermDb.cs" />
-    <Compile Include="Buildings\MutanterSecurableMonitor.cs" />
+    <Compile Include="MutanterComponent\MutanterSecurableMonitor.cs" />
     <Compile Include="FunctionPatches\EventInfoDataHelper_Patches.cs" />
     <Compile Include="FunctionPatches\MiningNeutronium_Patches.cs" />
     <Compile Include="MutanterCodexEntries\MutanterCodexEntry.cs" />
@@ -101,7 +105,11 @@
     <Compile Include="Mutanters\SCP173Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Room\ContainmentCharmberRoom.cs" />
+    <Compile Include="Room\DepartmentRoom.cs" />
     <Compile Include="SideScreen\ContainmentMonitorSideScreen.cs" />
+    <Compile Include="SideScreen\ControlDepartmentConsoleSideScreen.cs" />
+    <Compile Include="Skills\AttributeConverterDisplayHelper.cs" />
+    <Compile Include="Skills\MinionPersonalityPanelPatch.cs" />
     <Compile Include="Skills\MutanterAttributeConverters.cs" />
     <Compile Include="Skills\MutanterAttributes.cs" />
     <Compile Include="Skills\MutanterChoreGroups.cs" />
@@ -113,6 +121,7 @@
     <Compile Include="Skills\SkillAmountPerk.cs" />
     <Compile Include="Skills\SkillMinionWidgetPatch.cs" />
     <Compile Include="Strings.cs" />
+    <Compile Include="Technology\TechTreeRegister.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="anim\assets\containment_monitor_station\containment_monitor_station_anim.bytes" />

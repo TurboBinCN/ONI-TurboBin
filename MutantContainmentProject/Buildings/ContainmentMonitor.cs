@@ -31,7 +31,11 @@ namespace MutantContainmentProject.Buildings
             default_state = Operational;
 
             Unoperational
-                .TagTransition(GameTags.Operational, Operational, false);
+                .TagTransition(GameTags.Operational, Operational, false)
+                .Update("FindMutanters", delegate (Instance smi, float dt)
+                {
+                    smi.FindMutanter(smi);
+                }, UpdateRate.SIM_1000ms, false); ;
 
             Operational
                 .TagTransition(GameTags.Operational, Unoperational, true)
@@ -54,6 +58,7 @@ namespace MutantContainmentProject.Buildings
             private global::Room _mutanterContainer;
             private int onRoomUpdatedHandle;
             private Instance activeMonitor;
+            private bool isControlStationActive = false;
 
             private List<MutanterSecurableMonitor.Instance> targetSecurable = new List<MutanterSecurableMonitor.Instance>();
 
@@ -91,6 +96,7 @@ namespace MutantContainmentProject.Buildings
                 }
                 else
                 {
+                    TbbDebuger.LogDebug($"_mutanterContainer roomType 形成:[{ContainmentCharmberRoom.ContainmentChamber.Name}]");
                     findMutanterInRoom();
                 }
             }
@@ -98,15 +104,18 @@ namespace MutantContainmentProject.Buildings
 
             public void findMutanterInRoom()
             {
+                if(_mutanterContainer?.cavity == null)
+                {
+                    return;
+                }
                 foreach (int cell in _mutanterContainer.cavity.cells)
                 {
                     GameObject gameObject = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
-                    if (!(gameObject == null))
-                    {
-                        KPrefabID component = gameObject.GetComponent<KPrefabID>();
-                        if (component.HasTag(MutanterTags.Mutanter)) _mutantersInRoom.Add(component);
-                        TbbDebuger.LogDebug($"cell:[{cell}] layer:[3] name:[{component.name}]");
-                    }
+                    if (gameObject == null) continue;
+
+                    KPrefabID component = gameObject.GetComponent<KPrefabID>();
+                    if (component.HasTag(MutanterTags.Mutanter) && !_mutantersInRoom.Contains(component)) _mutantersInRoom.Add(component);
+                    //TbbDebuger.LogDebug($"cell:[{cell}] layer:[3] name:[{component.name}]");
                 }
             }
             public void TriggerContainmentMonitorNoLongerAvailable()
@@ -144,22 +153,55 @@ namespace MutantContainmentProject.Buildings
             }
             public void FindMutanter(Instance instance)
             {
-                if (_mutantersInRoom == null) findMutanterInRoom();
-                //TbbDebuger.LogDebug($"[畸变收容所] _mutantersInRoom:[{_mutantersInRoom.Count}]");
+                findMutanterInRoom();
+                //TbbDebuger.LogDebug($"[畸变体收容室] 收容室数量:[{_mutantersInRoom.Count}][{targetSecurable.Count}]");
                 foreach (var kprefabID in _mutantersInRoom)
                 {
-                    var smi = kprefabID.GetSMI<MutanterSecurableMonitor.Instance>();
+                    var smi = kprefabID.gameObject.GetSMI<MutanterSecurableMonitor.Instance>();
                     if (smi == null) continue;
                     if (!targetSecurable.Contains(smi))
                     {
                         smi.SetContainmentMonitor(this);
                         targetSecurable.Add(smi);
                     }
+                    // 应用控制站效果
+                    if (isControlStationActive)
+                    {
+                        smi.ApplyControlStationEffect();
+                    }
+                    else
+                    {
+                        smi.RemoveControlStationEffect();
+                    }
                     //TbbDebuger.LogDebug($"[畸变收容所] 畸变体:name[{kprefabID.name}] ShouldBeSecured: [{smi.ShouldBeSecured()}] RemoteDockChore:[{instance.remoteChore.RemoteDockChore}] RemoteDockChore.Complete:[{instance.remoteChore.RemoteDockChore?.isComplete}]");
                     if (CurrentAction != SecureAction.None && smi.ShouldBeSecured() && (instance.remoteChore.RemoteDockChore == null || (instance.remoteChore.RemoteDockChore?.isComplete == true)))
                     {
                         //TbbDebuger.LogDebug($"[畸变收容所] 畸变体:name[{kprefabID.name}] 需要被收容，创建收容任务");
                         instance.SetRemoteChore(instance, CreateChore(instance));
+                    }
+                }
+            }
+
+            public void EnableControlStationEffect()
+            {
+                isControlStationActive = true;
+                foreach (var smi in targetSecurable)
+                {
+                    if (smi != null && !smi.IsNullOrStopped())
+                    {
+                        smi.ApplyControlStationEffect();
+                    }
+                }
+            }
+
+            public void DisableControlStationEffect()
+            {
+                isControlStationActive = false;
+                foreach (var smi in targetSecurable)
+                {
+                    if (smi != null && !smi.IsNullOrStopped())
+                    {
+                        smi.RemoveControlStationEffect();
                     }
                 }
             }
@@ -174,6 +216,8 @@ namespace MutantContainmentProject.Buildings
         public StatusItem CorrosionWarning;
         public StatusItem HighCorrosionWarning;
         public StatusItem CorrosionOverflow;
+
+        public StatusItem WorkerDamage; // 小人受到伤害的状态项
 
         private static ContainmentMonitorBuildingStatusItems _instance;
         public static ContainmentMonitorBuildingStatusItems Instance
@@ -242,6 +286,27 @@ namespace MutantContainmentProject.Buildings
                 }
 
                 return string.Format(STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR.FAILURE.TOOLTIP, workerSubtasks, mutanterSubtasks);
+            };
+
+            // 小人受到伤害的状态项
+            WorkerDamage = buildingStatusItems.Add(new StatusItem("WorkerDamage", "BUILDINGS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, false, OverlayModes.None.ID, true, 129022, null));
+            WorkerDamage.resolveStringCallback = delegate (string str, object data)
+            {
+                return STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR.WORKER_DAMAGE.NAME;
+            };
+            WorkerDamage.resolveTooltipCallback = delegate (string str, object data)
+            {
+                float damage = 0f;
+                string damageType = "Unknown";
+
+                // 检查data类型
+                if (data is System.Tuple<float, string> damageInfo)
+                {
+                    damage = damageInfo.Item1;
+                    damageType = damageInfo.Item2;
+                }
+
+                return string.Format(STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR.WORKER_DAMAGE.TOOLTIP, damage, damageType);
             };
 
             // 腐蚀预警状态项

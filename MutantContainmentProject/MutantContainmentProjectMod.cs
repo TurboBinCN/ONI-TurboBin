@@ -5,17 +5,19 @@ using MutantContainmentProject.MutanterComponent;
 using MutantContainmentProject.MutanterEffect;
 using MutantContainmentProject.MutanterStoryStraits;
 using MutantContainmentProject.MutanterTraits;
-using MutantContainmentProject.Patches;
 using MutantContainmentProject.Room;
 using MutantContainmentProject.SideScreen;
 using MutantContainmentProject.Skills;
+using MutantContainmentProject.Technology;
 using PeterHan.PLib.Core;
+using System.Collections.Generic;
 using System.IO;
 using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.Module;
 using TBB.He.TbbLib.SingleToneInstance;
 using TBB.He.TbbLib.UI;
 using TBB.He.TbbLib.Utils;
+using TbbLib.UI;
 using UnityEngine;
 using static GravitasMutanterFounder;
 
@@ -65,6 +67,8 @@ namespace MutantContainmentProject
                     .AddSprite(("icon_goutong"), assetBundle)
                     .AddSprite(("icon_yapo"), assetBundle);
 
+                TbbColorSet.Initialize(mod, harmony)
+                    .Add("mutanter_containment_room", new Color32(76, 1, 92, 102));
                 //语言本地化
                 TbbLocalization.Initialize(mod, harmony)
                     .RegisterLoad(typeof(STRINGS))
@@ -77,6 +81,7 @@ namespace MutantContainmentProject
                     .RegisterAddStrings(typeof(STRINGS.DUPLICANTS))
                     .RegisterAddStrings(typeof(STRINGS.SKILLS))
                     .RegisterAddStrings(typeof(STRINGS.ENTITY))
+                    .RegisterAddStrings(typeof(STRINGS.RESEARCH))
                     .RegisterAddStrings(typeof(STRINGS.EFFECTS))
                     .RegisterAddStrings(typeof(STRINGS.BUILDINGS))
                     .RegisterAddStrings(typeof(STRINGS.SECURE_ACTION));
@@ -97,7 +102,8 @@ namespace MutantContainmentProject
                     .ADD("SCP939", "Creatures");
                 //房间
                 TbbRoom.Initialize(mod, harmony)
-                    .Add(ContainmentCharmberRoom.Register);
+                    .Add(ContainmentCharmberRoom.Register)
+                    .Add(DepartmentRoom.Register);
                 //特性
                 TbbTraits.Initialize(mod, harmony)
                     .Add(MutanterTraitDb.PsychologicalTrait);
@@ -108,16 +114,18 @@ namespace MutantContainmentProject
                     .Add(MutanterEffects.MutanterChaseEffect)
                     .Add(MutanterEffects.MutanterAttackRestrictedEffect)
                     .Add(MutanterEffects.MutanterAttackEnhancedEffect)
-                    .Add(MutanterEffects.SCP939AmnesiaEffect);
+                    .Add(MutanterEffects.SCP939AmnesiaEffect)
+                    .Add(MutanterEffects.MutanterControlSpeedEffect)
+                    .Add(MutanterEffects.MutanterControlSuppressionEffect);
                 //小人属性
                 TbbDuplicantsAttributes.Initialize(mod, harmony)
                     .Add(MutanterAttributes.AttributeBravery, MutanterAttributes.AttributeBraveryID)
                     .Add(MutanterAttributes.AttributeDefense, MutanterAttributes.AttributeDefenseID)
                     .Add(MutanterAttributes.AttributeDiscipline, MutanterAttributes.AttributeDisciplineID)
                     .Add(MutanterAttributes.AttributeRighteousness, MutanterAttributes.AttributeRighteousnessID);
-                
+
                 //属性转换器
-                TbbAttributeConverters.Initialize(mod,harmony)
+                TbbAttributeConverters.Initialize(mod, harmony)
                     .Add(MutanterAttributeConverters.RegisterAttributeConverters);
                 //ChoreGroups
                 TbbChoreGroups.Initialize(mod, harmony)
@@ -161,19 +169,22 @@ namespace MutantContainmentProject
 
                 //UI布局
                 TbbSideScreen.Initialize(mod, harmony)
-                    .CopyAndCreate<GeneticAnalysisStationSideScreen, ContainmentMonitorSideScreen>();
+                    .CopyAndCreate<GeneticAnalysisStationSideScreen, ContainmentMonitorSideScreen>()
+                    .CopyAndCreate<GeoTunerSideScreen, ControlDepartmentConsoleSideScreen>();
                 //StatusItems
                 TbbStatusItems.Initialize(mod, harmony)
                     .Add<MutanterStatusItems>();
                 //建筑
                 TbbBuilding.Initialize(mod, harmony)
                     .ToAdvanced()
-                    .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
+                    .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, null)
                     .AddBuilding(ContainmentMonitorStationConfig.ID)
-                    .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
+                    .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, null)
                     .AddBuilding(ContainmentTileConfig.ID)
-                    .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, TbbTypes.Technology.Food.Bioengineering)
-                    .AddBuilding(GlobalErosionPlanelConfig.ID);
+                    .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, null)
+                    .AddBuilding(GlobalErosionPlanelConfig.ID)
+                    .PlanAndTech(TbbTypes.PlanMenuCategory.Stations, TbbTypes.PlanMenuSubcategory.Farming, null)
+                    .AddBuilding(ControlDepartmentConsoleConfig.ID);
                 //建筑StatusItems
                 TbbBuildingStatusItems.Initialize(mod, harmony)
                     .Add(GravitasMutanterFounderBuildingStatusItems.Instance.CreateStatusItems)
@@ -182,6 +193,12 @@ namespace MutantContainmentProject
                 TbbSingleTone.Initialize(mod, harmony)
                     .Add<MutanterSpeciesCatalog>()
                     .Add<GlobalErosionManager>();
+
+                // 科技树
+                TbbTechTree.Initialize(mod, harmony)
+                    .AddCategory(TechTreeRegister.RegisterMutantContainTechCategory())
+                    .AddTech(TechTreeRegister.RegisterBasicMutantContainTech())
+                    .AddTech(TechTreeRegister.RegisterAdvancedMutantContainTech());
 
             }
         }

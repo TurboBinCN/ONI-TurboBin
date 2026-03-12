@@ -64,12 +64,14 @@
     <Compile Include="Module\TbbStatusItems.cs" />
     <Compile Include="Module\TbbStories.cs" />
     <Compile Include="Module\TbbStoryTraits.cs" />
+    <Compile Include="Module\TbbTechTree.cs" />
     <Compile Include="Module\TbbTraits.cs" />
     <Compile Include="Module\TbbTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SingleToneInstance\TbbSingleTone.cs" />
     <Compile Include="UI\TbbAssetBundle.cs" />
     <Compile Include="UI\TbbAssets.cs" />
+    <Compile Include="UI\TbbColorSet.cs" />
     <Compile Include="UI\TbbRangeVisualizer.cs" />
     <Compile Include="UI\TbbRangeVisualizerEffect.cs" />
     <Compile Include="UI\TbbSideScreen.cs" />

@@ -10,7 +10,11 @@ namespace MutantContainmentProject.MutanterEffect
         public static readonly string MUTANTER_ATTACK_RESTRICTED_EFFECT = "MutanterAttackRestricted";
         public static readonly string MUTANTER_ATTACK_ENHANCED_EFFECT = "MutanterAttackEnhanced";
         public static readonly string SCP939_AMNESIA_EFFECT = "SCP939Amnesia";
-        
+        public static readonly string MUTANTER_CONTROL_SPEED_EFFECT = "MutanterControlSpeed";
+        public static readonly string MUTANTER_CONTROL_SUPPRESSION_EFFECT = "MutanterControlSuppression";
+
+        public static readonly float MUTANTER_CTROL_SPEED_BOOST_DURATION = 1800f;
+
         public static void MutanterContainedEffect()
         {
             Effect mutanterContainedEffect = new(
@@ -90,6 +94,34 @@ namespace MutantContainmentProject.MutanterEffect
             // 添加效果修改器，降低体力恢复效率
             //scp939AmnesiaEffect.Add(new AttributeModifier(Db.Get().Attributes.StaminaDelta.Id, -0.5f, "SCP-939 Amnesia"));
             Db.Get().effects.Add(scp939AmnesiaEffect);
+        }
+        public static void MutanterControlSpeedEffect()
+        {
+            Effect mutanterControlSpeedEffect = new(
+                id: MUTANTER_CONTROL_SPEED_EFFECT,
+                name: STRINGS.EFFECTS.MUTANTER_CONTROL_SPEED_EFFECT.NAME,
+                description: STRINGS.EFFECTS.MUTANTER_CONTROL_SPEED_EFFECT.DESCRIPTION,
+                duration: MUTANTER_CTROL_SPEED_BOOST_DURATION, // 持续效果
+                show_in_ui: true,
+                trigger_floating_text: false,
+                is_bad: false
+            );
+            // 添加移动速度修改器
+            mutanterControlSpeedEffect.Add(new AttributeModifier(Db.Get().Attributes.Athletics.Id, 1.2f, "Control Station Speed Boost",true));
+            Db.Get().effects.Add(mutanterControlSpeedEffect);
+        }
+        public static void MutanterControlSuppressionEffect()
+        {
+            Effect mutanterControlSuppressionEffect = new(
+                id: MUTANTER_CONTROL_SUPPRESSION_EFFECT,
+                name: STRINGS.EFFECTS.MUTANTER_CONTROL_SUPPRESSION_EFFECT.NAME,
+                description: STRINGS.EFFECTS.MUTANTER_CONTROL_SUPPRESSION_EFFECT.DESCRIPTION,
+                duration: MUTANTER_CTROL_SPEED_BOOST_DURATION, // 与控制站速度效果相同的持续时间
+                show_in_ui: true,
+                trigger_floating_text: true,
+                is_bad: false
+            );
+            Db.Get().effects.Add(mutanterControlSuppressionEffect);
         }
     }
 }

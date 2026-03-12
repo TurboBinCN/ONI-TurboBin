@@ -153,7 +153,7 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 // 初始化时检查当前的收容状态
                 Effects effects = gameObject.GetComponent<Effects>();
-                if (effects != null && effects.HasEffect(MutanterEffect.MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+                if (effects != null && effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
                 {
                     _isContained = true;
                     TbbDebuger.LogDebug($"[MutanterStateMachine] {gameObject.name} initialized with containment effect, IsContained = true");
