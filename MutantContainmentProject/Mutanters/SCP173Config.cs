@@ -26,7 +26,9 @@ namespace MutantContainmentProject.Mutanters
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name,25);
 
             BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid,faction:FactionManager.FactionID.Pest,attackTags:new List<Tag> { MutanterTags.PsychologicalAttack });
-            prefab.AddOrGetDef<MutanterMoltenMetalMonitor.Def>();//挂载：畸变体熔融金属监控SMI
+
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: null);
+            //prefab.AddOrGetDef<MutanterMoltenMetalMonitor.Def>();//挂载：畸变体熔融金属监控SMI
             // 添加产出物
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Gold.CreateTag(), 1000f, 0.8f);
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Diamond.CreateTag(), 1000f, 0.4f);

@@ -271,6 +271,22 @@
             NAME: 汲取祭品能量
             TOOLTIP: "该祭坛正在从 <style=\"KKeyword\">祭品</style> 中汲取不稳定能量，用以生成畸变体"
         }
+        CORROSIONWARNING: {
+            NAME: 腐蚀预警
+            TOOLTIP: "腐蚀预警{0}%,产出降50%，小人靠近压力上升"
+        }
+        HIGHCORROSIONWARNING: {
+            NAME: 高腐蚀预警
+            TOOLTIP: "高腐蚀预警{0}%,局部溢流警报"
+        }
+        CORROSIONOVERFLOW: {
+            NAME: 溢流突破
+            TOOLTIP: "高腐蚀预警100%,畸变体突破收容，触发破坏效果"
+        }
+        WORKER_DAMAGE: {
+            NAME: 员工受伤
+            TOOLTIP: "员工受到 {0} 点伤害（{1} 攻击）"
+        }
         CONTAINMENTMONITOR: {
             SUCCESS: {
                 NAME: "收容措施执行成功"
@@ -279,22 +295,6 @@
             FAILURE: {
                 NAME: "收容措施执行失败"
                 TOOLTIP: "措施执行失败，进程：{0}/{1}"
-            }
-            CORROSIONWARNING: {
-                NAME: "腐蚀预警"
-                TOOLTIP: "产出降50%，小人靠近压力上升"
-            }
-            HIGHCORROSIONWARNING: {
-                NAME: "高腐蚀预警"
-                TOOLTIP: "局部溢流警报，10周期倒计时，超时突破"
-            }
-            CORROSIONOVERFLOW: {
-                NAME: "溢流突破"
-                TOOLTIP: "畸变体突破收容，触发破坏效果"
-            }
-            WORKER_DAMAGE: {
-                NAME: "员工受伤"
-                TOOLTIP: "员工受到 {0} 点伤害（{1} 攻击）"
             }
         }
         EROSION: {
@@ -591,6 +591,11 @@
           ACTION_RECONNAISSANCE: 洞察
           ACTION_COMMUNICATION: 沟通
           ACTION_INTIMIDATION: 压迫
+          EXECUTION_MODE: 执行模式：
+          BUTTON_ALWAYS_EXECUTE: 总是执行
+          ALWAYS_EXECUTE_TOOLTIP: 选择措施后直接执行
+          BUTTON_NORMAL_EXECUTE: 正常执行
+          NORMAL_EXECUTE_TOOLTIP: 当畸变体已收容接近移除时执行
         }
         CONTROLDEPARTMENTCONSOLE: {
           NOTHING: 未选择任何复制人

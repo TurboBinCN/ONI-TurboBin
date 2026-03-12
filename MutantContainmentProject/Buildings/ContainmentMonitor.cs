@@ -51,6 +51,8 @@ namespace MutantContainmentProject.Buildings
         {
             [SerializeField]
             public SecureAction CurrentAction = SecureAction.None;
+            [SerializeField]
+            public bool AlwaysExecute = false; // 执行模式：true为总是执行，false为正常执行
             private List<KPrefabID> _mutantersInRoom = new();
             [MyCmpAdd]
             public ManuallySetRemoteWorkTargetComponent remoteChore;
@@ -72,11 +74,22 @@ namespace MutantContainmentProject.Buildings
             public Instance(IStateMachineTarget master, Def def) : base(master, def)
             {
                 onRoomUpdatedHandle = Subscribe(144050788, new Action<object>(OnRoomUpdated));
+                Subscribe(493375141, new Action<object>(OnRefreshUserMenu));
             }
             protected override void OnCleanUp()
             {
                 base.OnCleanUp();
                 Unsubscribe(ref onRoomUpdatedHandle);
+            }
+
+            private void OnRefreshUserMenu(object data)
+            {
+                Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
+                    "action_discover",
+                    AlwaysExecute ? STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.BUTTON_NORMAL_EXECUTE : STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.BUTTON_ALWAYS_EXECUTE,
+                    ToggleAlwaysExecute,
+                    tooltipText: AlwaysExecute ? STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.NORMAL_EXECUTE_TOOLTIP : STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.ALWAYS_EXECUTE_TOOLTIP
+                ), 10f);
             }
 
             private void OnRoomUpdated(object data)
@@ -104,7 +117,7 @@ namespace MutantContainmentProject.Buildings
 
             public void findMutanterInRoom()
             {
-                if(_mutanterContainer?.cavity == null)
+                if (_mutanterContainer?.cavity == null)
                 {
                     return;
                 }
@@ -174,7 +187,7 @@ namespace MutantContainmentProject.Buildings
                         smi.RemoveControlStationEffect();
                     }
                     //TbbDebuger.LogDebug($"[畸变收容所] 畸变体:name[{kprefabID.name}] ShouldBeSecured: [{smi.ShouldBeSecured()}] RemoteDockChore:[{instance.remoteChore.RemoteDockChore}] RemoteDockChore.Complete:[{instance.remoteChore.RemoteDockChore?.isComplete}]");
-                    if (CurrentAction != SecureAction.None && smi.ShouldBeSecured() && (instance.remoteChore.RemoteDockChore == null || (instance.remoteChore.RemoteDockChore?.isComplete == true)))
+                    if (CurrentAction != SecureAction.None && smi.ShouldBeSecured() && (instance.remoteChore.RemoteDockChore == null || instance.remoteChore.RemoteDockChore?.isComplete == true))
                     {
                         //TbbDebuger.LogDebug($"[畸变收容所] 畸变体:name[{kprefabID.name}] 需要被收容，创建收容任务");
                         instance.SetRemoteChore(instance, CreateChore(instance));
@@ -204,6 +217,21 @@ namespace MutantContainmentProject.Buildings
                         smi.RemoveControlStationEffect();
                     }
                 }
+            }
+
+            public void SetAlwaysExecute(bool alwaysExecute)
+            {
+                AlwaysExecute = alwaysExecute;
+            }
+
+            public bool GetAlwaysExecute()
+            {
+                return AlwaysExecute;
+            }
+
+            public void ToggleAlwaysExecute()
+            {
+                AlwaysExecute = !AlwaysExecute;
             }
         }
         public class Def : BaseDef { }
@@ -292,7 +320,7 @@ namespace MutantContainmentProject.Buildings
             WorkerDamage = buildingStatusItems.Add(new StatusItem("WorkerDamage", "BUILDINGS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, false, OverlayModes.None.ID, true, 129022, null));
             WorkerDamage.resolveStringCallback = delegate (string str, object data)
             {
-                return STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR.WORKER_DAMAGE.NAME;
+                return STRINGS.BUILDINGS.STATUSITEMS.WORKER_DAMAGE.NAME;
             };
             WorkerDamage.resolveTooltipCallback = delegate (string str, object data)
             {
@@ -306,14 +334,34 @@ namespace MutantContainmentProject.Buildings
                     damageType = damageInfo.Item2;
                 }
 
-                return string.Format(STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR.WORKER_DAMAGE.TOOLTIP, damage, damageType);
+                return string.Format(STRINGS.BUILDINGS.STATUSITEMS.WORKER_DAMAGE.TOOLTIP, damage, damageType);
             };
 
             // 腐蚀预警状态项
             CorrosionWarning = buildingStatusItems.Add(new StatusItem("CorrosionWarning", "BUILDINGS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, false, OverlayModes.None.ID, true, 129022, null));
+            CorrosionWarning.resolveTooltipCallback = delegate (string str, object data)
+            {
+                float corrosionValue = 0f;
+                // 检查data类型
+                if (data is float level)
+                {
+                    corrosionValue = level;
+                }
+                return string.Format(STRINGS.BUILDINGS.STATUSITEMS.CORROSIONWARNING.TOOLTIP, corrosionValue);
+            };
 
             // 高腐蚀预警状态项
             HighCorrosionWarning = buildingStatusItems.Add(new StatusItem("HighCorrosionWarning", "BUILDINGS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, false, OverlayModes.None.ID, true, 129022, null));
+            HighCorrosionWarning.resolveTooltipCallback = delegate (string str, object data)
+            {
+                float corrosionValue = 0f;
+                // 检查data类型
+                if (data is float level)
+                {
+                    corrosionValue = level;
+                }
+                return string.Format(STRINGS.BUILDINGS.STATUSITEMS.HIGHCORROSIONWARNING.TOOLTIP, corrosionValue);
+            };
 
             // 溢流突破状态项
             CorrosionOverflow = buildingStatusItems.Add(new StatusItem("CorrosionOverflow", "BUILDINGS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, false, OverlayModes.None.ID, true, 129022, null));

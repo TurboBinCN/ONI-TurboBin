@@ -42,7 +42,7 @@ namespace MutantContainmentProject.Technology
                 STRINGS.RESEARCH.TECHS.MUTANT_CONTAINMENT_ADVANCED.NAME,
                 STRINGS.RESEARCH.TECHS.MUTANT_CONTAINMENT_ADVANCED.DESC,
                 MutantContainTechCategoryID,
-                new List<string> { ControlDepartmentConsoleConfig.ID },
+                new List<string> { ControlDepartmentConsoleConfig.ID, GlobalErosionPlanelConfig.ID },
                 new List<string> { BasicMutantContainTechID },
                 new Dictionary<string, float> { { "basic", 200f } },
                 searchTermKey: "MUTANTER"

@@ -348,6 +348,26 @@ namespace MutantContainmentProject
                     "  to generate an Aberrant Entity"
                     });
                 }
+                public static class CORROSIONWARNING
+                {
+                    public static LocString NAME = "Corrosion Warning";
+                    public static LocString TOOLTIP = "Corrosion Warning {0}%,output reduced by 50%, duplicant stress increases when nearby";
+                }
+                public static class HIGHCORROSIONWARNING
+                {
+                    public static LocString NAME = "High Corrosion Warning";
+                    public static LocString TOOLTIP = "High Corrosion Warning {0}%, local overflow alert, 10 cycle countdown, breach on timeout";
+                }
+                public static class CORROSIONOVERFLOW
+                {
+                    public static LocString NAME = "Overflow Breach";
+                    public static LocString TOOLTIP = "Overflow Breach 100%, mutanter breached containment, triggering destructive effects";
+                }
+                public static class WORKER_DAMAGE
+                {
+                    public static LocString NAME = "Duplicants Damaged";
+                    public static LocString TOOLTIP = "The Duplicant received {0} damage from mutanter ({1} attack)";
+                }
                 public static class CONTAINMENTMONITOR
                 {
                     public static class SUCCESS
@@ -360,26 +380,8 @@ namespace MutantContainmentProject
                         public static LocString NAME = "Containment Measure Failed";
                         public static LocString TOOLTIP = "Measure execution failed, progress: {0}/{1}";
                     }
-                    public static class CORROSIONWARNING
-                    {
-                        public static LocString NAME = "Corrosion Warning";
-                        public static LocString TOOLTIP = "Corrosion: {0}/100, output reduced by 50%, duplicant stress increases when nearby";
-                    }
-                    public static class HIGHCORROSIONWARNING
-                    {
-                        public static LocString NAME = "High Corrosion Warning";
-                        public static LocString TOOLTIP = "Corrosion: {0}/100, local overflow alert, 10 cycle countdown, breach on timeout";
-                    }
-                    public static class CORROSIONOVERFLOW
-                    {
-                        public static LocString NAME = "Overflow Breach";
-                        public static LocString TOOLTIP = "Corrosion: {0}/100, mutanter breached containment, triggering destructive effects";
-                    }
-                    public static class WORKER_DAMAGE
-                    {
-                        public static LocString NAME = "Duplicants Damaged";
-                        public static LocString TOOLTIP = "The Duplicant received {0} damage from mutanter ({1} attack)";
-                    }
+
+
                     public static class CORROSION
                     {
                         public static class STABLE
@@ -776,6 +778,10 @@ namespace MutantContainmentProject
                     public static LocString ACTION_RECONNAISSANCE = "Reconnaissance";
                     public static LocString ACTION_COMMUNICATION = "Communication";
                     public static LocString ACTION_INTIMIDATION = "Intimidation";
+                    public static LocString BUTTON_NORMAL_EXECUTE = "Normal Execute";
+                    public static LocString NORMAL_EXECUTE_TOOLTIP = "Execute the selected action based on the mutanter's current state and behavior patterns. This is the default mode of operation for containment measures.";
+                    public static LocString BUTTON_ALWAYS_EXECUTE = "Always Execute";
+                    public static LocString ALWAYS_EXECUTE_TOOLTIP = "Always execute the selected action, ignoring the mutanter's current state. This may lead to higher corrosion levels and increased risk of containment breach.";
                 }
                 public static class CONTROLDEPARTMENTCONSOLE
                 {

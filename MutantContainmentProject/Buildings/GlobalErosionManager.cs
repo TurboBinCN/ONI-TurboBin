@@ -203,7 +203,8 @@ namespace MutantContainmentProject.Buildings
         private static void TriggerErosionLevelChange()
         {
             TbbDebuger.LogDebug($"[全局侵蚀管理] 侵蚀等级变化: {currentErosionLevel}");
-            // 这里需要实现等级变化逻辑
+            // 触发全局腐蚀等级变化事件
+            Instance.BoxingTrigger((int)MutanterGameHashes.GlobalErosionLevelChanged, currentErosionLevel);
         }
 
         // 减少侵蚀点数

@@ -1,5 +1,3 @@
-using TBB.He.TbbLib.Debuger;
-
 namespace MutantContainmentProject.Buildings
 {
     public class GlobalErosionPlanel : KMonoBehaviour, ISim1000ms
@@ -59,7 +57,7 @@ namespace MutantContainmentProject.Buildings
                 m_erosionMeter = new MeterController(GetComponent<KBatchedAnimController>(), targetSymbol, targetAnimation, Meter.Offset.UserSpecified, Grid.SceneLayer.BuildingFront, System.Array.Empty<string>());
             }
 
-            TbbDebuger.LogDebug($"Updating Global Erosion Meter: Level={currentLevel}, Percentage={percentage:P2}");
+            //TbbDebuger.LogDebug($"Updating Global Erosion Meter: Level={currentLevel}, Percentage={percentage:P2}");
             // 更新 meter 显示
             m_erosionMeter.SetPositionPercent(percentage);
         }

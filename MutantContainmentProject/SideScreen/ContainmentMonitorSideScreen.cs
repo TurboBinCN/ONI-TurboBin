@@ -101,9 +101,17 @@ namespace MutantContainmentProject.SideScreen
             component.onClick += delegate ()
             {
                 this.target.CurrentAction = buttonInfo.Action;
+                if (this.target.GetAlwaysExecute())
+                {
+                    // 如果是总是执行模式，立即创建任务
+                    var chore = this.target.CreateChore(this.target);
+                    this.target.remoteChore.SetChore(chore);
+                }
                 this.Refresh();
             };
         }
+
+
         public override string GetTitle() => STRINGS.UI.UISIDESCREENS.CONTAINTMENTMONITOR.TITLE;
 
     }

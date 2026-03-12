@@ -11,5 +11,9 @@ namespace MutantContainmentProject
         // 其他可能的事件
         public const int MutanterSanityChanged = 2147483645;
         public const int MutanterAttack = 2147483644;
+        
+        // 腐蚀相关事件
+        public const int CorrosionLevelChanged = 2147483643;
+        public const int GlobalErosionLevelChanged = 2147483642;
     }
 }

@@ -440,6 +440,10 @@ namespace MutantContainmentProject.Buildings
             // 计算总任务数，只考虑小人的成功数，畸变体的成功数不增加总产出
             // 同时，畸变体的成功数会减少总任务数
             int totalEffectiveSubtasks = Mathf.Max(1, workerSuccessCount - mutanterSuccessCount);
+
+            // 计算产出抑制因子
+            float productionReductionFactor = CalculateProductionReductionFactor();
+
             // 直接获取监控站管理的畸变体
             if (_containmentMonitorSMI != null && _containmentMonitorSMI.gameObject != null)
             {
@@ -461,12 +465,62 @@ namespace MutantContainmentProject.Buildings
                             // 处理生成的产出物
                             foreach (var generatedProduct in generatedProducts)
                             {
-                                SpawnProduct(cell, generatedProduct.Id, generatedProduct.Amount);
+                                // 应用产出抑制因子
+                                int reducedAmount = Mathf.Max(1, Mathf.FloorToInt(generatedProduct.Amount * productionReductionFactor));
+                                SpawnProduct(cell, generatedProduct.Id, reducedAmount);
                             }
                         }
                     }
                 }
             }
+        }
+
+        private float CalculateProductionReductionFactor()
+        {
+            float reductionFactor = 1.0f;
+
+            // 基于腐蚀等级的抑制
+            if (CorrosionManagerComp != null)
+            {
+                switch (CorrosionManagerComp.CurrentCorrosionState)
+                {
+                    case CorrosionManager.CorrosionState.Stable:
+                        reductionFactor *= 1.0f;
+                        break;
+                    case CorrosionManager.CorrosionState.Warning:
+                        reductionFactor *= 0.8f;
+                        break;
+                    case CorrosionManager.CorrosionState.HighCorrosion:
+                        reductionFactor *= 0.6f;
+                        break;
+                    case CorrosionManager.CorrosionState.Overflow:
+                        reductionFactor *= 0.4f;
+                        break;
+                }
+            }
+
+            // 基于全局腐蚀等级的抑制
+            var globalErosionManager = GlobalErosionManager.Instance;
+            if (globalErosionManager != null)
+            {
+                switch (globalErosionManager.CurrentErosionLevel)
+                {
+                    case GlobalErosionManager.ErosionLevel.Safe:
+                        reductionFactor *= 1.0f;
+                        break;
+                    case GlobalErosionManager.ErosionLevel.Alert:
+                        reductionFactor *= 0.9f;
+                        break;
+                    case GlobalErosionManager.ErosionLevel.Crisis:
+                        reductionFactor *= 0.7f;
+                        break;
+                    case GlobalErosionManager.ErosionLevel.Disaster:
+                        reductionFactor *= 0.5f;
+                        break;
+                }
+            }
+
+            return Mathf.Max(0.1f, reductionFactor);
         }
 
         private void SpawnProduct(int cell, Tag productId, int amount)

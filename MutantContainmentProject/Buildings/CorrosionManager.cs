@@ -28,10 +28,16 @@ namespace MutantContainmentProject.Buildings
         }
 
         // 腐蚀值相关
+        [SerializeField]
         private float corrosionValue = 0f; // 0-100
+        [SerializeField]
         private float corrosionUpdateTimer = 0f;
+        [SerializeField]
         private bool isOperationInProgress = false; // 标记是否有操作正在进行中
+        [SerializeField]
         private bool hasReportedCorrosionFull = false; // 标记是否已经报告过腐蚀值满值的情况
+        [SerializeField]
+        private CorrosionState previousCorrosionState = CorrosionState.Stable;
 
         // 腐蚀值阈值
         private const float CORROSION_WARNING_THRESHOLD = 30f;
@@ -98,7 +104,6 @@ namespace MutantContainmentProject.Buildings
                 return securableMonitor;
             }
         }
-
         protected override void OnSpawn()
         {
             base.OnSpawn();
@@ -126,6 +131,16 @@ namespace MutantContainmentProject.Buildings
                     return (4f + (percentage - 0.8f) * 5f) / (float)frames;
                 }
             };
+            Subscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
+            // 更新腐蚀值显示
+            UpdateCorrosionMeter();
+            // 发布当前腐蚀等级事件
+            CheckCorrosionStateChange();
+        }
+
+        private void OnBreachContained(object obj)
+        {
+            corrosionValue = 0;
         }
 
         // 实现ISim1000ms接口
@@ -229,11 +244,20 @@ namespace MutantContainmentProject.Buildings
             TbbDebuger.LogDebug($"[腐蚀管理] 操作结束");
         }
 
+
         // 检查腐蚀状态变化
         private void CheckCorrosionStateChange()
         {
             CorrosionState currentState = CurrentCorrosionState;
             KSelectable selectable = gameObject.GetComponent<KSelectable>();
+
+            // 检查状态是否变化
+            if (currentState != previousCorrosionState)
+            {
+                // 触发腐蚀等级变化事件
+                BoxingTrigger((int)MutanterGameHashes.CorrosionLevelChanged, currentState);
+                previousCorrosionState = currentState;
+            }
 
             // 先移除所有腐蚀相关的状态项
             if (selectable != null)
@@ -353,7 +377,7 @@ namespace MutantContainmentProject.Buildings
                 // 计算腐蚀值百分比 (0-100% 映射到 0-1)
                 float percentage = corrosionValue / 100f;
                 m_corrosionMeter.SetPositionPercent(Mathf.Clamp01(percentage));
-                TbbDebuger.LogDebug($"[腐蚀管理] 更新腐蚀值显示，腐蚀值: {corrosionValue}, 百分比: {percentage}");
+                //TbbDebuger.LogDebug($"[腐蚀管理] 更新腐蚀值显示，腐蚀值: {corrosionValue}, 百分比: {percentage}");
             }
         }
     }
