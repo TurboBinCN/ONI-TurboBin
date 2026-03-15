@@ -1,13 +1,9 @@
 using MutantContainmentProject.Buildings;
-using MutantContainmentProject.MutanterEffect;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.UI;
 using UnityEngine;
 using UnityEngine.UI;
-using static STRINGS.CREATURES.SPECIES;
 
 namespace MutantContainmentProject.SideScreen
 {
@@ -83,14 +79,14 @@ namespace MutantContainmentProject.SideScreen
                 targetConsole.gameObject.Unsubscribe(uiRefreshSubHandle);
                 uiRefreshSubHandle = -1;
             }
-            
+
             // 设置新目标
             targetConsole = target.GetSMI<ControlDepartmentConsole.Instance>();
             if (targetConsole != null)
             {
                 // 刷新界面
                 RefreshOptions();
-                
+
                 // 订阅刷新事件
                 uiRefreshSubHandle = target.Subscribe(1980521255, RefreshOptions);
             }
@@ -113,9 +109,9 @@ namespace MutantContainmentProject.SideScreen
             SetRow(num++, STRINGS.UI.UISIDESCREENS.CONTROLDEPARTMENTCONSOLE.NOTHING, Assets.GetSprite("action_building_disabled"), null, true);
             // 获取当前世界的所有复制人，排除放生人
             List<MinionIdentity> dupes = Components.MinionIdentities.Items
-                .Where(d => d != null && d.gameObject != null && d.GetMyWorldId() == targetConsole.GetMyWorldId()  && d.GetComponent<KPrefabID>().PrefabTag != BionicMinionConfig.MODEL)
+                .Where(d => d != null && d.gameObject != null && d.GetMyWorldId() == targetConsole.GetMyWorldId() && d.GetComponent<KPrefabID>().PrefabTag != BionicMinionConfig.MODEL)
                 .ToList();
-            
+
             // 设置Header文本
             SetHeaderText(STRINGS.BUILDINGS.PREFABS.CONTROLDEPARTMENTCONSOLE.SELECT_DUPES_TITLE);
 
@@ -138,7 +134,7 @@ namespace MutantContainmentProject.SideScreen
             {
                 FindHeaderText();
             }
-            
+
             // 直接使用存储的headerText成员变量
             if (headerText != null)
             {

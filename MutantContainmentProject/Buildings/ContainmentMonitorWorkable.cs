@@ -21,7 +21,7 @@ namespace MutantContainmentProject.Buildings
         private float workerUnitWorkingElapsedTime = 0;
         private float mutanterUnitWorkingElapsedTime = 0;
         private float termUnitShowingElapsedTime = 0;
-        
+
         // 公共属性，供 StatusItems 使用
         public int WorkerCompletedSubtasks => workerCompletedSubtasks;
         public int MutanterCompletedSubtasks => mutanterCompletedSubtasks;
@@ -87,6 +87,9 @@ namespace MutantContainmentProject.Buildings
             // 从管理器中注销站点
             ContainmentMonitorStationManager.UnregisterStation(gameObject);
         }
+        // 当前操作类型的偏好值加成
+        private float currentActionPreferenceBonus = 1f;
+
         protected override void OnStartWork(WorkerBase worker)
         {
             base.OnStartWork(worker);
@@ -95,12 +98,12 @@ namespace MutantContainmentProject.Buildings
             if (CorrosionManagerComp != null)
             {
                 CorrosionManagerComp.StartOperation();
-                Debug.Log("[ContainmentMonitorWorkable] 标记操作开始");
+                TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 标记操作开始");
             }
 
             // 重置工作状态
             ResetWorkState();
-            Debug.Log("[ContainmentMonitorWorkable] 工作状态已重置");
+            TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 工作状态已重置");
 
             // 清除之前的状态项
             KSelectable selectable = gameObject.GetComponent<KSelectable>();
@@ -109,7 +112,7 @@ namespace MutantContainmentProject.Buildings
                 selectable.RemoveStatusItem(ContainmentMonitorBuildingStatusItems.Instance.ContainmentSuccess);
                 selectable.RemoveStatusItem(ContainmentMonitorBuildingStatusItems.Instance.ContainmentFailure);
                 selectable.RemoveStatusItem(ContainmentMonitorBuildingStatusItems.Instance.WorkerDamage);
-                Debug.Log("[ContainmentMonitorWorkable] 之前的状态项已清除");
+                TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 之前的状态项已清除");
             }
 
             workerGameObject = worker.gameObject;
@@ -117,11 +120,11 @@ namespace MutantContainmentProject.Buildings
             if (modifiers != null)
             {
                 var disciplineInstance = modifiers.attributes.Get(MutanterAttributes.AttributeDisciplineID);
-                
+
                 // 获取转换器实例
                 var containmentSpeedConverter = Db.Get().AttributeConverters.Get(MutanterAttributeConverters.AttributeContainmentSpeedConverterID);
                 var safetyMeasureSuccessRateConverter = Db.Get().AttributeConverters.Get(MutanterAttributeConverters.AttributeSafetyMeasureSuccessRateConverterID);
-                
+
                 // 计算收容速度因子
                 float containmentSpeedFactor = 1f;
                 if (containmentSpeedConverter != null)
@@ -132,7 +135,7 @@ namespace MutantContainmentProject.Buildings
                         containmentSpeedFactor = Mathf.Max(0.1f, 1f + converterInstance.Evaluate());
                     }
                 }
-                
+
                 // 计算安全措施成功率因子
                 float safetyMeasureSuccessRateFactor = 1f;
                 if (safetyMeasureSuccessRateConverter != null)
@@ -143,26 +146,26 @@ namespace MutantContainmentProject.Buildings
                         safetyMeasureSuccessRateFactor = Mathf.Max(0.1f, 0.5f + converterInstance.Evaluate());
                     }
                 }
-                
+
                 // 综合计算最终因子
                 workerWorkingSpeedFactor = containmentSpeedFactor;
                 workerSuccessRateFactor = safetyMeasureSuccessRateFactor;
-                
-                Debug.Log($"[ContainmentMonitorWorkable] 工作速度因子: {workerWorkingSpeedFactor}, 成功率因子: {workerSuccessRateFactor}");
-                Debug.Log($"[ContainmentMonitorWorkable] 收容速度: {containmentSpeedFactor}, 安全措施成功率: {safetyMeasureSuccessRateFactor}");
+
+                TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 工作速度因子: {workerWorkingSpeedFactor}, 成功率因子: {workerSuccessRateFactor}");
+                TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 收容速度: {containmentSpeedFactor}, 安全措施成功率: {safetyMeasureSuccessRateFactor}");
 
                 // 调试日志
-                Debug.Log($"[ContainmentMonitorWorkable] 工作速度因子: {workerWorkingSpeedFactor}, 成功率因子: {workerSuccessRateFactor}");
+                TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 工作速度因子: {workerWorkingSpeedFactor}, 成功率因子: {workerSuccessRateFactor}");
             }
             else
             {
-                Debug.Log("[ContainmentMonitorWorkable] 未找到Modifiers组件");
+                TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 未找到Modifiers组件");
                 // 如果没有Modifiers组件，使用默认值
                 workerWorkingSpeedFactor = 0.8f;
                 workerSuccessRateFactor = 0.6f;
-                Debug.Log($"[ContainmentMonitorWorkable] 使用默认值 - 工作速度因子: {workerWorkingSpeedFactor}, 成功率因子: {workerSuccessRateFactor}");
+                TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 使用默认值 - 工作速度因子: {workerWorkingSpeedFactor}, 成功率因子: {workerSuccessRateFactor}");
             }
-            
+
             // 从ContainmentMonitor获取畸变体的速度和成功率
             if (_containmentMonitorSMI != null)
             {
@@ -175,7 +178,12 @@ namespace MutantContainmentProject.Buildings
                         {
                             mutanterWorkingSpeedFactor = mutanterColony.WorkingSpeedFactor;
                             mutanterSuccessRateFactor = mutanterColony.SuccessRateFactor;
-                            Debug.Log($"[ContainmentMonitorWorkable] 从畸变体获取速度和成功率 - 速度: {mutanterWorkingSpeedFactor}, 成功率: {mutanterSuccessRateFactor}");
+
+                            // 计算当前操作类型的偏好值加成
+                            CalculateActionPreferenceBonus(_containmentMonitorSMI.CurrentAction, mutanterColony);
+
+                            TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 从畸变体获取速度和成功率 - 速度: {mutanterWorkingSpeedFactor}, 成功率: {mutanterSuccessRateFactor}");
+                            TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 当前操作偏好值加成: {currentActionPreferenceBonus}");
                             break; // 只获取第一个畸变体的参数
                         }
                     }
@@ -183,18 +191,19 @@ namespace MutantContainmentProject.Buildings
             }
             else
             {
-                Debug.Log("[ContainmentMonitorWorkable] 未找到ContainmentMonitor SMI");
+                TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 未找到ContainmentMonitor SMI");
+                currentActionPreferenceBonus = 1f; // 默认加成
             }
-            
-            Debug.Log($"[ContainmentMonitorWorkable] 开始工作，工人: {worker.name}");
-            Debug.Log($"[ContainmentMonitorWorkable] 最终参数 - 工人速度: {workerWorkingSpeedFactor}, 工人成功率: {workerSuccessRateFactor}, 畸变体速度: {mutanterWorkingSpeedFactor}, 畸变体成功率: {mutanterSuccessRateFactor}");
+
+            TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 开始工作，工人: {worker.name}");
+            TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 最终参数 - 工人速度: {workerWorkingSpeedFactor}, 工人成功率: {workerSuccessRateFactor}, 畸变体速度: {mutanterWorkingSpeedFactor}, 畸变体成功率: {mutanterSuccessRateFactor}");
         }
         protected override bool OnWorkTick(WorkerBase worker, float dt)
         {
             // 应用工作速度因子
             float workerEffectiveDt = dt * workerWorkingSpeedFactor;
             float mutanterEffectiveDt = dt * mutanterWorkingSpeedFactor;
-            
+
             workerUnitWorkingElapsedTime += workerEffectiveDt;
             mutanterUnitWorkingElapsedTime += mutanterEffectiveDt;
             termUnitShowingElapsedTime += dt;
@@ -202,22 +211,24 @@ namespace MutantContainmentProject.Buildings
             // 每5秒记录一次工作进度
             if ((int)(Time.time / 5) != (int)((Time.time - dt) / 5))
             {
-                Debug.Log($"[ContainmentMonitorWorkable] 工作进度: 工人时间={workerUnitWorkingElapsedTime:F2}/{SUBTASK_DURATION}, 畸变体时间={mutanterUnitWorkingElapsedTime:F2}/{SUBTASK_DURATION}");
-                Debug.Log($"[ContainmentMonitorWorkable] 子任务计数: 工人={workerCompletedSubtasks}, 畸变体={mutanterCompletedSubtasks}");
+                TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 工作进度: 工人时间={workerUnitWorkingElapsedTime:F2}/{SUBTASK_DURATION}, 畸变体时间={mutanterUnitWorkingElapsedTime:F2}/{SUBTASK_DURATION}");
+                TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 子任务计数: 工人={workerCompletedSubtasks}, 畸变体={mutanterCompletedSubtasks}");
             }
 
             if (workerUnitWorkingElapsedTime >= SUBTASK_DURATION)
             {
                 workerUnitWorkingElapsedTime = 0;
-                if (Random.value < workerSuccessRateFactor)
+                // 应用偏好值加成到成功率
+                float adjustedSuccessRate = workerSuccessRateFactor * currentActionPreferenceBonus;
+                if (Random.value < adjustedSuccessRate)
                 {
                     workerCompletedSubtasks += 1;
-                    Debug.Log($"[ContainmentMonitorWorkable] 小人完成子任务，当前计数: {workerCompletedSubtasks}");
+                    TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 小人完成子任务，当前计数: {workerCompletedSubtasks}, 调整后成功率: {adjustedSuccessRate}");
                     HandleWorkerSuccess();
                 }
                 else
                 {
-                    Debug.Log("[ContainmentMonitorWorkable] 小人子任务失败");
+                    TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 小人子任务失败，调整后成功率: {adjustedSuccessRate}");
                 }
             }
             if (mutanterUnitWorkingElapsedTime >= SUBTASK_DURATION)
@@ -226,12 +237,12 @@ namespace MutantContainmentProject.Buildings
                 if (Random.value < mutanterSuccessRateFactor)
                 {
                     mutanterCompletedSubtasks += 1;
-                    Debug.Log($"[ContainmentMonitorWorkable] 畸变体完成子任务，当前计数: {mutanterCompletedSubtasks}");
+                    TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 畸变体完成子任务，当前计数: {mutanterCompletedSubtasks}");
                     HandleMutantSuccess();
                 }
                 else
                 {
-                    Debug.Log("[ContainmentMonitorWorkable] 畸变体子任务失败");
+                    TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 畸变体子任务失败");
                 }
             }
 
@@ -312,6 +323,83 @@ namespace MutantContainmentProject.Buildings
             workerUnitWorkingElapsedTime = 0;
             mutanterUnitWorkingElapsedTime = 0;
             termUnitShowingElapsedTime = 0;
+            currentActionPreferenceBonus = 1f; // 重置偏好值加成
+        }
+
+        // 计算当前操作类型的偏好值加成
+        private void CalculateActionPreferenceBonus(SecureAction action, MutanterColonyComponent mutanterColony)
+        {
+            if (action == SecureAction.None || mutanterColony == null || workerGameObject == null)
+            {
+                currentActionPreferenceBonus = 1f;
+                return;
+            }
+
+            // 根据操作类型确定对应的技能等级
+            int skillLevel = GetSkillLevelForAction(action);
+
+            // 获取该操作类型对应等级的偏好值
+            float preference = mutanterColony.GetSecureActionPreference(action, skillLevel);
+
+            // 将偏好值转换为加成因子（偏好值越低，加成越低）
+            // 偏好值范围：0~100%，加成因子范围：0.5~1.0
+            currentActionPreferenceBonus = 0.5f + (preference / 100f) * 0.5f;
+
+            TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 操作类型: {action}, 技能等级: {skillLevel}, 偏好值: {preference}%, 加成因子: {currentActionPreferenceBonus}");
+        }
+
+        // 根据操作类型获取对应的技能等级
+        private int GetSkillLevelForAction(SecureAction action)
+        {
+            if (workerGameObject == null)
+            {
+                return 0;
+            }
+
+            // 获取小人的 MinionResume 组件，它管理小人的技能
+            MinionResume minionResume = workerGameObject.GetComponent<MinionResume>();
+            if (minionResume == null)
+            {
+                return 0;
+            }
+
+            // 根据操作类型确定对应的技能组
+            string skillGroupId = string.Empty;
+            switch (action)
+            {
+                case SecureAction.Instinct: // 本能操作对应勇气技能
+                    skillGroupId = MutanterSkillGroups.SkillGroupBraveryID;
+                    break;
+                case SecureAction.Reconnaissance: // 洞察操作对应防御技能
+                    skillGroupId = MutanterSkillGroups.SkillGroupDefenseID;
+                    break;
+                case SecureAction.Communicate: // 自律操作对应沟通技能
+                    skillGroupId = MutanterSkillGroups.SkillGroupDisciplineID;
+                    break;
+                case SecureAction.Intimidation: // 压迫操作对应正义技能
+                    skillGroupId = MutanterSkillGroups.SkillGroupRighteousnessID;
+                    break;
+                default:
+                    return 0;
+            }
+
+            // 获取技能组的最高技能等级
+            int maxLevel = 0;
+            foreach (var skill in Db.Get().Skills.resources)
+            {
+                // 检查技能是否属于目标技能组，并且小人已经掌握该技能
+                if (skill.skillGroup == skillGroupId && minionResume.HasMasteredSkill(skill.Id))
+                {
+                    // 技能的 tier 属性表示技能等级
+                    if (skill.tier > maxLevel)
+                    {
+                        maxLevel = skill.tier;
+                    }
+                }
+            }
+
+            // 确保等级在0-2之间（对应三个技能等级）
+            return Mathf.Clamp(maxLevel, 0, 2);
         }
         protected override void OnCompleteWork(WorkerBase worker)
         {
@@ -320,12 +408,12 @@ namespace MutantContainmentProject.Buildings
             // 保存当前子任务数
             int finalWorkerSubtasks = workerCompletedSubtasks;
             int finalMutanterSubtasks = mutanterCompletedSubtasks;
-            
+
             // 检查是否成功
             bool isSuccess = finalWorkerSubtasks > finalMutanterSubtasks;
-            
-            Debug.Log($"[ContainmentMonitorWorkable] 工作完成，工人子任务数: {finalWorkerSubtasks}, 畸变体子任务数: {finalMutanterSubtasks}");
-            Debug.Log($"[ContainmentMonitorWorkable] 收容措施结果: {(isSuccess ? "成功" : "失败")}");
+
+            TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 工作完成，工人子任务数: {finalWorkerSubtasks}, 畸变体子任务数: {finalMutanterSubtasks}");
+            TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 收容措施结果: {(isSuccess ? "成功" : "失败")}");
 
             // 显示状态项
             KSelectable selectable = gameObject.GetComponent<KSelectable>();
@@ -339,50 +427,50 @@ namespace MutantContainmentProject.Buildings
                 if (isSuccess)
                 {
                     selectable.AddStatusItem(ContainmentMonitorBuildingStatusItems.Instance.ContainmentSuccess, new System.Tuple<int, int>(finalWorkerSubtasks, finalMutanterSubtasks));
-                    Debug.Log("[ContainmentMonitorWorkable] 添加成功状态项");
+                    TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 添加成功状态项");
                 }
                 else
                 {
                     selectable.AddStatusItem(ContainmentMonitorBuildingStatusItems.Instance.ContainmentFailure, new System.Tuple<int, int>(finalWorkerSubtasks, finalMutanterSubtasks));
-                    Debug.Log("[ContainmentMonitorWorkable] 添加失败状态项");
+                    TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 添加失败状态项");
                 }
             }
             else
             {
-                Debug.Log("[ContainmentMonitorWorkable] 未找到KSelectable组件");
+                TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 未找到KSelectable组件");
             }
 
             if (isSuccess)
             {
                 // 成功：生成产出物
-                Debug.Log("[ContainmentMonitorWorkable] 开始生成产出物");
+                TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 开始生成产出物");
                 GenerateMutanterProducts();
 
                 // 找到ContainmentMonitor 所在房间中的畸变体，应用Effect/Modifier
                 if (_containmentMonitorSMI != null)
                 {
                     List<MutanterSecurableMonitor.Instance> list = _containmentMonitorSMI.TargetSecurables;
-                    Debug.Log($"[ContainmentMonitorWorkable] 找到 {list.Count} 个畸变体");
+                    TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 找到 {list.Count} 个畸变体");
 
                     foreach (var securable in list)
                     {
-                        if (securable != null) 
+                        if (securable != null)
                         {
                             securable.GoInToContaiment();
-                            Debug.Log($"[ContainmentMonitorWorkable] 应用收容效果到畸变体: {securable.gameObject.name}");
+                            TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 应用收容效果到畸变体: {securable.gameObject.name}");
                         }
                     }
                 }
                 else
                 {
-                    Debug.Log("[ContainmentMonitorWorkable] 未找到ContainmentMonitor SMI");
+                    TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 未找到ContainmentMonitor SMI");
                 }
 
                 // 处理管控成功（基于执行次数，而非子任务数）
                 if (CorrosionManagerComp != null)
                 {
                     CorrosionManagerComp.HandleContainmentSuccess();
-                    Debug.Log("[ContainmentMonitorWorkable] 执行成功，调用HandleContainmentSuccess");
+                    TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 执行成功，调用HandleContainmentSuccess");
                 }
             }
             else
@@ -394,23 +482,23 @@ namespace MutantContainmentProject.Buildings
                     if (health != null)
                     {
                         // health.Damage(health.maxHitPoints); // 扣减所有生命值
-                        Debug.Log($"[ContainmentMonitorWorkable] 工人 {worker.name} 受到致命伤害");
+                        TbbDebuger.LogDebug($"[ContainmentMonitorWorkable] 工人 {worker.name} 受到致命伤害");
                     }
                     else
                     {
-                        Debug.Log("[ContainmentMonitorWorkable] 未找到Health组件");
+                        TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 未找到Health组件");
                     }
                 }
                 else
                 {
-                    Debug.Log("[ContainmentMonitorWorkable] 工人对象为空");
+                    TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 工人对象为空");
                 }
 
                 // 处理管控失败（基于执行次数，而非子任务数）
                 if (CorrosionManagerComp != null)
                 {
                     CorrosionManagerComp.HandleContainmentFailure();
-                    Debug.Log("[ContainmentMonitorWorkable] 执行失败，调用HandleContainmentFailure");
+                    TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 执行失败，调用HandleContainmentFailure");
                 }
             }
 
@@ -418,7 +506,7 @@ namespace MutantContainmentProject.Buildings
             if (CorrosionManagerComp != null)
             {
                 CorrosionManagerComp.EndOperation();
-                Debug.Log("[ContainmentMonitorWorkable] 标记操作结束");
+                TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 标记操作结束");
             }
 
         }
@@ -595,12 +683,12 @@ namespace MutantContainmentProject.Buildings
         {
             base.OnStopWork(worker);
             ResetWorkState();
-            
+
             // 标记操作结束，恢复腐蚀值更新
             if (CorrosionManagerComp != null)
             {
                 CorrosionManagerComp.EndOperation();
-                Debug.Log("[ContainmentMonitorWorkable] 标记操作结束（工作停止）");
+                TbbDebuger.LogDebug("[ContainmentMonitorWorkable] 标记操作结束（工作停止）");
             }
         }
 

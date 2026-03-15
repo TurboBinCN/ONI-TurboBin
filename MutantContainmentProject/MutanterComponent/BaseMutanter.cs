@@ -1,5 +1,4 @@
 using Klei.AI;
-using MutantContainmentProject.Buildings;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.UI;
@@ -20,7 +19,7 @@ namespace MutantContainmentProject.MutanterComponent
     public class BaseMutanter
     {
         //畸变体基础设置：情绪管理、威胁管理、攻击方式管理
-        public static GameObject ExtendToBaseMutanter(GameObject template, MutanterDangerLevel dangerLevel, int MaxColonySize = 1, bool considerDecor = true, bool useEmotionMonitor = true, FactionManager.FactionID faction = FactionManager.FactionID.Prey, List<Tag> attackTags = null)
+        public static GameObject ExtendToBaseMutanter(GameObject template, MutanterDangerLevel dangerLevel, int MaxColonySize = 1, bool considerDecor = true, bool useEmotionMonitor = true, FactionManager.FactionID faction = FactionManager.FactionID.Prey, List<Tag> attackTags = null, System.Collections.Generic.Dictionary<MutantContainmentProject.Buildings.SecureAction, float[]> secureActionPreferences = null)
         {
             template.AddOrGetDef<MutanterStateMachine.Def>();//挂载：畸变体基础组件
             template.AddOrGetDef<MutanterSecurableMonitor.Def>();//挂载：畸变体安全控制监控SMI
@@ -39,7 +38,7 @@ namespace MutantContainmentProject.MutanterComponent
             }
             //收容逻辑：暴动后收容逻辑，被攻击、生命扣减低于1，封包
             template.AddOrGet<Health>().isCritter = true;//挂载：健康检测
-             
+
             //畸变体被攻击的相关组件
             template.AddOrGet<MutanterAttackable>(); //挂载：畸变体可攻击组件，关联到正义属性和攻击伤害
             var factionAlignment = template.AddOrGet<FactionAlignment>();
@@ -48,7 +47,7 @@ namespace MutantContainmentProject.MutanterComponent
 
 
             template.AddOrGet<TbbRangeVisualizer>();//挂载：威胁范围显示
-            
+
             // 挂载：攻击能力，并传递攻击标签
             var attackSystem = template.AddOrGet<MutanterAttackSystem>();
             if (attackTags != null)
@@ -63,13 +62,13 @@ namespace MutantContainmentProject.MutanterComponent
 
             // 添加产出物组件
             template.AddOrGet<MutanterProductComponent>();
-            
+
             // 添加过度拥挤监控器，这会将生物添加到房间的creatures集合中
             var overcrowdingMonitorDef = template.AddOrGetDef<OvercrowdingMonitor.Def>();
             overcrowdingMonitorDef.spaceRequiredPerCreature = 20; // 设置每个畸变体需要的空间
-            
+
             // 添加畸变体群落组件
-            template.AddOrGet<MutanterColonyComponent>().SetParameters(dangerLevel, MaxColonySize);
+            template.AddOrGet<MutanterColonyComponent>().SetParameters(dangerLevel, MaxColonySize, preferences: secureActionPreferences);
 
             return template;
         }
@@ -83,10 +82,10 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 // 获取畸变体ID
                 string mutanterId = template.GetComponent<KPrefabID>().PrefabID().Name;
-                
+
                 // 添加到静态数据库
                 MutanterProductComponent.AddProductToDatabase(mutanterId, new MutanterProductComponent.Product(productId, baseAmount, successRateMultiplier));
-                
+
                 // 同时添加到当前实例（用于预览）
                 productComponent.AddProduct(new MutanterProductComponent.Product(productId, baseAmount, successRateMultiplier));
             }
@@ -168,7 +167,7 @@ namespace MutantContainmentProject.MutanterComponent
             pickupable.sortOrder = sortOrder;
             template.AddOrGet<Clearable>().isClearable = false;
             template.AddOrGet<CharacterOverlay>();
-            
+
             template.AddOrGet<Prioritizable>();
             template.AddOrGet<Effects>();
             //TODO 畸变体表情SMI
@@ -216,7 +215,7 @@ namespace MutantContainmentProject.MutanterComponent
             return template;
         }
 
-        public static GameObject BaseGameObject(string id, string name, string desc, int width, int height,string anim_file, string anim_build_file, string anim_emotes_file, string symbol_override_prefix, float warnLowTemp, float warnHighTemp, float lethalLowTemp, float lethalHighTemp)
+        public static GameObject BaseGameObject(string id, string name, string desc, int width, int height, string anim_file, string anim_build_file, string anim_emotes_file, string symbol_override_prefix, float warnLowTemp, float warnHighTemp, float lethalLowTemp, float lethalHighTemp)
         {
 
             float mass = 50f;

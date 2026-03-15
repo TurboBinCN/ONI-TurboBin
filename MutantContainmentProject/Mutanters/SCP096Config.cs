@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
 using System;
 using System.Collections.Generic;
@@ -21,13 +22,24 @@ namespace MutantContainmentProject.Mutanters
             string name = STRINGS.ENTITY.MUTANTER.MUTANTER_SCP096.NAME;
             string desc = STRINGS.ENTITY.MUTANTER.MUTANTER_SCP096.DESCRIPTION;
 
-            GameObject prefab = BaseMutanter.BaseGameObject(ID, name, desc,1,4, KANIM_NAME, KANIM_NAME, KANIM_EMOTES_NAME, null, 233.15f, 293.15f, 173.15f, 373.15f);
+            GameObject prefab = BaseMutanter.BaseGameObject(ID, name, desc, 1, 4, KANIM_NAME, KANIM_NAME, KANIM_EMOTES_NAME, null, 233.15f, 293.15f, 173.15f, 373.15f);
 
             BaseMutanter.ExtendMutanterMove(prefab, "WalkerNavGrid1x4");
 
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name, 25);
-
-            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack });
+            // 安全措施偏好值
+            Dictionary<SecureAction, float[]> secureActionPreferences = new Dictionary<SecureAction, float[]>
+            {
+                // 本能操作（对应勇气技能）
+                [SecureAction.Instinct] = new float[] { 40f, 40f, 40f },
+                // 洞察操作（对应防御技能）
+                [SecureAction.Reconnaissance] = new float[] { 0f, 0f, 0f },
+                // 自律操作（对应沟通技能）
+                [SecureAction.Communicate] = new float[] { 0f, 0f, 0f },
+                // 压迫操作（对应正义技能）
+                [SecureAction.Intimidation] = new float[] { 70f, 70f, 70f }
+            };
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack }, secureActionPreferences: secureActionPreferences);
             prefab.AddOrGetDef<MutanterChaseMonitor.Def>();
 
             // 添加产出物
@@ -88,7 +100,7 @@ namespace MutantContainmentProject.Mutanters
                     new CellOffset(0, 2)
                 }, new CellOffset[0], new NavOffset[0], new NavOffset[0], true)
             };
-            
+
             // 使用正确的 Traverse 语法调用私有方法
             NavGrid.Transition[] transitions = Traverse.Create(__instance)
                 .Method("MirrorTransitions", originalTransitions)

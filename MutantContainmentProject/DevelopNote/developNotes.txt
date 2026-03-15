@@ -1,5 +1,6 @@
 1.畸变体
-	1.1 不同等级特质结构定义
+	1.1 不同等级特质结构定义 BaseMutanter.cs
+		--Safe/Euclid/Keter/Thaumiel/Neutralized
 	x1.7 畸变体基础分类，不要在归类到小动物中,影响太大梳理不清楚前不要动
 	1.8 畸变体特质体系
 		1.8.1 基础动物畸变体配置类 BaseMutanter.cs
@@ -17,6 +18,8 @@
  				--畸变体突破收容能力
 		 1.8.10 畸变体击败收容打包组件 DefeatStates.cs
 		 1.8.11 畸变体基础状态机组件 MutanterStateMachine.cs
+		 7.8.12 畸变体侵蚀玩法组件 CorrosionManager.cs
+		 1.8.13 全局畸变体侵蚀组件 GloablErosionManger.cs
 	1.10 畸变体百科词条
 		√1.10.1 畸变体百科词条的图片显示
 	1.11 畸变体攻击系统：
@@ -37,11 +40,14 @@
 		√2.4.1 收容安全控制措施
 			√2.4.1.1 措施执行
 			√2.4.1.2 措施成功率与小人能力数值之间的关系 技能：自律
+			√2.4.1.3 安全控制措施图标
+			2.4.1.4 需要优化显示 收益、收容体等级、侵蚀值
 	    √2.4.2 产出物生成
 	2.5 收容室定义 ContainmentCharmberRoom.cs
 		--中子质收容护壁 ContainmentTileConfig.cs、 1个畸变体、 畸变体监控站 ContainmentMonitorStationConfig.cs
 		--收容Effect MutanterEffects.cs
-			 
+3. 部门
+	3.1 控制部 DepartmentRoom.cs  与 控制部操作台 ControlDepartmentConfig.cs
 4. 小人能力架构
 	√4.1 小人收容能力架构 
 		--技能与能力：
@@ -52,6 +58,7 @@
 				关联：操作收容监控工作台 ContainmentMonitor.cs
 			√正义-正义属性-Converter：攻击伤害、攻击速度
 				关联：攻击畸变体 MutanterAttackable.cs
+			闪避/伤害无效/暴击率	
 	√4.3 能力数值调整
 	 4.6 技能帽的图片
 	√4.8 技能组
@@ -64,6 +71,15 @@
 	5.4 故事特质会被挤掉，怎么保证必然创建
 6. 畸变源祭坛遗迹 GravitasMutanterFounderConfig.cs
 	6.5 冷却时间与生成畸变体等级的实现
+8. 玩法设计
+	8.1 事件：畸变体入侵，类似黎明、正午、黄昏、午夜
+	8.2 基础玩法：畸变体收容
+		√8.2.1 基础玩法：畸变体击败收容
+	√8.3 全局危机系统 GloablErosionManger.cs
+		--畸变躁动等级 全域躁动 
+	√8.4 收容稳定度系统 CorrosionManager.cs
+	8.5 图鉴收集 P5
+		
 7. 多种类畸变体
 	7.1.SCP173
 		7.1.1 动画
@@ -83,10 +99,11 @@
 		7.5.1 整体动画
 		7.5.2 释放气体病毒UI
 		7.5.3 攻击逻辑
-	8.其他mod兼容
-		√8.1 DGSM选人兼容报错
+	7.6 		
+9.其他mod兼容
+	√9.1 DGSM选人兼容报错
 
-20263/5
+2026/3/5
 1. 完成：祭坛激活与故事特质动画
 2. 完成：小人技能图片
 3. 完成： assetsBundle包

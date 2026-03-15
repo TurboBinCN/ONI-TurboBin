@@ -1,0 +1,64 @@
+项目编号：SCP-939
+
+项目等级：Keter（极高危险、极难收容）
+
+类型：温血群居掠食生物，呈现典型穴居生物的系统退化特征，适配《缺氧》地底密闭生态环境，常潜藏于阴暗区域伏击猎物
+
+常见别名：千喉之兽
+
+生理外观
+
+1. 体型：直立平均高2.2米，重250千克；四肢带三指利爪+可对握第四指，覆有强攀爬力的刚毛，能灵活穿梭于《缺氧》基地的管道、岩壁及狭窄空间，适配纵向地底环境。
+
+2. 头部与感官：头部细长，无眼/眼眶/脑壳；下颚有6厘米长、微弱红光的尖牙，带热感应颊窝，可精准捕捉复制人散发的体温信号；背部带刺脊线分布可感知明暗的眼斑，16厘米长的背刺还能察觉气压与气流变化，对《缺氧》基地内的气体流动（如氧气泄漏、二氧化碳堆积）异常敏感；极度畏强光，暴露在基地照明或自然光下会出现躁动、逃窜行为。
+
+3. 特殊生理：缺少中枢神经、循环、消化道；呼吸系统仅用于释放记忆消除气雾（AMN-C227）；无进食刚需，吞入物（包括复制人遗体、基地废料）会在呼吸腔堆积后被吐出；仍能胎生繁殖，目前未发现雄性个体，繁殖过程无需消耗额外资源，适配《缺氧》生物生存的资源循环逻辑。
+
+异常能力
+
+1. 完美声音模仿：核心狩猎手段，能精准复制过往受害者的人声（甚至未听过对方讲话也能模仿），常以痛苦呼救、哀求、求助维修基地设备等贴合《缺氧》复制人日常的话术诱骗；声纹与真人完全一致，无法通过任何基地检测手段辨别真伪，因此会持续吸引附近的复制人前往其藏匿区域，一旦靠近便会发动攻击，对基地人员安全造成极大威胁。
+
+2. 强力咬合与捕猎：咬合力超35MPa，常一口咬穿复制人颅骨/脖颈致死；群体协作捕猎，擅长利用《缺氧》基地的复杂地形（如管道缝隙、废弃舱室、岩壁凹陷）埋伏，会优先攻击单独行动、脱离群体的复制人，避免与多名复制人正面冲突。
+
+3. AMN-C227记忆消除气雾：呼吸释放无色无味的C级遗忘剂，造成顺行性失忆（暴露期+后续约30分钟无法形成新记忆）；复制人脱离气雾环境后，在一周期内（贴合《缺氧》游戏内“周期”计时单位，与复制人代谢、睡眠周期同步）会无征兆进入沉睡状态，沉睡期间无法执行任何工作指令，且会失去对SCP-939的相关记忆，苏醒后仍可能被其声音模仿再次诱骗，同时沉睡状态会降低复制人体力恢复效率，增加基地生存压力。
+
+- 历史事件：
+
+曾发生“平安夜”收容突破，9只个体逃逸至基地深层区域，大量复制人被其声音诱骗，出现伤亡及沉睡现象，导致基地氧气循环、资源采集工作停滞；基金会以“基地内部气体泄漏”为由启动应急封锁，疏散受影响区域的复制人，并派武装回收队完成收容。
+
+- AMN-C227曾一度被考虑量产为通用遗忘剂，用于消除复制人对基地事故的不良记忆，后因多次引发复制人无征兆沉睡、工作系统瘫痪等事故，被无限期停用。
+
+- 游戏表现：适配《缺氧》生存逻辑，是基地深层区域的高危敌对生物，常潜藏于黑暗的岩壁或废弃舱室，通过模仿复制人声音干扰基地运营，其释放的记忆消除气雾会导致复制人工作中断，沉睡状态还会占用基地医疗资源，给玩家的基地管理带来极大挑战。
+
+
+Item #: SCP-939
+
+Object Class: Keter
+
+Type: Endothermic pack-based predators with systemic atrophy typical of troglobitic organisms, adapted to the closed underground ecosystem in Oxygen Not Included, often ambushing prey in dark areas.
+
+Common Alias: The Many-Voiced Beast
+
+Physical Appearance
+
+1. Size: Approximately 2.2 meters tall when standing upright, with an average weight of 250 kilograms; each limb ends in three clawed digits plus an opposable fourth, covered in setae that enhance climbing ability, allowing them to move nimbly through pipes, rock walls, and narrow spaces in the Oxygen Not Included base, adapting to the vertical underground environment.
+
+2. Head and Senses: The head is elongated, lacking eyes, eye sockets, and cranial casing; the jaws bear 6 cm-long, faintly luminescent red fangs, surrounded by heat-sensitive pit organs that can accurately capture the body temperature signals emitted by Duplicants; light-sensitive eye spots run along spined dorsal ridges (up to 16 cm long), which can detect changes in air pressure and flow, being extremely sensitive to gas flow in the Oxygen Not Included base (such as oxygen leakage and carbon dioxide accumulation); they are intensely photophobic, showing restlessness and escape behavior when exposed to base lighting or natural light.
+
+3. Special Physiology: They lack central nervous, circulatory, and digestive systems; the respiratory system functions solely to expel the memory-erasing aerosol (AMN-C227); they have no need to feed, and ingested substances (including Duplicant remains and base waste) accumulate in the respiratory cavities and are regurgitated; they can still reproduce via live birth, and no male individuals have been identified so far. The reproductive process does not require additional resources, adapting to the resource cycle logic of biological survival in Oxygen Not Included.
+
+Anomalous Properties
+
+1. Voice Mimicry: As the primary hunting method, it can accurately imitate the human voices of past victims—even without hearing them speak. It often lures prey with phrases that fit the daily life of Duplicants in Oxygen Not Included, such as cries for help, pleas, and requests for base equipment maintenance; its voiceprint is completely consistent with real humans and cannot be distinguished by any base detection method. Therefore, it will continuously attract nearby Duplicants to its hiding area, and launch an attack once they approach, posing a great threat to the safety of base personnel.
+
+2. Bite Force and Hunting: Its bite force exceeds 35 MPa, typically killing Duplicants with a single cranial or cervical bite; it hunts in packs, excelling in ambushing using the complex terrain of the Oxygen Not Included base (such as pipe gaps, abandoned cabins, and rock depressions). It prioritizes attacking Duplicants who act alone and are separated from the group, avoiding direct conflicts with multiple Duplicants.
+
+3. AMN-C227 Memory-Erasing Aerosol: It releases a colorless and odorless Class C amnestic through respiration, causing temporary anterograde amnesia (inhibits memory formation during exposure and 30 minutes post-exposure). After Duplicants leave the aerosol environment, they will fall into an unprovoked sleep state within one cycle (consistent with the "cycle" time unit in Oxygen Not Included, synchronized with the Duplicants' metabolism and sleep cycle). During sleep, they cannot execute any work orders and will lose all memories related to SCP-939. After waking up, they may still be lured again by its voice mimicry. At the same time, the sleep state will reduce the efficiency of Duplicants' physical recovery, increasing the pressure on base survival.
+
+Addenda
+
+- 09-20-1991: A containment breach ("Silent Night") at Site-06 released nine specimens into the deep area of the base. A large number of Duplicants were lured by their voices, resulting in casualties and sleep phenomena, which led to the stagnation of base oxygen circulation and resource collection work; the Foundation launched an emergency lockdown on the grounds of "internal base gas leakage", evacuated Duplicants in the affected area, and dispatched armed recovery teams to complete the containment.
+
+- 02-20-1992: The use of AMN-C227 as a general amnestic was suspended indefinitely due to multiple accidents such as unprovoked sleep of Duplicants and paralysis of the work system.
+
+- In-Game Performance: Consistent with the survival logic of Oxygen Not Included, it is a high-risk hostile creature in the deep area of the base, often hiding in dark rock walls or abandoned cabins. It interferes with base operations by imitating Duplicants' voices. The memory-erasing aerosol it releases will cause Duplicants to interrupt their work, and the sleep state will also occupy base medical resources, bringing great challenges to players' base management.

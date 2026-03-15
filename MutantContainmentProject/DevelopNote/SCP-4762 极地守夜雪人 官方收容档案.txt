@@ -1,0 +1,50 @@
+SCP-4762 极地守夜雪人 官方收容档案
+项目编号：SCP-4762
+项目等级：Safe
+
+特殊收容措施
+
+SCP-4762收容于Site-19极地分区Cold-7低温人形收容单元，环境恒定-35℃、95%湿度，模拟北极永久冻土，配备双层防冰裂墙体、低温冷凝回收系统与冰屑收集装置，严禁明火、高温设备及强光源入内。
+
+单元外围设三级隔离屏障，搭载热成像、声波、温度异常预警及低温稳定系统，每日补充积雪冰体。仅允许2级及以上人员穿戴特级抗寒防护服进入，单次接触不超过15分钟。
+
+严禁暴力抓捕、强光、噪音、肢体束缚等行为；禁止携带利器、热武器及人类文明标识物品。项目躁动时立即启动沟通安抚预案，严禁压迫手段；其释放的低温冰块禁止擅自触碰，静待自然消散。
+
+实体描述
+
+SCP-4762为类人雪人异常实体，高约2.8米，通体由致密积雪、冰晶与未知低温有机纤维构成，覆白色绒毛，面部无五官，仅存深色感知凹陷。体重恒定350kg，核心体温-42℃，接触常温物体即刻结霜，≥80℃高温可造成不可逆损伤。
+
+项目具备自主意识，无语言能力，可通过肢体、冰痕、积雪图案传递情绪，无主动攻击性，仅在受威胁、领地被侵时进入防御状态。可在极地暴风雪中自由行动，操控积雪筑盾，移动无声。
+
+核心异常能力：可被动释放-50℃至-70℃超低温寒气，情绪波动时主动投射高密度低温冰块；平静期仅散微量寒气与冰屑，防御期冰块射程5-8米，仅针对威胁目标，触碰可致瞬间深度冻伤。
+
+发现与背景
+
+2023年12月于格陵兰岛北极冻土带发现，当地因纽特部落奉其为“冰雪守灵”，世代供奉。史料记载其存在超300年，为极地自然异常，以冰体冰封破坏者、守护冻土生态为职责，从未伤及部落族人。
+
+初期收容采用压迫手段，触发项目防御机制，造成人员冻伤、设备冻裂，后续全面改用温和收容策略。观测证实，其冰体释放行为均源于安全感缺失，对善意互动有正向反馈。
+SCP-4762 | Polar Warden Yeti - Official Containment File
+Item #: SCP-4762
+Object Class: Safe
+
+Special Containment Procedures
+
+SCP-4762 is to be contained within Cold-7, a low-temperature humanoid containment chamber at the Site-19 Polar Sector. The chamber is maintained at a constant -35℃ with 95% humidity, simulating permanent Arctic permafrost, and is equipped with double-layer frost-crack resistant walls, a cryogenic condensation recovery system, and ice debris collection units. Open flames, high-temperature equipment, and intense light sources are strictly prohibited inside the chamber.
+
+A Tier-3 isolation barrier surrounds the chamber, fitted with thermal imaging surveillance, acoustic monitors, thermal anomaly alarms, and a cryogenic stabilization system. Snow and ice blocks are to be replenished daily. Only Level 2 or higher personnel wearing extreme-cold resistant hazmat suits may enter, with single contact duration not exceeding 15 minutes.
+
+Physical apprehension, bright light exposure, loud noise stimulation, and physical restraint are strictly forbidden. No sharp objects, thermal weapons, or items bearing human cultural insignia are permitted inside. In the event of SCP-4762 agitation, activate the Communication Calming Protocol immediately; coercive measures are prohibited. Low-temperature ice projectiles emitted by the entity must not be touched without authorization and are to be left to dissipate naturally.
+
+Description
+
+SCP-4762 is a humanoid anomalous yeti entity, standing approximately 2.8 meters tall. Its body is composed of compacted snow, ice crystals, and an unknown cryogenic organic fiber, covered in white fur. It lacks distinct facial features, possessing only a dark recessed sensory organ. The entity maintains a constant weight of 350kg and a core body temperature of -42℃; contact with room-temperature objects results in instantaneous frost formation, and temperatures of 80℃ or higher cause irreversible structural damage.
+
+SCP-4762 demonstrates self-awareness and basic cognitive function, with no verbal communication ability. It conveys emotions and intent via body language, ice scratch marks, and snow-piled patterns. The entity is non-aggressive by nature, only entering a defensive state when threatened or its territory is violated. It can move freely through Arctic blizzards, manipulate snow to form defensive barriers, and moves silently.
+
+Primary Anomalous Ability: Passively emits ultra-cold air ranging from -50℃ to -70℃; during emotional distress, it actively discharges high-density low-temperature ice projectiles. In a calm state, only trace cold air and fine ice shavings are released. In defensive mode, ice projectiles have a range of 5-8 meters and target only perceived threats, causing instant severe frostbite upon contact.
+
+Discovery & Background
+
+SCP-4762 was recovered in December 2023 from an uncharted permafrost zone in Greenland, Arctic Circle. Local Inuit tribes revered it as the "Ice Warden" and offered generations of worship. Historical records indicate the entity has existed for over 300 years as a naturally occurring Arctic anomaly, tasked with freezing ecological intruders and protecting permafrost balance; no tribal casualties attributed to SCP-4762 have been documented.
+
+Initial containment attempts utilized coercive tactics, triggering the entity’s defensive mechanisms and resulting in personnel frostbite and equipment cryogenic failure. Containment protocols were subsequently revised to fully adopt non-confrontational measures. Observations confirm ice projectile emission stems solely from a lack of perceived safety, with positive responses to benign interaction.

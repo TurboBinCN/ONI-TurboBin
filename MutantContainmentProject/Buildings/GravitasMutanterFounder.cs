@@ -1,10 +1,10 @@
 ﻿using Database;
 using KSerialization;
 using MutantContainmentProject.Buildings;
+using MutantContainmentProject.FunctionPatches;
 using MutantContainmentProject.MutanterComponent;
 using MutantContainmentProject.Mutanters;
 using MutantContainmentProject.MutanterStoryStraits;
-using MutantContainmentProject.FunctionPatches;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,14 +58,16 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             .ParamTransition(cooldownTimer, operational.cooldown, IsGTZero);
         operational.capture
             .PlayAnim("working_capture", KAnim.PlayMode.Once)
-            .Enter((smi)=>{
+            .Enter((smi) =>
+            {
                 // 重置献祭品检测参数
                 smi.sm.sacrificeDetected.Set(false, smi, false);
                 smi.CreatureStore();
                 // 更新进度条，显示当前配方的满足数量
                 smi.UpdateMeter();
             })
-            .EventHandler(GameHashes.AnimQueueComplete, (smi, data) => {
+            .EventHandler(GameHashes.AnimQueueComplete, (smi, data) =>
+            {
                 // 检查激活条件
                 if (smi.CheckAndSetUnlockCondition())
                 {
@@ -188,7 +190,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
         // ---献祭配方字典 ---
         /**
         * 可选配方的值 HatchConfig.ID PacuConfig.ID CrabConfig.ID BeeConfig.ID
-         IceBellyConfig.ID ChameleonConfig.ID ButterflyConfig.ID DivergentBeetleConfig.ID
+         IceBellyConfig.ID ChameleonConfig.ID ButterflyConfig.ID DivergentBeetleConfig.ID WoodDeerConfig.ID
          DreckoConfig.ID GlomConfig.ID LightBugConfig.ID MoleConfig.ID MooConfig.ID MosquitoConfig.ID
          OilfloaterConfig.ID PuftConfig.ID RaptorConfig.ID SquirrelConfig.ID StaterpillarConfig.ID StegoConfig.ID
         */
@@ -262,20 +264,26 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
 
             m_progressMeter = new MeterController(GetComponent<KBatchedAnimController>(), "m_d", "meter", Meter.Offset.UserSpecified, Grid.SceneLayer.TileFront, Array.Empty<string>());
             // 使用自定义插值函数，实现4帧3格动画的正确映射
-            m_progressMeter.interpolateFunction = (percentage, frames) => {
+            m_progressMeter.interpolateFunction = (percentage, frames) =>
+            {
                 if (frames <= 1 || percentage <= 0f) return 0f;
                 if (percentage >= 1f) return 1f;
-                
+
                 // 4帧3格动画的映射：
                 // 0-33.33% → 第1-2帧 (0-0.3333)
                 // 33.33-66.66% → 第2-3帧 (0.3333-0.6666)
                 // 66.66-100% → 第3-4帧 (0.6666-1.0)
-                if (percentage < 1f/3f) {
+                if (percentage < 1f / 3f)
+                {
                     return percentage * 3f / (float)frames;
-                } else if (percentage < 2f/3f) {
-                    return (1f + (percentage - 1f/3f) * 3f) / (float)frames;
-                } else {
-                    return (2f + (percentage - 2f/3f) * 3f) / (float)frames;
+                }
+                else if (percentage < 2f / 3f)
+                {
+                    return (1f + (percentage - 1f / 3f) * 3f) / (float)frames;
+                }
+                else
+                {
+                    return (2f + (percentage - 2f / 3f) * 3f) / (float)frames;
                 }
             };
 
@@ -337,28 +345,28 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
         {
             // 更新进度条，显示当前配方的满足数量
             float progress = 0f;
-            
+
             // 检查是否有激活目标
             if (m_activationTarget != Tag.Invalid && m_usedRecipe != null)
             {
                 // 计算当前配方的满足比例
                 float totalRequired = 0f;
                 float totalAvailable = 0f;
-                
+
                 foreach (var ingredient in m_usedRecipe)
                 {
                     Tag ingredientTag = ingredient.Key;
                     int requiredCount = ingredient.Value;
                     float availableCount = CountItemsInStorage(ingredientTag);
-                    
+
                     TbbDebuger.LogDebug($"UpdateMeter: ingredient={ingredientTag}, required={requiredCount}, available={availableCount}");
-                    
+
                     totalRequired += requiredCount;
                     totalAvailable += Mathf.Min(availableCount, requiredCount);
                 }
-                
+
                 TbbDebuger.LogDebug($"UpdateMeter: totalRequired={totalRequired}, totalAvailable={totalAvailable}");
-                
+
                 if (totalRequired > 0)
                 {
                     progress = totalAvailable / totalRequired;
@@ -373,17 +381,17 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                     Dictionary<Tag, int> possibleRecipe = recipePair.Value;
                     float totalRequired = 0f;
                     float totalAvailable = 0f;
-                    
+
                     foreach (var ingredient in possibleRecipe)
                     {
                         Tag ingredientTag = ingredient.Key;
                         int requiredCount = ingredient.Value;
                         float availableCount = CountItemsInStorage(ingredientTag);
-                        
+
                         totalRequired += requiredCount;
                         totalAvailable += Mathf.Min(availableCount, requiredCount);
                     }
-                    
+
                     if (totalRequired > 0)
                     {
                         float recipeProgress = totalAvailable / totalRequired;
@@ -393,7 +401,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                         }
                     }
                 }
-                
+
                 // 如果有配方在进行中，显示配方进度
                 if (maxProgress > 0)
                 {
@@ -408,7 +416,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 }
             }
             TbbDebuger.LogDebug($"UpdateMeter: final progress=[{Mathf.Clamp01(progress)}]");
-            
+
             m_progressMeter.SetPositionPercent(Mathf.Clamp01(progress));
         }
 
@@ -451,13 +459,14 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 smi.sm.sacrificeDetected.Set(true, smi, false);
             }
         }
-        
+
         private Pickupable m_currentSacrifice;
-        
-        public void CreatureStore() {
+
+        public void CreatureStore()
+        {
             if (m_currentSacrifice == null)
                 return;
-                
+
             TbbDebuger.LogDebug($"[GravitasMutanterFounder] Store [{m_currentSacrifice.gameObject.GetInstanceID()}]");
             // 尝试将物品放入献祭容器
             if (m_sacrificeContainer.Store(m_currentSacrifice.gameObject, false, false, true, false))
@@ -474,7 +483,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 CheckAndSetUnlockCondition();
                 UpdateMeter();
             }
-            
+
             // 清空当前献祭品引用
             m_currentSacrifice = null;
         }
@@ -616,10 +625,10 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             // 清空缓存的配方信息
             m_usedRecipe = null;
             m_activationTarget = Tag.Invalid;
-            
+
             // 清空已献祭的物种集合，确保进度条归零
             m_sacrificedSpecies.Clear();
-            
+
             // 调用UpdateMeter，确保进度条归零
             UpdateMeter();
         }
@@ -670,19 +679,19 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 {
                     mutantGO.SetActive(true);
                     TbbDebuger.LogDebug($"[GravitasMutanterFounder] 生成畸变体： {m_activationTarget} @ [{spawnPos}]");
-                    
+
                     // 注册新生成的畸变体
                     MutanterSpeciesCatalog.Instance.RegisterMutanterSpecies(m_activationTarget);
-                    
+
                     // 执行迷雾揭开和镜头操作
                     //StartRevealSequence(mutantGO, spawnPos);
-                    
+
                     return m_activationTarget;
                 }
             }
             return Tag.Invalid;
         }
-        
+
         private Vector3 GetRandomSpawnPosition(Tag mutantTag)
         {
             // 获取畸变体预制体以确定大小
@@ -692,7 +701,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 TbbDebuger.LogWarning($"[GravitasMutanterFounder] 无法找到畸变体预制体: {mutantTag}");
                 return Vector3.zero;
             }
-            
+
             // 估算畸变体大小（默认2x2格子）
             int width = 2;
             int height = 2;
@@ -704,10 +713,10 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 width = Mathf.CeilToInt(collider.size.x);
                 height = Mathf.CeilToInt(collider.size.y);
             }
-            
+
             // 获取当前世界ID
             int worldID = gameObject.GetMyWorldId();
-            
+
             // 尝试最多100次寻找合适位置
             int maxAttempts = 100;
             for (int attempt = 0; attempt < maxAttempts; attempt++)
@@ -715,7 +724,7 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 // 在世界范围内随机选择一个起始格子
                 int x = UnityEngine.Random.Range(0, Grid.WidthInCells);
                 int y = UnityEngine.Random.Range(0, Grid.HeightInCells);
-                
+
                 // 检查该位置是否在当前世界
                 int cell = Grid.XYToCell(x, y);
                 if (Grid.IsValidCell(cell) && Grid.WorldIdx[cell] == worldID)
@@ -728,11 +737,11 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                     }
                 }
             }
-            
+
             // 没有找到合适位置
             return Vector3.zero;
         }
-        
+
         private bool IsAreaSuitableForSpawn(int startX, int startY, int width, int height)
         {
             // 检查指定区域内的所有格子
@@ -741,25 +750,25 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                 for (int y = startY; y < startY + height; y++)
                 {
                     int cell = Grid.XYToCell(x, y);
-                    
+
                     // 检查格子是否有效
                     if (!Grid.IsValidCell(cell))
                     {
                         return false;
                     }
-                    
+
                     // 检查是否有固体
                     if (Grid.Solid[cell])
                     {
                         return false;
                     }
-                    
+
                     // 检查是否有液体
                     if (Grid.IsLiquid(cell))
                     {
                         return false;
                     }
-                    
+
                     // 检查是否有其他物体
                     if (Grid.Objects[cell, (int)ObjectLayer.Pickupables] != null)
                     {
@@ -767,44 +776,47 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                     }
                 }
             }
-            
+
             return true;
         }
-        
+
         private void StartRevealSequence(GameObject mutantGO, Vector3 spawnPos)
         {
             // 揭开迷雾
             Vector2I cellPos = Grid.PosToXY(spawnPos);
             GridVisibility.Reveal(cellPos.x, cellPos.y, 8, 1f);
-            
+
             // 镜头操作 - 拉近到生成位置
             CameraController.Instance.DisableUserCameraControl = true;
             CameraController.Instance.SetOverrideZoomSpeed(0.6f);
-            
+
             // 设置相机目标位置和缩放
             float initialOrthographicSize = 15f;
             float finalOrthographicSize = 6f;
-            
+
             CameraController.Instance.SetTargetPos(spawnPos, initialOrthographicSize, false);
-            
+
             // 使用GameScheduler实现平滑的镜头缩放和淡入效果
             StartRevealSequenceWithScheduler(spawnPos, finalOrthographicSize);
         }
-        
+
         private void StartRevealSequenceWithScheduler(Vector3 targetPos, float finalZoom)
         {
             // 第一阶段：淡入效果
-            CameraController.Instance.FadeInColor(Color.black, callback:() => {
+            CameraController.Instance.FadeInColor(Color.black, callback: () =>
+            {
                 // 淡入完成后，镜头拉近
                 CameraController.Instance.SetTargetPos(targetPos, finalZoom, false);
-                
+
                 // 第二阶段：等待3秒展示生成的畸变体
-                GameScheduler.Instance.Schedule("RevealSequence_Wait", 3f, _ => {
+                GameScheduler.Instance.Schedule("RevealSequence_Wait", 3f, _ =>
+                {
                     // 第三阶段：镜头拉远
                     CameraController.Instance.SetTargetPos(targetPos, 15f, true);
-                    
+
                     // 第四阶段：等待1秒后恢复控制
-                    GameScheduler.Instance.Schedule("RevealSequence_Complete", 1f, __ => {
+                    GameScheduler.Instance.Schedule("RevealSequence_Complete", 1f, __ =>
+                    {
                         // 恢复相机控制
                         CameraController.Instance.DisableUserCameraControl = false;
                         CameraController.Instance.SetOverrideZoomSpeed(1f);
@@ -871,16 +883,16 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
             }
             infoDialogScreen.AddPlainText(GravitasMutanterFounderConfig.GetBodyContentForUnknownSpecies());
         }
-        
+
         public void ShowMutanterExistsNotification(Tag species)
         {
             // 显示畸变体已存在的通知
             Notification notification = new Notification(
                 BUILDINGS.NOTIFICATIONS.GRAVITASMUTANTERFOUNDER.NAME,
                 NotificationType.Bad,
-                (notifications, obj) => string.Format(BUILDINGS.NOTIFICATIONS.GRAVITASMUTANTERFOUNDER.TOOLTIP, species.ToString()), 
-                species.ToString().ToUpper(), 
-                false, 
+                (notifications, obj) => string.Format(BUILDINGS.NOTIFICATIONS.GRAVITASMUTANTERFOUNDER.TOOLTIP, species.ToString()),
+                species.ToString().ToUpper(),
+                false,
                 clear_on_click: true
             );
             gameObject.AddOrGet<Notifier>().Add(notification);

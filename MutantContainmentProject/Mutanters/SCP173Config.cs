@@ -1,4 +1,4 @@
-using Klei.AI;
+using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,16 +19,27 @@ namespace MutantContainmentProject.Mutanters
             string name = STRINGS.ENTITY.MUTANTER.MUTANTER_SCP173.NAME;
             string desc = STRINGS.ENTITY.MUTANTER.MUTANTER_SCP173.DESCRIPTION;
 
-            GameObject prefab = BaseMutanter.BaseGameObject(ID, name, desc,1,2, KANIM_NAME, KANIM_NAME, KANIM_EMOTES_NAME, null, 233.15f, 293.15f, 173.15f, 373.15f);
+            GameObject prefab = BaseMutanter.BaseGameObject(ID, name, desc, 1, 2, KANIM_NAME, KANIM_NAME, KANIM_EMOTES_NAME, null, 233.15f, 293.15f, 173.15f, 373.15f);
 
             BaseMutanter.ExtendMutanterMove(prefab, "WalkerNavGrid1x2");
 
-            BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name,25);
+            BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name, 25);
 
-            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid,faction:FactionManager.FactionID.Pest,attackTags:new List<Tag> { MutanterTags.PsychologicalAttack });
+            // 安全措施偏好值
+            Dictionary<SecureAction, float[]> secureActionPreferences = new Dictionary<SecureAction, float[]>
+            {
+                // 本能操作（对应勇气技能）
+                [SecureAction.Instinct] = new float[] { 70f, 70f, 70f },
+                // 洞察操作（对应防御技能）
+                [SecureAction.Reconnaissance] = new float[] { 5f, 15f, 25f },
+                // 自律操作（对应沟通技能）
+                [SecureAction.Communicate] = new float[] { 10f, 30f, 40f },
+                // 压迫操作（对应正义技能）
+                [SecureAction.Intimidation] = new float[] { 15f, 35f, 45f }
+            };
 
-            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: null);
-            //prefab.AddOrGetDef<MutanterMoltenMetalMonitor.Def>();//挂载：畸变体熔融金属监控SMI
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PsychologicalAttack }, secureActionPreferences: secureActionPreferences);
+
             // 添加产出物
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Gold.CreateTag(), 1000f, 0.8f);
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Diamond.CreateTag(), 1000f, 0.4f);
@@ -42,8 +53,8 @@ namespace MutantContainmentProject.Mutanters
         public string[] GetAnyRequiredDlcIds() => null;
         public string[] GetDlcIds() => DlcManager.AVAILABLE_ALL_VERSIONS;
 
-        public void OnPrefabInit(GameObject inst){}
+        public void OnPrefabInit(GameObject inst) { }
 
-        public void OnSpawn(GameObject inst){}
+        public void OnSpawn(GameObject inst) { }
     }
 }

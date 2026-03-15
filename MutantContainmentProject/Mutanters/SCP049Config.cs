@@ -1,3 +1,4 @@
+using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,8 +23,19 @@ namespace MutantContainmentProject.Mutanters
             BaseMutanter.ExtendMutanterMove(prefab, "WalkerNavGrid1x2");
 
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name, 50);
-
-            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack });
+            // 安全措施偏好值
+            Dictionary<SecureAction, float[]> secureActionPreferences = new Dictionary<SecureAction, float[]>
+            {
+                // 本能操作（对应勇气技能）
+                [SecureAction.Instinct] = new float[] { 20f, 30f, 30f },
+                // 洞察操作（对应防御技能）
+                [SecureAction.Reconnaissance] = new float[] { 50f, 50f, 50f },
+                // 自律操作（对应沟通技能）
+                [SecureAction.Communicate] = new float[] { 70f, 70f, 70f },
+                // 压迫操作（对应正义技能）
+                [SecureAction.Intimidation] = new float[] { 40f, 50f, 60f }
+            };
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack }, secureActionPreferences: secureActionPreferences);
 
             // 添加SCP-049特有的组件
             prefab.AddOrGet<SCP049Controller>();

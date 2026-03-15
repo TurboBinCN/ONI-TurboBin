@@ -1,3 +1,4 @@
+using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,12 +26,23 @@ namespace MutantContainmentProject.Mutanters
             BaseMutanter.ExtendMutanterMove(prefab, "WalkerNavGrid2x2");
 
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name, 50);
-
-            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Keter, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack, MutanterTags.PsychologicalAttack });
+            // 安全措施偏好值
+            Dictionary<SecureAction, float[]> secureActionPreferences = new Dictionary<SecureAction, float[]>
+            {
+                // 本能操作（对应勇气技能）
+                [SecureAction.Instinct] = new float[] { 70f, 70f, 70f },
+                // 洞察操作（对应防御技能）
+                [SecureAction.Reconnaissance] = new float[] { 50f, 50f, 50f },
+                // 自律操作（对应沟通技能）
+                [SecureAction.Communicate] = new float[] { 0f, 0f, 0f },
+                // 压迫操作（对应正义技能）
+                [SecureAction.Intimidation] = new float[] { 40f, 50f, 60f }
+            };
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Keter, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack, MutanterTags.PsychologicalAttack }, secureActionPreferences: secureActionPreferences);
 
             // 添加SCP-939特有的组件
             prefab.AddOrGet<SCP939Controller>();
-            
+
             // 添加动画调试组件
             //prefab.AddOrGet<MutanterAnimationDebugger>();
 
