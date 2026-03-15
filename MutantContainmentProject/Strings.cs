@@ -1,3 +1,4 @@
+using MutantContainmentProject.Buildings;
 using MutantContainmentProject.Mutanters;
 
 namespace MutantContainmentProject
@@ -131,20 +132,14 @@ namespace MutantContainmentProject
             public class FAMILY_PLURAL
             {
                 public static LocString MUTANTER_SPECIES = "MUTANTER_SPECIES";
-                public static LocString SCP173 = global::STRINGS.UI.FormatAsLink("SCP-173", SCP173Config.ID);
-                public static LocString SCP096 = global::STRINGS.UI.FormatAsLink("SCP-096", SCP096Config.ID);
-                public static LocString SCP662 = global::STRINGS.UI.FormatAsLink("SCP-662", SCP662Config.ID);
-                public static LocString SCP662_1 = global::STRINGS.UI.FormatAsLink("SCP-662-1", SCP662_1Config.ID);
-                public static LocString SCP049 = global::STRINGS.UI.FormatAsLink("SCP-049", SCP049Config.ID);
-                public static LocString SCP049_2 = global::STRINGS.UI.FormatAsLink("SCP-049-2", SCP049_2Config.ID);
                 public static LocString MUTANTER_SCP173 = global::STRINGS.UI.FormatAsLink("SCP-173", SCP173Config.ID);
                 public static LocString MUTANTER_SCP096 = global::STRINGS.UI.FormatAsLink("SCP-096", SCP096Config.ID);
                 public static LocString MUTANTER_SCP662 = global::STRINGS.UI.FormatAsLink("SCP-662", SCP662Config.ID);
                 public static LocString MUTANTER_SCP662_1 = global::STRINGS.UI.FormatAsLink("SCP-662-1", SCP662_1Config.ID);
                 public static LocString MUTANTER_SCP049 = global::STRINGS.UI.FormatAsLink("SCP-049", SCP049Config.ID);
                 public static LocString MUTANTER_SCP049_2 = global::STRINGS.UI.FormatAsLink("SCP-049-2", SCP049_2Config.ID);
-                public static LocString SCP939 = global::STRINGS.UI.FormatAsLink("SCP-939", SCP939Config.ID);
                 public static LocString MUTANTER_SCP939 = global::STRINGS.UI.FormatAsLink("SCP-939", SCP939Config.ID);
+                public static LocString MUTANTER_SCP4762 = global::STRINGS.UI.FormatAsLink("SCP-4762", SCP4762Config.ID);
             }
         }
         public static class MUTANTERS
@@ -252,22 +247,22 @@ namespace MutantContainmentProject
                 }
                 public static class CONTAINMENTMONITORSTATION
                 {
-                    public static LocString NAME = "Mutant Monitoring Station";
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("Mutant Monitoring Station",ContainmentMonitorStationConfig.ID);
                     public static LocString DESC = "Used to monitor mutants and implement corresponding safety control measures to prevent them from breaking containment.";
                     public static LocString EFFECT = "Provides security prevention measures for mutants within the Mutant Containment Chamber.";
                 }
                 public static class CONTAINMENTTILE {
-                    public static LocString NAME = "Neutronium Containment Plating";
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("Neutronium Containment Plating",ContainmentTileConfig.ID);
                     public static LocString DESC = "Forged from neutronium, this reinforced plating forms the structural barrier of the Aberrant Containment Chamber. It resists physical breaches and suppresses unstable energy emissions from contained entities.";
                     public static LocString EFFECT = "Provides impenetrable physical containment and energy suppression for aberrant entities within the Aberrant Containment Chamber.";
                 }
                 public static class GLOBALEROSIONPLANEL {
-                    public static LocString NAME = "Global Erosion Panel";
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("Global Erosion Panel", GlobalErosionPlanelConfig.ID);
                     public static LocString DESC = "A monitoring panel that displays the global erosion level and provides visual alerts for containment status.";
                     public static LocString EFFECT = "Displays the current global erosion level and potential containment risks.";
                 }
                 public static class CONTROLDEPARTMENTCONSOLE {
-                    public static LocString NAME = "Control Department Console";
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("Control Department Console",ControlDepartmentConsoleConfig.ID);
                     public static LocString DESC = "A central control console that manages containment systems and provides speed boosts to selected dupes. Prevents low-level mutanters from breaking containment.";
                     public static LocString EFFECT = "Prevents mutanters below Euclid class from breaking containment and provides movement speed boost to selected dupes.";
                     public static LocString LOGIC_PORT = "Control Status";
@@ -910,6 +905,11 @@ namespace MutantContainmentProject
                     public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-939", SCP939Config.ID);
                     public static LocString DESCRIPTION = "SCP-939 are endothermic pack-based predators with systemic atrophy typical of troglobitic organisms. They can mimic human voices to lure prey and release memory-erasing aerosol.";
                 }
+                public static class MUTANTER_SCP4762
+                {
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("SCP-4762", SCP4762Config.ID);
+                    public static LocString DESCRIPTION = "SCP-4762 is a humanoid anomalous yeti entity composed of compacted snow, ice crystals, and an unknown cryogenic organic fiber. It passively emits ultra-cold air and can discharge high-density low-temperature ice projectiles when threatened.";
+                }
             }
         }
         public static class RESEARCH
@@ -1045,6 +1045,15 @@ namespace MutantContainmentProject
                     public static class BODY
                     {
                         public static LocString CONTAINER1 = "Item #: SCP-049-2\r\nObject Class: Euclid\r\nSpecial Containment Procedures: SCP-049-2 instances require separate containment or termination. They are to be kept in standard humanoid containment cells when not being studied.\r\nDescription: \r\nSCP-049-2 refers to reanimated cadavers modified by SCP-049's surgery. They lack autonomous consciousness and follow only SCP-049's commands.\r\nSCP-049-2 instances possess anomalous physiology, surviving indefinitely without nutrition or oxygen. They are hostile to non-049 humans and will attack on sight.\r\nWhen SCP-049 is neutralized or contained, SCP-049-2 instances typically become inactive and expire within 24 hours.";
+                    }
+                }
+                public static class MUTANTER_SCP4762
+                {
+                    public static LocString TITLE = "SCP-4762";
+                    public static LocString SUBTITLE = "SCP-4762 Polar Warden Yeti - Official Containment File";
+                    public static class BODY
+                    {
+                        public static LocString CONTAINER1 = "Item #: SCP-4762\r\nObject Class: Safe\r\n\r\nSpecial Containment Procedures\r\n\r\nSCP-4762 is to be contained within Cold-7, a low-temperature humanoid containment chamber at the Site-19 Polar Sector. The chamber is maintained at a constant -35℃ with 95% humidity, simulating permanent Arctic permafrost, and is equipped with double-layer frost-crack resistant walls, a cryogenic condensation recovery system, and ice debris collection units. Open flames, high-temperature equipment, and intense light sources are strictly prohibited inside the chamber.\r\n\r\nA Tier-3 isolation barrier surrounds the chamber, fitted with thermal imaging surveillance, acoustic monitors, thermal anomaly alarms, and a cryogenic stabilization system. Snow and ice blocks are to be replenished daily. Only Level 2 or higher personnel wearing extreme-cold resistant hazmat suits may enter, with single contact duration not exceeding 15 minutes.\r\n\r\nPhysical apprehension, bright light exposure, loud noise stimulation, and physical restraint are strictly forbidden. No sharp objects, thermal weapons, or items bearing human cultural insignia are permitted inside. In the event of SCP-4762 agitation, activate the Communication Calming Protocol immediately; coercive measures are prohibited. Low-temperature ice projectiles emitted by the entity must not be touched without authorization and are to be left to dissipate naturally.\r\n\r\nDescription\r\n\r\nSCP-4762 is a humanoid anomalous yeti entity, standing approximately 2.8 meters tall. Its body is composed of compacted snow, ice crystals, and an unknown cryogenic organic fiber, covered in white fur. It lacks distinct facial features, possessing only a dark recessed sensory organ. The entity maintains a constant weight of 350kg and a core body temperature of -42℃; contact with room-temperature objects results in instantaneous frost formation, and temperatures of 80℃ or higher cause irreversible structural damage.\r\n\r\nSCP-4762 demonstrates self-awareness and basic cognitive function, with no verbal communication ability. It conveys emotions and intent via body language, ice scratch marks, and snow-piled patterns. The entity is non-aggressive by nature, only entering a defensive state when threatened or its territory is violated. It can move freely through Arctic blizzards, manipulate snow to form defensive barriers, and moves silently.\r\n\r\nPrimary Anomalous Ability: Passively emits ultra-cold air ranging from -50℃ to -70℃; during emotional distress, it actively discharges high-density low-temperature ice projectiles. In a calm state, only trace cold air and fine ice shavings are released. In defensive mode, ice projectiles have a range of 5-8 meters and target only perceived threats, causing instant severe frostbite upon contact.\r\n\r\nDiscovery & Background\r\n\r\nSCP-4762 was recovered in December 2023 from an uncharted permafrost zone in Greenland, Arctic Circle. Local Inuit tribes revered it as the \"Ice Warden\" and offered generations of worship. Historical records indicate the entity has existed for over 300 years as a naturally occurring Arctic anomaly, tasked with freezing ecological intruders and protecting permafrost balance; no tribal casualties attributed to SCP-4762 have been documented.\r\n\r\nInitial containment attempts utilized coercive tactics, triggering the entity’s defensive mechanisms and resulting in personnel frostbite and equipment cryogenic failure. Containment protocols were subsequently revised to fully adopt non-confrontational measures. Observations confirm ice projectile emission stems solely from a lack of perceived safety, with positive responses to benign interaction.";
                     }
                 }
             }

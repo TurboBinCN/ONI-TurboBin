@@ -15,8 +15,8 @@ contentContainers:
           preferredWidth: -1
       - !CodexImage
           batchedAnimPrefabSourceID: MUTANTER_SCP049
-          preferredWidth: 34
-          preferredHeight: 100
+          preferredWidth: 80
+          preferredHeight: 230
 #-----------------------------
   - contentLayout: Vertical
     content:

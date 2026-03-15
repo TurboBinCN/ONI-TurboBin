@@ -170,7 +170,10 @@ namespace MutantContainmentProject.Buildings
                 //TbbDebuger.LogDebug($"[畸变体收容室] 收容室数量:[{_mutantersInRoom.Count}][{targetSecurable.Count}]");
                 foreach (var kprefabID in _mutantersInRoom)
                 {
-                    var smi = kprefabID.gameObject.GetSMI<MutanterSecurableMonitor.Instance>();
+                    MutanterSecurableMonitor.Instance smi = null;
+                    try { 
+                        smi = kprefabID.gameObject.GetSMI<MutanterSecurableMonitor.Instance>();
+                    } catch { }
                     if (smi == null) continue;
                     if (!targetSecurable.Contains(smi))
                     {

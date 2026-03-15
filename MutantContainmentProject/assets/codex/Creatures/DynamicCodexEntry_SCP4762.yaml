@@ -1,25 +1,25 @@
-id: "MUTANTER_SCP096"
-title: STRINGS.CODEX.MUTANTER.MUTANTER_SCP096.TITLE
+id: "MUTANTER_SCP4762"
+title: STRINGS.CODEX.MUTANTER.MUTANTER_SCP4762.TITLE
 
 contentContainers:
 #-----------------------------
   - contentLayout: Vertical
     content:
       - !CodexText
-          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_SCP096.TITLE
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_SCP4762.TITLE
           style: Title
       - !CodexText
-          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_SCP096.SUBTITLE
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_SCP4762.SUBTITLE
           style: Subtitle
       - !CodexDividerLine
           preferredWidth: -1
       - !CodexImage
-          batchedAnimPrefabSourceID: MUTANTER_SCP096
-          preferredWidth: 50
+          batchedAnimPrefabSourceID: MUTANTER_SCP4762
+          preferredWidth: 128
           preferredHeight: 200
 #-----------------------------
   - contentLayout: Vertical
     content:
       - !CodexText
-          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_SCP096.BODY.CONTAINER1
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_SCP4762.BODY.CONTAINER1
           style: Body

@@ -260,6 +260,10 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 return buildings;
             }
+            public void EasyEmotion(float delta)
+            {
+                INSANITYValue = Mathf.Clamp(INSANITYValue + delta, MIN_INSANITY, MAX_INSANITY);
+            }
             public void SpaceProbe(StatesInstance smi, float dt)
             {
                 var BaseCell = Grid.PosToCell(smi);

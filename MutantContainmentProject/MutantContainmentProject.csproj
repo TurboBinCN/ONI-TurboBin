@@ -59,6 +59,7 @@
     <Compile Include="Buildings\GravitasMutanterFounder.cs" />
     <Compile Include="Buildings\GravitasMutanterFounderConfig.cs" />
     <Compile Include="Buildings\SecureTermDb.cs" />
+    <Compile Include="MutanterComponent\MutanterColdIceMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterSecurableMonitor.cs" />
     <Compile Include="FunctionPatches\EventInfoDataHelper_Patches.cs" />
     <Compile Include="FunctionPatches\MiningNeutronium_Patches.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="MutanterStoryStraits\MutanterStoris.cs" />
     <Compile Include="Mutanters\MutanterManager.cs" />
     <Compile Include="Mutanters\SCP096Config.cs" />
+    <Compile Include="Mutanters\SCP4762Config.cs" />
     <Compile Include="Mutanters\SCP662Config.cs" />
     <Compile Include="Mutanters\SCP662_1Config.cs" />
     <Compile Include="Mutanters\SCP049Config.cs" />
@@ -138,6 +140,8 @@
     <None Include="anim\assets\scp096\scp096_build.bytes" />
     <None Include="anim\assets\SCP173\scp173_anim.bytes" />
     <None Include="anim\assets\SCP173\scp173_build.bytes" />
+    <None Include="anim\assets\scp4762\scp4762_anim.bytes" />
+    <None Include="anim\assets\scp4762\scp4762_build.bytes" />
     <None Include="anim\assets\scp662\scp662_anim.bytes" />
     <None Include="anim\assets\scp662\scp662_build.bytes" />
     <None Include="anim\assets\SCP662_1\scp662_1_anim.bytes" />
@@ -149,6 +153,7 @@
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP049_2.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP096.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP173.yaml" />
+    <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP4762.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP939.yaml" />
     <None Include="assets\codex\IndustrialIngredients\DynamicCodexEntry_SCP662.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP662_1.yaml" />
@@ -167,6 +172,7 @@
     <Content Include="anim\assets\scp049\scp049.png" />
     <Content Include="anim\assets\scp096\scp096.png" />
     <Content Include="anim\assets\SCP173\scp173.png" />
+    <Content Include="anim\assets\scp4762\scp4762.png" />
     <Content Include="anim\assets\scp662\scp662.png" />
     <Content Include="anim\assets\SCP662_1\scp662_1.png" />
     <Content Include="anim\assets\scp939\scp939.png" />
@@ -178,6 +184,7 @@
     <Folder Include="anim\assets\scp049_2\" />
     <Folder Include="Codex\" />
     <Folder Include="Duplicants\" />
+    <Folder Include="Patches\" />
     <Folder Include="UI\" />
   </ItemGroup>
   <ItemGroup>
