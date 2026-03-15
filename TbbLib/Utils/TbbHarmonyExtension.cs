@@ -8,6 +8,14 @@ namespace TBB.He.TbbLib.Utils
 {
     public static class TbbHarmonyExtension
     {
+        /// <summary>
+        /// 修补指定类型的方法
+        /// </summary>
+        /// <param name="instance">Harmony实例</param>
+        /// <param name="type">目标类型</param>
+        /// <param name="methodName">方法名称</param>
+        /// <param name="prefix">前缀方法</param>
+        /// <param name="postfix">后缀方法</param>
         public static void Patch(
             this Harmony instance,
             Type type,
@@ -19,6 +27,7 @@ namespace TBB.He.TbbLib.Utils
                 throw new ArgumentNullException(nameof(type));
             if (string.IsNullOrEmpty(methodName))
                 throw new ArgumentNullException(nameof(methodName));
+            
             try
             {
                 var method = type.GetMethod(methodName,
@@ -26,44 +35,49 @@ namespace TBB.He.TbbLib.Utils
                 if (method != null)
                     instance.Patch(method, prefix, postfix);
                 else
-                    Debug.LogWarningFormat("Unable to find method {0} on type {1}", methodName, type.FullName);
+                    TbbDebuger.LogWarning($"无法找到类型 {type.FullName} 上的方法 {methodName}");
             }
             catch (AmbiguousMatchException ex)
             {
-                Debug.LogException(ex);
+                TbbDebuger.LogError($"修补方法 {methodName} 时出现歧义匹配异常: {ex.Message}");
             }
         }
-        public static void InvokeMethod(object obj, string name, params object[] args)
+        
+        /// <summary>
+        /// 调用对象的方法
+        /// </summary>
+        /// <param name="obj">目标对象</param>
+        /// <param name="name">方法名称</param>
+        /// <param name="args">方法参数</param>
+        /// <param name="debug">是否输出调试信息</param>
+        public static void InvokeMethod(object obj, string name, bool debug = false, params object[] args)
         {
-            if (obj == null) return;
-            var types = args == null ? Type.EmptyTypes : Array.ConvertAll(args, a => a?.GetType() ?? typeof(object));
-            var method = obj.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, types, null);
-            method?.Invoke(obj, args);
+            object result;
+            InvokeMethod(out result, obj, name, debug, args);
         }
-        public static bool InvokeMethod(out object __result, object obj, string name, params object[] args)
+        
+        /// <summary>
+        /// 调用对象的方法并返回结果
+        /// </summary>
+        /// <param name="result">方法返回值</param>
+        /// <param name="obj">目标对象</param>
+        /// <param name="name">方法名称</param>
+        /// <param name="debug">是否输出调试信息</param>
+        /// <param name="args">方法参数</param>
+        /// <returns>是否成功调用</returns>
+        public static bool InvokeMethod(out object result, object obj, string name, bool debug = false, params object[] args)
         {
-            __result = null;
-            if (obj == null) return false;
-            var types = args == null ? Type.EmptyTypes : Array.ConvertAll(args, a => a?.GetType() ?? typeof(object));
-            var method = obj.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, types, null);
-            if (method != null)
-            {
-                __result = method?.Invoke(obj, args);
-                return true;
-            }
-            return false;
-        }
-        public static bool InvokeMethodDebug(out object __result, object obj, string name, params object[] args)
-        {
-            __result = null;
+            result = null;
             if (obj == null)
             {
-                TbbDebuger.LogDebug($"InvokeMethod: obj is null.");
+                if (debug)
+                    TbbDebuger.LogDebug($"InvokeMethod: 对象为 null。");
                 return false;
             }
 
             Type objType = obj.GetType();
-            TbbDebuger.LogDebug($"InvokeMethod: Searching for method '{name}' on type '{objType.FullName}'.");
+            if (debug)
+                TbbDebuger.LogDebug($"InvokeMethod: 在类型 '{objType.FullName}' 上搜索方法 '{name}'。");
 
             Type[] argTypes = args == null ? Type.EmptyTypes : Array.ConvertAll(args, a => a?.GetType() ?? typeof(object));
 
@@ -75,72 +89,100 @@ namespace TBB.He.TbbLib.Utils
 
             if (method != null)
             {
-                TbbDebuger.LogDebug($"InvokeMethod: Found method '{method.Name}' with signature: ({string.Join(", ", method.GetParameters().Select(p => p.ParameterType.Name))})");
+                if (debug)
+                    TbbDebuger.LogDebug($"InvokeMethod: 找到方法 '{method.Name}'，签名: ({string.Join(", ", method.GetParameters().Select(p => p.ParameterType.Name))})");
                 try
                 {
-                    __result = method.Invoke(obj, args);
-                    TbbDebuger.LogDebug($"InvokeMethod: Successfully invoked method. Result: [{__result}]");
+                    result = method.Invoke(obj, args);
+                    if (debug)
+                        TbbDebuger.LogDebug($"InvokeMethod: 成功调用方法。结果: [{result}]");
                     return true;
                 }
                 catch (Exception ex)
                 {
-                    TbbDebuger.LogDebug($"InvokeMethod: Exception while invoking method: {ex}");
+                    if (debug)
+                        TbbDebuger.LogDebug($"InvokeMethod: 调用方法时出现异常: {ex}");
                     return false;
                 }
             }
             else
             {
-                // 详细列出所有匹配名称的方法，包括参数，以便调试
-                MethodInfo[] allMethods = objType.GetMethods(flags).Where(m => m.Name == name).ToArray();
-                TbbDebuger.LogDebug($"InvokeMethod: Method '{name}' not found with given parameters.");
-                TbbDebuger.LogDebug($"InvokeMethod: Available methods named '{name}' on '{objType.FullName}':");
-                foreach (var m in allMethods)
+                if (debug)
                 {
-                    var paramStr = string.Join(", ", m.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}" + (p.IsOptional ? $" = {p.DefaultValue}" : "")));
-                    TbbDebuger.LogDebug($"  - {m.ReturnType.Name} {m.Name}({paramStr}) - {(m.IsPublic ? "Public" : m.IsPrivate ? "Private" : m.IsFamily ? "Protected" : "Other")}");
+                    // 详细列出所有匹配名称的方法，包括参数，以便调试
+                    MethodInfo[] allMethods = objType.GetMethods(flags).Where(m => m.Name == name).ToArray();
+                    TbbDebuger.LogDebug($"InvokeMethod: 未找到带有给定参数的方法 '{name}'。");
+                    TbbDebuger.LogDebug($"InvokeMethod: 类型 '{objType.FullName}' 上名为 '{name}' 的可用方法:");
+                    foreach (var m in allMethods)
+                    {
+                        var paramStr = string.Join(", ", m.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}" + (p.IsOptional ? $" = {p.DefaultValue}" : "")));
+                        TbbDebuger.LogDebug($"  - {m.ReturnType.Name} {m.Name}({paramStr}) - {(m.IsPublic ? "公共" : m.IsPrivate ? "私有" : m.IsFamily ? "保护" : "其他")}");
+                    }
+                    TbbDebuger.LogDebug($"InvokeMethod: 搜索的签名: ({string.Join(", ", argTypes.Select(t => t.Name))})");
                 }
-                TbbDebuger.LogDebug($"InvokeMethod: Searched for signature: ({string.Join(", ", argTypes.Select(t => t.Name))})");
                 return false; // 方法未找到
             }
         }
+        
+        /// <summary>
+        /// 设置对象的字段值
+        /// </summary>
+        /// <param name="obj">目标对象</param>
+        /// <param name="name">字段名称</param>
+        /// <param name="value">字段值</param>
         public static void SetField(object obj, string name, object value)
         {
             if (obj == null) return;
+            
             var field = obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             if (field != null)
                 field.SetValue(obj, value);
         }
+        
+        /// <summary>
+        /// 获取对象的字段值
+        /// </summary>
+        /// <param name="obj">目标对象</param>
+        /// <param name="name">字段名称</param>
+        /// <returns>字段值</returns>
         public static object GetField(object obj, string name)
         {
             if (obj == null) return null;
-            //Traverse.Create(obj).Field<List<FetchList2>>("fetchLists").Value;
+            
             var field = obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             if (field != null)
                 return field.GetValue(obj);
             return null;
         }
-        public static TResult CallStaticMethod<TResult>(Type type, string methodName, params object[] args)
+        
+        /// <summary>
+        /// 调用方法（使用Traverse，支持静态和实例方法）
+        /// </summary>
+        /// <typeparam name="TResult">返回类型</typeparam>
+        /// <param name="target">目标对象或类型</param>
+        /// <param name="methodName">方法名称</param>
+        /// <param name="parameters">方法参数</param>
+        /// <returns>方法返回值</returns>
+        public static TResult CallMethod<TResult>(object target, string methodName, params object[] parameters)
         {
-            return Traverse.Create(type)
-            .Method(methodName)
-            .GetValue<TResult>(args);
+            if (target is Type type)
+                return Traverse.Create(type).Method(methodName).GetValue<TResult>(parameters);
+            else
+                return Traverse.Create(target).Method(methodName).GetValue<TResult>(parameters);
         }
-        public static TResult CallInstanceMethod<TResult>(object instance, string methodName, params object[] parameters)
+        
+        /// <summary>
+        /// 调用无返回值的方法（使用Traverse，支持静态和实例方法）
+        /// </summary>
+        /// <param name="target">目标对象或类型</param>
+        /// <param name="methodName">方法名称</param>
+        /// <param name="parameters">方法参数</param>
+        public static void CallMethod(object target, string methodName, params object[] parameters)
         {
-            return Traverse.Create(instance)
-                .Method(methodName)
-                .GetValue<TResult>(parameters);
-        }
-
-        // 无返回值的重载（简化 void 方法调用）
-        public static void CallStaticMethod(Type type, string methodName, params object[] parameters)
-        {
-            Traverse.Create(type).Method(methodName, parameters).GetValue();
-        }
-
-        public static void CallInstanceMethod(object instance, string methodName, params object[] parameters)
-        {
-            Traverse.Create(instance).Method(methodName, parameters).GetValue();
+            if (target is Type type)
+                Traverse.Create(type).Method(methodName, parameters).GetValue();
+            else
+                Traverse.Create(target).Method(methodName, parameters).GetValue();
         }
     }
 }

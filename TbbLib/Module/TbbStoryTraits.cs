@@ -68,7 +68,7 @@ namespace TBB.He.TbbLib.Module
             foreach (FileHandle file in list)
             {
                 TbbDebuger.LogDebug($"[故事特质] 搜索到故事特质：[{file.full_path}]");
-                TbbHarmonyExtension.CallStaticMethod(typeof(SettingsCache), "LoadTrait", new object[] {
+                TbbHarmonyExtension.CallMethod(typeof(SettingsCache), "LoadTrait", new object[] {
                    file,path,"",settingCacheStoryTraits,errors
                 });
                 TbbDebuger.LogDebug($"[故事特质] 添加故事特质成功 [{file.full_path}]");

@@ -177,7 +177,10 @@
     <Content Include="anim\assets\SCP662_1\scp662_1.png" />
     <Content Include="anim\assets\scp939\scp939.png" />
     <Content Include="assets\texture\containment_tile_solid.png" />
-    <Content Include="developNotes.txt" />
+    <Content Include="DevelopNote\developNotes.txt" />
+    <Content Include="DevelopNote\SCP-4762 极地守夜雪人 官方收容档案.txt" />
+    <Content Include="DevelopNote\SCP-939.txt" />
+    <Content Include="DevelopNote\畸变溢流玩法.txt" />
     <Content Include="Directory.Build.props.user" />
   </ItemGroup>
   <ItemGroup>

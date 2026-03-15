@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -203,6 +204,161 @@ namespace TBB.He.TbbLib.Debuger
             if (transform.parent == null)
                 return "/" + transform.name;
             return transform.parent.GetFullPath() + "/" + transform.name;
+        }
+
+        /// <summary>
+        /// 记录UI树结构，显示每个节点的类型、节点名，并标记当前节点
+        /// </summary>
+        /// <param name="targetTransform">目标Transform</param>
+        public static void LogUITree(Transform targetTransform)
+        {
+            LogUITree(targetTransform, null);
+        }
+
+        /// <summary>
+        /// 记录UI树结构，显示每个节点的类型、节点名，并标记当前节点
+        /// </summary>
+        /// <param name="targetTransform">目标Transform</param>
+        /// <param name="rootTransform">自定义根节点，如果为null则自动查找KScreen或父节点</param>
+        public static void LogUITree(Transform targetTransform, Transform rootTransform)
+        {
+            WriteLog(LogLevel.Debug, LogType.Log, "=== UI树调试 ===", Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?");
+            if (targetTransform == null)
+            {
+                WriteLog(LogLevel.Error, LogType.Error, "目标Transform为null！", Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?");
+                return;
+            }
+            
+            // 如果没有指定根节点，自动查找KScreen或最近的父节点
+            if (rootTransform == null)
+            {
+                rootTransform = FindUITreeRoot(targetTransform);
+            }
+            
+            // 记录完整UI树
+            WriteLog(LogLevel.Debug, LogType.Log, GetUITreeString(rootTransform, 0, targetTransform), Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?");
+            WriteLog(LogLevel.Debug, LogType.Log, "====================", Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?");
+        }
+
+        /// <summary>
+        /// 查找UI树的根节点，优先查找KScreen，否则查找最近的父节点
+        /// </summary>
+        /// <param name="transform">目标Transform</param>
+        /// <returns>UI树的根节点</returns>
+        private static Transform FindUITreeRoot(Transform transform)
+        {
+            if (transform == null)
+                return null;
+
+            // 向上查找KScreen组件
+            Transform current = transform;
+            while (current != null)
+            {
+                // 检查是否有KScreen组件
+                if (current.gameObject.GetComponent("KScreen") != null)
+                {
+                    return current;
+                }
+
+                // 如果到达根节点，停止查找
+                if (current.parent == null)
+                {
+                    return current;
+                }
+
+                current = current.parent;
+            }
+
+            return transform;
+        }
+
+        /// <summary>
+        /// 构建UI树的字符串表示
+        /// </summary>
+        /// <param name="transform">当前Transform</param>
+        /// <param name="indentLevel">缩进级别</param>
+        /// <param name="targetTransform">目标Transform（用于标记）</param>
+        /// <returns>UI树的字符串表示</returns>
+        private static string GetUITreeString(Transform transform, int indentLevel, Transform targetTransform)
+        {
+            if (transform == null)
+                return "";
+
+            StringBuilder sb = new StringBuilder();
+            string indent = new string(' ', indentLevel * 4);
+
+            // 构建节点信息
+            string nodeName = transform.name;
+            bool isTarget = transform == targetTransform;
+
+            // 获取UI组件类型
+            string uiComponentTypes = GetUIComponentTypes(transform.gameObject);
+
+            // 添加节点信息，标记当前节点
+            sb.AppendLine($"{indent}{(isTarget ? "[CURRENT] " : "")}[{uiComponentTypes}] {nodeName}");
+
+            // 递归处理子节点
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Transform child = transform.GetChild(i);
+                sb.Append(GetUITreeString(child, indentLevel + 1, targetTransform));
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 获取GameObject上的UI组件类型
+        /// </summary>
+        /// <param name="gameObject">目标GameObject</param>
+        /// <returns>UI组件类型列表，以逗号分隔</returns>
+        private static string GetUIComponentTypes(GameObject gameObject)
+        {
+            if (gameObject == null)
+                return "Transform";
+
+            List<string> uiTypes = new List<string>();
+
+            // 添加Transform类型
+            uiTypes.Add("Transform");
+
+            // 获取所有组件
+            Component[] components = gameObject.GetComponents<Component>();
+
+            foreach (Component component in components)
+            {
+                if (component == null)
+                    continue;
+
+                string componentName = component.GetType().Name;
+
+                // 检查是否为UI相关组件
+                if (IsUIComponent(componentName))
+                {
+                    uiTypes.Add(componentName);
+                }
+            }
+
+            return string.Join(", ", uiTypes);
+        }
+
+        /// <summary>
+        /// 检查组件是否为UI相关组件
+        /// </summary>
+        /// <param name="componentName">组件名称</param>
+        /// <returns>是否为UI组件</returns>
+        private static bool IsUIComponent(string componentName)
+        {
+            // 常见的UI组件名称列表
+            string[] uiComponentNames = {
+                "Text", "Image", "Button", "Toggle", "Slider", "Scrollbar", "ScrollView",
+                "InputField", "Dropdown", "Canvas", "CanvasRenderer", "RectTransform",
+                "Mask", "RectMask2D", "GridLayoutGroup", "HorizontalLayoutGroup", "VerticalLayoutGroup",
+                "LayoutElement", "AspectRatioFitter", "ContentSizeFitter", "EventSystem",
+                "StandaloneInputModule", "TouchInputModule", "TextMeshProUGUI", "Image", "Icon"
+            };
+
+            return Array.Exists(uiComponentNames, name => name.Equals(componentName, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
