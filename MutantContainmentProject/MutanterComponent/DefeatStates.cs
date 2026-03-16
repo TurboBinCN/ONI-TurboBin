@@ -1,4 +1,4 @@
-﻿using PeterHan.PLib.Core;
+using PeterHan.PLib.Core;
 using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent

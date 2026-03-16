@@ -1,0 +1,25 @@
+id: "MUTANTER_DAWN_CONFUSION"
+title: STRINGS.CODEX.MUTANTER.MUTANTER_DAWN_CONFUSION.TITLE
+
+contentContainers:
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_DAWN_CONFUSION.TITLE
+          style: Title
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_DAWN_CONFUSION.SUBTITLE
+          style: Subtitle
+      - !CodexDividerLine
+          preferredWidth: -1
+      - !CodexImage
+          batchedAnimPrefabSourceID: MUTANTER_DAWN_CONFUSION
+          preferredWidth: 128
+          preferredHeight: 230
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_DAWN_CONFUSION.BODY.CONTAINER1
+          style: Body

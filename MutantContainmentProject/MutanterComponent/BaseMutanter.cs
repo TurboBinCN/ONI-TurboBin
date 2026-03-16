@@ -19,7 +19,7 @@ namespace MutantContainmentProject.MutanterComponent
     public class BaseMutanter
     {
         //畸变体基础设置：情绪管理、威胁管理、攻击方式管理
-        public static GameObject ExtendToBaseMutanter(GameObject template, MutanterDangerLevel dangerLevel, int MaxColonySize = 1, bool considerDecor = true, bool useEmotionMonitor = true, FactionManager.FactionID faction = FactionManager.FactionID.Prey, List<Tag> attackTags = null, System.Collections.Generic.Dictionary<MutantContainmentProject.Buildings.SecureAction, float[]> secureActionPreferences = null)
+        public static GameObject ExtendToBaseMutanter(GameObject template, MutanterDangerLevel dangerLevel, int MaxColonySize = 1, bool considerDecor = true, bool useEmotionMonitor = true, FactionManager.FactionID faction = FactionManager.FactionID.Prey, List<Tag> attackTags = null, System.Collections.Generic.Dictionary<MutantContainmentProject.Buildings.SecureAction, float[]> secureActionPreferences = null, bool canBeCaptured = false, bool canBeDefeated = true)
         {
             template.AddOrGetDef<MutanterStateMachine.Def>();//挂载：畸变体基础组件
             template.AddOrGetDef<MutanterSecurableMonitor.Def>();//挂载：畸变体安全控制监控SMI
@@ -57,8 +57,11 @@ namespace MutantContainmentProject.MutanterComponent
                     template.GetComponent<KPrefabID>().AddTag(tag);
                 }
             }
-            EntityTemplates.CreateAndRegisterBaggedCreature(template, true, false, false);//挂载：被击败后打包
-            template.AddOrGetDef<DefeatStates.Def>();//挂载：击败状态监控
+            EntityTemplates.CreateAndRegisterBaggedCreature(template, true, canBeCaptured, false);//挂载：被击败后打包
+            if (canBeDefeated)
+            {
+                template.AddOrGetDef<DefeatStates.Def>();//挂载：击败状态监控
+            }
 
             // 添加产出物组件
             template.AddOrGet<MutanterProductComponent>();

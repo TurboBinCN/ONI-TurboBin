@@ -93,6 +93,7 @@
     <Compile Include="MutanterComponent\MutanterTags.cs" />
     <Compile Include="MutanterGameHashes.cs" />
     <Compile Include="MutanterStoryStraits\MutanterStoris.cs" />
+    <Compile Include="Mutanters\DawnConfusionConfig.cs" />
     <Compile Include="Mutanters\MutanterManager.cs" />
     <Compile Include="Mutanters\SCP096Config.cs" />
     <Compile Include="Mutanters\SCP4762Config.cs" />
@@ -130,6 +131,8 @@
     <None Include="anim\assets\containment_monitor_station\containment_monitor_station_build.bytes" />
     <None Include="anim\assets\containment_tile\containment_tile_anim.bytes" />
     <None Include="anim\assets\containment_tile\containment_tile_build.bytes" />
+    <None Include="anim\assets\dawn_doubt\dawn_doubt_anim.bytes" />
+    <None Include="anim\assets\dawn_doubt\dawn_doubt_build.bytes" />
     <None Include="anim\assets\global_erosion_panel\global_erosion_panel_anim.bytes" />
     <None Include="anim\assets\global_erosion_panel\global_erosion_panel_build.bytes" />
     <None Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder_anim.bytes" />
@@ -167,6 +170,7 @@
   <ItemGroup>
     <Content Include="anim\assets\containment_monitor_station\containment_monitor_station.png" />
     <Content Include="anim\assets\containment_tile\containment_tile.png" />
+    <Content Include="anim\assets\dawn_doubt\dawn_doubt.png" />
     <Content Include="anim\assets\global_erosion_panel\global_erosion_panel.png" />
     <Content Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder.png" />
     <Content Include="anim\assets\scp049\scp049.png" />
