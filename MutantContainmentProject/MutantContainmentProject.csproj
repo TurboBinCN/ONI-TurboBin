@@ -93,6 +93,7 @@
     <Compile Include="MutanterComponent\MutanterTags.cs" />
     <Compile Include="MutanterGameHashes.cs" />
     <Compile Include="MutanterStoryStraits\MutanterStoris.cs" />
+    <Compile Include="Mutanters\BugDuskConfig.cs" />
     <Compile Include="Mutanters\DawnConfusionConfig.cs" />
     <Compile Include="Mutanters\MutanterManager.cs" />
     <Compile Include="Mutanters\SCP096Config.cs" />
@@ -127,6 +128,8 @@
     <Compile Include="Technology\TechTreeRegister.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="anim\assets\bugdusk\bugdusk_anim.bytes" />
+    <None Include="anim\assets\bugdusk\bugdusk_build.bytes" />
     <None Include="anim\assets\containment_monitor_station\containment_monitor_station_anim.bytes" />
     <None Include="anim\assets\containment_monitor_station\containment_monitor_station_build.bytes" />
     <None Include="anim\assets\containment_tile\containment_tile_anim.bytes" />
@@ -152,6 +155,8 @@
     <None Include="anim\assets\scp939\scp939_anim.bytes" />
     <None Include="anim\assets\scp939\scp939_build.bytes" />
     <None Include="assets\assetsBundle\mutant_containment_project" />
+    <None Include="assets\codex\Creatures\DynamicCodexEntry_BugDusk.yaml" />
+    <None Include="assets\codex\Creatures\DynamicCodexEntry_DawnConfusion.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP049.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP049_2.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP096.yaml" />
@@ -168,6 +173,7 @@
     <None Include="translations\zh.hjson" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="anim\assets\bugdusk\bugdusk.png" />
     <Content Include="anim\assets\containment_monitor_station\containment_monitor_station.png" />
     <Content Include="anim\assets\containment_tile\containment_tile.png" />
     <Content Include="anim\assets\dawn_doubt\dawn_doubt.png" />

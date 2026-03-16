@@ -1,6 +1,7 @@
 1.根据文本 xxxx 添加畸变体，参考MutantContainmentProject/Mutanters/SCP173Config.cs
-2.添加词条英文：MutantContainmentProject/Strings.cs 对应中文翻译：MutantContainmentProject/translations/zh.hjson
-3.添加百科词条：MutantContainmentProject/assets/codex/Creatures
-4.如果有新建畸变体组件MutantContainmentProject/MutanterComponent
-5.添加生成配方MutantContainmentProject/Buildings/GravitasMutanterFounder.cs
-5.注册畸变体MutantContainmentProject/MutantContainmentProjectMod.cs
+2.攻击类型设置标签：MutantContainmentProject/MutanterComponent/MutanterTags.cs
+3.添加词条英文：MutantContainmentProject/Strings.cs 对应中文翻译：MutantContainmentProject/translations/zh.hjson
+4.添加百科词条：MutantContainmentProject/assets/codex/Creatures
+5.如果有新建畸变体组件MutantContainmentProject/MutanterComponent
+6.添加生成配方MutantContainmentProject/Buildings/GravitasMutanterFounder.cs
+7.注册畸变体MutantContainmentProject/MutantContainmentProjectMod.cs

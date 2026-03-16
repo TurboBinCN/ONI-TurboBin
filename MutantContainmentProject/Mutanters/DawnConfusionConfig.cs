@@ -10,8 +10,8 @@ namespace MutantContainmentProject.Mutanters
         public static string ID = "MUTANTER_DAWN_CONFUSION";
         public static readonly string TRAIT_ID = "MutanterDawnConfusionTrait";
         public static readonly string KANIM_NAME = "dawn_doubt_kanim";
-        public static readonly string KANIM_BUILD_NAME = "dawn_confusion_build_kanim";
-        public static readonly string KANIM_EMOTES_NAME = "dawn_confusion_emotes_kanim";
+        public static readonly string KANIM_BUILD_NAME = "dawn_doubt_kanim";
+        public static readonly string KANIM_EMOTES_NAME = "chameleo_emotes_kanim";
 
         public GameObject CreatePrefab()
         {

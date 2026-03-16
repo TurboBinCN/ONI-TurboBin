@@ -1,0 +1,25 @@
+id: "MUTANTER_BUG_DUSK"
+title: STRINGS.CODEX.MUTANTER.MUTANTER_BUG_DUSK.TITLE
+
+contentContainers:
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_BUG_DUSK.TITLE
+          style: Title
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_BUG_DUSK.SUBTITLE
+          style: Subtitle
+      - !CodexDividerLine
+          preferredWidth: -1
+      - !CodexImage
+          batchedAnimPrefabSourceID: MUTANTER_BUG_DUSK
+          preferredWidth: 128
+          preferredHeight: 230
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_BUG_DUSK.BODY.CONTAINER1
+          style: Body

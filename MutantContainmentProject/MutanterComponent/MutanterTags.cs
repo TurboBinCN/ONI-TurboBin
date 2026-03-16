@@ -18,8 +18,6 @@ namespace MutantContainmentProject.MutanterComponent
             public static class Species
             {
                 public static readonly Tag Mutanter = TagManager.Create("Mutanter_Species", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_SPECIES);
-                public static readonly Tag SCP173 = TagManager.Create("SCP173", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_SCP173);
-                public static readonly Tag DawnConfusion = TagManager.Create("DawnConfusion", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_DAWN_CONFUSION);
             }
         }
     }

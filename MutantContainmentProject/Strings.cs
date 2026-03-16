@@ -141,6 +141,7 @@ namespace MutantContainmentProject
                 public static LocString MUTANTER_SCP939 = global::STRINGS.UI.FormatAsLink("SCP-939", SCP939Config.ID);
                 public static LocString MUTANTER_SCP4762 = global::STRINGS.UI.FormatAsLink("SCP-4762", SCP4762Config.ID);
                 public static LocString MUTANTER_DAWN_CONFUSION = global::STRINGS.UI.FormatAsLink("Dawn Confusion", DawnConfusionConfig.ID);
+                public static LocString MUTANTER_BUG_DUSK = global::STRINGS.UI.FormatAsLink("BugDusk", BugDuskConfig.ID);
             }
         }
         public static class MUTANTERS
@@ -916,6 +917,11 @@ namespace MutantContainmentProject
                     public static LocString NAME = global::STRINGS.UI.FormatAsLink("Dawn Confusion", DawnConfusionConfig.ID);
                     public static LocString DESCRIPTION = "Dawn Confusion is an anomalous entity that emerges at the boundary between day and night. It emits a disorienting aura that affects the perception of time and space, causing confusion and disorientation in nearby creatures.";
                 }
+                public static class MUTANTER_BUG_DUSK
+                {
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("BugDusk", BugDuskConfig.ID);
+                    public static LocString DESCRIPTION = "BugDusk is a worm-like creature with sharp teeth and a thin brown exoskeleton on its back. It has amber-colored bubble-like growths on its sides. It wanders through corridors and attacks by jumping and biting, causing 1-2 points of physical damage.";
+                }
             }
         }
         public static class RESEARCH
@@ -979,6 +985,7 @@ namespace MutantContainmentProject
                         public static LocString MUTANTER_SCP096 = "Specimen displayed extreme distress upon altar activation. Review data for more information.";
                         public static LocString MUTANTER_SCP662 = "Specimen manifested as a silver bell that summons a butler-like entity. The entity appears docile but requires monitoring.";
                         public static LocString MUTANTER_DAWN_CONFUSION = "Specimen manifested as a semi-transparent humanoid figure that distorts time and space perception. Review data for more information.";
+                        public static LocString MUTANTER_BUG_DUSK = "Specimen manifested as a worm-like creature with sharp fangs and brown carapace. It exhibits aggressive behavior when approached. Review data for more information.";
                         public static LocString UNKNOWN_TITLE = "ALERT FROM ALTAR CONTROL SYSTEM";
                         public static LocString UNKNOWN = "Sacrifice successfully processed.\n\nMutation function unavailable due to energy flux malfunction.\n\nPlease note that kicking the altar's exterior is unlikely to correct this issue and may result in permanent damage to the energy matrix.";
                     }
@@ -987,6 +994,7 @@ namespace MutantContainmentProject
                         public static LocString MUTANTER_SCP096 = "Specimen exhibited severe emotional distress upon exposure to altar's energy signature. Subject became highly aggressive and attempted to breach containment.\n\nNeural analysis shows abnormal activity in the amygdala and prefrontal cortex, suggesting a hyperactive fear response triggered by the altar's energy frequency.";
                         public static LocString MUTANTER_SCP662 = "Specimen manifested as a small silver bell with anomalous properties. When rung, it summons a humanoid entity identifying itself as 'Mr. Gerald', who appears as a traditional English butler.\n\nThe entity is completely obedient to the ringer and can perform various tasks within reasonable limits. It cannot be harmed by conventional means and disappears upon completing its task or being dismissed.\n\nEnergy analysis indicates the bell serves as a conduit to an extradimensional plane from which the butler entity is summoned. The connection appears stable but requires further study.";
                         public static LocString MUTANTER_DAWN_CONFUSION = "Specimen manifested as a semi-transparent humanoid figure surrounded by a faint glow. It emits a confusion aura that affects the perception of time and space in nearby creatures.\n\nInitial analysis shows the entity is most active during dawn and dusk, when its confusion aura expands in range. It shows no obvious aggression, but prolonged exposure may cause permanent spatial perception disorders.\n\nEnergy readings indicate the entity's anomalous properties are linked to the boundary between day and night, suggesting a connection to temporal transitions.";
+                        public static LocString MUTANTER_BUG_DUSK = "Specimen manifested as a worm-like creature with sharp fangs and a thin brown carapace. It has amber-colored bubble-like growths along its sides.\n\nThe entity exhibits territorial behavior, patrolling corridors and attacking any units that approach. It uses a leaping bite attack that causes 1-2 points of physical damage and moves it behind the target.\n\nAnalysis suggests it is highly aggressive towards lower-level personnel and often acts in groups. Once it initiates an attack, it will persistently pursue the target. The amber growths on its body appear to be a defense mechanism, possibly containing a sticky substance.\n\nEnergy readings indicate the creature has a strong affinity for dark, enclosed spaces, which may explain its preference for corridor environments.";
                     }
                 }
             }
@@ -1071,6 +1079,15 @@ namespace MutantContainmentProject
                     public static class BODY
                     {
                         public static LocString CONTAINER1 = "Item #: Dawn Confusion\r\nObject Class: Euclid\r\n\r\nSpecial Containment Procedures\r\n\r\nDawn Confusion is to be contained in a light-controlled chamber that simulates day-night cycles. The chamber should be equipped with emotional monitoring equipment and spatial perception testing devices to track the range of its anomalous effects. Personnel must wear emotional stabilizers and spatial positioning devices before entering the chamber to avoid the effects of its confusion aura.\r\n\r\nDescription\r\n\r\nDawn Confusion is an anomalous entity that appears at the boundary between day and night. It manifests as a semi-transparent humanoid figure surrounded by a faint glow. Its presence distorts the perception of time and space, causing confusion, disorientation, and time perception disorders in creatures within its influence range.\r\n\r\nThe entity is most active during dawn and dusk, when the range of its confusion aura expands. It shows no obvious aggression, but prolonged exposure to its influence may cause permanent spatial perception disorders.\r\n\r\nCore Anomalous Abilities\r\n\r\nEmits a confusion aura that affects the perception of time and space in surrounding creatures, causing disorientation and time distortion. Its abilities are strongest during the transition between day and night, with the largest influence range.\r\n\r\nDiscovery & Background\r\n\r\nThe entity was first discovered in March 2024 in an abandoned research facility, where researchers reported severe spatial perception confusion and time illusion phenomena. Initial containment attempts failed due to personnel disorientation, but it was successfully stabilized by establishing a light-controlled containment environment.";
+                    }
+                }
+                public static class MUTANTER_BUG_DUSK
+                {
+                    public static LocString TITLE = "BugDusk";
+                    public static LocString SUBTITLE = "BugDusk";
+                    public static class BODY
+                    {
+                        public static LocString CONTAINER1 = "Item #: BugDusk\r\nObject Class: Euclid\r\n\r\nSpecial Containment Procedures\r\n\r\nBugDusk should be contained in a reinforced containment chamber with smooth walls to prevent climbing. The chamber should be monitored with motion sensors and security cameras. Personnel should avoid entering the chamber alone, as BugDusk typically hunts in groups.\r\n\r\nDescription\r\n\r\nBugDusk is a worm-like creature with sharp teeth and a thin brown exoskeleton on its back. It has amber-colored bubble-like growths on its sides. It wanders through corridors and attacks by jumping and biting, causing 1-2 points of physical damage and moving to the target's rear.\r\n\r\nThese creatures are a significant threat to lower-level personnel. They typically act in groups and will pursue targets persistently once they initiate an attack.\r\n\r\nCore Anomalous Abilities\r\n\r\nBugDusk exhibits enhanced jumping ability and persistence in pursuit. When it attacks, it moves behind its target, making it difficult to defend against multiple attackers.\r\n\r\nDiscovery & Background\r\n\r\nBugDusk was discovered in the dark corridors of an abandoned research facility. They appear to be native to the facility's lower levels and have adapted to the confined space. Their behavior suggests they are pack hunters that coordinate their attacks.";
                     }
                 }
             }
