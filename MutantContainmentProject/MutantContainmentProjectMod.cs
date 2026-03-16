@@ -102,7 +102,8 @@ namespace MutantContainmentProject
                     .ADD("SCP939", "Creatures")
                     .ADD("SCP4762", "Creatures")
                     .ADD("DawnConfusion", "Creatures")
-                    .ADD("BugDusk", "Creatures");
+                    .ADD("BugDusk", "Creatures")
+                    .ADD("CosmicBug", "Creatures");
                 //房间
                 TbbRoom.Initialize(mod, harmony)
                     .Add(ContainmentCharmberRoom.Register)

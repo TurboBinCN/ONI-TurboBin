@@ -1,0 +1,25 @@
+id: "MUTANTER_COSMIC_BUG"
+title: STRINGS.CODEX.MUTANTER.MUTANTER_COSMIC_BUG.TITLE
+
+contentContainers:
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_COSMIC_BUG.TITLE
+          style: Title
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_COSMIC_BUG.SUBTITLE
+          style: Subtitle
+      - !CodexDividerLine
+          preferredWidth: -1
+      - !CodexImage
+          batchedAnimPrefabSourceID: MUTANTER_COSMIC_BUG
+          preferredWidth: 128
+          preferredHeight: 230
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_COSMIC_BUG.BODY.CONTAINER1
+          style: Body

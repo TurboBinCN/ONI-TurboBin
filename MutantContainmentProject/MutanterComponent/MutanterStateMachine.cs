@@ -48,7 +48,7 @@ namespace MutantContainmentProject.MutanterComponent
                         });
 
             stable// --- 稳定状态 ---
-                .ToggleStatusItem(MutanterStatusItems.Instance.Idle)
+                //.ToggleStatusItem(MutanterStatusItems.Instance.Idle)
                 .Update("CheckSanityForStability", (smi, dt) =>
                 {
                     if (!smi.IsContained && smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue <= smi.def.sanityThresholdToAgitate)

@@ -59,6 +59,7 @@
     <Compile Include="Buildings\GravitasMutanterFounder.cs" />
     <Compile Include="Buildings\GravitasMutanterFounderConfig.cs" />
     <Compile Include="Buildings\SecureTermDb.cs" />
+    <Compile Include="MutanterComponent\DeathDamage.cs" />
     <Compile Include="MutanterComponent\MutanterColdIceMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterSecurableMonitor.cs" />
     <Compile Include="FunctionPatches\EventInfoDataHelper_Patches.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="MutanterGameHashes.cs" />
     <Compile Include="MutanterStoryStraits\MutanterStoris.cs" />
     <Compile Include="Mutanters\BugDuskConfig.cs" />
+    <Compile Include="Mutanters\CosmicBugConfig.cs" />
     <Compile Include="Mutanters\DawnConfusionConfig.cs" />
     <Compile Include="Mutanters\MutanterManager.cs" />
     <Compile Include="Mutanters\SCP096Config.cs" />
@@ -134,6 +136,8 @@
     <None Include="anim\assets\containment_monitor_station\containment_monitor_station_build.bytes" />
     <None Include="anim\assets\containment_tile\containment_tile_anim.bytes" />
     <None Include="anim\assets\containment_tile\containment_tile_build.bytes" />
+    <None Include="anim\assets\cosmic_bug\cosmic_bug_anim.bytes" />
+    <None Include="anim\assets\cosmic_bug\cosmic_bug_build.bytes" />
     <None Include="anim\assets\dawn_doubt\dawn_doubt_anim.bytes" />
     <None Include="anim\assets\dawn_doubt\dawn_doubt_build.bytes" />
     <None Include="anim\assets\global_erosion_panel\global_erosion_panel_anim.bytes" />
@@ -156,6 +160,7 @@
     <None Include="anim\assets\scp939\scp939_build.bytes" />
     <None Include="assets\assetsBundle\mutant_containment_project" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_BugDusk.yaml" />
+    <None Include="assets\codex\Creatures\DynamicCodexEntry_CosmicBug.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_DawnConfusion.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP049.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP049_2.yaml" />
@@ -176,6 +181,7 @@
     <Content Include="anim\assets\bugdusk\bugdusk.png" />
     <Content Include="anim\assets\containment_monitor_station\containment_monitor_station.png" />
     <Content Include="anim\assets\containment_tile\containment_tile.png" />
+    <Content Include="anim\assets\cosmic_bug\cosmic_bug.png" />
     <Content Include="anim\assets\dawn_doubt\dawn_doubt.png" />
     <Content Include="anim\assets\global_erosion_panel\global_erosion_panel.png" />
     <Content Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder.png" />

@@ -142,6 +142,7 @@ namespace MutantContainmentProject
                 public static LocString MUTANTER_SCP4762 = global::STRINGS.UI.FormatAsLink("SCP-4762", SCP4762Config.ID);
                 public static LocString MUTANTER_DAWN_CONFUSION = global::STRINGS.UI.FormatAsLink("Dawn Confusion", DawnConfusionConfig.ID);
                 public static LocString MUTANTER_BUG_DUSK = global::STRINGS.UI.FormatAsLink("BugDusk", BugDuskConfig.ID);
+                public static LocString MUTANTER_COSMIC_BUG = global::STRINGS.UI.FormatAsLink("CosmicBug", CosmicBugConfig.ID);
             }
         }
         public static class MUTANTERS
@@ -922,6 +923,11 @@ namespace MutantContainmentProject
                     public static LocString NAME = global::STRINGS.UI.FormatAsLink("BugDusk", BugDuskConfig.ID);
                     public static LocString DESCRIPTION = "BugDusk is a worm-like creature with sharp teeth and a thin brown exoskeleton on its back. It has amber-colored bubble-like growths on its sides. It wanders through corridors and attacks by jumping and biting, causing 1-2 points of physical damage.";
                 }
+                public static class MUTANTER_COSMIC_BUG
+                {
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("Cosmic Bug", BugDuskConfig.ID);
+                    public static LocString DESCRIPTION = "Specimen manifested as a purple spherical creature with tentacles. It contains a glowing purple slab with ancient Cuneiform. Review data for more information.";
+                }
             }
         }
         public static class RESEARCH
@@ -981,20 +987,22 @@ namespace MutantContainmentProject
                         public static LocString VIEW_IN_CODEX = "Review Entity Data";
                     }
                     public class SPECIES_ENTRIES {
-                        public static LocString MUTANTER_SCP173 = "Specimen attempted to disrupt the altar's energy core. Review data for more information.";
-                        public static LocString MUTANTER_SCP096 = "Specimen displayed extreme distress upon altar activation. Review data for more information.";
-                        public static LocString MUTANTER_SCP662 = "Specimen manifested as a silver bell that summons a butler-like entity. The entity appears docile but requires monitoring.";
-                        public static LocString MUTANTER_DAWN_CONFUSION = "Specimen manifested as a semi-transparent humanoid figure that distorts time and space perception. Review data for more information.";
-                        public static LocString MUTANTER_BUG_DUSK = "Specimen manifested as a worm-like creature with sharp fangs and brown carapace. It exhibits aggressive behavior when approached. Review data for more information.";
-                        public static LocString UNKNOWN_TITLE = "ALERT FROM ALTAR CONTROL SYSTEM";
-                        public static LocString UNKNOWN = "Sacrifice successfully processed.\n\nMutation function unavailable due to energy flux malfunction.\n\nPlease note that kicking the altar's exterior is unlikely to correct this issue and may result in permanent damage to the energy matrix.";
-                    }
+                public static LocString MUTANTER_SCP173 = "Specimen attempted to disrupt the altar's energy core. Review data for more information.";
+                public static LocString MUTANTER_SCP096 = "Specimen displayed extreme distress upon altar activation. Review data for more information.";
+                public static LocString MUTANTER_SCP662 = "Specimen manifested as a silver bell that summons a butler-like entity. The entity appears docile but requires monitoring.";
+                public static LocString MUTANTER_DAWN_CONFUSION = "Specimen manifested as a semi-transparent humanoid figure that distorts time and space perception. Review data for more information.";
+                public static LocString MUTANTER_BUG_DUSK = "Specimen manifested as a worm-like creature with sharp fangs and brown carapace. It exhibits aggressive behavior when approached. Review data for more information.";
+                public static LocString MUTANTER_COSMIC_BUG = "Specimen manifested as a purple spherical creature with tentacles. It contains a glowing purple slab with ancient Cuneiform. Review data for more information.";
+                public static LocString UNKNOWN_TITLE = "ALERT FROM ALTAR CONTROL SYSTEM";
+                public static LocString UNKNOWN = "Sacrifice successfully processed.\n\nMutation function unavailable due to energy flux malfunction.\n\nPlease note that kicking the altar's exterior is unlikely to correct this issue and may result in permanent damage to the energy matrix.";
+            }
                     public class SPECIES_ENTRIES_EXPANDED {
                         public static LocString MUTANTER_SCP173 = "Specimen attempted to breach the altar's energy core casing. Sample is viable, though the containment apparatus may be somewhat mangled.\n\nAtomic force microscopy of the impact pattern reveals traces of goethite, a mineral notable for its exceptional strength and affinity for unstable aberrant energy.";
                         public static LocString MUTANTER_SCP096 = "Specimen exhibited severe emotional distress upon exposure to altar's energy signature. Subject became highly aggressive and attempted to breach containment.\n\nNeural analysis shows abnormal activity in the amygdala and prefrontal cortex, suggesting a hyperactive fear response triggered by the altar's energy frequency.";
                         public static LocString MUTANTER_SCP662 = "Specimen manifested as a small silver bell with anomalous properties. When rung, it summons a humanoid entity identifying itself as 'Mr. Gerald', who appears as a traditional English butler.\n\nThe entity is completely obedient to the ringer and can perform various tasks within reasonable limits. It cannot be harmed by conventional means and disappears upon completing its task or being dismissed.\n\nEnergy analysis indicates the bell serves as a conduit to an extradimensional plane from which the butler entity is summoned. The connection appears stable but requires further study.";
                         public static LocString MUTANTER_DAWN_CONFUSION = "Specimen manifested as a semi-transparent humanoid figure surrounded by a faint glow. It emits a confusion aura that affects the perception of time and space in nearby creatures.\n\nInitial analysis shows the entity is most active during dawn and dusk, when its confusion aura expands in range. It shows no obvious aggression, but prolonged exposure may cause permanent spatial perception disorders.\n\nEnergy readings indicate the entity's anomalous properties are linked to the boundary between day and night, suggesting a connection to temporal transitions.";
                         public static LocString MUTANTER_BUG_DUSK = "Specimen manifested as a worm-like creature with sharp fangs and a thin brown carapace. It has amber-colored bubble-like growths along its sides.\n\nThe entity exhibits territorial behavior, patrolling corridors and attacking any units that approach. It uses a leaping bite attack that causes 1-2 points of physical damage and moves it behind the target.\n\nAnalysis suggests it is highly aggressive towards lower-level personnel and often acts in groups. Once it initiates an attack, it will persistently pursue the target. The amber growths on its body appear to be a defense mechanism, possibly containing a sticky substance.\n\nEnergy readings indicate the creature has a strong affinity for dark, enclosed spaces, which may explain its preference for corridor environments.";
+                        public static LocString MUTANTER_COSMIC_BUG = "Specimen manifested as a purple spherical creature with tentacles. Its body contains a glowing purple slab with ancient Cuneiform.\n\nThe entity has moderate health and low movement speed. It initially shows no hostility towards any units, but will counterattack when attacked by staff. After successfully moving to the attacker's location, it will begin to flickering glimmer, causing erosion damage to units within attack range with each flash.\n\nIf not eliminated within 60-70 seconds of spawning, it will die on its own and emit a violent purple glow, causing mental damage to all nearby staff.\n\nEnergy readings indicate the glowing slab within its body is the source of its anomalous properties, emitting a unique energy signature that affects the mental state of nearby creatures.";
                     }
                 }
             }
@@ -1088,6 +1096,15 @@ namespace MutantContainmentProject
                     public static class BODY
                     {
                         public static LocString CONTAINER1 = "Item #: BugDusk\r\nObject Class: Euclid\r\n\r\nSpecial Containment Procedures\r\n\r\nBugDusk should be contained in a reinforced containment chamber with smooth walls to prevent climbing. The chamber should be monitored with motion sensors and security cameras. Personnel should avoid entering the chamber alone, as BugDusk typically hunts in groups.\r\n\r\nDescription\r\n\r\nBugDusk is a worm-like creature with sharp teeth and a thin brown exoskeleton on its back. It has amber-colored bubble-like growths on its sides. It wanders through corridors and attacks by jumping and biting, causing 1-2 points of physical damage and moving to the target's rear.\r\n\r\nThese creatures are a significant threat to lower-level personnel. They typically act in groups and will pursue targets persistently once they initiate an attack.\r\n\r\nCore Anomalous Abilities\r\n\r\nBugDusk exhibits enhanced jumping ability and persistence in pursuit. When it attacks, it moves behind its target, making it difficult to defend against multiple attackers.\r\n\r\nDiscovery & Background\r\n\r\nBugDusk was discovered in the dark corridors of an abandoned research facility. They appear to be native to the facility's lower levels and have adapted to the confined space. Their behavior suggests they are pack hunters that coordinate their attacks.";
+                    }
+                }
+                public static class MUTANTER_COSMIC_BUG
+                {
+                    public static LocString TITLE = "CosmicBug";
+                    public static LocString SUBTITLE = "CosmicBug";
+                    public static class BODY
+                    {
+                        public static LocString CONTAINER1 = "Item #: CosmicBug\r\nObject Class: Euclid\r\n\r\nSpecial Containment Procedures\r\n\r\nCosmicBug should be contained in a reinforced containment chamber with energy-dampening walls to suppress its anomalous energy. The chamber should be monitored with motion sensors and energy detectors. Personnel should be equipped with mental protection gear when entering the chamber.\r\n\r\nDescription\r\n\r\nCosmicBug is a purple spherical creature with tentacles. Its body contains a glowing purple slab with ancient Cuneiform. It has moderate health and low movement speed. It initially shows no hostility towards any units, but will counterattack when attacked by staff.\r\n\r\nAfter successfully moving to the attacker's location, it will begin to flickering glimmer, causing erosion damage to units within attack range with each flash. If not eliminated within 60-70 seconds of spawning, it will die on its own and emit a violent purple glow, causing mental damage to all nearby staff.\r\n\r\nCore Anomalous Abilities\r\n\r\nCosmicBug can emit a purple glow that causes erosion damage to nearby units. Upon death, it releases a violent energy burst that causes mental damage to all nearby staff. The glowing slab within its body is the source of its anomalous properties.\r\n\r\nDiscovery & Background\r\n\r\nCosmicBug was discovered in a deep underground chamber with ancient markings. The slab within its body appears to be of extraterrestrial origin, with inscriptions that have yet to be fully deciphered. Its presence suggests a connection to cosmic energies beyond our current understanding.";
                     }
                 }
             }
