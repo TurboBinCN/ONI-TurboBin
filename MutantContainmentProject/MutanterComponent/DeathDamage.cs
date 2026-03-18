@@ -6,8 +6,9 @@ namespace MutantContainmentProject.MutanterComponent
 {
     public class DeathDamage : KMonoBehaviour
     {
-        public string damageType = "Mental";
-        public float damageAmount = 5f;
+        public Tag attackTag = MutanterTags.PhysicalAttack;
+        public float damageAmount = 12.5f;
+        public float damageRadius = 5f;
         private Health health;
         private AmountInstance hitPointsInstance;
         private bool hasTriggeredDeathDamage = false;
@@ -48,34 +49,33 @@ namespace MutantContainmentProject.MutanterComponent
             if (health != null && health.hitPoints <= 0f && health.IsDefeated())
             {
                 hasTriggeredDeathDamage = true;
-                TbbDebuger.LogDebug($"[DeathDamage] Creature died, releasing death damage to all staff!");
+                TbbDebuger.LogDebug($"[DeathDamage] Creature died, releasing death damage to nearby units!");
                 
-                // 找到所有职员并造成伤害
-                var duplicants = GameObject.FindObjectsOfType<MinionIdentity>();
-                foreach (var dupe in duplicants)
+                // 找到范围内的所有单位并造成伤害
+                var allGameObjects = GameObject.FindObjectsOfType<GameObject>();
+                foreach (var obj in allGameObjects)
                 {
-                    if (dupe != null && dupe.gameObject != null)
+                    if (obj != null && obj != gameObject)
                     {
-                        // 使用MutanterAttackSystem执行攻击
-                        var attackSystem = GetComponent<MutanterAttackSystem>();
-                        if (attackSystem != null)
+                        // 检查距离
+                        float distance = Vector3.Distance(transform.position, obj.transform.position);
+                        if (distance <= damageRadius)
                         {
-                            // 执行精神伤害（通过压力值攻击模拟）
-                            bool success = attackSystem.ExecuteStressAttack(dupe.gameObject, damageAmount);
-                            if (success)
+                            // 检查是否有Health组件
+                            var targetHealth = obj.GetComponent<Health>();
+                            if (targetHealth != null && targetHealth.IsDefeated() == false)
                             {
-                                TbbDebuger.LogDebug($"[DeathDamage] Successfully dealt {damageAmount} mental damage to {dupe.name}");
-                            }
-                        }
-                        else
-                        {
-                            // 降级处理：直接执行攻击
-                            var dupeHealth = dupe.GetComponent<Health>();
-                            if (dupeHealth != null)
-                            {
-                                // 造成精神伤害
-                                dupeHealth.Damage(damageAmount);
-                                TbbDebuger.LogDebug($"[DeathDamage] Fallback: Dealt {damageAmount} mental damage to {dupe.name}");
+                                // 使用MutanterAttackSystem执行攻击
+                                var attackSystem = GetComponent<MutanterAttackSystem>();
+                                if (attackSystem != null)
+                                {
+                                    // 执行攻击
+                                    bool success = attackSystem.TryExecuteAttack(obj, damageAmount, attackTag);
+                                    if (success)
+                                    {
+                                        TbbDebuger.LogDebug($"[DeathDamage] Successfully dealt {damageAmount} damage with tag {attackTag} to {obj.name}");
+                                    }
+                                }
                             }
                         }
                     }

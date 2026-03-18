@@ -22,6 +22,7 @@ namespace MutantContainmentProject.MutanterComponent
                 public static readonly Tag DawnConfusion = TagManager.Create("DawnConfusion", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_DAWN_CONFUSION);
                 public static readonly Tag BugDusk = TagManager.Create("BugDusk", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_BUG_DUSK);
                 public static readonly Tag CosmicBug = TagManager.Create("CosmicBug", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_COSMIC_BUG);
+                public static readonly Tag CircusJoker = TagManager.Create("CircusJoker", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_CIRCUS_JOKER);
             }
         }
     }

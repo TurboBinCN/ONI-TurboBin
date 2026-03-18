@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
 namespace MutantContainmentProject.Buildings
@@ -10,12 +12,11 @@ namespace MutantContainmentProject.Buildings
         public static void RegisterStation(GameObject station)
         {
             KPrefabID kPrefabID = station.GetComponent<KPrefabID>();
-            if (kPrefabID != null && !containmentStations.Contains(kPrefabID))
+            if (kPrefabID != null && !containmentStations.Any(x => x.GetInstanceID() == kPrefabID.GetInstanceID()))
             {
                 containmentStations.Add(kPrefabID);
             }
         }
-
         public static void UnregisterStation(GameObject station)
         {
             KPrefabID kPrefabID = station.GetComponent<KPrefabID>();
@@ -27,8 +28,13 @@ namespace MutantContainmentProject.Buildings
 
         public static List<KPrefabID> GetAllStations()
         {
-            // 清理无效的实例
-            containmentStations.RemoveAll(kPrefabID => kPrefabID == null || kPrefabID.gameObject == null || !kPrefabID.gameObject.activeSelf);
+            containmentStations.ForEach(kPrefabID =>
+            {
+                if (kPrefabID == null || kPrefabID.gameObject == null || !kPrefabID.gameObject.activeSelf)
+                {
+                     containmentStations.Remove(kPrefabID);
+                }
+            });
             return containmentStations;
         }
 

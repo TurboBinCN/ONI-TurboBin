@@ -41,7 +41,7 @@ namespace MutantContainmentProject.Mutanters
 
             // 添加死后造成伤害的组件
             var deathDamageComponent = prefab.AddComponent<DeathDamage>();
-            deathDamageComponent.damageType = "Mental";
+            deathDamageComponent.attackTag = MutanterTags.PhysicalAttack;
             deathDamageComponent.damageAmount = 5f;
 
             // 添加产出物

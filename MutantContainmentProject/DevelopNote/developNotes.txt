@@ -1,151 +1,114 @@
 1.畸变体
-	1.1 不同等级特质结构定义 BaseMutanter.cs
+	✅1.1 不同等级特质结构定义 BaseMutanter.cs
 		--Safe/Euclid/Keter/Thaumiel/Neutralized
-	x1.7 畸变体基础分类，不要在归类到小动物中,影响太大梳理不清楚前不要动
+	❌1.7 畸变体基础分类，不要在归类到小动物中,影响太大梳理不清楚前不要动
 	1.8 畸变体特质体系
-		1.8.1 基础动物畸变体配置类 BaseMutanter.cs
-		1.8.2 基础物品畸变体配置类 BaseItemsMutanter.cs
-		√1.8.3 畸变体熔融物产出组件 MutanterMoltenMetalMonitor.cs
-		 1.8.4 威胁感知与理智值管理组件 EmotionMonitor
-		 1.8.5 畸变体注册单例 MutanterSpeciesCatalog.cs
-		 1.8.6 畸变体群落组件 MutanterColonyComponent.cs
+		✅1.8.1 基础动物畸变体配置类 BaseMutanter.cs
+		✅1.8.2 基础物品畸变体配置类 BaseItemsMutanter.cs
+		✅1.8.3 畸变体熔融物产出组件 MutanterMoltenMetalMonitor.cs
+		✅1.8.4 威胁感知与理智值管理组件 EmotionMonitor
+		✅1.8.5 畸变体注册单例 MutanterSpeciesCatalog.cs
+		✅1.8.6 畸变体群落组件 MutanterColonyComponent.cs
 		 		--收容等级定义与关联
 				--畸变体收容时候的竞态速度与成功率设定
-		 1.8.8 畸变体产出物组件 MutanterProductComponent.cs
+				--安全控制措施偏好设定与关联
+		✅1.8.8 畸变体产出物组件 MutanterProductComponent.cs
 		 		--产出物规则：产出可以是多种，数量与畸变体监控站的措施执行的成功率数值有直接关系
-		 1.8.8 畸变体追击目标组件 MutanterChaseMonitor.cs
-		 1.8.9 畸变体建筑破坏组件 MutanterBuildingDestruction.cs
+		✅1.8.8 畸变体追击目标组件 MutanterChaseMonitor.cs
+		✅1.8.9 畸变体建筑破坏组件 MutanterBuildingDestruction.cs
  				--畸变体突破收容能力
-		 1.8.10 畸变体击败收容打包组件 DefeatStates.cs
-		 1.8.11 畸变体基础状态机组件 MutanterStateMachine.cs
-		 7.8.12 畸变体侵蚀玩法组件 CorrosionManager.cs
-		 1.8.13 全局畸变体侵蚀组件 GloablErosionManger.cs
-	1.10 畸变体百科词条
-		√1.10.1 畸变体百科词条的图片显示
+		✅1.8.10 畸变体击败收容打包组件 DefeatStates.cs
+		✅1.8.11 畸变体基础状态机组件 MutanterStateMachine.cs
+		✅1.8.12 畸变体侵蚀玩法组件 CorrosionManager.cs
+		✅1.8.13 全局畸变体侵蚀组件 GloablErosionManger.cs
+		⏩1.8.14 畸变体吸引组件
+	✅1.10 畸变体百科词条体系
 	1.11 畸变体攻击系统：
-		1.11.1 攻击管理组件 MutanterAttackSystem.cs IMutanterAttackBehavior.cs
-		1.11.2 物理攻击：MeleeAttack.cs
+		✅1.11.1 攻击管理组件 MutanterAttackSystem.cs IMutanterAttackBehavior.cs
+		✅1.11.2 物理攻击：MeleeAttack.cs
 			--减少生命值
-		1.11.3 精神攻击：PsychologicalAttack .cs
+		✅1.11.3 精神攻击：PsychologicalAttack .cs
 			--增长压力值，原系统压力值到达100%出现压力反应
-		1.11.4 侵蚀攻击：ErosionAttack.cs
+		✅1.11.4 侵蚀攻击：ErosionAttack.cs
 			--同时作用两个数值-减少生命值，增长压力
-		1.11.5 灵魂伤害：SoulAttack.cs
+		✅1.11.5 灵魂伤害：SoulAttack.cs
 			--按照百分比扣减生命值 
+	⏩1.12 畸变体属性防御体系
 2.收容室
-	2.2 收容Effect的定义
-		√2.2.1 收容Effect作用后，威胁降低设计
-		x2.2.2 随小人属性增长延长effect作用时间 待定，后续实现
-	√2.4 畸变体监控站
-		√2.4.1 收容安全控制措施
-			√2.4.1.1 措施执行
-			√2.4.1.2 措施成功率与小人能力数值之间的关系 技能：自律
-			√2.4.1.3 安全控制措施图标
-			2.4.1.4 需要优化显示 收益、收容体等级、侵蚀值
-	    √2.4.2 产出物生成
-	2.5 收容室定义 ContainmentCharmberRoom.cs
+	✅2.4 畸变体监控站
+		-- 收容安全控制措施
+			执行 ContainmentMonitorWorkable.cs 
+				(产出物控制，收益关联因素： 小人属性、 小人技能等级、畸变体收容措施偏好、收容室侵蚀值、全局侵蚀值)
+			UI ContainmentMonitorSideScreen.cs
+	✅2.5 收容室定义 ContainmentCharmberRoom.cs
 		--中子质收容护壁 ContainmentTileConfig.cs、 1个畸变体、 畸变体监控站 ContainmentMonitorStationConfig.cs
 		--收容Effect MutanterEffects.cs
+			-- 关联： 
+				攻击系统：免疫即死伤害
+				理智值系统：抑制理智值下降、加快理智值回复
+	✅2.2 收容Effect的定义
+		❌2.2.2 随小人属性增长延长effect作用时间 待定，后续实现
 3. 部门
-	3.1 控制部 DepartmentRoom.cs  与 控制部操作台 ControlDepartmentConfig.cs
+	✅3.1 控制部 
+		--部门房间定义：DepartmentRoom.cs  
+		--控制部操作台 ControlDepartmentConfig.cs
+			任务执行 ControlDepartmentConsoleWorkable.cs
+			UI ControlDepartmentConsoleSideScreen.cs
 4. 小人能力架构
-	√4.1 小人收容能力架构 
+	✅4.1 小人收容能力架构 
 		--技能与能力：
-			√勇气-生命，
-			√防御-防御属性-Converter： 精神防御、物理防御 
+			✅勇气-生命，
+			✅防御-防御属性-Converter： 精神防御、物理防御 
 				关联：被攻击增加经验升级 MutanterAttackSystem.cs
-			√自律-自律属性-Converter：安全措施成功率、工作速度 
+			✅自律-自律属性-Converter：安全措施成功率、工作速度 
 				关联：操作收容监控工作台 ContainmentMonitor.cs
-			√正义-正义属性-Converter：攻击伤害、攻击速度
+			✅正义-正义属性-Converter：攻击伤害、⏩攻击速度
 				关联：攻击畸变体 MutanterAttackable.cs
-			闪避/伤害无效/暴击率	
-	√4.3 能力数值调整
-	 4.6 技能帽的图片
-	√4.8 技能组
-	 	x4.8.1 技能组是不是可以调整为一个组，工作怎么增加属性的经验
-	 4.10 收容能力与技能关联
-5. 故事特质体系
-	√5.1 祭坛献祭生成畸变体实现
-	√5.2 故事特质体系
-	√5.3 优化：畸变体随机地点生成
-	5.4 故事特质会被挤掉，怎么保证必然创建
-6. 畸变源祭坛遗迹 GravitasMutanterFounderConfig.cs
-	6.5 冷却时间与生成畸变体等级的实现
+			⏩闪避/伤害无效/暴击率
+	⏩4.2 小人属性防御能力	
+	⏩4.6 技能帽的图片
+	✅4.8 技能组
+	 	❌4.8.1 技能组是不是可以调整为一个组，工作怎么增加属性的经验
+10. EGO装备系统
+	⏩10.1 首先需要解决的是怎么覆盖小人动画问题
+✅5. 故事特质体系
+	--祭坛： 祭坛献祭生成畸变体
+		配方设定：GravitasMutanterFounder.cs
+	⏩5.4 故事特质会被挤掉，怎么保证必然创建
+✅6. 畸变源祭坛遗迹 GravitasMutanterFounderConfig.cs
 8. 玩法设计
-	8.1 事件：畸变体入侵，类似黎明、正午、黄昏、午夜
-	8.2 基础玩法：畸变体收容
-		√8.2.1 基础玩法：畸变体击败收容
-	√8.3 全局危机系统 GloablErosionManger.cs
+	⏩8.1 事件：畸变体入侵，类似黎明、正午、黄昏、午夜
+	⏩8.2 基础玩法：畸变体收容
+		✅8.2.1 基础玩法：畸变体击败收容
+	✅8.3 全局危机系统 GloablErosionManger.cs
 		--畸变躁动等级 全域躁动 
-	√8.4 收容稳定度系统 CorrosionManager.cs
+	✅8.4 收容稳定度系统 CorrosionManager.cs
 	8.5 图鉴收集 P5
+	8.6 电子斗蛐蛐 P5 首先要解决小人挂载武器动画问题
 		
 7. 多种类畸变体
-	7.1.SCP173 雕像
+	✅7.1.SCP173 雕像
 		-- 1x2 物理攻击
-	7.2.SCP096
+	✅7.2.SCP096
 		-- 1x4 物理攻击
-	7.3 SCP 662 管家铃
+	✅7.3 SCP 662 管家铃
 		-- 物品类畸变体，可召唤 SCP662-1
-		7.3.1 662-1 MR. Gerald 管家先生
+		✅7.3.1 662-1 MR. Gerald 管家先生
 			-- 1x2 可召唤提供食物
-	7.4 SCP-049 瘟疫医生
+	✅7.4 SCP-049 瘟疫医生
 		-- 1x2 侵蚀攻击、即死攻击、复活墓碑与尸体
-		7.4.1 SCP-049-2 活尸
+		✅7.4.1 SCP-049-2 活尸
 			-- 侦察者机器人
-	7.5 SCP-939 千喉之兽
+	✅7.5 SCP-939 千喉之兽
 		-- 2x2 侵蚀攻击
-		需要实现吸引小人
-	7.6 SCP 4762 极地守夜雪人
+		⏩需要实现吸引小人
+	✅7.6 SCP 4762 极地守夜雪人
 		-- 1x2 无攻击性、吸收周围热量至-100℃、间歇性释放-30℃碎冰
-	7.7 DawnConfusion 黎明的疑惑
+	✅7.7 DawnConfusion 黎明的疑惑
 		-- 1x2 物理攻击、精神攻击，不可被捕捉与收容，只能击杀
-	7.8 BugDusk 蠕虫
+	✅7.8 BugDusk 蠕虫
 		-- 2x2 物理攻击，不可被捕捉与收容，只能击杀
+	✅7.9 CosmicBug宇宙虫
+		-- 2x2 物理攻击、不可捕捉与收容，只能击杀
 9.其他mod兼容
-	√9.1 DGSM选人兼容报错
-
-2026/3/5
-1. 完成：祭坛激活与故事特质动画
-2. 完成：小人技能图片
-3. 完成： assetsBundle包
-4. 完成： 畸变体群落组件，可以设置畸变体的最多生成数
-2026/3/4
-1. 完成：SCP662-1 Mr. Gerald 动画
-2. 完成：SCP049 动画
-3. 修正：SCP069 动画
-2026/3/3
-1.添加SCP 049/SCP049-2
-2.添加SCP 939
-3.优化整体攻击体系
-2026/3/2
-1.完成畸变体监控仪动画
-2.完成畸变源祭坛遗迹动画
-3.完善动画相关逻辑与遗迹默认布局
-4. 添加SCP096
-5.更新scp173动画
-6.添加追击组件
-2026/2/25
-1. 完成：祭坛动画
-2. 完成：畸变体监控站动画
-2026/2/24
-1. 完成： 小人能力修正与关联完成
-2 完成： 畸变体攻击系统实现与小人能力关联
-2026/2/23
-1. 完成: 畸变体熔融物产出威胁
-2. 完成：收容室外墙设定
-3. 完成：小人攻击能力修正/生命修正，收容监控安全措施关联
-2026/2/22
-1. 完成：中子质收容护壁UI
-2026/2/21
-1. 完成：故事特质部分的逻辑与畸变祭坛SMI、祭坛生成畸变体
-2. 完成：SCP173初版动画
-3. 完成：优化BaseMutanter
-4. 完成：挖中子质、中子质收容护壁
-2026/2/9
-1. 完成: StatusItems 翻译/收容Effect翻译
-2. 完成：畸变体单独在小动物中的单独物种
-3. 完成：故事特质体系
-2026/2/8
-1. 完成：畸变体威胁探知能力与探知范围显示
-2. 完成：畸变体监控台安全控制措施执行时，PopFXManager显示
+	✅9.1 DGSM选人兼容报错

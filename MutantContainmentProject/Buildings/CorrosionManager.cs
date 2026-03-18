@@ -92,18 +92,8 @@ namespace MutantContainmentProject.Buildings
         }
 
         private MeterController m_corrosionMeter;
-
-        private MutanterSecurableMonitor.Instance securableMonitor;
-        private MutanterSecurableMonitor.Instance SecurableMonitor             {
-            get
-            {
-                if (securableMonitor == null)
-                {
-                    securableMonitor = gameObject.GetSMI<MutanterSecurableMonitor.Instance>();
-                }
-                return securableMonitor;
-            }
-        }
+        private ContainmentMonitor.Instance containmentMonitor;
+        public ContainmentMonitor.Instance ContainmentMonitor => containmentMonitor ??= gameObject.GetSMI<ContainmentMonitor.Instance>();
         protected override void OnSpawn()
         {
             base.OnSpawn();
@@ -206,7 +196,7 @@ namespace MutantContainmentProject.Buildings
             baseRate *= DANGER_LEVEL_MULTIPLIERS[dangerLevel];
 
             // 是否被收容
-            if (!SecurableMonitor?.IsSecured() == true)
+            if (ContainmentMonitor?.TargetSecurables.Count > 0)
             {
                 corrosionChange += CORROSION_INCREASE_UNATTENDED;
             }
@@ -270,6 +260,7 @@ namespace MutantContainmentProject.Buildings
             if (currentState == CorrosionState.Overflow)
             {
                 HandleOverflow();
+
                 // 只报告一次腐蚀值满值的情况
                 if (!hasReportedCorrosionFull)
                 {
@@ -281,6 +272,9 @@ namespace MutantContainmentProject.Buildings
                 {
                     selectable.AddStatusItem(ContainmentMonitorBuildingStatusItems.Instance.CorrosionOverflow);
                 }
+
+                //重置溢流值为0
+                CorrosionValue = 0;
             }
             else if (currentState == CorrosionState.HighCorrosion)
             {
@@ -337,7 +331,7 @@ namespace MutantContainmentProject.Buildings
         private void TriggerBreakout()
         {
             TbbDebuger.LogDebug($"[腐蚀管理] 畸变体突破收容");
-            SecurableMonitor.GoOutOfContainment();
+            containmentMonitor?.TriggerBreakout();
         }
 
         // 处理管控成功

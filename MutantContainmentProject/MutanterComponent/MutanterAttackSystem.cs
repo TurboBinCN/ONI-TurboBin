@@ -534,5 +534,82 @@ namespace MutantContainmentProject.MutanterComponent
             bool stressSuccess = ExecuteStressAttack(target, stressAmount);
             return healthSuccess || stressSuccess;
         }
+
+        /// <summary>
+        /// 尝试执行指定类型的攻击
+        /// </summary>
+        /// <param name="target">攻击目标</param>
+        /// <param name="damageAmount">伤害值</param>
+        /// <param name="damageType">伤害类型 ("Physical", "Mental", "Erosion")</param>
+        /// <returns>是否成功执行</returns>
+        public bool TryExecuteAttack(GameObject target, float damageAmount, string damageType)
+        {
+            if (!CanExecuteAnyAttack())
+                return false;
+
+            if (target == null)
+                return false;
+
+            switch (damageType.ToLower())
+            {
+                case "physical":
+                    return ExecuteHealthAttack(target, damageAmount);
+                case "mental":
+                    return ExecuteStressAttack(target, damageAmount);
+                case "erosion":
+                    // 侵蚀攻击同时造成生命值和压力值伤害
+                    return ExecuteCombinedAttack(target, damageAmount * 0.5f, damageAmount * 0.5f);
+                default:
+                    TbbDebuger.LogDebug($"[MutanterAttackSystem] Unknown damage type: {damageType}");
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// 尝试执行指定tag的攻击
+        /// </summary>
+        /// <param name="target">攻击目标</param>
+        /// <param name="damageAmount">伤害值</param>
+        /// <param name="attackTag">攻击tag</param>
+        /// <returns>是否成功执行</returns>
+        public bool TryExecuteAttack(GameObject target, float damageAmount, Tag attackTag)
+        {
+            if (!CanExecuteAnyAttack())
+                return false;
+
+            if (target == null)
+                return false;
+
+            if (attackTag == MutanterTags.PhysicalAttack)
+            {
+                return ExecuteHealthAttack(target, damageAmount);
+            }
+            else if (attackTag == MutanterTags.PsychologicalAttack)
+            {
+                return ExecuteStressAttack(target, damageAmount);
+            }
+            else if (attackTag == MutanterTags.ErosionAttack)
+            {
+                // 侵蚀攻击同时造成生命值和压力值伤害
+                return ExecuteCombinedAttack(target, damageAmount * 0.5f, damageAmount * 0.5f);
+            }
+            else if (attackTag == MutanterTags.SoulAttack)
+            {
+                // 灵魂攻击按照百分比扣减生命值
+                var health = target.GetComponent<Health>();
+                if (health != null)
+                {
+                    float maxHitPoints = health.maxHitPoints;
+                    float soulDamage = maxHitPoints * 0.2f; // 20%最大生命值
+                    return ExecuteHealthAttack(target, soulDamage);
+                }
+                return false;
+            }
+            else
+            {
+                TbbDebuger.LogDebug($"[MutanterAttackSystem] Unknown attack tag: {attackTag}");
+                return false;
+            }
+        }
     }
 }

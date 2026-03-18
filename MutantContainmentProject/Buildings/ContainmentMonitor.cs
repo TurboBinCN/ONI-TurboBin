@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MutantContainmentProject.Buildings
 {
@@ -62,24 +63,32 @@ namespace MutantContainmentProject.Buildings
             private Instance activeMonitor;
             private bool isControlStationActive = false;
 
-            private List<MutanterSecurableMonitor.Instance> targetSecurable = new List<MutanterSecurableMonitor.Instance>();
+            private List<MutanterSecurableMonitor.Instance> targetSecurables = new();
 
             public List<MutanterSecurableMonitor.Instance> TargetSecurables
             {
-                get { return targetSecurable; }
+                get { return targetSecurables; }
             }
-
+            private int onBuildingSelectHandle;
 
 
             public Instance(IStateMachineTarget master, Def def) : base(master, def)
             {
                 onRoomUpdatedHandle = Subscribe(144050788, new Action<object>(OnRoomUpdated));
                 Subscribe(493375141, new Action<object>(OnRefreshUserMenu));
+                onBuildingSelectHandle = Subscribe(-1503271301, new Action<object>(OnBuildingSelect));
+            }
+            private void OnBuildingSelect(object data)
+            {
+                var selectable = gameObject.GetComponent<KSelectable>();
+                if (selectable == null) return;
+                selectable.RemoveStatusItem(ContainmentMonitorBuildingStatusItems.Instance.MutanterBeReleased);
             }
             protected override void OnCleanUp()
             {
                 base.OnCleanUp();
                 Unsubscribe(ref onRoomUpdatedHandle);
+                Unsubscribe(ref onBuildingSelectHandle);
             }
 
             private void OnRefreshUserMenu(object data)
@@ -133,17 +142,17 @@ namespace MutantContainmentProject.Buildings
             }
             public void TriggerContainmentMonitorNoLongerAvailable()
             {
-                for (int i = targetSecurable.Count - 1; i >= 0; i--)
+                for (int i = TargetSecurables.Count - 1; i >= 0; i--)
                 {
-                    MutanterSecurableMonitor.Instance instance = targetSecurable[i];
+                    MutanterSecurableMonitor.Instance instance = TargetSecurables[i];
                     if (instance.IsNullOrStopped())
                     {
-                        targetSecurable.RemoveAt(i);
+                        TargetSecurables.RemoveAt(i);
                     }
                     else
                     {
                         instance.GoOutOfContainment();
-                        this.targetSecurable.Remove(instance);
+                        this.TargetSecurables.Remove(instance);
 
                         if (_mutantersInRoom != null) _mutantersInRoom.Clear();
                     }
@@ -175,10 +184,10 @@ namespace MutantContainmentProject.Buildings
                         smi = kprefabID.gameObject.GetSMI<MutanterSecurableMonitor.Instance>();
                     } catch { }
                     if (smi == null) continue;
-                    if (!targetSecurable.Contains(smi))
+                    if (!TargetSecurables.Contains(smi))
                     {
                         smi.SetContainmentMonitor(this);
-                        targetSecurable.Add(smi);
+                        TargetSecurables.Add(smi);
                     }
                     // 应用控制站效果
                     if (isControlStationActive)
@@ -201,7 +210,7 @@ namespace MutantContainmentProject.Buildings
             public void EnableControlStationEffect()
             {
                 isControlStationActive = true;
-                foreach (var smi in targetSecurable)
+                foreach (var smi in TargetSecurables)
                 {
                     if (smi != null && !smi.IsNullOrStopped())
                     {
@@ -213,7 +222,7 @@ namespace MutantContainmentProject.Buildings
             public void DisableControlStationEffect()
             {
                 isControlStationActive = false;
-                foreach (var smi in targetSecurable)
+                foreach (var smi in TargetSecurables)
                 {
                     if (smi != null && !smi.IsNullOrStopped())
                     {
@@ -236,6 +245,18 @@ namespace MutantContainmentProject.Buildings
             {
                 AlwaysExecute = !AlwaysExecute;
             }
+            public void TriggerBreakout()
+            {
+                if(TargetSecurables.Count > 0){
+                    foreach (var smi in TargetSecurables)
+                    {
+                        if (smi != null && !smi.IsNullOrStopped())
+                        {
+                            smi.GoOutOfContainment();
+                        }
+                    }
+                }
+            }
         }
         public class Def : BaseDef { }
     }
@@ -250,18 +271,10 @@ namespace MutantContainmentProject.Buildings
 
         public StatusItem WorkerDamage; // 小人受到伤害的状态项
 
+        public StatusItem MutanterBeReleased; // 畸变体被释放的状态项
+
         private static ContainmentMonitorBuildingStatusItems _instance;
-        public static ContainmentMonitorBuildingStatusItems Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new ContainmentMonitorBuildingStatusItems();
-                }
-                return _instance;
-            }
-        }
+        public static ContainmentMonitorBuildingStatusItems Instance => _instance ??= new ContainmentMonitorBuildingStatusItems();
 
         public void CreateStatusItems(BuildingStatusItems buildingStatusItems)
         {
@@ -368,6 +381,10 @@ namespace MutantContainmentProject.Buildings
 
             // 溢流突破状态项
             CorrosionOverflow = buildingStatusItems.Add(new StatusItem("CorrosionOverflow", "BUILDINGS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, false, OverlayModes.None.ID, true, 129022, null));
+
+            // 畸变体被释放的状态项
+            MutanterBeReleased = buildingStatusItems.Add(new StatusItem("MutanterBeReleased", "BUILDINGS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, false, OverlayModes.None.ID, true, 129022, null));
+            MutanterBeReleased.AddNotification();
         }
     }
 

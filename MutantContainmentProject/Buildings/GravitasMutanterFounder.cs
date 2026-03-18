@@ -248,6 +248,13 @@ public class GravitasMutanterFounder : GameStateMachine<GravitasMutanterFounder,
                     { GlomConfig.ID, 1},
                     { ButterflyConfig.ID, 2}
                 }
+            },
+            {
+                CircusJokerConfig.ID, new Dictionary<Tag, int>
+                {
+                    { HatchConfig.ID, 2},
+                    { ButterflyConfig.ID, 1}
+                }
             }
         };
 

@@ -1,0 +1,25 @@
+id: "MUTANTER_CIRCUS_JOKER"
+title: STRINGS.CODEX.MUTANTER.MUTANTER_CIRCUS_JOKER.TITLE
+
+contentContainers:
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_CIRCUS_JOKER.TITLE
+          style: Title
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_CIRCUS_JOKER.SUBTITLE
+          style: Subtitle
+      - !CodexDividerLine
+          preferredWidth: -1
+      - !CodexImage
+          batchedAnimPrefabSourceID: MUTANTER_CIRCUS_JOKER
+          preferredWidth: 128
+          preferredHeight: 230
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_CIRCUS_JOKER.BODY.CONTAINER1
+          style: Body
