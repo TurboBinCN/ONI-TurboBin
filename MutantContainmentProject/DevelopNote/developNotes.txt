@@ -22,6 +22,8 @@
 		✅1.8.12 畸变体侵蚀玩法组件 CorrosionManager.cs
 		✅1.8.13 全局畸变体侵蚀组件 GloablErosionManger.cs
 		⏩1.8.14 畸变体吸引组件
+		✅1.8.15 畸变体瞬移组件 MoveImmediately.cs
+		✅1.8.16 畸变体技能攻击组件 MutanterSkillComponent
 	✅1.10 畸变体百科词条体系
 	1.11 畸变体攻击系统：
 		✅1.11.1 攻击管理组件 MutanterAttackSystem.cs IMutanterAttackBehavior.cs
@@ -110,5 +112,9 @@
 		-- 2x2 物理攻击，不可被捕捉与收容，只能击杀
 	✅7.9 CosmicBug宇宙虫
 		-- 2x2 物理攻击、不可捕捉与收容，只能击杀
+	✅7.10 Circus Joker 小丑
+	 	-- 1x2 无攻击，死亡爆炸，瞬移至收容室、释放收容畸变体
+	✅7.11 The Fixer Red 红色收尾人
+	 	-- 1x2 物理攻击，死亡攻击、多技能攻击
 9.其他mod兼容
 	✅9.1 DGSM选人兼容报错

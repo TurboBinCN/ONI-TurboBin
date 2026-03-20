@@ -144,6 +144,7 @@ namespace MutantContainmentProject
                 public static LocString MUTANTER_BUG_DUSK = global::STRINGS.UI.FormatAsLink("BugDusk", BugDuskConfig.ID);
                 public static LocString MUTANTER_COSMIC_BUG = global::STRINGS.UI.FormatAsLink("CosmicBug", CosmicBugConfig.ID);
                 public static LocString MUTANTER_CIRCUS_JOKER = global::STRINGS.UI.FormatAsLink("Circus Joker", CircusJokerConfig.ID);
+                public static LocString MUTANTER_THE_FIXER_RED = global::STRINGS.UI.FormatAsLink("The Fixer Red", TheFixerRedConfig.ID);
             }
         }
         public static class MUTANTERS
@@ -941,6 +942,11 @@ namespace MutantContainmentProject
                     public static LocString NAME = global::STRINGS.UI.FormatAsLink("Circus Joker", CircusJokerConfig.ID);
                     public static LocString DESCRIPTION = "A clown with an evil smile. They are quite thin with a tongue hanging out. They wear red and white striped clown suits and black and white spotted clown hats.";
                 }
+                public static class MUTANTER_THE_FIXER_RED
+                {
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("The Fixer Red", TheFixerRedConfig.ID);
+                    public static LocString DESCRIPTION = "The Fixer Red is a Keter-class anomalous entity that wanders aimlessly within the facility and attacks any units it encounters. It uses a combination of close-range slashes, long-range hand cannon shots, spinning slashes, and laser attacks.";
+                }
             }
         }
         public static class RESEARCH
@@ -1127,6 +1133,15 @@ namespace MutantContainmentProject
                     public static class BODY
                     {
                         public static LocString CONTAINER1 = "Item #: Circus Joker\r\nObject Class: Euclid\r\n\r\nSpecial Containment Procedures\r\n\r\nCircus Joker must be contained in a standard containment unit. Due to its teleportation ability, the containment unit must be equipped with energy barriers to prevent breach.\r\n\r\nDescription\r\n\r\nA clown with an evil smile. They are quite thin with a tongue hanging out. They wear red and white striped clown suits and black and white spotted clown hats.\r\n\r\nThey do not attack staff. After spawning, they will immediately teleport to a random corridor within the facility and run at a fast speed towards the door of a containment unit, where they will \"mischief\". If not defeated, the clown will max out the erosion value of contained aberrations within its perception range, causing them to breach containment. Then, they will teleport to another random corridor and repeat this behavior.\r\n\r\nWhen defeated, the clown will self-destruct, causing 10-15 points of physical damage to all units within perception range.\r\n\r\nCore Anomalous Abilities\r\n\r\n1. Teleportation: The clown can move to a target location in a short time, playing a special animation before teleportation.\r\n2. Mischief: The clown will perform \"mischief\" at containment unit doors, increasing the erosion value of aberrations.\r\n3. Self-destruction: When defeated, the clown will self-destruct and cause damage to surrounding units.\r\n\r\nDiscovery & Background\r\n\r\nThe entity was first discovered in May 2024 in an abandoned circus tent. It appears to be a manifestation of chaotic energy, drawn to places with high emotional energy such as containment facilities.";
+                    }
+                }
+                public static class MUTANTER_THE_FIXER_RED
+                {
+                    public static LocString TITLE = "The Fixer Red";
+                    public static LocString SUBTITLE = "The Fixer Red";
+                    public static class BODY
+                    {
+                        public static LocString CONTAINER1 = "Item #: The Fixer Red\r\nObject Class: Keter\r\n\r\nSpecial Containment Procedures\r\n\r\nThe Fixer Red must be contained in a reinforced containment chamber with multiple layers of security. The chamber should be equipped with energy barriers and regular patrols to prevent breach.\r\n\r\nDescription\r\n\r\nThe Fixer Red is a Keter-class anomalous entity that wanders aimlessly within the facility and attacks any units it encounters.\r\n\r\nWhen targets are nearby, it extends the blades on its hands to slash at them, dealing 5-6 points of physical damage. The slash has a range of 3.5.\r\n\r\nWhen targets are farther away, it uses the hand cannon on its hands to shoot at them, dealing 14-17 points of physical damage. The hand cannon has a range of 9.\r\n\r\nAfter the cooldown period, The Fixer Red will use its blades to perform a spinning slash, dealing three hits of 25-30 points of physical damage to targets in front. If units are behind The Fixer Red, they will only take two hits. The initial cooldown for this skill is 12-15 seconds, and after the first use, the cooldown becomes 19-21 seconds.\r\n\r\nAfter the cooldown period, The Fixer Red will transform its hand cannon and fire a laser in a straight line forward. The laser will pass through walls and deal 70-100 points of physical damage to all units in its path. The initial cooldown for this skill is 25-30 seconds, and after the first use, the cooldown becomes 45-60 seconds.\r\n\r\nWhen killed, The Fixer Red will activate a laser cannon towards the sky and sweep down for a final attack. The laser will sweep approximately 240 degrees in the direction The Fixer Red was facing at the time of death, dealing 70-100 points of physical damage to all units in its path.\r\n\r\nCore Anomalous Abilities\r\n\r\n1. Close-range Slash: Uses hand blades to deal damage to nearby targets.\r\n2. Long-range Hand Cannon: Fires projectiles to damage distant targets.\r\n3. Spinning Slash: Performs a spinning attack that hits multiple times.\r\n4. Laser Attack: Fires a powerful laser that passes through walls.\r\n5. Death Laser: Releases a sweeping laser upon death.\r\n\r\nDiscovery & Background\r\n\r\nThe Fixer Red was first discovered in a deep underground facility. It appears to be a highly aggressive entity with no apparent motive other than attacking any living being it encounters. Its origins are currently unknown.";
                     }
                 }
             }

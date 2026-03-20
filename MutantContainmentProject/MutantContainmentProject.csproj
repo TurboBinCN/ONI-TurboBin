@@ -42,6 +42,9 @@
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>G:\Program Files (x86)\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>G:\Program Files (x86)\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buildings\ContainmentMonitorStationManager.cs" />
@@ -61,6 +64,7 @@
     <Compile Include="Buildings\SecureTermDb.cs" />
     <Compile Include="MutanterComponent\CircusJokerBehavior.cs" />
     <Compile Include="MutanterComponent\DeathDamage.cs" />
+    <Compile Include="MutanterComponent\EyeTrailController.cs" />
     <Compile Include="MutanterComponent\MoveImmediately.cs" />
     <Compile Include="MutanterComponent\MutanterColdIceMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterSecurableMonitor.cs" />
@@ -78,6 +82,7 @@
     <Compile Include="MutanterComponent\MutanterColonyComponent.cs" />
     <Compile Include="MutanterComponent\MutanterMoltenMetalMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterProductComponent.cs" />
+    <Compile Include="MutanterComponent\MutanterSkillComponent.cs" />
     <Compile Include="MutanterComponent\SCP049Controller.cs" />
     <Compile Include="MutanterComponent\SCP662BellController.cs" />
     <Compile Include="MutanterComponent\SCP662_1Controller.cs" />
@@ -108,6 +113,7 @@
     <Compile Include="Mutanters\SCP049Config.cs" />
     <Compile Include="Mutanters\SCP049_2Config.cs" />
     <Compile Include="Mutanters\SCP939Config.cs" />
+    <Compile Include="Mutanters\TheFixerRedConfig.cs" />
     <Compile Include="MutanterTraits\MutanterTraitDb.cs" />
     <Compile Include="MutanterComponent\MutanterStateMachine.cs" />
     <Compile Include="MutanterComponent\PsychologicalAttack .cs" />
@@ -163,6 +169,8 @@
     <None Include="anim\assets\SCP662_1\scp662_1_build.bytes" />
     <None Include="anim\assets\scp939\scp939_anim.bytes" />
     <None Include="anim\assets\scp939\scp939_build.bytes" />
+    <None Include="anim\assets\the_fixer_red\the_fixer_red_anim.bytes" />
+    <None Include="anim\assets\the_fixer_red\the_fixer_red_build.bytes" />
     <None Include="assets\assetsBundle\mutant_containment_project" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_BugDusk.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_CircusJoker.yaml" />
@@ -174,6 +182,7 @@
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP173.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP4762.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP939.yaml" />
+    <None Include="assets\codex\Creatures\DynamicCodexEntry_TheFixerRed.yaml" />
     <None Include="assets\codex\IndustrialIngredients\DynamicCodexEntry_SCP662.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP662_1.yaml" />
     <None Include="assets\codex\StoryTraits\DynamicCodexEntry_StoryTraitMutanterFounder.yaml" />
@@ -199,6 +208,7 @@
     <Content Include="anim\assets\scp662\scp662.png" />
     <Content Include="anim\assets\SCP662_1\scp662_1.png" />
     <Content Include="anim\assets\scp939\scp939.png" />
+    <Content Include="anim\assets\the_fixer_red\the_fixer_red.png" />
     <Content Include="assets\texture\containment_tile_solid.png" />
     <Content Include="DevelopNote\developNotes.txt" />
     <Content Include="DevelopNote\SCP-4762 极地守夜雪人 官方收容档案.txt" />
@@ -219,6 +229,10 @@
       <Project>{f7162753-681d-4dc6-9649-2cc944ec5834}</Project>
       <Name>TbbLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="G:\Program Files %28x86%29\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed\UnityEngine.AssetBundleModule.dll" />
+    <Analyzer Include="G:\Program Files %28x86%29\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed\UnityEngine.ParticleSystemModule.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

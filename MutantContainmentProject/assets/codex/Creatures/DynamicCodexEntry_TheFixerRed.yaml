@@ -1,0 +1,25 @@
+id: "MUTANTER_THE_FIXER_RED"
+title: STRINGS.CODEX.MUTANTER.MUTANTER_THE_FIXER_RED.TITLE
+
+contentContainers:
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_THE_FIXER_RED.TITLE
+          style: Title
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_THE_FIXER_RED.SUBTITLE
+          style: Subtitle
+      - !CodexDividerLine
+          preferredWidth: -1
+      - !CodexImage
+          batchedAnimPrefabSourceID: MUTANTER_THE_FIXER_RED
+          preferredWidth: 150
+          preferredHeight: 250
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_THE_FIXER_RED.BODY.CONTAINER1
+          style: Body

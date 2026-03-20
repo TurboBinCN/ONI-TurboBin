@@ -4,6 +4,7 @@ using MutantContainmentProject.Skills;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace MutantContainmentProject.MutanterComponent
 {
@@ -17,6 +18,9 @@ namespace MutantContainmentProject.MutanterComponent
 
         private bool _isContained = false;
         public bool IsContained { get => _isContained; }
+
+        private Navigator _navigator;
+        public Navigator Navigator => _navigator ??= gameObject.GetComponent<Navigator>();
 
         protected override void OnSpawn()
         {
@@ -165,21 +169,22 @@ namespace MutantContainmentProject.MutanterComponent
         /// <returns>是否可以执行攻击</returns>
         private bool CanExecuteAnyAttack()
         {
-            // 检查是否有收容效果，如果有则限制攻击
-            if (_effects != null && _effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
-            {
-                TbbDebuger.LogDebug("[MutanterAttackSystem] Attack restricted due to containment effect");
-                return false;
-            }
+            // // 检查是否有收容效果，如果有则限制攻击
+            // if (_effects != null && _effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+            // {
+            //     TbbDebuger.LogDebug("[MutanterAttackSystem] Attack restricted due to containment effect");
+            //     return false;
+            // }
 
-            // 检查是否有攻击限制效果
-            if (_effects != null && _effects.HasEffect(MutanterEffects.MUTANTER_ATTACK_RESTRICTED_EFFECT))
-            {
-                TbbDebuger.LogDebug("[MutanterAttackSystem] Attack restricted due to attack restricted effect");
-                return false;
-            }
+            // // 检查是否有攻击限制效果
+            // if (_effects != null && _effects.HasEffect(MutanterEffects.MUTANTER_ATTACK_RESTRICTED_EFFECT))
+            // {
+            //     TbbDebuger.LogDebug("[MutanterAttackSystem] Attack restricted due to attack restricted effect");
+            //     return false;
+            // }
 
             return true;
+            
         }
 
         /// <summary>
@@ -190,6 +195,9 @@ namespace MutantContainmentProject.MutanterComponent
         /// <returns>是否成功执行攻击</returns>
         private bool ExecuteAttackInternal(GameObject target, float insanityValue)
         {
+            // 改变朝向到目标
+            FaceTarget(target);
+
             // 选择行为的逻辑
             IMutanterAttackBehavior selectedBehavior = SelectBehavior(target, insanityValue);
 
@@ -206,6 +214,38 @@ namespace MutantContainmentProject.MutanterComponent
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// 朝向目标
+        /// </summary>
+        /// <param name="target">目标对象</param>
+        private void FaceTarget(GameObject target)
+        {
+            TbbDebuger.LogDebug($"[MutanterAttackSystem] 朝向目标: {target?.name}");
+            if (target == null || Navigator == null)
+                return;
+
+            // 计算目标位置
+            int targetCell = Grid.PosToCell(target.transform.position);
+            int currentCell = Grid.PosToCell(gameObject.transform.position);
+
+            // 计算朝向目标的方向
+            if (targetCell != currentCell)
+            {
+                // 尝试移动一小段距离来改变朝向
+                Navigator.SetCurrentNavType(NavType.Floor);
+                Navigator.GoTo(targetCell);
+
+                // 立即停止移动，只改变朝向
+                System.Action<object> NavigatorEvent = (data) =>
+                {
+                    TbbDebuger.LogDebug($"[MutanterAttackSystem] 改变朝向到目标位置: {targetCell}");
+                    Navigator.Stop();
+                    Navigator.Unsubscribe((int)GameHashes.PathAdvanced);
+                };
+                Navigator.Subscribe((int)GameHashes.PathAdvanced, NavigatorEvent);
+            }
         }
 
         /// <summary>
@@ -544,11 +584,14 @@ namespace MutantContainmentProject.MutanterComponent
         /// <returns>是否成功执行</returns>
         public bool TryExecuteAttack(GameObject target, float damageAmount, string damageType)
         {
-            if (!CanExecuteAnyAttack())
+             if (!CanExecuteAnyAttack())
                 return false;
 
             if (target == null)
                 return false;
+
+            // 改变朝向到目标
+            FaceTarget(target);
 
             switch (damageType.ToLower())
             {
@@ -579,6 +622,9 @@ namespace MutantContainmentProject.MutanterComponent
 
             if (target == null)
                 return false;
+
+            // 改变朝向到目标
+            FaceTarget(target);
 
             if (attackTag == MutanterTags.PhysicalAttack)
             {

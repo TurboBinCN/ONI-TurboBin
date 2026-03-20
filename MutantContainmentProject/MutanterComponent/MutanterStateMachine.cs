@@ -1,6 +1,6 @@
-using TBB.He.TbbLib.Debuger;
-using MutantContainmentProject.MutanterEffect;
 using Klei.AI;
+using MutantContainmentProject.MutanterEffect;
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent
@@ -48,7 +48,7 @@ namespace MutantContainmentProject.MutanterComponent
                         });
 
             stable// --- 稳定状态 ---
-                //.ToggleStatusItem(MutanterStatusItems.Instance.Idle)
+                  //.ToggleStatusItem(MutanterStatusItems.Instance.Idle)
                 .Update("CheckSanityForStability", (smi, dt) =>
                 {
                     if (!smi.IsContained && smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue <= smi.def.sanityThresholdToAgitate)
@@ -119,7 +119,13 @@ namespace MutantContainmentProject.MutanterComponent
                 .Enter(smi =>
                 {
                     TbbDebuger.LogDebug($"[MutanterStateMachine] Entering AttackStates.pre");
+                    if(smi.IdleSmi != null)
+                    {
+                        TbbDebuger.LogDebug($"[MutanterStateMachine] 进入 AttackStates.pre, 停止空闲状态");
+                        smi.StopIdleStates();
+                    }
                 })
+                .ScheduleGoTo(1f,attackStates.loop)
                 .OnAnimQueueComplete(attackStates.loop);
 
             // 攻击循环状态
@@ -138,16 +144,34 @@ namespace MutantContainmentProject.MutanterComponent
                 {
                     TbbDebuger.LogDebug($"[MutanterStateMachine] Entering AttackStates.pst");
                 })
-                .OnAnimQueueComplete(stable);
+                .ScheduleGoTo(1f, attackStates.loop)
+                .OnAnimQueueComplete(stable)
+                .Exit(smi =>
+                {
+                    if(smi.IdleSmi != null)
+                    {
+                        TbbDebuger.LogDebug($"[MutanterStateMachine] 退出 AttackStates.pst, 继续空闲状态");
+                        smi.ContinueIdleStates();
+                    }
+                });
         }
         public class StatesInstance : GameInstance
         {
             private EmotionMonitor.StatesInstance _emotionSMI;
-            private MutanterChaseMonitor.StatesInstance _chaseMonitorSMI;
-            private MutanterAttackSystem _attackSystem;
+            public EmotionMonitor.StatesInstance EmotionSMI => _emotionSMI ??= master.gameObject.GetSMI<EmotionMonitor.StatesInstance>();
 
+            private MutanterChaseMonitor.StatesInstance _chaseMonitorSMI;
+            public MutanterChaseMonitor.StatesInstance ChaseMonitorSMI => _chaseMonitorSMI ??= master.gameObject.GetSMI<MutanterChaseMonitor.StatesInstance>();
+
+            private IdleStates.Instance _idleSmi;
+            public IdleStates.Instance IdleSmi => _idleSmi ??= master.gameObject.GetSMI<IdleStates.Instance>();
             private bool _isContained = false;
             public bool IsContained { get => _isContained; }
+            private MutanterAttackSystem _attackSystem;
+            public MutanterAttackSystem AttackSystem => _attackSystem ??= master.gameObject.GetComponent<MutanterAttackSystem>();
+
+            private KBatchedAnimController _animController;
+            public KBatchedAnimController AnimController => _animController ??= master.gameObject.GetComponent<KBatchedAnimController>();
 
             public StatesInstance(IStateMachineTarget master, Def def) : base(master, def)
             {
@@ -158,7 +182,7 @@ namespace MutantContainmentProject.MutanterComponent
                     _isContained = true;
                     TbbDebuger.LogDebug($"[MutanterStateMachine] {gameObject.name} initialized with containment effect, IsContained = true");
                 }
-                
+
                 // 订阅事件来更新IsContained属性
                 Subscribe((int)MutanterGameHashes.MutanterContained, OnContained);
                 Subscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
@@ -190,39 +214,17 @@ namespace MutantContainmentProject.MutanterComponent
                 Unsubscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
                 base.OnCleanUp();
             }
+            public void StopIdleStates()
+            {
+                if (IdleSmi == null) return;
+                IdleSmi.GoTo((StateMachine.BaseState) IdleSmi.sm.root);
+                IdleSmi.GetComponent<Navigator>().Stop();
+            }
 
-            public EmotionMonitor.StatesInstance EmotionSMI
+            public void ContinueIdleStates()
             {
-                get
-                {
-                    if (_emotionSMI == null)
-                    {
-                        _emotionSMI = master.gameObject.GetSMI<EmotionMonitor.StatesInstance>();
-                    }
-                    return _emotionSMI;
-                }
-            }
-            public MutanterChaseMonitor.StatesInstance ChaseMonitorSMI
-            {
-                get
-                {
-                    if (_chaseMonitorSMI == null)
-                    {
-                        _chaseMonitorSMI = master.gameObject.GetSMI<MutanterChaseMonitor.StatesInstance>();
-                    }
-                    return _chaseMonitorSMI;
-                }
-            }
-            public MutanterAttackSystem AttackSystem
-            {
-                get
-                {
-                    if (_attackSystem == null)
-                    {
-                        _attackSystem = master.gameObject.GetComponent<MutanterAttackSystem>();
-                    }
-                    return _attackSystem;
-                }
+                if (IdleSmi == null) return;
+                IdleSmi.GoTo(IdleSmi.sm.GetDefaultState());
             }
         }
         public class Def : BaseDef
@@ -236,8 +238,7 @@ namespace MutantContainmentProject.MutanterComponent
         // 执行攻击逻辑
         private void ExecuteAttack(StatesInstance smi, float dt)
         {
-            var attackSystem = smi.master.gameObject.GetComponent<MutanterAttackSystem>();
-            if (attackSystem != null && smi.EmotionSMI != null)
+            if (smi.AttackSystem != null && smi.EmotionSMI != null)
             {
                 var threaters = smi.EmotionSMI.GetThreaters();
 
@@ -247,9 +248,20 @@ namespace MutantContainmentProject.MutanterComponent
                     {
                         if (threater != null && threater.gameObject != null && threater.gameObject.GetComponent<Health>()?.State != Health.HealthState.Dead)
                         {
-                            // 播放攻击动画
-                            smi.master.gameObject.GetComponent<KBatchedAnimController>().Play("attack_once", KAnim.PlayMode.Once);
-                            attackSystem.TryExecuteAttack(threater.gameObject);
+                            // 尝试使用技能攻击
+                            var skillComponent = smi.master.gameObject.GetComponent<MutanterSkillComponent>();
+                            if (skillComponent != null)
+                            {
+                                bool skillSuccess = skillComponent.TryExecuteSkill(threater.gameObject, out var usedSkill);
+                                // 技能已经在内部播放了动画，这里不需要再播放
+                            }
+                            else
+                            {
+                                // 如果没有技能组件，使用普通攻击
+                                bool isSuccess = smi.AttackSystem.TryExecuteAttack(threater.gameObject);
+                                // 播放攻击动画
+                                if(isSuccess && smi.AnimController != null) smi.AnimController.Play("attack_once", KAnim.PlayMode.Once);
+                            }
                         }
                     }
                 }

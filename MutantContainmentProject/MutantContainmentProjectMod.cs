@@ -38,7 +38,7 @@ namespace MutantContainmentProject
                 TbbAssetsUtils.Initialize(mod, harmony);
 
                 AssetBundle assetBundle = TbbAssetBundle.LoadAssetBundle("", "mutant_containment_project", Path.Combine(mod.ContentPath, "assets/assetsBundle"));
-
+                
                 TbbAssets.Initialize(mod, harmony)
                     .AddSprite(("gravitas_mutanter_founder_image"), assetBundle)
                     .AddSprite(("gravitas_mutanter_founder_icon"), assetBundle)
@@ -104,7 +104,8 @@ namespace MutantContainmentProject
                     .ADD("DawnConfusion", "Creatures")
                     .ADD("BugDusk", "Creatures")
                     .ADD("CosmicBug", "Creatures")
-                    .ADD("CircusJoker", "Creatures");
+                    .ADD("CircusJoker", "Creatures")
+                    .ADD("TheFixerRed", "Creatures");
                 //房间
                 TbbRoom.Initialize(mod, harmony)
                     .Add(ContainmentCharmberRoom.Register)

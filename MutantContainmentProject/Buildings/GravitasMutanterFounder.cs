@@ -1,4 +1,4 @@
-﻿using Database;
+using Database;
 using KSerialization;
 using MutantContainmentProject.Buildings;
 using MutantContainmentProject.FunctionPatches;
