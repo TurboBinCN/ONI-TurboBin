@@ -71,7 +71,6 @@ namespace MutantContainmentProject.MutanterComponent
             };
             Idle = CreateStatusItem("Idle", "MUTANTERS", "", StatusItem.IconType.Info, NotificationType.Neutral, allow_multiples: false, OverlayModes.None.ID);
             Incapacitated = CreateStatusItem("Incapacitated", "MUTANTERS", "", StatusItem.IconType.Exclamation, NotificationType.BadMinor, allow_multiples: false, OverlayModes.None.ID);
-            Incapacitated.AddNotification();
 
             Sealed = CreateStatusItem("Sealed", "MUTANTERS", "", StatusItem.IconType.Exclamation, NotificationType.Good, allow_multiples: false, OverlayModes.None.ID);
 

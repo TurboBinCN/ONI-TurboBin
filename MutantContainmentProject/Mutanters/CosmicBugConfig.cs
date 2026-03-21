@@ -37,7 +37,7 @@ namespace MutantContainmentProject.Mutanters
                 [SecureAction.Intimidation] = new float[] { 50f, 50f, 50f }
             };
 
-            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.ErosionAttack }, secureActionPreferences: secureActionPreferences, canBeCaptured: false, canBeDefeated: true);
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.ErosionAttack }, secureActionPreferences: secureActionPreferences, canBeCaptured: false, canBekilled: true);
 
             // 添加死后造成伤害的组件
             var deathDamageComponent = prefab.AddComponent<DeathDamage>();

@@ -35,68 +35,71 @@ namespace MutantContainmentProject.Mutanters
                 [SecureAction.Intimidation] = new float[] { 15f, 35f, 45f }
             };
 
-            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Keter, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack }, secureActionPreferences: secureActionPreferences);
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Keter, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack }, secureActionPreferences: secureActionPreferences, canBeCaptured: false, canBekilled: true);
 
             // 添加技能攻击组件
             var skillComponent = prefab.AddComponent<MutanterSkillComponent>();
             // 近距离切割攻击
             var skills = new List<MutanterSkillComponent.SkillData>{
-                new MutanterSkillComponent.SkillData
-            {
-                name = "Slash",
-                damageType = MutanterTags.PhysicalAttack,
-                damage = Random.Range(5f, 6f),
-                range = 3,
-                cooldown = 2f,
-                animation = "attack_once_3",
-                lastUseTime = 0f,
-                isFirstUse = true
+                new() {
+                    name = "Slash",
+                    damageType = MutanterTags.PhysicalAttack,
+                    damage = Random.Range(5f, 6f),
+                    range = 3,
+                    cooldown = 2f,
+                    animation = "attack_once_3",
+                    lastUseTime = 0f,
+                    isFirstUse = true
 
-            },
+                },
                 // 远距离手炮攻击
-                new MutanterSkillComponent.SkillData
-            {
-                name = "HandCannon",
-                damageType = MutanterTags.PhysicalAttack,
-                damage = Random.Range(14f, 17f),
-                range = 9,
-                cooldown = 3f,
-                animation = "attack_once",
-                lastUseTime = 0f,
-                isFirstUse = true
-            },
+                new() {
+                    name = "HandCannon",
+                    damageType = MutanterTags.PhysicalAttack,
+                    damage = Random.Range(14f, 17f),
+                    range = 9,
+                    cooldown = 3f,
+                    animation = "attack_once",
+                    lastUseTime = 0f,
+                    isFirstUse = true
+                },
                 // 回旋斩击
-                new MutanterSkillComponent.SkillData
-            {
-                name = "SpinSlash",
-                damageType = MutanterTags.PhysicalAttack,
-                damage = Random.Range(25f, 30f),
-                range = 3,
-                cooldown = 19f,
-                animation = "attack_once_2",
-                lastUseTime = 0f,
-                isFirstUse = true
-            },
+                new() {
+                    name = "SpinSlash",
+                    damageType = MutanterTags.PhysicalAttack,
+                    damage = Random.Range(25f, 30f),
+                    range = 3,
+                    cooldown = 19f,
+                    animation = "attack_once_2",
+                    lastUseTime = 0f,
+                    isFirstUse = true
+                },
                 // 激光攻击
-                new MutanterSkillComponent.SkillData
-            {
-                name = "Laser",
-                damageType = MutanterTags.PhysicalAttack,
-                damage = Random.Range(70f, 100f),
-                range = 15,
-                cooldown = 45f,
-                animation = "attack_once_4",
-                lastUseTime = 0f,
-                isFirstUse = true
-            }
+                new() {
+                    name = "Laser",
+                    damageType = MutanterTags.PhysicalAttack,
+                    damage = Random.Range(70f, 100f),
+                    range = 15,
+                    cooldown = 45f,
+                    animation = "attack_once_4",
+                    lastUseTime = 0f,
+                    extraAnimationEffectId = LaserBeamController.ID, // 使用激光束效果
+                    isFirstUse = true
+                }
             };
-            
+
             // 设置技能并添加到数据库
             skillComponent.skills = skills;
             MutanterSkillComponent.AddSkillsToDatabase(ID, skills);
 
+            prefab.AddOrGet<LaserBeamController>();
+            prefab.GetComponent<KPrefabID>().prefabSpawnFn += delegate (GameObject inst)
+            {
+                //inst.GetComponent<KBatchedAnimController>().SetSymbolVisiblity("snapto_gun_base", is_visible: false);
+                //inst.GetComponent<KBatchedAnimController>().SetSymbolVisiblity("snapto_gun_end", is_visible: false);
+            };
             // 添加死亡伤害组件
-            prefab.AddComponent<DeathDamage>();
+            prefab.AddOrGet<DeathDamage>();
 
             return prefab;
         }

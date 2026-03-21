@@ -169,6 +169,14 @@ namespace MutantContainmentProject.MutanterComponent
         /// <returns>是否可以执行攻击</returns>
         private bool CanExecuteAnyAttack()
         {
+            // 检查生命值，确保只有在生命值大于0时才执行攻击
+            var health = GetComponent<Health>();
+            if (health != null && health.hitPoints <= 0f)
+            {
+                TbbDebuger.LogDebug($"[MutanterAttackSystem] Attack blocked: health is {health.hitPoints} (<= 0) for {gameObject.name}");
+                return false;
+            }
+            
             // // 检查是否有收容效果，如果有则限制攻击
             // if (_effects != null && _effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
             // {
@@ -223,28 +231,30 @@ namespace MutantContainmentProject.MutanterComponent
         private void FaceTarget(GameObject target)
         {
             TbbDebuger.LogDebug($"[MutanterAttackSystem] 朝向目标: {target?.name}");
-            if (target == null || Navigator == null)
+            if (target == null)
                 return;
 
-            // 计算目标位置
-            int targetCell = Grid.PosToCell(target.transform.position);
-            int currentCell = Grid.PosToCell(gameObject.transform.position);
+            // 计算目标位置和当前位置
+            Vector3 targetPos = target.transform.position;
+            Vector3 currentPos = gameObject.transform.position;
 
             // 计算朝向目标的方向
-            if (targetCell != currentCell)
+            Vector3 direction = targetPos - currentPos;
+            if (direction.magnitude > 0.1f)
             {
-                // 尝试移动一小段距离来改变朝向
-                Navigator.SetCurrentNavType(NavType.Floor);
-                Navigator.GoTo(targetCell);
-
-                // 立即停止移动，只改变朝向
-                System.Action<object> NavigatorEvent = (data) =>
+                // 在2D游戏中，只需要考虑X轴方向的朝向
+                // 通过调整localScale.x来实现朝向改变
+                if (direction.x > 0)
                 {
-                    TbbDebuger.LogDebug($"[MutanterAttackSystem] 改变朝向到目标位置: {targetCell}");
-                    Navigator.Stop();
-                    Navigator.Unsubscribe((int)GameHashes.PathAdvanced);
-                };
-                Navigator.Subscribe((int)GameHashes.PathAdvanced, NavigatorEvent);
+                    // 朝向右侧
+                    transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                }
+                else
+                {
+                    // 朝向左侧
+                    transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                }
+                TbbDebuger.LogDebug($"[MutanterAttackSystem] 改变朝向到目标位置: {targetPos}, 方向: {direction.normalized}");
             }
         }
 

@@ -65,8 +65,10 @@
     <Compile Include="MutanterComponent\CircusJokerBehavior.cs" />
     <Compile Include="MutanterComponent\DeathDamage.cs" />
     <Compile Include="MutanterComponent\EyeTrailController.cs" />
+    <Compile Include="MutanterComponent\LaserBeamController.cs" />
     <Compile Include="MutanterComponent\MoveImmediately.cs" />
     <Compile Include="MutanterComponent\MutanterColdIceMonitor.cs" />
+    <Compile Include="MutanterComponent\MutanterCombatManager.cs" />
     <Compile Include="MutanterComponent\MutanterSecurableMonitor.cs" />
     <Compile Include="FunctionPatches\EventInfoDataHelper_Patches.cs" />
     <Compile Include="FunctionPatches\MiningNeutronium_Patches.cs" />

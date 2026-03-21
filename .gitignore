@@ -93,3 +93,14 @@ _ReSharper*/
 .idea/
 #Nuget packages folder
 packages/
+/.trae/documents/AnimationSystemAnalysis.md
+/.trae/documents/CompleteEventSystemAnalysis.md
+/.trae/documents/GameObjectEventSystemAnalysis.md
+/.trae/documents/KleiEventSystemAnalysis.md
+/.trae/documents/MutanterAttackSystem_Framework.md
+/.trae/documents/MutanterChaseBehavior_Implementation.md
+/.trae/documents/MutanterChaseMonitor_Integration.md
+/.trae/documents/NavGridAnalysis.md
+/.trae/documents/SkillSystemAnalysis.md
+/.trae/documents/实现畸变体熔融金属生成SMI.md
+/.trae/documents/沙盒模式小动物分类分析.md

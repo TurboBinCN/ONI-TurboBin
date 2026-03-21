@@ -37,7 +37,7 @@ namespace MutantContainmentProject.Mutanters
                 [SecureAction.Intimidation] = new float[] { 20f, 40f, 50f }
             };
 
-            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack, MutanterTags.PsychologicalAttack }, secureActionPreferences: secureActionPreferences, canBeCaptured: false, canBeDefeated: true);
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack, MutanterTags.PsychologicalAttack }, secureActionPreferences: secureActionPreferences, canBeCaptured: false, canBekilled: true);
 
             // 添加产出物
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Iron.CreateTag(), 1000f, 0.8f);

@@ -10,15 +10,6 @@ namespace MutantContainmentProject.MutanterComponent
 {
     /**
      * 2. 情绪/理智监控器 (EmotionMonitor)
-        功能: 替代或扩展 ThreatMonitor，持续追踪畸变体的情绪状态（如恐惧、愤怒、兴奋、绝望）。
-        这是一个数值系统（如 0-100 的“理智值”）。
-        触发源:
-        * 环境:灯光、装饰度
-        * 其他creature: 复制人、仿生人
-        * 其他Plant: 植物
-        * 安全控制措施：词条
-        * Effect：收容->随时间变化
-        * 特定事件
         作用: 输出的理智状态是 MutanterStateMachine 切换状态的关键输入。
      */
     public class EmotionMonitor : GameStateMachine<EmotionMonitor, EmotionMonitor.StatesInstance, IStateMachineTarget, EmotionMonitor.Def>
@@ -38,7 +29,7 @@ namespace MutantContainmentProject.MutanterComponent
                 })
                 .Update((smi, dt) => CalculateNewINSANITY(smi, dt), UpdateRate.SIM_1000ms);
         }
-        private void UpdateThreateArea(StatesInstance smi, float dt)
+        public void UpdateThreateArea(StatesInstance smi, float dt)
         {
             float insanityValue = smi.INSANITYValue; // 获取值一次，提高可读性和效率
             if (smi.MutanterStateMachineDef == null) return;
@@ -143,13 +134,35 @@ namespace MutantContainmentProject.MutanterComponent
         private float EvaluateThreaters(StatesInstance smi)
         {
             float impact = 0f;
-            if (smi.GetThreaters().Count > 0)
+            var threaters = smi.GetThreaters();
+            if (threaters.Count > 0)
             {
-                impact += 2f;
+                // 基础影响值
+                impact = 2f * threaters.Count;
+
+                // 检查收容状态，减少威胁影响
                 var effects = smi.master.gameObject.GetComponent<Effects>();
                 if (effects != null && effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
                 {
                     impact *= 0.5f;
+                }
+
+                // 计算距离影响（距离越近，影响越大）
+                Vector2 position = (Vector2)smi.master.transform.GetPosition();
+                foreach (var threat in threaters)
+                {
+                    if (threat != null && threat.gameObject != null)
+                    {
+                        float distance = Vector2.Distance(position, (Vector2)threat.transform.GetPosition());
+                        if (distance < 5f) // 近距离威胁
+                        {
+                            impact *= 1.5f;
+                        }
+                        else if (distance > 15f) // 远距离威胁
+                        {
+                            impact *= 0.5f;
+                        }
+                    }
                 }
             }
             return -impact;
@@ -220,6 +233,8 @@ namespace MutantContainmentProject.MutanterComponent
                 // 使用Klei原生事件系统订阅事件
                 Subscribe((int)MutanterGameHashes.MutanterContained, OnContained);
                 Subscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
+                // 订阅被攻击事件
+                Subscribe((int)GameHashes.Attacked, OnAttacked);
             }
 
             private void OnContained(object data)
@@ -242,6 +257,25 @@ namespace MutantContainmentProject.MutanterComponent
                 }
             }
 
+            private void OnAttacked(object data)
+            {
+                // 被攻击时，将理智值直接拉到攻击阈值或降为0
+                if (MutanterStateMachineDef != null)
+                {
+                    // 将理智值设置为攻击阈值
+                    INSANITYValue = MutanterStateMachineDef.sanityThresholdToAttack;
+                    TbbDebuger.LogDebug($"[EmotionMonitor] {gameObject.name} 被攻击，理智值降至攻击阈值: {INSANITYValue}");
+                }
+                else
+                {
+                    // 如果没有找到状态机定义，直接将理智值降为0
+                    INSANITYValue = MIN_INSANITY;
+                    TbbDebuger.LogDebug($"[EmotionMonitor] {gameObject.name} 被攻击，理智值降至0");
+                }
+                // 立即更新威胁区域的可视化
+                smi.sm.UpdateThreateArea(this, 0f);
+            }
+
             protected override void OnCleanUp()
             {
                 Unsubscribe((int)GameHashes.CreatureLowDecor);
@@ -249,6 +283,8 @@ namespace MutantContainmentProject.MutanterComponent
                 // 使用Klei原生事件系统取消订阅
                 Unsubscribe((int)MutanterGameHashes.MutanterContained, OnContained);
                 Unsubscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
+                // 取消订阅被攻击事件
+                Unsubscribe((int)GameHashes.Attacked, OnAttacked);
                 base.OnCleanUp();
             }
 
@@ -263,6 +299,9 @@ namespace MutantContainmentProject.MutanterComponent
             public void EasyEmotion(float delta)
             {
                 INSANITYValue = Mathf.Clamp(INSANITYValue + delta, MIN_INSANITY, MAX_INSANITY);
+            }
+            public void ExpelThreat() {
+                INSANITYValue = mutanterStateMachineDef.sanityThresholdToAgitate;
             }
             public void SpaceProbe(StatesInstance smi, float dt)
             {

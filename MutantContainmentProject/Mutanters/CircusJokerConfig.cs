@@ -35,7 +35,7 @@ namespace MutantContainmentProject.Mutanters
                 [SecureAction.Intimidation] = new float[] { 10f, 10f, 10f }
             };
 
-            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag>(), secureActionPreferences: secureActionPreferences);
+            BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag>(), secureActionPreferences: secureActionPreferences, canBeCaptured: false, canBekilled: true);
 
             // 添加MoveImmediately组件
             prefab.AddOrGet<MoveImmediately>();

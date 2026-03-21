@@ -25,15 +25,33 @@ namespace MutantContainmentProject.MutanterComponent
             public State loop; // 攻击循环状态
             public State pst; // 攻击后状态
         }
+
         public override void InitializeStates(out BaseState default_state)
         {
             default_state = stable;
 
             TbbDebuger.LogDebug($"MutanterStatusItems.Instance: [{MutanterStatusItems.Instance}]");
             incapacitated// --- 瘫痪状态 ---
+                .Enter(smi =>
+                {
+                    TbbDebuger.LogDebug($"[MutanterStateMachine] Entering incapacitated state for {smi.master.gameObject.name}");
+                    smi.StopIdleStates();
+                    // 清理动画队列，确保死亡动画不会被打断
+                    if (smi.AnimController != null)
+                    {
+                        smi.AnimController.ClearQueue();
+                        TbbDebuger.LogDebug($"[MutanterStateMachine] Cleared animation queue in incapacitated state for {smi.master.gameObject.name}");
+                    }
+                })
                 .ToggleStatusItem(MutanterStatusItems.Instance.Incapacitated)
                 .ToggleTag(MutanterTags.Incapacitated)
-                .Exit((smi) => smi.gameObject.GetComponent<KPrefabID>().RemoveTag(MutanterTags.Incapacitated));
+                .EventTransition(GameHashes.HealthChanged, stable, (smi => (smi.HealthInstance.State == Health.HealthState.Alright)))
+                .Exit((smi) =>
+                {
+                    TbbDebuger.LogDebug($"[MutanterStateMachine] Exiting incapacitated state for {smi.master.gameObject.name}");
+                    smi.gameObject.GetComponent<KPrefabID>().RemoveTag(MutanterTags.Incapacitated);
+                    smi.ContinueIdleStates();
+                });
 
             _sealed// --- 封印状态 ---
                 .ToggleStatusItem(MutanterStatusItems.Instance.Sealed)
@@ -45,7 +63,8 @@ namespace MutantContainmentProject.MutanterComponent
                 .Exit((smi) =>
                         {
                             // 解除封印时的清理工作
-                        });
+                        })
+                .Transition(incapacitated, smi => smi.HealthInstance != null && smi.HealthInstance.hitPoints <= 10f);
 
             stable// --- 稳定状态 ---
                   //.ToggleStatusItem(MutanterStatusItems.Instance.Idle)
@@ -55,7 +74,8 @@ namespace MutantContainmentProject.MutanterComponent
                     {
                         smi.GoTo(smi.sm.agitated);
                     }
-                }, UpdateRate.SIM_1000ms);
+                }, UpdateRate.SIM_1000ms)
+                .Transition(incapacitated, smi => smi.HealthInstance != null && smi.HealthInstance.hitPoints <= 10f);
 
             agitated// --- 焦躁状态 ---
                 .ToggleStatusItem(MutanterStatusItems.Instance.Agitated)
@@ -78,7 +98,8 @@ namespace MutantContainmentProject.MutanterComponent
                     {
                         smi.GoTo(stable);
                     }
-                }, UpdateRate.SIM_1000ms);
+                }, UpdateRate.SIM_1000ms)
+                .Transition(incapacitated, smi => smi.HealthInstance != null && smi.HealthInstance.hitPoints <= 10f);
             hostile// --- 敌对状态 ---
                 .ToggleStatusItem(MutanterStatusItems.Instance.Hostile)
                 .Enter((smi) =>
@@ -100,7 +121,8 @@ namespace MutantContainmentProject.MutanterComponent
                     {
                         smi.GoTo(attackStates);
                     }
-                }, UpdateRate.SIM_1000ms);
+                }, UpdateRate.SIM_1000ms)
+                .Transition(incapacitated, smi => smi.HealthInstance != null && smi.HealthInstance.hitPoints <= 10f);
 
             // --- 攻击状态组实现 ---
             attackStates
@@ -119,14 +141,14 @@ namespace MutantContainmentProject.MutanterComponent
                 .Enter(smi =>
                 {
                     TbbDebuger.LogDebug($"[MutanterStateMachine] Entering AttackStates.pre");
-                    if(smi.IdleSmi != null)
+                    if (smi.IdleSmi != null)
                     {
                         TbbDebuger.LogDebug($"[MutanterStateMachine] 进入 AttackStates.pre, 停止空闲状态");
                         smi.StopIdleStates();
                     }
                 })
-                .ScheduleGoTo(1f,attackStates.loop)
-                .OnAnimQueueComplete(attackStates.loop);
+                .ScheduleGoTo(1f, attackStates.loop)
+                .Transition(incapacitated, smi => smi.HealthInstance != null && smi.HealthInstance.hitPoints <= 10f);
 
             // 攻击循环状态
             attackStates.loop
@@ -136,24 +158,22 @@ namespace MutantContainmentProject.MutanterComponent
                 })
                 .Update((smi, dt) => ExecuteAttack(smi, dt), UpdateRate.SIM_1000ms)//攻击循环状态中执行攻击逻辑
                 .ToggleStatusItem(MutanterStatusItems.Instance.AttackLoop)
-                .Transition(attackStates.pst, smi => smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue >= smi.def.sanityThresholdToStable);
+                .Transition(attackStates.pst, smi => smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue > smi.def.sanityThresholdToAttack)
+                .Transition(incapacitated, smi => smi.HealthInstance != null && smi.HealthInstance.hitPoints <= 10f);
 
             // 攻击后状态
             attackStates.pst
                 .Enter(smi =>
                 {
                     TbbDebuger.LogDebug($"[MutanterStateMachine] Entering AttackStates.pst");
-                })
-                .ScheduleGoTo(1f, attackStates.loop)
-                .OnAnimQueueComplete(stable)
-                .Exit(smi =>
-                {
-                    if(smi.IdleSmi != null)
+                    if (smi.IdleSmi != null)
                     {
                         TbbDebuger.LogDebug($"[MutanterStateMachine] 退出 AttackStates.pst, 继续空闲状态");
                         smi.ContinueIdleStates();
                     }
-                });
+                })
+                .ScheduleGoTo(1f, stable)
+                .Transition(incapacitated, smi => smi.HealthInstance != null && smi.HealthInstance.hitPoints <= 10f);
         }
         public class StatesInstance : GameInstance
         {
@@ -173,6 +193,11 @@ namespace MutantContainmentProject.MutanterComponent
             private KBatchedAnimController _animController;
             public KBatchedAnimController AnimController => _animController ??= master.gameObject.GetComponent<KBatchedAnimController>();
 
+            private EyeTrailController _eyetrackingMonitor;
+            public EyeTrailController EyetrackingMonitor => _eyetrackingMonitor ??= master.gameObject.GetComponent<EyeTrailController>();
+
+            private Health health;
+            public Health HealthInstance => health ??= master.gameObject.GetComponent<Health>();
             public StatesInstance(IStateMachineTarget master, Def def) : base(master, def)
             {
                 // 初始化时检查当前的收容状态
@@ -217,7 +242,7 @@ namespace MutantContainmentProject.MutanterComponent
             public void StopIdleStates()
             {
                 if (IdleSmi == null) return;
-                IdleSmi.GoTo((StateMachine.BaseState) IdleSmi.sm.root);
+                IdleSmi.GoTo((StateMachine.BaseState)IdleSmi.sm.root);
                 IdleSmi.GetComponent<Navigator>().Stop();
             }
 
@@ -238,16 +263,53 @@ namespace MutantContainmentProject.MutanterComponent
         // 执行攻击逻辑
         private void ExecuteAttack(StatesInstance smi, float dt)
         {
-            if (smi.AttackSystem != null && smi.EmotionSMI != null)
+            int threatCount = 0;
+            // 检查生命值，确保只有在生命值大于0时才执行攻击
+            if (smi.HealthInstance != null && smi.HealthInstance.hitPoints <= 0f)
+            {
+                return;
+            }
+
+            // 获取战斗管理器
+            var combatManager = smi.master.gameObject.GetComponent<MutanterCombatManager>();
+            
+            if (combatManager != null && smi.EmotionSMI != null)
             {
                 var threaters = smi.EmotionSMI.GetThreaters();
+                TbbDebuger.LogDebug($"[MutanterStateMachine] 攻击目标: {threaters.Count} 个");
 
                 if (threaters != null && threaters.Count > 0)
                 {
                     foreach (var threater in threaters)
                     {
-                        if (threater != null && threater.gameObject != null && threater.gameObject.GetComponent<Health>()?.State != Health.HealthState.Dead)
+                        if (threater != null && threater.gameObject != null
+                        && threater.gameObject.GetComponent<Health>().hitPoints > 0f)
                         {
+                            threatCount++;
+                            // 使用战斗管理器执行攻击
+                            combatManager.TryExecuteAttack(threater.gameObject);
+                        }
+                    }
+                }
+                if (threatCount == 0)
+                {
+                    //smi.EmotionSMI.ExpelThreat();
+                }
+            }
+            else if (smi.AttackSystem != null && smi.EmotionSMI != null)
+            {
+                // 备用方案：直接使用攻击系统
+                var threaters = smi.EmotionSMI.GetThreaters();
+                TbbDebuger.LogDebug($"[MutanterStateMachine] 攻击目标: {threaters.Count} 个");
+
+                if (threaters != null && threaters.Count > 0)
+                {
+                    foreach (var threater in threaters)
+                    {
+                        if (threater != null && threater.gameObject != null
+                        && threater.gameObject.GetComponent<Health>().hitPoints > 0f)
+                        {
+                            threatCount++;
                             // 尝试使用技能攻击
                             var skillComponent = smi.master.gameObject.GetComponent<MutanterSkillComponent>();
                             if (skillComponent != null)
@@ -260,10 +322,14 @@ namespace MutantContainmentProject.MutanterComponent
                                 // 如果没有技能组件，使用普通攻击
                                 bool isSuccess = smi.AttackSystem.TryExecuteAttack(threater.gameObject);
                                 // 播放攻击动画
-                                if(isSuccess && smi.AnimController != null) smi.AnimController.Play("attack_once", KAnim.PlayMode.Once);
+                                if (isSuccess && smi.AnimController != null) smi.AnimController.Play("attack_once", KAnim.PlayMode.Once);
                             }
                         }
                     }
+                }
+                if (threatCount == 0)
+                {
+                    //smi.EmotionSMI.ExpelThreat();
                 }
             }
         }
