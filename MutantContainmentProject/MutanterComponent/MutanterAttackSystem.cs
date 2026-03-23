@@ -230,32 +230,9 @@ namespace MutantContainmentProject.MutanterComponent
         /// <param name="target">目标对象</param>
         private void FaceTarget(GameObject target)
         {
-            TbbDebuger.LogDebug($"[MutanterAttackSystem] 朝向目标: {target?.name}");
-            if (target == null)
-                return;
-
-            // 计算目标位置和当前位置
+            if (target == null) return;
             Vector3 targetPos = target.transform.position;
-            Vector3 currentPos = gameObject.transform.position;
-
-            // 计算朝向目标的方向
-            Vector3 direction = targetPos - currentPos;
-            if (direction.magnitude > 0.1f)
-            {
-                // 在2D游戏中，只需要考虑X轴方向的朝向
-                // 通过调整localScale.x来实现朝向改变
-                if (direction.x > 0)
-                {
-                    // 朝向右侧
-                    transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-                }
-                else
-                {
-                    // 朝向左侧
-                    transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-                }
-                TbbDebuger.LogDebug($"[MutanterAttackSystem] 改变朝向到目标位置: {targetPos}, 方向: {direction.normalized}");
-            }
+            GetComponent<Facing>()?.Face(targetPos);
         }
 
         /// <summary>

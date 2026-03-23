@@ -1,3 +1,5 @@
+using Klei.AI;
+using System;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
@@ -40,37 +42,48 @@ namespace MutantContainmentProject.MutanterComponent
         // 效果组件映射
         private Dictionary<string, IExtraAnimationEffect> effectComponents = new();
 
+        private static Dictionary<Type,Type> EffectsCom = new();
         protected override void OnSpawn()
         {
             base.OnSpawn();
             attackSystem = GetComponent<MutanterAttackSystem>();
             navigator = GetComponent<Navigator>();
 
-            // 初始化效果组件映射
-            InitializeEffectComponents();
-
-            // 尝试从数据库加载技能
             string mutanterId = gameObject.GetComponent<KPrefabID>().PrefabID().Name;
             if (_mutanterSkillsDatabase.ContainsKey(mutanterId))
             {
                 skills = new List<SkillData>(_mutanterSkillsDatabase[mutanterId]);
             }
+            InitializeEffects();
         }
 
-        // 初始化效果组件映射
-        private void InitializeEffectComponents()
+        private void InitializeEffects()
         {
-            // 注册激光束效果
-            var laserBeam = GetComponent<LaserBeamController>();
-            if (laserBeam != null)
+            foreach(var kvp in EffectsCom)
             {
-                effectComponents[LaserBeamController.ID] = new LaserBeamEffect(laserBeam);
+                try
+                {
+                    var effectController = gameObject.GetComponent(kvp.Key) ?? gameObject.AddComponent(kvp.Key);
+                    if (effectController != null)
+                    {
+                        var effect = (IExtraAnimationEffect)Activator.CreateInstance(kvp.Value, new object[] { effectController });
+                        string key = kvp.Key.Name;
+                        effectComponents[key] = effect;
+                    }
+                }
+                catch (Exception e)
+                {
+                    TbbDebuger.LogError($"初始化效果时出错: {e.Message}\n{e.StackTrace}");
+                }
             }
-
-            // 可以在这里添加其他效果组件
         }
 
-        // 获取额外动画效果
+        public void RegisterEffectComponents<TEffectController, TAnimationEffect> ()
+        where TEffectController : KMonoBehaviour
+        where TAnimationEffect : IExtraAnimationEffect
+        {
+            EffectsCom.Add(typeof(TEffectController), typeof(TAnimationEffect));
+        }
         private IExtraAnimationEffect GetExtraAnimationEffect(string effectId)
         {
             if (effectId != null && effectComponents.TryGetValue(effectId, out var effect))
@@ -80,26 +93,6 @@ namespace MutantContainmentProject.MutanterComponent
             return null;
         }
 
-        // 激光束效果实现
-        private class LaserBeamEffect : IExtraAnimationEffect
-        {
-            private LaserBeamController laserBeam;
-
-            public LaserBeamEffect(LaserBeamController laserBeam)
-            {
-                this.laserBeam = laserBeam;
-            }
-
-            public void Activate()
-            {
-                laserBeam?.ActiveParticle();
-            }
-
-            public void Deactivate()
-            {
-                laserBeam?.DeactiveParticle();
-            }
-        }
         protected override void OnPrefabInit()
         {
             base.OnPrefabInit();
@@ -210,7 +203,6 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 // 获取额外动画效果
                 var extraEffect = GetExtraAnimationEffect(skill.extraAnimationEffectId);
-
                 // 激活额外动画效果
                 if (extraEffect != null)
                 {

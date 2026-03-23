@@ -10,7 +10,6 @@ using MutantContainmentProject.SideScreen;
 using MutantContainmentProject.Skills;
 using MutantContainmentProject.Technology;
 using PeterHan.PLib.Core;
-using System.Collections.Generic;
 using System.IO;
 using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.Module;
@@ -27,6 +26,7 @@ namespace MutantContainmentProject
     {
         public class MutantContainmentProject : UserMod2
         {
+            public static AssetBundle ModAssetBundle;
             public override void OnLoad(Harmony harmony)
             {
                 base.OnLoad(harmony);
@@ -38,7 +38,7 @@ namespace MutantContainmentProject
                 TbbAssetsUtils.Initialize(mod, harmony);
 
                 AssetBundle assetBundle = TbbAssetBundle.LoadAssetBundle("", "mutant_containment_project", Path.Combine(mod.ContentPath, "assets/assetsBundle"));
-                
+                ModAssetBundle = assetBundle;
                 TbbAssets.Initialize(mod, harmony)
                     .AddSprite(("gravitas_mutanter_founder_image"), assetBundle)
                     .AddSprite(("gravitas_mutanter_founder_icon"), assetBundle)

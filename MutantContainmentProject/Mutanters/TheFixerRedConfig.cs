@@ -37,8 +37,11 @@ namespace MutantContainmentProject.Mutanters
 
             BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Keter, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack }, secureActionPreferences: secureActionPreferences, canBeCaptured: false, canBekilled: true);
 
+            
             // 添加技能攻击组件
-            var skillComponent = prefab.AddComponent<MutanterSkillComponent>();
+            var skillComponent = prefab.AddOrGet<MutanterSkillComponent>();
+            skillComponent.RegisterEffectComponents<LaserBeamController, LaserBeamEffect>();
+            skillComponent.RegisterEffectComponents<EyeTrailController, EyeTrailEffect>();
             // 近距离切割攻击
             var skills = new List<MutanterSkillComponent.SkillData>{
                 new() {
@@ -72,6 +75,7 @@ namespace MutantContainmentProject.Mutanters
                     cooldown = 19f,
                     animation = "attack_once_2",
                     lastUseTime = 0f,
+                    extraAnimationEffectId = typeof(EyeTrailController).Name,
                     isFirstUse = true
                 },
                 // 激光攻击
@@ -83,7 +87,7 @@ namespace MutantContainmentProject.Mutanters
                     cooldown = 45f,
                     animation = "attack_once_4",
                     lastUseTime = 0f,
-                    extraAnimationEffectId = LaserBeamController.ID, // 使用激光束效果
+                    extraAnimationEffectId = typeof(LaserBeamController).Name, // 使用激光束效果
                     isFirstUse = true
                 }
             };
@@ -95,8 +99,10 @@ namespace MutantContainmentProject.Mutanters
             prefab.AddOrGet<LaserBeamController>();
             prefab.GetComponent<KPrefabID>().prefabSpawnFn += delegate (GameObject inst)
             {
-                //inst.GetComponent<KBatchedAnimController>().SetSymbolVisiblity("snapto_gun_base", is_visible: false);
-                //inst.GetComponent<KBatchedAnimController>().SetSymbolVisiblity("snapto_gun_end", is_visible: false);
+                var animController = inst.GetComponent<KBatchedAnimController>();
+                animController.SetSymbolVisiblity("snapto_gun_base", is_visible: false);
+                animController.SetSymbolVisiblity("snapto_gun_end", is_visible: false);
+                animController.SetSymbolVisiblity("snapto_eye", is_visible: false);
             };
             // 添加死亡伤害组件
             prefab.AddOrGet<DeathDamage>();
