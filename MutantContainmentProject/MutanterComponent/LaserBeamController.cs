@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
@@ -22,6 +24,10 @@ namespace MutantContainmentProject.MutanterComponent
         {
             laserBeam?.DeactiveParticle();
         }
+        public List<KPrefabID> GetAttackTargets()
+        {
+            return laserBeam?.GetAttackTargets() ?? new List<KPrefabID>();
+        }
     }
     public class LaserBeamController : KMonoBehaviour, ISimEveryTick
     {
@@ -34,13 +40,14 @@ namespace MutantContainmentProject.MutanterComponent
         public Color beamColor = Color.red;
 
         private Vector3 gunBasePosition;
-        private Vector3 gunEndPosition;
         private Vector3 beamDirection;
         private float beamDistance;
         private bool isSkillActive = false;
         private GameObject beamInstance;
         private ParticleSystem particleSystem;
         private Texture2D particleTexture;
+        // 存储检测到的攻击目标
+        private List<KPrefabID> attackTargets = new List<KPrefabID>();
 
         private Facing facing;
         public Facing FacingCom => facing ??= gameObject.GetComponent<Facing>();
@@ -223,24 +230,21 @@ namespace MutantContainmentProject.MutanterComponent
             // 计算光束方向（直线型）
             beamDirection = new Vector3(facingDirection, 0, 0);
             beamDistance = beamLength;
-
-            // 计算枪末端位置
-            gunEndPosition = gunBasePosition + beamDirection * beamDistance;
         }
 
         // 激活激光束
         public void ActiveParticle()
         {
-            if (AnimController == null)  return;
+            if (AnimController == null) return;
             TbbDebuger.LogDebug($"激活激光束");
-            // 计算激光发射参数
             CalculateLaserParameters();
 
-            // 标记为激活状态
             isSkillActive = true;
+
+            // 检测直线激光路径上的碰撞
+            CheckLaserCollision();
         }
 
-        // 停用激光束
         public void DeactiveParticle()
         {
             if (beamInstance != null)
@@ -253,6 +257,215 @@ namespace MutantContainmentProject.MutanterComponent
                 beamInstance.SetActive(false); // 禁用对象，而不是销毁
             }
             isSkillActive = false;
+        }
+        public List<KPrefabID> GetAttackTargets()
+        {
+            TbbDebuger.LogDebug($"LaserBeamController获取攻击目标! 目标数量: {attackTargets.Count}");
+            // 返回检测到的攻击目标列表
+            return new List<KPrefabID>(attackTargets);
+        }
+
+        private void CheckRotatingLaserCollision()
+        {
+            // 清空之前的攻击目标列表
+            attackTargets.Clear();
+
+            // 计算旋转过程中所有可能的路径
+            for (int i = 0; i <= rotationDuration; i++)
+            {
+                // 计算当前旋转角度
+                float rotationProgress = i;
+                float facingDirection = FacingCom.GetFacing() ? -1f : 1f;
+                float currentRotation = (rotationProgress / rotationDuration) * targetRotation * facingDirection * -1;
+
+                // 计算当前方向
+                Vector3 initialDirection = new Vector3(facingDirection * Mathf.Cos(Mathf.Deg2Rad * StartAngle), Mathf.Sin(Mathf.Deg2Rad * StartAngle), 0f).normalized;
+                Quaternion rotation = Quaternion.Euler(0, 0, currentRotation);
+                Vector3 currentDirection = rotation * initialDirection;
+                currentDirection = currentDirection.normalized;
+
+                // 计算激光终点位置
+                Vector3 endPosition = gunBasePosition + currentDirection * beamLength;
+
+                // 检测激光路径上的所有格子
+                int startCell = Grid.PosToCell(gunBasePosition);
+                int endCell = Grid.PosToCell(endPosition);
+
+                // 使用Grid.CellToXY获取起始和结束格子的坐标
+                int startX, startY, endX, endY;
+                Grid.CellToXY(startCell, out startX, out startY);
+                Grid.CellToXY(endCell, out endX, out endY);
+
+                // 使用Bresenham算法遍历激光路径上的所有格子
+                int dx = Math.Abs(endX - startX);
+                int dy = Math.Abs(endY - startY);
+                int sx = startX < endX ? 1 : -1;
+                int sy = startY < endY ? 1 : -1;
+                int err = dx - dy;
+
+                int x = startX;
+                int y = startY;
+
+                while (true)
+                {
+                    // 检查当前格子是否有效
+                    int cell = Grid.XYToCell(x, y);
+                    if (Grid.IsValidCell(cell))
+                    {
+                        // 检查格子中的小人
+                        GameObject minion = Grid.Objects[cell, (int)ObjectLayer.Minion];
+                        if (minion != null)
+                        {
+                            var health = minion.GetComponent<Health>();
+                            if (health != null && health.hitPoints > 0)
+                            {
+                                // 添加到攻击目标列表
+                                KPrefabID kPrefabID = minion.GetComponent<KPrefabID>();
+                                if (kPrefabID != null && !attackTargets.Contains(kPrefabID))
+                                {
+                                    attackTargets.Add(kPrefabID);
+                                }
+                            }
+                        }
+
+                        // 检查格子中的生物
+                        GameObject creature = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
+                        if (creature != null)
+                        {
+                            ObjectLayerListItem objectLayerListItem = creature.GetComponent<Pickupable>().objectLayerListItem;
+                            while (objectLayerListItem != null)
+                            {
+                                Pickupable pickupable = objectLayerListItem.pickupable;
+                                objectLayerListItem = objectLayerListItem.nextItem;
+                                if (pickupable != null && pickupable.KPrefabID.HasTag(GameTags.Creature) && !pickupable.KPrefabID.HasTag(MutanterTags.Mutanter))
+                                {
+                                    Health health = pickupable.GetComponent<Health>();
+                                    if (health != null && health.hitPoints > 0)
+                                    {
+                                        // 添加到攻击目标列表
+                                        KPrefabID kPrefabID = pickupable.KPrefabID;
+                                        if (kPrefabID != null && !attackTargets.Contains(kPrefabID))
+                                        {
+                                            attackTargets.Add(kPrefabID);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 检查是否到达终点
+                    if (x == endX && y == endY)
+                        break;
+
+                    // 继续Bresenham算法
+                    int e2 = 2 * err;
+                    if (e2 > -dy)
+                    {
+                        err -= dy;
+                        x += sx;
+                    }
+                    if (e2 < dx)
+                    {
+                        err += dx;
+                        y += sy;
+                    }
+                }
+            }
+        }
+
+        private void CheckLaserCollision()
+        {
+            // 清空之前的攻击目标列表
+            attackTargets.Clear();
+
+            // 计算激光终点位置
+            Vector3 endPosition = gunBasePosition + beamDirection * beamLength;
+
+            // 检测激光路径上的所有格子
+            int startCell = Grid.PosToCell(gunBasePosition);
+            int endCell = Grid.PosToCell(endPosition);
+
+            // 使用Grid.CellToXY获取起始和结束格子的坐标
+            int startX, startY, endX, endY;
+            Grid.CellToXY(startCell, out startX, out startY);
+            Grid.CellToXY(endCell, out endX, out endY);
+
+            // 使用Bresenham算法遍历激光路径上的所有格子
+            int dx = Math.Abs(endX - startX);
+            int dy = Math.Abs(endY - startY);
+            int sx = startX < endX ? 1 : -1;
+            int sy = startY < endY ? 1 : -1;
+            int err = dx - dy;
+
+            int x = startX;
+            int y = startY;
+
+            while (true)
+            {
+                // 检查当前格子是否有效
+                int cell = Grid.XYToCell(x, y);
+                if (Grid.IsValidCell(cell))
+                {
+                    // 检查格子中的小人
+                    GameObject minion = Grid.Objects[cell, (int)ObjectLayer.Minion];
+                    if (minion != null)
+                    {
+                        var health = minion.GetComponent<Health>();
+                        if (health != null && health.hitPoints > 0)
+                        {
+                            // 添加到攻击目标列表
+                            KPrefabID kPrefabID = minion.GetComponent<KPrefabID>();
+                            if (kPrefabID != null && !attackTargets.Contains(kPrefabID))
+                            {
+                                attackTargets.Add(kPrefabID);
+                            }
+                        }
+                    }
+
+                    // 检查格子中的生物
+                    GameObject creature = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
+                    if (creature != null)
+                    {
+                        ObjectLayerListItem objectLayerListItem = creature.GetComponent<Pickupable>().objectLayerListItem;
+                        while (objectLayerListItem != null)
+                        {
+                            Pickupable pickupable = objectLayerListItem.pickupable;
+                            objectLayerListItem = objectLayerListItem.nextItem;
+                            if (pickupable != null && pickupable.KPrefabID.HasTag(GameTags.Creature) && !pickupable.KPrefabID.HasTag(MutanterTags.Mutanter))
+                            {
+                                Health health = pickupable.GetComponent<Health>();
+                                if (health != null && health.hitPoints > 0)
+                                {
+                                    // 添加到攻击目标列表
+                                    KPrefabID kPrefabID = pickupable.KPrefabID;
+                                    if (kPrefabID != null && !attackTargets.Contains(kPrefabID))
+                                    {
+                                        attackTargets.Add(kPrefabID);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 检查是否到达终点
+                if (x == endX && y == endY)
+                    break;
+
+                // 继续Bresenham算法
+                int e2 = 2 * err;
+                if (e2 > -dy)
+                {
+                    err -= dy;
+                    x += sx;
+                }
+                if (e2 < dx)
+                {
+                    err += dx;
+                    y += sy;
+                }
+            }
         }
 
         public bool isRotating = false;
@@ -277,8 +490,12 @@ namespace MutantContainmentProject.MutanterComponent
             currentDelayTime = Time.time;
             // 计算激光发射参数
             CalculateLaserParameters();
+
             float facingDirection = FacingCom.GetFacing() ? -1f : 1f; // Facing组件的GetFacing()返回true表示向左
             initialDirection = new Vector3(facingDirection * Mathf.Cos(Mathf.Deg2Rad * StartAngle), Mathf.Sin(Mathf.Deg2Rad * StartAngle), 0f).normalized;
+
+            // 检测旋转激光路径上的碰撞
+            CheckRotatingLaserCollision();
         }
 
         public void SimEveryTick(float dt)
@@ -366,7 +583,6 @@ namespace MutantContainmentProject.MutanterComponent
                 // 由于粒子系统默认沿Z轴发射，我们需要将Z轴对准光束方向
                 beamInstance.transform.rotation = Quaternion.LookRotation(beamDirection, Vector3.up);
             }
-
             // 检查是否完成旋转
             if (rotationProgress >= rotationDuration)
             {

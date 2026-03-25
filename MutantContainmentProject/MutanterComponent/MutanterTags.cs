@@ -23,6 +23,8 @@ namespace MutantContainmentProject.MutanterComponent
                 public static readonly Tag BugDusk = TagManager.Create("BugDusk", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_BUG_DUSK);
                 public static readonly Tag CosmicBug = TagManager.Create("CosmicBug", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_COSMIC_BUG);
                 public static readonly Tag CircusJoker = TagManager.Create("CircusJoker", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_CIRCUS_JOKER);
+                public static readonly Tag TheFixerRed = TagManager.Create("TheFixerRed", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_THE_FIXER_RED);
+                public static readonly Tag TheFixerWhite = TagManager.Create("TheFixerWhite", STRINGS.CREATURES.FAMILY_PLURAL.MUTANTER_THE_FIXER_WHITE);
             }
         }
     }

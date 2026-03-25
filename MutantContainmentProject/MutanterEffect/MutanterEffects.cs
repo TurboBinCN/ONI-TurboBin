@@ -12,6 +12,7 @@ namespace MutantContainmentProject.MutanterEffect
         public static readonly string SCP939_AMNESIA_EFFECT = "SCP939Amnesia";
         public static readonly string MUTANTER_CONTROL_SPEED_EFFECT = "MutanterControlSpeed";
         public static readonly string MUTANTER_CONTROL_SUPPRESSION_EFFECT = "MutanterControlSuppression";
+        public static readonly string WHITE_MIST_SLOW_EFFECT = "WhiteMistSlow";
 
         public static readonly float MUTANTER_CTROL_SPEED_BOOST_DURATION = 1800f;
 
@@ -122,6 +123,21 @@ namespace MutantContainmentProject.MutanterEffect
                 is_bad: false
             );
             Db.Get().effects.Add(mutanterControlSuppressionEffect);
+        }
+        public static void WhiteMistSlowEffect()
+        {
+            Effect whiteMistSlowEffect = new(
+                id: WHITE_MIST_SLOW_EFFECT,
+                name: STRINGS.EFFECTS.WHITE_MIST_SLOW_EFFECT.NAME,
+                description: STRINGS.EFFECTS.WHITE_MIST_SLOW_EFFECT.DESCRIPTION,
+                duration: 5f,
+                show_in_ui: true,
+                trigger_floating_text: true,
+                is_bad: true
+            );
+            // 添加移动速度修改器，降低50%移动速度
+            whiteMistSlowEffect.Add(new AttributeModifier(Db.Get().Attributes.Athletics.Id, -0.5f, "White Mist Slow", true));
+            Db.Get().effects.Add(whiteMistSlowEffect);
         }
     }
 }

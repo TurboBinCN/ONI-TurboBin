@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
@@ -10,9 +11,7 @@ namespace MutantContainmentProject.MutanterComponent
         [Header("拖尾配置")]
         public string eyeSymbolName = "snapto_eye";
 
-        private Vector3 eyeMarkerWorldPosition;
         private bool isSkillActive = false;
-        private KBatchedAnimController animController;
         private GameObject trailInstance;
         private ParticleSystem particleSystem;
         private Facing facing;
@@ -26,33 +25,10 @@ namespace MutantContainmentProject.MutanterComponent
         private float ellipseTilt = 10f; // 椭圆的倾斜角度（度）
         private float facingDirection = 1f; // 畸变体的朝向（1=右, -1=左）
 
-        public KBatchedAnimController AnimController
-        {
-            get
-            {
-                if (animController == null)
-                {
-                    animController = gameObject.GetComponent<KBatchedAnimController>();
-                }
-                return animController;
-            }
-        }
 
         protected override void OnSpawn()
         {
             base.OnSpawn();
-
-            if (AnimController == null) return;
-
-            // 尝试找到眼睛标记点
-            if (!FindEyeMarker())
-            {
-                TbbDebuger.LogWarning($"在[{gameObject?.name}]上未找到标记点：{eyeSymbolName}，使用默认位置");
-                // 使用对象中心作为默认位置
-                Vector3 defaultPosition = AnimController.transform.position;
-                defaultPosition.z = Grid.GetLayerZ(Grid.SceneLayer.FXFront);
-                eyeMarkerWorldPosition = defaultPosition;
-            }
 
             GameObject prefab = MutantContainmentProjectMod.MutantContainmentProject.ModAssetBundle.LoadAsset<GameObject>("TheFixerRedEyeTrail");
             trailInstance = Util.KInstantiate(prefab);
@@ -73,32 +49,11 @@ namespace MutantContainmentProject.MutanterComponent
         protected override void OnCleanUp()
         {
             DeactivateRedEyeTrail();
-            animController = null;
             base.OnCleanUp();
         }
 
-        private bool FindEyeMarker()
-        {
-            bool isFound = false;
-            Matrix4x4 symbolMatrix = AnimController.GetSymbolTransform(eyeSymbolName, out isFound);
-
-            if (!isFound)
-            {
-                // 使用对象中心作为默认位置
-                eyeMarkerWorldPosition = AnimController.transform.position;
-                eyeMarkerWorldPosition.z = Grid.GetLayerZ(Grid.SceneLayer.FXFront);
-                return false; // 找不到标记点，返回false
-            }
-
-            Vector3 localPos = symbolMatrix.GetColumn(3);
-            eyeMarkerWorldPosition = AnimController.transform.TransformPoint(localPos);
-            eyeMarkerWorldPosition.z = Grid.GetLayerZ(Grid.SceneLayer.FXFront);
-
-            return true; // 找到标记点，返回true
-        }
         public void ActivateRedEyeTrail()
         {
-            if (AnimController == null) return;
             TbbDebuger.LogDebug($"激活红眼拖尾");
             // 更新畸变体的朝向
             facingDirection = FacingCom?.GetFacing() == true ? -1f : 1f; // Facing组件的GetFacing()返回true表示向左
@@ -140,7 +95,8 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 facingDirection = currentFacingDirection;
             }
-            if(trailInstance != null){
+            if (trailInstance != null)
+            {
                 float rotationAngle = facingDirection > 0 ? 0f : 180f;
                 trailInstance.transform.rotation = Quaternion.Euler(0, rotationAngle, 0);
             }
@@ -200,6 +156,11 @@ namespace MutantContainmentProject.MutanterComponent
         public void Deactivate()
         {
             trail?.DeactivateRedEyeTrail();
+        }
+
+        public List<KPrefabID> GetAttackTargets()
+        {
+            return new List<KPrefabID>();
         }
     }
 }

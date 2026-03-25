@@ -105,7 +105,8 @@ namespace MutantContainmentProject
                     .ADD("BugDusk", "Creatures")
                     .ADD("CosmicBug", "Creatures")
                     .ADD("CircusJoker", "Creatures")
-                    .ADD("TheFixerRed", "Creatures");
+                    .ADD("TheFixerRed", "Creatures")
+                    .ADD("TheFixerWhite", "Creatures");
                 //房间
                 TbbRoom.Initialize(mod, harmony)
                     .Add(ContainmentCharmberRoom.Register)

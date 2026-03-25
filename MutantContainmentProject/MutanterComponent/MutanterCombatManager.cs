@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
+using static KAnim;
 
 namespace MutantContainmentProject.MutanterComponent
 {
@@ -8,38 +8,47 @@ namespace MutantContainmentProject.MutanterComponent
     {
         // 攻击状态跟踪
         private bool isAttacking = false;
-        
+
         // 技能系统
         private MutanterSkillSystem skillSystem;
-        
+
         // 动画协调器
         private AnimationCoordinator animationCoordinator;
-        
+
         // 状态管理器
         private StateManager stateManager;
-        
+
         // 攻击系统
         private MutanterAttackSystem attackSystem;
-        
+
         // 技能组件
         private MutanterSkillComponent skillComponent;
-        
+
         protected override void OnSpawn()
         {
             base.OnSpawn();
-            
+
             // 初始化组件
             attackSystem = GetComponent<MutanterAttackSystem>();
             skillComponent = GetComponent<MutanterSkillComponent>();
-            
+
             // 初始化系统
             skillSystem = new MutanterSkillSystem(this);
             animationCoordinator = new AnimationCoordinator(this);
             stateManager = new StateManager(this);
-            
-            TbbDebuger.LogDebug($"[MutanterCombatManager] Initialized for {gameObject.name}");
         }
-        
+        public void TryExecuteSkill(string extraAnimationEffectId, float damageAmount = 0f, bool playAnimation = true)
+        {
+            if (skillComponent != null)
+            {
+                bool skillSuccess = skillComponent.TryExecuteSkill(extraAnimationEffectId, damageAmount, playAnimation);
+                if (skillSuccess)
+                {
+                    TbbDebuger.LogDebug($"[MutanterCombatManager] 执行技能攻击 for {gameObject.name}");
+                }
+            }
+        }
+
         /// <summary>
         /// 尝试执行攻击
         /// </summary>
@@ -50,43 +59,38 @@ namespace MutantContainmentProject.MutanterComponent
             // 检查是否正在攻击
             if (isAttacking)
             {
-                TbbDebuger.LogDebug($"[MutanterCombatManager] Attack blocked: already attacking for {gameObject.name}");
                 return false;
             }
-            
+
             // 检查生命值
             var health = GetComponent<Health>();
             if (health != null && health.hitPoints <= 0f)
             {
-                TbbDebuger.LogDebug($"[MutanterCombatManager] Attack blocked: health is {health.hitPoints} (<= 0) for {gameObject.name}");
                 return false;
             }
-            
-            // 尝试执行技能攻击
+
             if (skillComponent != null)
             {
                 bool skillSuccess = skillComponent.TryExecuteSkill(target);
                 if (skillSuccess)
                 {
-                    TbbDebuger.LogDebug($"[MutanterCombatManager] Skill attack executed for {gameObject.name}");
                     return true;
                 }
             }
-            
+
             // 尝试执行基础攻击
             if (attackSystem != null)
             {
                 bool attackSuccess = attackSystem.TryExecuteAttack(target);
                 if (attackSuccess)
                 {
-                    TbbDebuger.LogDebug($"[MutanterCombatManager] Basic attack executed for {gameObject.name}");
                     return true;
                 }
             }
-            
+
             return false;
         }
-        
+
         /// <summary>
         /// 设置攻击状态
         /// </summary>
@@ -94,9 +98,12 @@ namespace MutantContainmentProject.MutanterComponent
         public void SetAttacking(bool attacking)
         {
             isAttacking = attacking;
-            TbbDebuger.LogDebug($"[MutanterCombatManager] Attacking state set to {attacking} for {gameObject.name}");
         }
-        
+
+        public void PlayAnimation(string animationName, float duration, System.Action onComplete = null)
+        {
+            animationCoordinator.PlayAnimation(animationName, duration, onComplete);
+        }
         /// <summary>
         /// 播放动画
         /// </summary>
@@ -107,7 +114,7 @@ namespace MutantContainmentProject.MutanterComponent
         {
             animationCoordinator.PlayAnimation(animationName, playMode, onComplete);
         }
-        
+
         /// <summary>
         /// 清理动画队列
         /// </summary>
@@ -115,7 +122,7 @@ namespace MutantContainmentProject.MutanterComponent
         {
             animationCoordinator.ClearQueue();
         }
-        
+
         /// <summary>
         /// 停止所有攻击
         /// </summary>
@@ -123,34 +130,62 @@ namespace MutantContainmentProject.MutanterComponent
         {
             SetAttacking(false);
             ClearAnimationQueue();
-            TbbDebuger.LogDebug($"[MutanterCombatManager] All attacks stopped for {gameObject.name}");
         }
-        
+
         // 技能系统
         public class MutanterSkillSystem
         {
             private MutanterCombatManager manager;
-            
+
             public MutanterSkillSystem(MutanterCombatManager manager)
             {
                 this.manager = manager;
             }
-            
+
             // 技能相关逻辑
         }
-        
+
         // 动画协调器
         public class AnimationCoordinator
         {
             private MutanterCombatManager manager;
             private KBatchedAnimController animController;
-            
+
             public AnimationCoordinator(MutanterCombatManager manager)
             {
                 this.manager = manager;
                 this.animController = manager.gameObject.GetComponent<KBatchedAnimController>();
             }
-            
+            public void PlayAnimation(string animationName, float duration, System.Action onComplete = null)
+            {
+                if (animController != null)
+                {
+                    animController.Play($"{animationName}_pre", PlayMode.Once);
+                    animController.Queue($"{animationName}_loop", PlayMode.Loop);
+                    GameScheduler.Instance.Schedule($"{animationName}_animation_Play", duration, (_) =>
+                    {
+                        animController.Play($"{animationName}_pst", PlayMode.Once);
+                    });
+                    if (onComplete != null)
+                    {
+                        System.Action<object> kAnimEvent = null;
+                        kAnimEvent = (_) =>
+                        {
+                            var currentAnim = animController.GetCurrentAnim();
+                            if (currentAnim != null && currentAnim.name == $"{animationName}_pst")
+                            {
+                                onComplete();
+                            }
+                            else
+                            {
+                                string currentAnimName = currentAnim != null ? currentAnim.name : "null";
+                            }
+                            animController.gameObject.Unsubscribe((int)GameHashes.AnimQueueComplete, kAnimEvent);
+                        };
+                        animController.gameObject.Subscribe((int)GameHashes.AnimQueueComplete, kAnimEvent);
+                    }
+                }
+            }
             /// <summary>
             /// 播放动画
             /// </summary>
@@ -158,9 +193,8 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 if (animController != null && !string.IsNullOrEmpty(animationName))
                 {
-                    TbbDebuger.LogDebug($"[MutanterCombatManager] Playing animation: {animationName} for {manager.gameObject.name}");
                     animController.Play(animationName, playMode);
-                    
+
                     if (onComplete != null)
                     {
                         System.Action<object> kAnimEvent = null;
@@ -173,7 +207,7 @@ namespace MutantContainmentProject.MutanterComponent
                     }
                 }
             }
-            
+
             /// <summary>
             /// 清理动画队列
             /// </summary>
@@ -182,21 +216,20 @@ namespace MutantContainmentProject.MutanterComponent
                 if (animController != null)
                 {
                     animController.ClearQueue();
-                    TbbDebuger.LogDebug($"[MutanterCombatManager] Cleared animation queue for {manager.gameObject.name}");
                 }
             }
         }
-        
+
         // 状态管理器
         public class StateManager
         {
             private MutanterCombatManager manager;
-            
+
             public StateManager(MutanterCombatManager manager)
             {
                 this.manager = manager;
             }
-            
+
             // 状态相关逻辑
         }
     }

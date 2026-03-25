@@ -1,4 +1,3 @@
-using Klei.AI;
 using System;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
@@ -13,16 +12,19 @@ namespace MutantContainmentProject.MutanterComponent
         {
             void Activate();
             void Deactivate();
+            List<KPrefabID> GetAttackTargets();
         }
 
         public struct SkillData
         {
             public string name;
             public Tag damageType;
+            public bool isPassiveSkill;
             public float damage;
             public int range;
             public float cooldown;
             public string animation;
+            public float animationDuration;
             public float lastUseTime;
             public bool isFirstUse;
             public string extraAnimationEffectId; // 额外动画效果ID
@@ -31,7 +33,6 @@ namespace MutantContainmentProject.MutanterComponent
         [SerializeField]
         public List<SkillData> skills = new();
         private MutanterAttackSystem attackSystem;
-        private Navigator navigator;
 
         // 静态技能数据库
         private static Dictionary<string, List<SkillData>> _mutanterSkillsDatabase = new();
@@ -39,15 +40,17 @@ namespace MutantContainmentProject.MutanterComponent
         private LaserBeamController laserBeamController;
         public LaserBeamController LaserBeamController => laserBeamController ??= GetComponent<LaserBeamController>();
 
+        private WhiteMistController whiteMistController;
+        public WhiteMistController WhiteMistControllerInstancce => whiteMistController ??= GetComponent<WhiteMistController>();
+
         // 效果组件映射
         private Dictionary<string, IExtraAnimationEffect> effectComponents = new();
 
-        private static Dictionary<Type,Type> EffectsCom = new();
+        private static Dictionary<Type, Type> EffectsCom = new();
         protected override void OnSpawn()
         {
             base.OnSpawn();
             attackSystem = GetComponent<MutanterAttackSystem>();
-            navigator = GetComponent<Navigator>();
 
             string mutanterId = gameObject.GetComponent<KPrefabID>().PrefabID().Name;
             if (_mutanterSkillsDatabase.ContainsKey(mutanterId))
@@ -59,7 +62,7 @@ namespace MutantContainmentProject.MutanterComponent
 
         private void InitializeEffects()
         {
-            foreach(var kvp in EffectsCom)
+            foreach (var kvp in EffectsCom)
             {
                 try
                 {
@@ -78,11 +81,12 @@ namespace MutantContainmentProject.MutanterComponent
             }
         }
 
-        public void RegisterEffectComponents<TEffectController, TAnimationEffect> ()
+        public void RegisterEffectComponents<TEffectController, TAnimationEffect>()
         where TEffectController : KMonoBehaviour
         where TAnimationEffect : IExtraAnimationEffect
         {
-            EffectsCom.Add(typeof(TEffectController), typeof(TAnimationEffect));
+            if (!EffectsCom.ContainsKey(typeof(TEffectController)))
+                EffectsCom.Add(typeof(TEffectController), typeof(TAnimationEffect));
         }
         private IExtraAnimationEffect GetExtraAnimationEffect(string effectId)
         {
@@ -109,7 +113,21 @@ namespace MutantContainmentProject.MutanterComponent
         {
             skills.Add(skill);
         }
-
+        public bool TryExecuteSkill(string extraAnimationEffectId, float damageAmount = 0, bool playAnimation = true)
+        {
+            if (extraAnimationEffectId == null || skills.Count == 0)
+                return false;
+            for (int i = 0; i < skills.Count; i++)
+            {
+                if (skills[i].extraAnimationEffectId == extraAnimationEffectId)
+                {
+                    // 执行技能攻击
+                    ExecuteSkill(i, null, damageAmount, playAnimation);
+                    return true;
+                }
+            }
+            return false;
+        }
         public bool TryExecuteSkill(GameObject target, out SkillData? usedSkill)
         {
             usedSkill = null;
@@ -132,20 +150,30 @@ namespace MutantContainmentProject.MutanterComponent
             int selectedSkillIndex = -1;
 
             //distance = 10;//调试用，不要修改
-
-            // 按距离和伤害排序技能
+            // 筛选非被动技能
+            var activeSkills = new List<SkillData>();
             for (int i = 0; i < skills.Count; i++)
             {
-                var skill = skills[i];
-                if (distance <= skill.range && Time.time - skill.lastUseTime >= skill.cooldown)
+                if (!skills[i].isPassiveSkill)
                 {
-                    if (selectedSkillIndex == -1 || skills[i].damage > skills[selectedSkillIndex].damage)
-                    {
-                        selectedSkillIndex = i;
-                    }
+                    activeSkills.Add(skills[i]);
                 }
             }
 
+            // 按距离和伤害排序技能
+            for (int i = 0; i < activeSkills.Count; i++)
+            {
+                var skill = activeSkills[i];
+                if (distance <= skill.range && Time.time - skill.lastUseTime >= skill.cooldown)
+                {
+                    // 找到原始技能索引
+                    int originalIndex = skills.FindIndex(s => s.name == skill.name && s.damage == skill.damage);
+                    if (selectedSkillIndex == -1 || skill.damage > skills[selectedSkillIndex].damage)
+                    {
+                        selectedSkillIndex = originalIndex;
+                    }
+                }
+            }
             //TbbDebuger.LogDebug($"选择技能索引: {selectedSkillIndex} 技能名称：[{skills[selectedSkillIndex].name}]");
             if (selectedSkillIndex != -1)
             {
@@ -175,7 +203,7 @@ namespace MutantContainmentProject.MutanterComponent
             return null;
         }
 
-        private void ExecuteSkill(int skillIndex, GameObject target)
+        private void ExecuteSkill(int skillIndex, GameObject target, float damageAmount = 0, bool playAnimation = true)
         {
             // 检查生命值，确保只有在生命值大于0时才执行技能
             var health = gameObject.GetComponent<Health>();
@@ -189,45 +217,78 @@ namespace MutantContainmentProject.MutanterComponent
 
             var skill = skills[skillIndex];
 
-            // 获取战斗管理器
             var combatManager = gameObject.GetComponent<MutanterCombatManager>();
-            // 设置攻击状态
             combatManager?.SetAttacking(true);
 
-            // 执行攻击
-            attackSystem.TryExecuteAttack(target, skill.damage, skill.damageType);
-
-            // 播放动画
-            var animController = gameObject.GetComponent<KBatchedAnimController>();
-            if (animController != null && !string.IsNullOrEmpty(skill.animation))
+            float damage = damageAmount == 0 ? skill.damage : damageAmount;
+            if (target != null)
             {
-                // 获取额外动画效果
+                attackSystem.TryExecuteAttack(target, damage, skill.damageType);
+            }
+            else
+            {
+                //没有Target的情况分两种，一种是被动技能，一种是主动技能，主动技能没有目标，说明出错了
                 var extraEffect = GetExtraAnimationEffect(skill.extraAnimationEffectId);
-                // 激活额外动画效果
+
                 if (extraEffect != null)
                 {
-                    extraEffect.Activate();
-                    TbbDebuger.LogDebug($"[MutanterSkillComponent] Activated extra effect {skill.extraAnimationEffectId} for {gameObject.name}");
+                    List<KPrefabID> extralDamageTargets = extraEffect.GetAttackTargets();
+                    if (extralDamageTargets.Count > 0)
+                    {
+                        foreach (var kPrefabID in extralDamageTargets)
+                        {
+                            attackSystem.TryExecuteAttack(kPrefabID.gameObject, damage, skill.damageType);
+                        }
+                    }
                 }
+            }
+            if (playAnimation)
+            {
+                // 播放动画
+                var animController = gameObject.GetComponent<KBatchedAnimController>();
+                if (animController != null && !string.IsNullOrEmpty(skill.animation))
+                {
+                    // 获取额外动画效果
+                    var extraEffect = GetExtraAnimationEffect(skill.extraAnimationEffectId);
+                    // 激活额外动画效果
+                    if (extraEffect != null)
+                    {
+                        extraEffect.Activate();
+                    }
 
-                TbbDebuger.LogDebug($"[MutanterSkillComponent] 播放动画: {skill.animation} for {gameObject.name}");
 
-                combatManager?.PlayAnimation(skill.animation, KAnim.PlayMode.Once, () =>
+                    System.Action onComplete = null;
+                    onComplete = () =>
                     {
                         // 停用额外动画效果
                         if (extraEffect != null)
                         {
                             extraEffect.Deactivate();
-                            TbbDebuger.LogDebug($"[MutanterSkillComponent] Deactivated extra effect {skill.extraAnimationEffectId} for {gameObject.name}");
+                            List<KPrefabID> extralDamageTargets = extraEffect.GetAttackTargets();
+                            if (extralDamageTargets.Count > 0)
+                            {
+                                // 处理额外伤害目标
+                                foreach (var target in extralDamageTargets)
+                                {
+                                    attackSystem.TryExecuteAttack(target.gameObject, damage, skill.damageType);
+                                }
+                            }
                         }
                         combatManager?.SetAttacking(false);
-                        TbbDebuger.LogDebug($"[MutanterSkillComponent] 动画播放完成: {skill.animation} for {gameObject.name}");
-                    });
-            }
-            else
-            {
-                // 如果没有动画，直接设置攻击状态为 false
-                combatManager?.SetAttacking(false);
+                    };
+                    if (skill.animationDuration > 0f)
+                    {
+                        combatManager?.PlayAnimation(skill.animation, skill.animationDuration, onComplete);
+                    }
+                    else
+                    {
+                        combatManager?.PlayAnimation(skill.animation, KAnim.PlayMode.Once, onComplete);
+                    }
+                }
+                else
+                {
+                    combatManager?.SetAttacking(false);
+                }
             }
 
             // 更新技能冷却时间
@@ -236,7 +297,6 @@ namespace MutantContainmentProject.MutanterComponent
             if (updatedSkill.isFirstUse)
             {
                 updatedSkill.isFirstUse = false;
-                // 初次使用后，冷却时间保持配置值不变
             }
             skills[skillIndex] = updatedSkill;
 

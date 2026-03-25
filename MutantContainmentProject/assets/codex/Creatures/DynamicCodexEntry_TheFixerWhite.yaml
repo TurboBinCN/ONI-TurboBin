@@ -1,0 +1,25 @@
+id: "MUTANTER_THE_FIXER_WHITE"
+title: STRINGS.CODEX.MUTANTER.MUTANTER_THE_FIXER_WHITE.TITLE
+
+contentContainers:
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_THE_FIXER_WHITE.TITLE
+          style: Title
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_THE_FIXER_WHITE.SUBTITLE
+          style: Subtitle
+      - !CodexDividerLine
+          preferredWidth: -1
+      - !CodexImage
+          batchedAnimPrefabSourceID: MUTANTER_THE_FIXER_WHITE
+          preferredWidth: 150
+          preferredHeight: 250
+#-----------------------------
+  - contentLayout: Vertical
+    content:
+      - !CodexText
+          stringKey: STRINGS.CODEX.MUTANTER.MUTANTER_THE_FIXER_WHITE.BODY.CONTAINER1
+          style: Body

@@ -63,8 +63,13 @@
     <Compile Include="Buildings\GravitasMutanterFounderConfig.cs" />
     <Compile Include="Buildings\SecureTermDb.cs" />
     <Compile Include="MutanterComponent\CircusJokerBehavior.cs" />
+    <Compile Include="MutanterComponent\DamageReflectionController.cs" />
     <Compile Include="MutanterComponent\DeathDamage.cs" />
     <Compile Include="MutanterComponent\EyeTrailController.cs" />
+    <Compile Include="MutanterComponent\FixerRedDeathDamageController.cs" />
+    <Compile Include="MutanterComponent\FixerWhiteLaserController.cs" />
+    <Compile Include="MutanterComponent\FixerWhiteLaserSweepController.cs" />
+    <Compile Include="MutanterComponent\FixerWhitePrayerSkillController.cs" />
     <Compile Include="MutanterComponent\LaserBeamController.cs" />
     <Compile Include="MutanterComponent\MoveImmediately.cs" />
     <Compile Include="MutanterComponent\MutanterColdIceMonitor.cs" />
@@ -91,6 +96,8 @@
     <Compile Include="MutanterComponent\SCP939Amnesia.cs" />
     <Compile Include="MutanterComponent\SCP939Controller.cs" />
     <Compile Include="MutanterComponent\SoulAttack.cs" />
+    <Compile Include="MutanterComponent\WhiteMistController.cs" />
+    <Compile Include="MutanterComponent\WhiteMistEffect.cs" />
     <Compile Include="MutanterEffect\MutanterEffects.cs" />
     <Compile Include="MutantContainmentProjectMod.cs" />
     <Compile Include="MutanterComponent\BaseMutanter.cs" />
@@ -116,6 +123,7 @@
     <Compile Include="Mutanters\SCP049_2Config.cs" />
     <Compile Include="Mutanters\SCP939Config.cs" />
     <Compile Include="Mutanters\TheFixerRedConfig.cs" />
+    <Compile Include="Mutanters\TheFixerWhiteConfig.cs" />
     <Compile Include="MutanterTraits\MutanterTraitDb.cs" />
     <Compile Include="MutanterComponent\MutanterStateMachine.cs" />
     <Compile Include="MutanterComponent\PsychologicalAttack .cs" />
@@ -173,6 +181,8 @@
     <None Include="anim\assets\scp939\scp939_build.bytes" />
     <None Include="anim\assets\the_fixer_red\the_fixer_red_anim.bytes" />
     <None Include="anim\assets\the_fixer_red\the_fixer_red_build.bytes" />
+    <None Include="anim\assets\the_fixer_white\the_fixer_white_anim.bytes" />
+    <None Include="anim\assets\the_fixer_white\the_fixer_white_build.bytes" />
     <None Include="assets\assetsBundle\mutant_containment_project" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_BugDusk.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_CircusJoker.yaml" />
@@ -185,6 +195,7 @@
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP4762.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP939.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_TheFixerRed.yaml" />
+    <None Include="assets\codex\Creatures\DynamicCodexEntry_TheFixerWhite.yaml" />
     <None Include="assets\codex\IndustrialIngredients\DynamicCodexEntry_SCP662.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_SCP662_1.yaml" />
     <None Include="assets\codex\StoryTraits\DynamicCodexEntry_StoryTraitMutanterFounder.yaml" />
@@ -211,6 +222,7 @@
     <Content Include="anim\assets\SCP662_1\scp662_1.png" />
     <Content Include="anim\assets\scp939\scp939.png" />
     <Content Include="anim\assets\the_fixer_red\the_fixer_red.png" />
+    <Content Include="anim\assets\the_fixer_white\the_fixer_white.png" />
     <Content Include="assets\texture\containment_tile_solid.png" />
     <Content Include="DevelopNote\developNotes.txt" />
     <Content Include="DevelopNote\SCP-4762 极地守夜雪人 官方收容档案.txt" />
