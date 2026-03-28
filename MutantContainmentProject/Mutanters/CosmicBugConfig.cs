@@ -1,7 +1,9 @@
 using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
+using MutantContainmentProject.MutanterComponent.VFXController;
 using System.Collections.Generic;
 using UnityEngine;
+using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
 
 namespace MutantContainmentProject.Mutanters
 {
@@ -39,15 +41,42 @@ namespace MutantContainmentProject.Mutanters
 
             BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Euclid, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.ErosionAttack }, secureActionPreferences: secureActionPreferences, canBeCaptured: false, canBekilled: true);
 
-            // 添加死后造成伤害的组件
-            var deathDamageComponent = prefab.AddComponent<DeathDamage>();
-            deathDamageComponent.attackTag = MutanterTags.PhysicalAttack;
-            deathDamageComponent.damageAmount = 5f;
-
             // 添加产出物
-            //BaseMutanter.AddProductToMutanter(prefab, SimHashes..CreateTag(), 500f, 0.8f);
+            BaseMutanter.AddProductToMutanter(prefab, "Meat", 500f, 0.8f);
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.SlimeMold.CreateTag(), 300f, 0.5f);
 
+            // 添加技能攻击组件
+            var skillComponent = prefab.AddOrGet<MutanterSkillComponent>();
+            var skills = new List<SkillData>{
+                //死亡攻击
+                new() {
+                    name = "DeathAttack",
+                    isPassiveSkill = true,
+                    cooldown = 0f,
+                    animation = "death",
+                    lastUseTime = 0f,
+                    isFirstUse = true,
+                    VFXName = "CosmicBugDeathDamangeVFX",
+                    //extraAnimationEffectId = typeof(CosmicBugDeathDamangeVFXController).Name,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.PhysicalAttack,
+                            damageAmount = Random.Range(30f, 50f)
+                        }
+                    },
+                    triggers = new List<TriggerData>()
+                    {
+                        new(){
+                            triggerName = "DeathTrigger",
+                            properties = new Dictionary<string, object>()
+                        }
+                    }
+                }
+            };
+
+            // 设置技能并添加到数据库
+            skillComponent.AddSkillsToDb(skills);
             return prefab;
         }
 

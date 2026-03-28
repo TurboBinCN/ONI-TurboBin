@@ -9,14 +9,11 @@ namespace MutantContainmentProject.MutanterComponent
         // 攻击状态跟踪
         private bool isAttacking = false;
 
-        // 技能系统
-        private MutanterSkillSystem skillSystem;
+        //基础技能攻击能力
+        public bool AbilityOfBasicAttaction = true;
 
         // 动画协调器
         private AnimationCoordinator animationCoordinator;
-
-        // 状态管理器
-        private StateManager stateManager;
 
         // 攻击系统
         private MutanterAttackSystem attackSystem;
@@ -33,22 +30,31 @@ namespace MutantContainmentProject.MutanterComponent
             skillComponent = GetComponent<MutanterSkillComponent>();
 
             // 初始化系统
-            skillSystem = new MutanterSkillSystem(this);
             animationCoordinator = new AnimationCoordinator(this);
-            stateManager = new StateManager(this);
         }
-        public void TryExecuteSkill(string extraAnimationEffectId, float damageAmount = 0f, bool playAnimation = true)
+        public bool MutiSegmentDamage() {
+            return false;
+        }
+        /// <summary>
+        /// 尝试执行技能攻击
+        /// </summary>
+        /// <param name="skillName">技能名称</param>
+        /// <param name="damageAmount">伤害金额</param>
+        /// <param name="playAnimation">是否播放动画</param>
+        /// <param name="AsyncAttack">是否异步攻击</param>
+        /// <returns>是否成功执行技能攻击</returns>
+        public bool TryExecuteSkill(string skillName, float damageAmount = 0f)
         {
+            // 检查是否正在攻击
+            if (isAttacking) return false;
+
             if (skillComponent != null)
             {
-                bool skillSuccess = skillComponent.TryExecuteSkill(extraAnimationEffectId, damageAmount, playAnimation);
-                if (skillSuccess)
-                {
-                    TbbDebuger.LogDebug($"[MutanterCombatManager] 执行技能攻击 for {gameObject.name}");
-                }
+                bool skillSuccess = skillComponent.TryExecuteSkill(skillName, damageAmount);
+                return skillSuccess;
             }
+            return false;
         }
-
         /// <summary>
         /// 尝试执行攻击
         /// </summary>
@@ -79,7 +85,7 @@ namespace MutantContainmentProject.MutanterComponent
             }
 
             // 尝试执行基础攻击
-            if (attackSystem != null)
+            if (AbilityOfBasicAttaction && attackSystem != null)
             {
                 bool attackSuccess = attackSystem.TryExecuteAttack(target);
                 if (attackSuccess)
@@ -99,7 +105,12 @@ namespace MutantContainmentProject.MutanterComponent
         {
             isAttacking = attacking;
         }
-
+        /// <summary>
+        /// 播放动画 用于三联动画播放
+        /// </summary>
+        /// <param name="animationName">动画名称</param>
+        /// <param name="duration">{animationName}_loop动画的持续时间</param>
+        /// <param name="onComplete">动画完成回调</param>
         public void PlayAnimation(string animationName, float duration, System.Action onComplete = null)
         {
             animationCoordinator.PlayAnimation(animationName, duration, onComplete);
@@ -130,19 +141,6 @@ namespace MutantContainmentProject.MutanterComponent
         {
             SetAttacking(false);
             ClearAnimationQueue();
-        }
-
-        // 技能系统
-        public class MutanterSkillSystem
-        {
-            private MutanterCombatManager manager;
-
-            public MutanterSkillSystem(MutanterCombatManager manager)
-            {
-                this.manager = manager;
-            }
-
-            // 技能相关逻辑
         }
 
         // 动画协调器
@@ -218,19 +216,6 @@ namespace MutantContainmentProject.MutanterComponent
                     animController.ClearQueue();
                 }
             }
-        }
-
-        // 状态管理器
-        public class StateManager
-        {
-            private MutanterCombatManager manager;
-
-            public StateManager(MutanterCombatManager manager)
-            {
-                this.manager = manager;
-            }
-
-            // 状态相关逻辑
         }
     }
 }

@@ -228,7 +228,7 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 // 计算需要的伤害值（确保杀死目标）
                 float damage = health.hitPoints;
-                if (attackSystem.ExecuteHealthAttack(target, damage))
+                if (attackSystem.ExecuteHealthAttack(target, damage, out _))
                 {
                     TbbDebuger.LogDebug($"[SCP049] Instantly killed {target.name} via skin contact");
                     

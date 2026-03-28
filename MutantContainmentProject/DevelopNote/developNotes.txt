@@ -23,10 +23,12 @@
 		✅1.8.13 全局畸变体侵蚀组件 GloablErosionManger.cs
 		⏩1.8.14 畸变体吸引组件
 		✅1.8.15 畸变体瞬移组件 MoveImmediately.cs
-		✅1.8.16 畸变体技能攻击组件 MutanterSkillComponent
+
 	✅1.10 畸变体百科词条体系
 	1.11 畸变体攻击系统：
 		✅1.11.1 攻击管理组件 MutanterAttackSystem.cs IMutanterAttackBehavior.cs
+				畸变体战斗管理组件 MutanterCombatManager.cs
+				畸变体技能组件 MutanterSkillComponent.cs
 		✅1.11.2 物理攻击：MeleeAttack.cs
 			--减少生命值
 		✅1.11.3 精神攻击：PsychologicalAttack .cs
@@ -35,6 +37,12 @@
 			--同时作用两个数值-减少生命值，增长压力
 		✅1.11.5 灵魂伤害：SoulAttack.cs
 			--按照百分比扣减生命值 
+		特效与碰撞
+		✅1.11.6 激光特效组件 LaserBeamController.cs FixerWhiteLaserController.cs FixerWhiteLaserSweepController.cs
+		✅1.11.7 反伤组件 DamageReflectionController.cs 
+		✅1.11.8 死亡攻击组件 FixerRedDeathDamageController.cs
+		✅1.11.9 祈祷反伤组件 FixerWhitePrayerSkillController.cs
+		✅1.11.10 红眼拖尾组件 EyeTrailController.cs
 	⏩1.12 畸变体属性防御体系
 2.收容室
 	✅2.4 畸变体监控站
@@ -66,7 +74,7 @@
 				关联：操作收容监控工作台 ContainmentMonitor.cs
 			✅正义-正义属性-Converter：攻击伤害、⏩攻击速度
 				关联：攻击畸变体 MutanterAttackable.cs
-			⏩闪避/伤害无效/暴击率
+			⏩闪避/命中/伤害无效/暴击率
 	⏩4.2 小人属性防御能力	
 	⏩4.6 技能帽的图片
 	✅4.8 技能组
@@ -115,6 +123,8 @@
 	✅7.10 Circus Joker 小丑
 	 	-- 1x2 无攻击，死亡爆炸，瞬移至收容室、释放收容畸变体
 	✅7.11 The Fixer Red 红色收尾人
+	 	-- 1x2 物理攻击，死亡攻击、多技能攻击
+	✅7.12 The Fixer White 白色收尾人
 	 	-- 1x2 物理攻击，死亡攻击、多技能攻击
 9.其他mod兼容
 	✅9.1 DGSM选人兼容报错

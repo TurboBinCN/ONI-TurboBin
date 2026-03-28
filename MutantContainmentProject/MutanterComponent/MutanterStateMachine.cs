@@ -193,9 +193,6 @@ namespace MutantContainmentProject.MutanterComponent
             private KBatchedAnimController _animController;
             public KBatchedAnimController AnimController => _animController ??= master.gameObject.GetComponent<KBatchedAnimController>();
 
-            private EyeTrailController _eyetrackingMonitor;
-            public EyeTrailController EyetrackingMonitor => _eyetrackingMonitor ??= master.gameObject.GetComponent<EyeTrailController>();
-
             private Health health;
             public Health HealthInstance => health ??= master.gameObject.GetComponent<Health>();
             public StatesInstance(IStateMachineTarget master, Def def) : base(master, def)
@@ -287,43 +284,8 @@ namespace MutantContainmentProject.MutanterComponent
                         {
                             threatCount++;
                             // 使用战斗管理器执行攻击
+                            TbbDebuger.LogDebug($"[MutanterStateMachine] 攻击目标: {threater.gameObject.name}");
                             combatManager.TryExecuteAttack(threater.gameObject);
-                        }
-                    }
-                }
-                if (threatCount == 0)
-                {
-                    //smi.EmotionSMI.ExpelThreat();
-                }
-            }
-            else if (smi.AttackSystem != null && smi.EmotionSMI != null)
-            {
-                // 备用方案：直接使用攻击系统
-                var threaters = smi.EmotionSMI.GetThreaters();
-                TbbDebuger.LogDebug($"[MutanterStateMachine] 攻击目标: {threaters.Count} 个");
-
-                if (threaters != null && threaters.Count > 0)
-                {
-                    foreach (var threater in threaters)
-                    {
-                        if (threater != null && threater.gameObject != null
-                        && threater.gameObject.GetComponent<Health>().hitPoints > 0f)
-                        {
-                            threatCount++;
-                            // 尝试使用技能攻击
-                            var skillComponent = smi.master.gameObject.GetComponent<MutanterSkillComponent>();
-                            if (skillComponent != null)
-                            {
-                                bool skillSuccess = skillComponent.TryExecuteSkill(threater.gameObject, out var usedSkill);
-                                // 技能已经在内部播放了动画，这里不需要再播放
-                            }
-                            else
-                            {
-                                // 如果没有技能组件，使用普通攻击
-                                bool isSuccess = smi.AttackSystem.TryExecuteAttack(threater.gameObject);
-                                // 播放攻击动画
-                                if (isSuccess && smi.AnimController != null) smi.AnimController.Play("attack_once", KAnim.PlayMode.Once);
-                            }
                         }
                     }
                 }

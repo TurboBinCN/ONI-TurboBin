@@ -2,6 +2,7 @@ using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
 using System.Collections.Generic;
 using UnityEngine;
+using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
 
 namespace MutantContainmentProject.Mutanters
 {
@@ -40,81 +41,137 @@ namespace MutantContainmentProject.Mutanters
 
             // 添加技能攻击组件
             var skillComponent = prefab.AddOrGet<MutanterSkillComponent>();
-            skillComponent.RegisterEffectComponents<LaserBeamController, LaserBeamEffect>();
-            skillComponent.RegisterEffectComponents<EyeTrailController, EyeTrailEffect>();
-            skillComponent.RegisterEffectComponents<FixerRedDeathDamageController, FixerRedDeathDamageEffect>();
             // 近距离切割攻击
-            var skills = new List<MutanterSkillComponent.SkillData>{
+            var skills = new List<SkillData>{
                 new() {
                     name = "Slash",
-                    damageType = MutanterTags.PhysicalAttack,
                     isPassiveSkill = false,
-                    damage = Random.Range(5f, 6f),
-                    range = 3,
                     cooldown = 2f,
                     animation = "attack_once_3",
                     lastUseTime = 0f,
-                    isFirstUse = true
-
+                    isFirstUse = true,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.PhysicalAttack,
+                            damageAmount = Random.Range(5f, 6f)
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "DistanceTrigger",
+                            properties = new Dictionary<string, object> {
+                                { "Range", 3 }
+                            }
+                        }
+                    }
                 },
                 // 远距离手炮攻击
                 new() {
                     name = "HandCannon",
-                    damageType = MutanterTags.PhysicalAttack,
                     isPassiveSkill = false,
-                    damage = Random.Range(14f, 17f),
-                    range = 9,
                     cooldown = 3f,
                     animation = "attack_once",
                     lastUseTime = 0f,
-                    isFirstUse = true
+                    isFirstUse = true,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.PhysicalAttack,
+                            damageAmount = Random.Range(14f, 17f)
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "DistanceTrigger",
+                            properties = new Dictionary<string, object> {
+                                { "Range", 9 }
+                            }
+                        }
+                    }
                 },
                 // 回旋斩击
                 new() {
                     name = "SpinSlash",
-                    damageType = MutanterTags.PhysicalAttack,
                     isPassiveSkill = false,
-                    damage = Random.Range(25f, 30f),
-                    range = 3,
                     cooldown = 19f,
                     animation = "attack_once_2",
                     lastUseTime = 0f,
-                    extraAnimationEffectId = typeof(EyeTrailController).Name,
-                    isFirstUse = true
+                    VFXName = "EyeTrailVFX",
+                    //extraAnimationEffectId = typeof(EyeTrailController).Name,
+                    isFirstUse = true,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.PhysicalAttack,
+                            damageAmount = Random.Range(25f, 30f)
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "DistanceTrigger",
+                            properties = new Dictionary<string, object> {
+                                { "Range", 3 }
+                            }
+                        }
+                    }
                 },
                 // 激光攻击
                 new() {
                     name = "Laser",
-                    damageType = MutanterTags.PhysicalAttack,
                     isPassiveSkill = false,
-                    damage = Random.Range(70f, 100f),
-                    range = 15,
                     cooldown = 45f,
                     animation = "attack_once_4",
                     lastUseTime = 0f,
-                    extraAnimationEffectId = typeof(LaserBeamController).Name, // 使用激光束效果
-                    isFirstUse = true
+                    VFXName = "LaserBeamVFX",
+                    //extraAnimationEffectId = typeof(LaserBeamController).Name, // 使用激光束效果
+                    isFirstUse = true,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.PhysicalAttack,
+                            damageAmount = Random.Range(70f, 100f)
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "DistanceTrigger",
+                            properties = new Dictionary<string, object> {
+                                { "Range", 15 }
+                            }
+                        }
+                    }
                 },
                 //死亡攻击
                 new() {
                     name = "DeathAttack",
-                    damageType = MutanterTags.PhysicalAttack,
-                    isPassiveSkill = false,
-                    damage = Random.Range(70f, 100f),
-                    range = 0,
+                    isPassiveSkill = true,
                     cooldown = 0f,
                     animation = "death",
                     lastUseTime = 0f,
-                    extraAnimationEffectId = typeof(FixerRedDeathDamageController).Name,
-                    isFirstUse = true
+                    VFXName = "FixerRedDeathDamageVFX",
+                    //extraAnimationEffectId = typeof(FixerRedDeathDamageController).Name,
+                    isFirstUse = true,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.PhysicalAttack,
+                            damageAmount = Random.Range(70f, 100f)
+                        }
+                    },
+                    triggers = new List<TriggerData>()
+                    {
+                        new(){
+                            triggerName = "DeathTrigger",
+                            properties = new Dictionary<string, object>()
+                        }
+                    }
                 }
             };
 
             // 设置技能并添加到数据库
-            skillComponent.skills = skills;
-            MutanterSkillComponent.AddSkillsToDatabase(ID, skills);
+            skillComponent.AddSkillsToDb(skills);
 
-            prefab.AddOrGet<LaserBeamController>();
             prefab.GetComponent<KPrefabID>().prefabSpawnFn += delegate (GameObject inst)
             {
                 var animController = inst.GetComponent<KBatchedAnimController>();
@@ -122,7 +179,8 @@ namespace MutantContainmentProject.Mutanters
                 animController.SetSymbolVisiblity("snapto_gun_end", is_visible: false);
                 animController.SetSymbolVisiblity("snapto_eye", is_visible: false);
             };
-
+            //禁用基础攻击能力
+            prefab.AddOrGet<MutanterCombatManager>().AbilityOfBasicAttaction = false;
             return prefab;
         }
 

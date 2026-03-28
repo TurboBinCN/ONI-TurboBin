@@ -26,11 +26,12 @@ namespace MutantContainmentProject
     {
         public class MutantContainmentProject : UserMod2
         {
+            public static Harmony ModHarmony;
             public static AssetBundle ModAssetBundle;
             public override void OnLoad(Harmony harmony)
             {
                 base.OnLoad(harmony);
-
+                ModHarmony = harmony;
                 TbbDebuger.GlobalLogLevel = TbbDebuger.LogLevel.Debug;
 
                 PUtil.InitLibrary();
@@ -65,7 +66,11 @@ namespace MutantContainmentProject
                     .AddSprite(("icon_benneng"), assetBundle)
                     .AddSprite(("icon_dongcha"), assetBundle)
                     .AddSprite(("icon_goutong"), assetBundle)
-                    .AddSprite(("icon_yapo"), assetBundle);
+                    .AddSprite(("icon_yapo"), assetBundle)
+                    .AddSprite(("RDamage"), assetBundle)
+                    .AddSprite(("PDamage"), assetBundle)
+                    .AddSprite(("BDamage"), assetBundle)
+                    .AddSprite(("WDamage"), assetBundle);
 
                 TbbColorSet.Initialize(mod, harmony)
                     .Add("mutanter_containment_room", new Color32(76, 1, 92, 102));

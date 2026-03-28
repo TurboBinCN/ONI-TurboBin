@@ -1,35 +1,11 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
-using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
 
-namespace MutantContainmentProject.MutanterComponent
+namespace MutantContainmentProject.MutanterComponent.VFXController
 {
-    public class LaserBeamEffect : IExtraAnimationEffect
-    {
-        private LaserBeamController laserBeam;
-
-        public LaserBeamEffect(LaserBeamController laserBeam)
-        {
-            this.laserBeam = laserBeam;
-        }
-
-        public void Activate()
-        {
-            laserBeam?.ActiveParticle();
-        }
-
-        public void Deactivate()
-        {
-            laserBeam?.DeactiveParticle();
-        }
-        public List<KPrefabID> GetAttackTargets()
-        {
-            return laserBeam?.GetAttackTargets() ?? new List<KPrefabID>();
-        }
-    }
-    public class LaserBeamController : KMonoBehaviour, ISimEveryTick
+    [VFXAttribute("LaserBeamVFX")]
+    public class LaserBeamVFXController : KMonoBehaviour, ISimEveryTick, IVFXController
     {
         public static string ID = "LaserBeam";
         [Header("激光束配置")]
@@ -270,106 +246,131 @@ namespace MutantContainmentProject.MutanterComponent
             // 清空之前的攻击目标列表
             attackTargets.Clear();
 
-            // 计算旋转过程中所有可能的路径
-            for (int i = 0; i <= rotationDuration; i++)
+            // 获取激光起点的位置
+            Vector3 laserPosition = gunBasePosition;
+
+            // 计算扇面的最大半径
+            float maxRadius = beamLength;
+
+            // 计算扇面的角度范围
+            float facingDirection = FacingCom.GetFacing() ? -1f : 1f;
+            float sectorStart = StartAngle;
+            float sectorEnd = StartAngle - targetRotation * facingDirection;
+            // 确保角度在0-360范围内
+            if (sectorStart < 0)
+                sectorStart += 360;
+            if (sectorEnd < 0)
+                sectorEnd += 360;
+
+            // 查找所有小人
+            List<GameObject> minions = FindAllMinions();
+            foreach (var minion in minions)
             {
-                // 计算当前旋转角度
-                float rotationProgress = i;
-                float facingDirection = FacingCom.GetFacing() ? -1f : 1f;
-                float currentRotation = (rotationProgress / rotationDuration) * targetRotation * facingDirection * -1;
-
-                // 计算当前方向
-                Vector3 initialDirection = new Vector3(facingDirection * Mathf.Cos(Mathf.Deg2Rad * StartAngle), Mathf.Sin(Mathf.Deg2Rad * StartAngle), 0f).normalized;
-                Quaternion rotation = Quaternion.Euler(0, 0, currentRotation);
-                Vector3 currentDirection = rotation * initialDirection;
-                currentDirection = currentDirection.normalized;
-
-                // 计算激光终点位置
-                Vector3 endPosition = gunBasePosition + currentDirection * beamLength;
-
-                // 检测激光路径上的所有格子
-                int startCell = Grid.PosToCell(gunBasePosition);
-                int endCell = Grid.PosToCell(endPosition);
-
-                // 使用Grid.CellToXY获取起始和结束格子的坐标
-                int startX, startY, endX, endY;
-                Grid.CellToXY(startCell, out startX, out startY);
-                Grid.CellToXY(endCell, out endX, out endY);
-
-                // 使用Bresenham算法遍历激光路径上的所有格子
-                int dx = Math.Abs(endX - startX);
-                int dy = Math.Abs(endY - startY);
-                int sx = startX < endX ? 1 : -1;
-                int sy = startY < endY ? 1 : -1;
-                int err = dx - dy;
-
-                int x = startX;
-                int y = startY;
-
-                while (true)
+                if (IsInSector(minion.transform.position, laserPosition, maxRadius, sectorStart, sectorEnd, facingDirection))
                 {
-                    // 检查当前格子是否有效
-                    int cell = Grid.XYToCell(x, y);
-                    if (Grid.IsValidCell(cell))
+                    var health = minion.GetComponent<Health>();
+                    if (health != null && health.hitPoints > 0)
                     {
-                        // 检查格子中的小人
-                        GameObject minion = Grid.Objects[cell, (int)ObjectLayer.Minion];
-                        if (minion != null)
+                        KPrefabID kPrefabID = minion.GetComponent<KPrefabID>();
+                        if (kPrefabID != null && !attackTargets.Contains(kPrefabID))
                         {
-                            var health = minion.GetComponent<Health>();
-                            if (health != null && health.hitPoints > 0)
-                            {
-                                // 添加到攻击目标列表
-                                KPrefabID kPrefabID = minion.GetComponent<KPrefabID>();
-                                if (kPrefabID != null && !attackTargets.Contains(kPrefabID))
-                                {
-                                    attackTargets.Add(kPrefabID);
-                                }
-                            }
-                        }
-
-                        // 检查格子中的生物
-                        GameObject creature = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
-                        if (creature != null)
-                        {
-                            ObjectLayerListItem objectLayerListItem = creature.GetComponent<Pickupable>().objectLayerListItem;
-                            while (objectLayerListItem != null)
-                            {
-                                Pickupable pickupable = objectLayerListItem.pickupable;
-                                objectLayerListItem = objectLayerListItem.nextItem;
-                                if (pickupable != null && pickupable.KPrefabID.HasTag(GameTags.Creature) && !pickupable.KPrefabID.HasTag(MutanterTags.Mutanter))
-                                {
-                                    Health health = pickupable.GetComponent<Health>();
-                                    if (health != null && health.hitPoints > 0)
-                                    {
-                                        // 添加到攻击目标列表
-                                        KPrefabID kPrefabID = pickupable.KPrefabID;
-                                        if (kPrefabID != null && !attackTargets.Contains(kPrefabID))
-                                        {
-                                            attackTargets.Add(kPrefabID);
-                                        }
-                                    }
-                                }
-                            }
+                            attackTargets.Add(kPrefabID);
                         }
                     }
+                }
+            }
 
-                    // 检查是否到达终点
-                    if (x == endX && y == endY)
-                        break;
+            // 查找所有生物
+            List<GameObject> creatures = FindAllCreatures();
+            foreach (var creature in creatures)
+            {
+                if (IsInSector(creature.transform.position, laserPosition, maxRadius, sectorStart, sectorEnd, facingDirection))
+                {
+                    var health = creature.GetComponent<Health>();
+                    if (health != null && health.hitPoints > 0)
+                    {
+                        KPrefabID kPrefabID = creature.GetComponent<KPrefabID>();
+                        if (kPrefabID != null && !attackTargets.Contains(kPrefabID))
+                        {
+                            attackTargets.Add(kPrefabID);
+                        }
+                    }
+                }
+            }
+        }
 
-                    // 继续Bresenham算法
-                    int e2 = 2 * err;
-                    if (e2 > -dy)
-                    {
-                        err -= dy;
-                        x += sx;
-                    }
-                    if (e2 < dx)
-                    {
-                        err += dx;
-                        y += sy;
-                    }
+        // 查找所有小人
+        private List<GameObject> FindAllMinions()
+        {
+            List<GameObject> minions = new List<GameObject>();
+
+            // 使用游戏内置的Components系统获取所有活着的小人
+            foreach (var minionIdentity in Components.LiveMinionIdentities.Items)
+            {
+                if (minionIdentity != null && minionIdentity.gameObject != null)
+                {
+                    minions.Add(minionIdentity.gameObject);
+                }
+            }
+
+            return minions;
+        }
+
+        // 查找所有生物
+        private List<GameObject> FindAllCreatures()
+        {
+            List<GameObject> creatures = new List<GameObject>();
+
+            // 遍历所有可拾取对象，查找生物
+            foreach (var pickupable in Components.Pickupables.Items)
+            {
+                if (pickupable != null && pickupable.KPrefabID.HasTag(GameTags.Creature) && !pickupable.KPrefabID.HasTag(MutanterTags.Mutanter))
+                {
+                    creatures.Add(pickupable.gameObject);
+                }
+            }
+
+            return creatures;
+        }
+
+        // 判断位置是否在扇面内
+        private bool IsInSector(Vector3 position, Vector3 origin, float maxRadius, float sectorStart, float sectorEnd, float facingDirection)
+        {
+            // 计算距离
+            float distance = Vector3.Distance(position, origin);
+            if (distance > maxRadius)
+                return false;
+
+            // 计算角度
+            Vector3 direction = position - origin;
+            float angle = Mathf.Atan2(direction.y, direction.x * facingDirection);
+            float angleDeg = Mathf.Rad2Deg * angle;
+            if (angleDeg < 0)
+                angleDeg += 360;
+
+            // 检查角度是否在扇面范围内
+            if (facingDirection > 0) // 面向右
+            {
+                if (sectorStart >= sectorEnd)
+                {
+                    return (angleDeg >= sectorEnd && angleDeg <= sectorStart);
+                }
+                else
+                {
+                    return (angleDeg >= sectorEnd || angleDeg <= sectorStart);
+                }
+            }
+            else // 面向左
+            {
+                if (sectorStart <= sectorEnd)
+                {
+                    // 当面向左且sectorStart <= sectorEnd时，扇面是从sectorStart到360度，再从0度到sectorEnd
+                    return (angleDeg >= sectorStart || angleDeg <= sectorEnd);
+                }
+                else
+                {
+                    // 当面向左且sectorStart > sectorEnd时，扇面是从sectorStart到sectorEnd
+                    return (angleDeg >= sectorStart && angleDeg <= sectorEnd);
                 }
             }
         }
@@ -382,90 +383,76 @@ namespace MutantContainmentProject.MutanterComponent
             // 计算激光终点位置
             Vector3 endPosition = gunBasePosition + beamDirection * beamLength;
 
-            // 检测激光路径上的所有格子
-            int startCell = Grid.PosToCell(gunBasePosition);
-            int endCell = Grid.PosToCell(endPosition);
-
-            // 使用Grid.CellToXY获取起始和结束格子的坐标
-            int startX, startY, endX, endY;
-            Grid.CellToXY(startCell, out startX, out startY);
-            Grid.CellToXY(endCell, out endX, out endY);
-
-            // 使用Bresenham算法遍历激光路径上的所有格子
-            int dx = Math.Abs(endX - startX);
-            int dy = Math.Abs(endY - startY);
-            int sx = startX < endX ? 1 : -1;
-            int sy = startY < endY ? 1 : -1;
-            int err = dx - dy;
-
-            int x = startX;
-            int y = startY;
-
-            while (true)
+            // 查找所有小人
+            List<GameObject> minions = FindAllMinions();
+            foreach (var minion in minions)
             {
-                // 检查当前格子是否有效
-                int cell = Grid.XYToCell(x, y);
-                if (Grid.IsValidCell(cell))
+                if (IsOnLaserPath(minion.transform.position, gunBasePosition, endPosition, beamWidth))
                 {
-                    // 检查格子中的小人
-                    GameObject minion = Grid.Objects[cell, (int)ObjectLayer.Minion];
-                    if (minion != null)
+                    var health = minion.GetComponent<Health>();
+                    if (health != null && health.hitPoints > 0)
                     {
-                        var health = minion.GetComponent<Health>();
-                        if (health != null && health.hitPoints > 0)
+                        KPrefabID kPrefabID = minion.GetComponent<KPrefabID>();
+                        if (kPrefabID != null && !attackTargets.Contains(kPrefabID))
                         {
-                            // 添加到攻击目标列表
-                            KPrefabID kPrefabID = minion.GetComponent<KPrefabID>();
-                            if (kPrefabID != null && !attackTargets.Contains(kPrefabID))
-                            {
-                                attackTargets.Add(kPrefabID);
-                            }
+                            attackTargets.Add(kPrefabID);
                         }
                     }
-
-                    // 检查格子中的生物
-                    GameObject creature = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
-                    if (creature != null)
-                    {
-                        ObjectLayerListItem objectLayerListItem = creature.GetComponent<Pickupable>().objectLayerListItem;
-                        while (objectLayerListItem != null)
-                        {
-                            Pickupable pickupable = objectLayerListItem.pickupable;
-                            objectLayerListItem = objectLayerListItem.nextItem;
-                            if (pickupable != null && pickupable.KPrefabID.HasTag(GameTags.Creature) && !pickupable.KPrefabID.HasTag(MutanterTags.Mutanter))
-                            {
-                                Health health = pickupable.GetComponent<Health>();
-                                if (health != null && health.hitPoints > 0)
-                                {
-                                    // 添加到攻击目标列表
-                                    KPrefabID kPrefabID = pickupable.KPrefabID;
-                                    if (kPrefabID != null && !attackTargets.Contains(kPrefabID))
-                                    {
-                                        attackTargets.Add(kPrefabID);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // 检查是否到达终点
-                if (x == endX && y == endY)
-                    break;
-
-                // 继续Bresenham算法
-                int e2 = 2 * err;
-                if (e2 > -dy)
-                {
-                    err -= dy;
-                    x += sx;
-                }
-                if (e2 < dx)
-                {
-                    err += dx;
-                    y += sy;
                 }
             }
+
+            // 查找所有生物
+            List<GameObject> creatures = FindAllCreatures();
+            foreach (var creature in creatures)
+            {
+                if (IsOnLaserPath(creature.transform.position, gunBasePosition, endPosition, beamWidth))
+                {
+                    var health = creature.GetComponent<Health>();
+                    if (health != null && health.hitPoints > 0)
+                    {
+                        KPrefabID kPrefabID = creature.GetComponent<KPrefabID>();
+                        if (kPrefabID != null && !attackTargets.Contains(kPrefabID))
+                        {
+                            attackTargets.Add(kPrefabID);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 判断位置是否在激光路径上
+        private bool IsOnLaserPath(Vector3 position, Vector3 start, Vector3 end, float width)
+        {
+            // 计算点到线段的距离
+            float distance = Vector3.Distance(position, ClosestPointOnLine(start, end, position));
+
+            // 检查距离是否在激光宽度范围内
+            if (distance > width)
+                return false;
+
+            // 检查点是否在线段的延长线上
+            Vector3 startToEnd = end - start;
+            Vector3 startToPoint = position - start;
+            Vector3 endToPoint = position - end;
+
+            // 计算点积，检查点是否在线段范围内
+            float dotStart = Vector3.Dot(startToEnd, startToPoint);
+            float dotEnd = Vector3.Dot(-startToEnd, endToPoint);
+
+            return dotStart >= 0 && dotEnd >= 0;
+        }
+
+        // 计算点到线段的最近点
+        private Vector3 ClosestPointOnLine(Vector3 start, Vector3 end, Vector3 point)
+        {
+            Vector3 startToEnd = end - start;
+            float lengthSquared = startToEnd.sqrMagnitude;
+
+            if (lengthSquared == 0)
+                return start;
+
+            float t = Mathf.Clamp01(Vector3.Dot(point - start, startToEnd) / lengthSquared);
+            return start + t * startToEnd;
         }
 
         public bool isRotating = false;
@@ -590,6 +577,16 @@ namespace MutantContainmentProject.MutanterComponent
                 rotationProgress = 0f;
                 particleSystem.Stop();
             }
+        }
+
+        public void Activate()
+        {
+            this.ActiveParticle();
+        }
+
+        public void Deactivate()
+        {
+            this.DeactiveParticle();
         }
     }
 }

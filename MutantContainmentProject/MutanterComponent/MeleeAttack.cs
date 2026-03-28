@@ -44,7 +44,7 @@ namespace MutantContainmentProject.MutanterComponent
             if (attackSystem != null)
             {
                 float damage = _baseDamage * effectImpact;
-                bool success = attackSystem.ExecuteHealthAttack(target, damage);
+                bool success = attackSystem.ExecuteHealthAttack(target, damage, out _);
                 _lastExecutedTime = Time.time;
                 return success;
             }

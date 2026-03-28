@@ -52,7 +52,7 @@ namespace MutantContainmentProject.MutanterComponent
             var attackSystem = GetAttackSystem(attacker.gameObject);
             if (attackSystem != null)
             {
-                bool success = attackSystem.ExecuteHealthAttack(target, damageAmount);
+                bool success = attackSystem.ExecuteHealthAttack(target, damageAmount, out _);
                 _lastExecutedTime = Time.time;
                 return success;
             }

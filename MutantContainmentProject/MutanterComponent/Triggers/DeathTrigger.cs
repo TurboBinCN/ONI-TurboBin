@@ -1,65 +1,30 @@
-using System.Collections.Generic;
-using TBB.He.TbbLib.Debuger;
-using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
+﻿using TBB.He.TbbLib.Debuger;
+using UnityEngine;
 
-namespace MutantContainmentProject.MutanterComponent
+namespace MutantContainmentProject.MutanterComponent.Triggers
 {
-    public class FixerRedDeathDamageEffect : IExtraAnimationEffect
+    [SkillTrigger("DeathTrigger", 10, true)]
+    public class DeathTrigger : KMonoBehaviour, IPassiveSkillTrigger
     {
-        private FixerRedDeathDamageController deathDamageController;
-
-        public FixerRedDeathDamageEffect(FixerRedDeathDamageController controller)
-        {
-            this.deathDamageController = controller;
-        }
-
-        public void Activate()
-        {
-            deathDamageController?.ActivateDeathDamage();
-        }
-
-        public void Deactivate()
-        {
-            deathDamageController?.DeactivateDeathDamage();
-        }
-        public List<KPrefabID> GetAttackTargets()
-        {
-            return deathDamageController?.GetAttackTargets() ?? new List<KPrefabID>();
-        }
-    }
-    public class FixerRedDeathDamageController : LaserBeamController
-    {
+        public string TriggerName => "DeathTrigger";
+        public int Priority => 10;
+        public bool IsPassive => true;
+        public MutanterSkillComponent.SkillData Skill { get; set; }
         private bool hasTriggeredDeathDamage = false;
+
+
         private Health health;
         private Health HealthInstance => health ??= GetComponent<Health>();
-
-        public void ActivateDeathDamage()
-        {
-            base.ActiveParticle();
-            base.StartBeamRotation();
-            TbbDebuger.LogDebug($"[FixerRedDeathDamage] 激活红色收尾人死亡攻击 {gameObject.name}");
-        }
-        public void DeactivateDeathDamage()
-        {
-            base.DeactiveParticle();
-            TbbDebuger.LogDebug($"[FixerRedDeathDamage] 取消红色收尾人死亡攻击 {gameObject.name}");
-        }
-        public List<KPrefabID> GetAttackTargets()
-        {
-            return base.GetAttackTargets();
-        }
         protected override void OnSpawn()
         {
             base.OnSpawn();
             Subscribe((int)GameHashes.HealthChanged, OnHitPointsChanged);
         }
-
         protected override void OnCleanUp()
         {
-            Unsubscribe((int)GameHashes.HealthChanged);
+            Unsubscribe((int)GameHashes.HealthChanged, OnHitPointsChanged);
             base.OnCleanUp();
         }
-
         private void OnHitPointsChanged(object data)
         {
             if (hasTriggeredDeathDamage) return;
@@ -75,7 +40,6 @@ namespace MutantContainmentProject.MutanterComponent
                 GameScheduler.Instance.Schedule("TriggerDeathMonitor", 0.3f, (_) => TriggerDeathMonitor());
             }
         }
-
         private void TriggerDeathMonitor()
         {
             // 触发 DeathMonitor 的死亡状态
@@ -87,7 +51,7 @@ namespace MutantContainmentProject.MutanterComponent
                 var combat_manager = gameObject.GetComponent<MutanterCombatManager>();
                 if (combat_manager != null)
                 {
-                    combat_manager.TryExecuteSkill(typeof(FixerRedDeathDamageController).Name);
+                    combat_manager.TryExecuteSkill(Skill.name);
                 }
                 TbbDebuger.LogDebug($"[FixerRedDeathDamage] Triggered DeathMonitor for {gameObject.name}");
             }

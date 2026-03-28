@@ -1,52 +1,57 @@
 using System.Collections.Generic;
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
-using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
 
-namespace MutantContainmentProject.MutanterComponent
+namespace MutantContainmentProject.MutanterComponent.Triggers
 {
-    public class FixerWhitePrayerSkillEffect : IExtraAnimationEffect
+    [SkillTrigger("HealthChangeTrigger", 10, true)]
+    public class HealthChangeTrigger : KMonoBehaviour, IPassiveSkillTrigger
     {
-        private FixerWhitePrayerSkillController damageReflectionController;
+        public string TriggerName => "HealthChangeTrigger";
+        public int Priority => 10;
+        public bool IsPassive => true;
 
-        public FixerWhitePrayerSkillEffect(FixerWhitePrayerSkillController controller)
-        {
-            this.damageReflectionController = controller;
-        }
-
-        public void Activate()
-        {
-            damageReflectionController?.StartPrayer();
-        }
-
-        public void Deactivate()
-        {
-            damageReflectionController?.DeactivatePrayer();
-        }
-        public List<KPrefabID> GetAttackTargets()
-        {
-            return damageReflectionController?.GetAttackTargets() ?? new List<KPrefabID>();
-        }
-    }
-    public class FixerWhitePrayerSkillController : DamageReflectionController
-    {
+        private float healthChangeDelta = 0.3f;
         private Health health;
-        private Health HealthCom => health ??= gameObject.GetComponent<Health>();
-
+        private Health HealthCom => health ??= GetComponent<Health>();
         private MutanterCombatManager combatManager;
         private MutanterCombatManager CombatManager => combatManager ??= gameObject.GetComponent<MutanterCombatManager>();
+
+        public MutanterSkillComponent.SkillData Skill { get; set; }
 
         private float initialHealth = 0f;
         private float lastHealth = 0f;
         private float healthThreshold = 0.3f; // 30% 生命值阈值
         private float lastDamageTime = 0f;
-        private float resetTime = 5f; // 5秒内无伤害则重置
+        private float resetTime = 5f; // 5秒无伤害后重置
         private float[] fixedThresholds = new float[] { 0.7f, 0.4f, 0.1f }; // 70%、40%、10% 固定阈值
         private bool[] thresholdTriggered = new bool[] { false, false, false }; // 记录阈值是否已触发
 
         protected override void OnSpawn()
         {
             base.OnSpawn();
-            Subscribe((int)GameHashes.HealthChanged, OnHealthChanged);
+
+            foreach (var item in Skill.triggers)
+            {
+                if (item.triggerName == TriggerName)
+                {
+                    if (item.properties.TryGetValue("ChangeDelta", out object value))
+                    {
+                        if (value is float floatValue)
+                        {
+                            healthChangeDelta = floatValue;
+                        }
+                        else if (value is double doubleValue)
+                        {
+                            healthChangeDelta = (float)doubleValue;
+                        }
+                        else if (value is int intValue)
+                        {
+                            healthChangeDelta = intValue;
+                        }
+                    }
+                }
+            }
 
             // 初始化生命值
             if (HealthCom != null)
@@ -55,38 +60,44 @@ namespace MutantContainmentProject.MutanterComponent
                 lastHealth = HealthCom.hitPoints;
             }
 
-            // 初始化阈值触发数组
+            // 初始化阈值触发状态
             thresholdTriggered = new bool[] { false, false, false };
+            Subscribe((int)GameHashes.HealthChanged, OnHealthChanged);
         }
+
         protected override void OnCleanUp()
         {
             Unsubscribe((int)GameHashes.HealthChanged, OnHealthChanged);
             base.OnCleanUp();
         }
+
         public void OnHealthChanged(object data)
         {
-            // 检查是否长时间无伤害
+            // 检查是否超时重置伤害
             if (lastDamageTime > 0 && Time.time - lastDamageTime > resetTime)
             {
-                // 重置伤害计时
+                // 重置伤害计时器
                 lastDamageTime = 0f;
             }
+
             if (HealthCom == null || initialHealth <= 0)
+            {
                 return;
+            }
 
             float currentHealth = HealthCom.hitPoints;
             float healthLost = lastHealth - currentHealth;
 
-            // 检查是否有生命值损失
+            // 检查是否是生命值恢复
             if (healthLost <= 0)
             {
-                // 长时间无伤害，重置计时
+                // 立即重置伤害计时器
                 lastDamageTime = 0f;
                 lastHealth = currentHealth;
                 return;
             }
 
-            // 更新最后伤害时间
+            // 更新伤害时间
             lastDamageTime = Time.time;
 
             // 计算当前生命值比例
@@ -98,38 +109,22 @@ namespace MutantContainmentProject.MutanterComponent
                 if (!thresholdTriggered[i] && currentHealthRatio <= fixedThresholds[i])
                 {
                     thresholdTriggered[i] = true;
-                    // 触发固定阈值，播放动画
-                    StartPrayer();
-                    CombatManager.TryExecuteSkill(GetType().Name, 0, true);
+                    // 触发固定阈值对应的技能
+                    CombatManager.TryExecuteSkill(Skill.name, 0);
                     lastHealth = currentHealth;
                     return;
                 }
             }
 
-            // 检查30%损失阈值
+            // 检查30%伤害阈值
             float healthLostRatio = healthLost / initialHealth;
             if (healthLostRatio >= healthThreshold)
             {
-                StartPrayer();
-                CombatManager.TryExecuteSkill(GetType().Name, 0, true);
+                CombatManager.TryExecuteSkill(Skill.name, 0);
             }
 
             // 更新上次生命值
             lastHealth = currentHealth;
-        }
-        public void DeactivatePrayer()
-        {
-            base.DeactivateDamage();
-        }
-        public void StartPrayer()
-        {
-            base.ActiveDamage();
-        }
-
-        public List<KPrefabID> GetAttackTargets()
-        {
-
-            return base.GetAttackTargets();
         }
     }
 }

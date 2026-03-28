@@ -45,7 +45,7 @@ namespace MutantContainmentProject.MutanterComponent
             if (attackSystem != null)
             {
                 float stressAmount = _stressAmount * effectImpact;
-                bool success = attackSystem.ExecuteStressAttack(target, stressAmount);
+                bool success = attackSystem.ExecuteStressAttack(target, stressAmount, out _);
                 _lastExecutedTime = Time.time;
                 return success;
             }

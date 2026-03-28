@@ -1,10 +1,11 @@
 using Klei.AI;
 using MutantContainmentProject.MutanterEffect;
 using MutantContainmentProject.Skills;
+using System;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
-using UnityEngine.Assertions;
+using static MutantContainmentProject.STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR;
 
 namespace MutantContainmentProject.MutanterComponent
 {
@@ -18,6 +19,11 @@ namespace MutantContainmentProject.MutanterComponent
 
         private bool _isContained = false;
         public bool IsContained { get => _isContained; }
+
+        private Sprite Icon_RDamage;
+        private Sprite Icon_WDamage;
+        private Sprite Icon_PDamage;
+        private Sprite Icon_BDamage;
 
         private Navigator _navigator;
         public Navigator Navigator => _navigator ??= gameObject.GetComponent<Navigator>();
@@ -35,7 +41,11 @@ namespace MutantContainmentProject.MutanterComponent
                 _isContained = true;
                 TbbDebuger.LogDebug($"[MutanterAttackSystem] {gameObject.name} initialized with containment effect, IsContained = true");
             }
-
+            var defaultSprite = PopFXManager.Instance.sprite_Negative;
+            Icon_RDamage = Assets.Sprites.TryGetValue("RDamage", out Sprite rDamageIcon) ? rDamageIcon : defaultSprite;
+            Icon_PDamage = Assets.Sprites.TryGetValue("PDamage", out Sprite pDamageIcon) ? pDamageIcon : defaultSprite;
+            Icon_BDamage = Assets.Sprites.TryGetValue("BDamage", out Sprite bDamageIcon) ? bDamageIcon : defaultSprite;
+            Icon_WDamage = Assets.Sprites.TryGetValue("WDamage", out Sprite wDamageIcon) ? wDamageIcon : defaultSprite;
             // 使用Klei原生事件系统订阅事件
             Subscribe((int)MutanterGameHashes.MutanterContained, OnContained);
             Subscribe((int)MutanterGameHashes.MutanterBreachContained, OnBreachContained);
@@ -176,7 +186,7 @@ namespace MutantContainmentProject.MutanterComponent
                 TbbDebuger.LogDebug($"[MutanterAttackSystem] Attack blocked: health is {health.hitPoints} (<= 0) for {gameObject.name}");
                 return false;
             }
-            
+
             // // 检查是否有收容效果，如果有则限制攻击
             // if (_effects != null && _effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
             // {
@@ -192,7 +202,7 @@ namespace MutantContainmentProject.MutanterComponent
             // }
 
             return true;
-            
+
         }
 
         /// <summary>
@@ -425,8 +435,9 @@ namespace MutantContainmentProject.MutanterComponent
         /// <param name="target">攻击目标</param>
         /// <param name="damage">伤害值</param>
         /// <returns>是否成功执行</returns>
-        public bool ExecuteHealthAttack(GameObject target, float damage)
+        public bool ExecuteHealthAttack(GameObject target, float damage, out float finalDamage)
         {
+            finalDamage = damage;
             if (!CanExecuteAnyAttack())
                 return false;
 
@@ -458,9 +469,10 @@ namespace MutantContainmentProject.MutanterComponent
                     }
                 }
 
-                float effectiveDamage = damage * physicalDefenseFactor;
-                health.Damage(effectiveDamage);
-                TbbDebuger.LogDebug($"[MutanterAttackSystem] Health attack: {target.name} took {effectiveDamage} damage (original: {damage}, defense factor: {physicalDefenseFactor})");
+                finalDamage = damage * physicalDefenseFactor;
+                health.Damage(finalDamage);
+
+                TbbDebuger.LogDebug($"[MutanterAttackSystem] Health attack: {target.name} took {finalDamage} damage (original: {damage}, defense factor: {physicalDefenseFactor})");
                 return true;
             }
 
@@ -473,8 +485,9 @@ namespace MutantContainmentProject.MutanterComponent
         /// <param name="target">攻击目标</param>
         /// <param name="stressAmount">压力值增加量</param>
         /// <returns>是否成功执行</returns>
-        public bool ExecuteStressAttack(GameObject target, float stressAmount)
+        public bool ExecuteStressAttack(GameObject target, float stressAmount, out float finalDamage)
         {
+            finalDamage = stressAmount;
             if (!CanExecuteAnyAttack())
                 return false;
 
@@ -509,9 +522,9 @@ namespace MutantContainmentProject.MutanterComponent
                         }
                     }
 
-                    float effectiveStressAmount = stressAmount * mentalDefenseFactor;
-                    stressAmountComp.value = Mathf.Min(stressAmountComp.value + effectiveStressAmount, 100f);
-                    TbbDebuger.LogDebug($"[MutanterAttackSystem] Stress attack: {target.name} stress increased to {stressAmountComp.value}%, effective amount: {effectiveStressAmount}");
+                    finalDamage = stressAmount * mentalDefenseFactor;
+                    stressAmountComp.value = Mathf.Min(stressAmountComp.value + finalDamage, 100f);
+                    TbbDebuger.LogDebug($"[MutanterAttackSystem] Stress attack: {target.name} stress increased to {stressAmountComp.value}%, effective amount: {finalDamage}");
                     return true;
                 }
             }
@@ -557,8 +570,8 @@ namespace MutantContainmentProject.MutanterComponent
             if (!CanExecuteAnyAttack())
                 return false;
 
-            bool healthSuccess = ExecuteHealthAttack(target, damage);
-            bool stressSuccess = ExecuteStressAttack(target, stressAmount);
+            bool healthSuccess = ExecuteHealthAttack(target, damage, out _);
+            bool stressSuccess = ExecuteStressAttack(target, stressAmount, out _);
             return healthSuccess || stressSuccess;
         }
 
@@ -571,7 +584,7 @@ namespace MutantContainmentProject.MutanterComponent
         /// <returns>是否成功执行</returns>
         public bool TryExecuteAttack(GameObject target, float damageAmount, string damageType)
         {
-             if (!CanExecuteAnyAttack())
+            if (!CanExecuteAnyAttack())
                 return false;
 
             if (target == null)
@@ -583,9 +596,9 @@ namespace MutantContainmentProject.MutanterComponent
             switch (damageType.ToLower())
             {
                 case "physical":
-                    return ExecuteHealthAttack(target, damageAmount);
+                    return ExecuteHealthAttack(target, damageAmount, out float damage);
                 case "mental":
-                    return ExecuteStressAttack(target, damageAmount);
+                    return ExecuteStressAttack(target, damageAmount, out _);
                 case "erosion":
                     // 侵蚀攻击同时造成生命值和压力值伤害
                     return ExecuteCombinedAttack(target, damageAmount * 0.5f, damageAmount * 0.5f);
@@ -615,16 +628,22 @@ namespace MutantContainmentProject.MutanterComponent
 
             if (attackTag == MutanterTags.PhysicalAttack)
             {
-                return ExecuteHealthAttack(target, damageAmount);
+                bool success = ExecuteHealthAttack(target, damageAmount, out float finalDamage);
+                PopFXManager.Instance.SpawnFX(Icon_RDamage, $"{Math.Floor(finalDamage)}", target.transform, 1.5f, false);
+                return success;
             }
             else if (attackTag == MutanterTags.PsychologicalAttack)
             {
-                return ExecuteStressAttack(target, damageAmount);
+                bool success = ExecuteStressAttack(target, damageAmount, out float finalDamage);
+                PopFXManager.Instance.SpawnFX(Icon_PDamage, $"{Math.Floor(finalDamage)}%", target.transform, 1.5f, false);
+                return success;
             }
             else if (attackTag == MutanterTags.ErosionAttack)
             {
                 // 侵蚀攻击同时造成生命值和压力值伤害
-                return ExecuteCombinedAttack(target, damageAmount * 0.5f, damageAmount * 0.5f);
+                bool success = ExecuteCombinedAttack(target, damageAmount * 0.5f, damageAmount * 0.5f);
+                PopFXManager.Instance.SpawnFX(Icon_BDamage, $"{damageAmount}", target.transform, 1.5f, false);
+                return success;
             }
             else if (attackTag == MutanterTags.SoulAttack)
             {
@@ -634,7 +653,9 @@ namespace MutantContainmentProject.MutanterComponent
                 {
                     float maxHitPoints = health.maxHitPoints;
                     float soulDamage = maxHitPoints * 0.2f; // 20%最大生命值
-                    return ExecuteHealthAttack(target, soulDamage);
+                    bool success = ExecuteHealthAttack(target, soulDamage, out _);
+                    PopFXManager.Instance.SpawnFX(Icon_WDamage, $"{soulDamage}", target.transform, 1.5f, false);
+                    return success;
                 }
                 return false;
             }

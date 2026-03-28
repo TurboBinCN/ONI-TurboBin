@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
-using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
 
-namespace MutantContainmentProject.MutanterComponent
+namespace MutantContainmentProject.MutanterComponent.VFXController
 {
-    public class EyeTrailController : KMonoBehaviour, ISimEveryTick
+    [VFXAttribute("EyeTrailVFX")]
+    public class EyeTrailVFXController : KMonoBehaviour, ISimEveryTick, IVFXController
     {
         public static string ID = "EyeTrailController";
         [Header("拖尾配置")]
@@ -48,11 +48,11 @@ namespace MutantContainmentProject.MutanterComponent
 
         protected override void OnCleanUp()
         {
-            DeactivateRedEyeTrail();
+            Deactivate();
             base.OnCleanUp();
         }
 
-        public void ActivateRedEyeTrail()
+        public void Activate()
         {
             TbbDebuger.LogDebug($"激活红眼拖尾");
             // 更新畸变体的朝向
@@ -74,7 +74,7 @@ namespace MutantContainmentProject.MutanterComponent
             }
         }
 
-        public void DeactivateRedEyeTrail()
+        public void Deactivate()
         {
             if (trailInstance != null && particleSystem != null)
             {
@@ -137,27 +137,6 @@ namespace MutantContainmentProject.MutanterComponent
                 trailInstance.transform.position = ellipsePosition;
             }
         }
-
-    }
-    public class EyeTrailEffect : IExtraAnimationEffect
-    {
-        private EyeTrailController trail;
-
-        public EyeTrailEffect(EyeTrailController trail)
-        {
-            this.trail = trail;
-        }
-
-        public void Activate()
-        {
-            trail?.ActivateRedEyeTrail();
-        }
-
-        public void Deactivate()
-        {
-            trail?.DeactivateRedEyeTrail();
-        }
-
         public List<KPrefabID> GetAttackTargets()
         {
             return new List<KPrefabID>();

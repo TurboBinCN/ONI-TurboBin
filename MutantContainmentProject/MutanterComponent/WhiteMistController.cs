@@ -5,7 +5,7 @@ using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
 
 namespace MutantContainmentProject.MutanterComponent
 {
-    public class WhiteMistAnimationEffect : IExtraAnimationEffect
+    public class WhiteMistAnimationEffect 
     {
         private WhiteMistController whiteMistController;
 

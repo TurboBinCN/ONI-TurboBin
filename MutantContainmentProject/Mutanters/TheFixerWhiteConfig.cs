@@ -2,6 +2,7 @@ using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
 using System.Collections.Generic;
 using UnityEngine;
+using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
 
 namespace MutantContainmentProject.Mutanters
 {
@@ -40,65 +41,103 @@ namespace MutantContainmentProject.Mutanters
 
             // 添加技能攻击组件
             var skillComponent = prefab.AddOrGet<MutanterSkillComponent>();
-            skillComponent.RegisterEffectComponents<LaserBeamController, LaserBeamEffect>();
-            skillComponent.RegisterEffectComponents<WhiteMistController, WhiteMistAnimationEffect>();
-            skillComponent.RegisterEffectComponents<FixerWhiteLaserController, FixerWhiteLaserEffect>();
-            skillComponent.RegisterEffectComponents<FixerWhiteLaserSweepController, FixerWhiteLaserSweepEffect>();
-            skillComponent.RegisterEffectComponents<FixerWhitePrayerSkillController, FixerWhitePrayerSkillEffect>();
 
             // 精神激光攻击
-            var skills = new List<MutanterSkillComponent.SkillData>{
+            var skills = new List<SkillData>{
                 new() {
                     name = "MentalLaser",
-                    damageType = MutanterTags.PsychologicalAttack,
                     isPassiveSkill = false,
-                    damage = Random.Range(10f, 12f),
-                    range = 15,
                     cooldown = Random.Range(20f, 30f),
                     animation = "attack_skill_1",
                     lastUseTime = 0f,
-                    extraAnimationEffectId = typeof(FixerWhiteLaserController).Name,
-                    isFirstUse = true
+                    VFXName = "FixerWhiteLaserVFX",
+                    //extraAnimationEffectId = typeof(FixerWhiteLaserVFXController).Name,
+                    isFirstUse = true,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){ 
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.PsychologicalAttack,
+                            damageAmount = Random.Range(10f, 12f)
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "DistanceTrigger",
+                            properties = new Dictionary<string, object> {
+                                { "Range", 15 }
+                            }
+                        }
+                    }
                 },
                 // 240°激光横扫
                 new() {
                     name = "LaserSweep",
-                    damageType = MutanterTags.PsychologicalAttack,
                     isPassiveSkill = false,
-                    damage = Random.Range(10f, 12f),
-                    range = 15,
                     cooldown = Random.Range(40f, 45f),
-                    //cooldown = Random.Range(20f, 45f),
                     animation = "attack_skill_2",
                     lastUseTime = 0f,
-                    extraAnimationEffectId = typeof(FixerWhiteLaserSweepController).Name,
-                    isFirstUse = true
+                    VFXName = "FixerWhiteLaserSweepVFX",
+                    //extraAnimationEffectId = typeof(FixerWhiteLaserSweepVFXController).Name,
+                    isFirstUse = true,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.PsychologicalAttack,
+                            damageAmount = Random.Range(10f, 12f)
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "DistanceTrigger",
+                            properties = new Dictionary<string, object> {
+                                { "Range", 15 }
+                            }
+                        }
+                    }
                 },
                 // 祈祷反伤
                 new() {
                     name = "Prayer",
-                    damageType = MutanterTags.PsychologicalAttack,
                     isPassiveSkill = true,
-                    damage = 0f,
-                    range = 0,
                     cooldown = 0f,
                     animation = "attack_skill_pray",
                     animationDuration = 10f,
                     lastUseTime = 0f,
-                    extraAnimationEffectId = typeof(FixerWhitePrayerSkillController).Name,
-                    isFirstUse = true
+                    isFirstUse = true,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.PsychologicalAttack,
+                            damageAmount = 0
+                        },
+                        new(){
+                            attackEffectorName = "DamageReflection",
+                            damageType = Tag.Invalid,
+                            damageAmount = 0
+                        },
+                        new(){
+                            attackEffectorName = "FrozenHitPoints",
+                            damageType = Tag.Invalid,
+                            damageAmount = 0
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "HealthChangeTrigger",
+                            properties = new Dictionary<string, object>()
+                            {
+                                { "ChangeDelta", 0.3 }
+                            }
+                        }
+                    }
                 }
             };
 
             // 设置技能并添加到数据库
-            skillComponent.skills = skills;
-            MutanterSkillComponent.AddSkillsToDatabase(ID, skills);
+            skillComponent.AddSkillsToDb(skills);
 
-            prefab.AddOrGet<LaserBeamController>();
-            prefab.AddOrGet<WhiteMistController>();
-            prefab.AddOrGet<FixerWhiteLaserController>();
-            prefab.AddOrGet<FixerWhiteLaserSweepController>();
-            prefab.AddOrGet<FixerWhitePrayerSkillController>();
+            //禁用基础攻击能力
+            prefab.AddOrGet<MutanterCombatManager>().AbilityOfBasicAttaction = false;
 
             return prefab;
         }

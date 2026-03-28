@@ -1,4 +1,7 @@
 using Klei.AI;
+using MutantContainmentProject.MutanterComponent.Effector;
+using MutantContainmentProject.MutanterComponent.Triggers;
+using MutantContainmentProject.MutanterComponent.VFXController;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.UI;
@@ -60,7 +63,12 @@ namespace MutantContainmentProject.MutanterComponent
             
             // 挂载：战斗管理器
             template.AddOrGet<MutanterCombatManager>();//挂载：战斗管理器，统一协调攻击和动画
-            
+            // 挂载：技能触发器管理器
+            template.AddOrGet<SkillTriggerManager>();//挂载：技能触发器管理器
+            //挂载：技能攻击效果管理器
+            template.AddOrGet<SkillEffectorManager>();
+            //挂载：VFX效果管理器
+            template.AddOrGet<VFXManager>();
             // 挂载：技能组件
             template.AddOrGet<MutanterSkillComponent>();//挂载：技能组件
             

@@ -1,3 +1,6 @@
+using MutantContainmentProject.MutanterComponent.Effector;
+using MutantContainmentProject.MutanterComponent.Triggers;
+using MutantContainmentProject.MutanterComponent.VFXController;
 using System;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
@@ -5,179 +8,118 @@ using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent
 {
+    /**
+     * 参考 DevelopNote\畸变体战斗系统架构
+     */
     public class MutanterSkillComponent : KMonoBehaviour
     {
-        // 额外动画效果接口
-        public interface IExtraAnimationEffect
+        public struct TriggerData
         {
-            void Activate();
-            void Deactivate();
-            List<KPrefabID> GetAttackTargets();
+            public string triggerName;
+            public Dictionary<string, object> properties; // 触发器属性
         }
-
+        public struct AttackEffectorData
+        {
+            public string attackEffectorName;
+            public Tag damageType;
+            public float damageAmount;
+        }
         public struct SkillData
         {
             public string name;
-            public Tag damageType;
             public bool isPassiveSkill;
-            public float damage;
-            public int range;
             public float cooldown;
-            public string animation;
-            public float animationDuration;
+            public List<TriggerData> triggers; // 触发器数据列表
+            public List<AttackEffectorData> attackEffectors;//攻击效果数据列表
             public float lastUseTime;
             public bool isFirstUse;
-            public string extraAnimationEffectId; // 额外动画效果ID
+            //表现层设定: 基础动画 攻击特效
+            public string animation;
+            public float animationDuration;
+            public string VFXName;
+            //public string extraAnimationEffectId; // 额外动画效果ID
         }
 
-        [SerializeField]
-        public List<SkillData> skills = new();
-        private MutanterAttackSystem attackSystem;
-
         // 静态技能数据库
-        private static Dictionary<string, List<SkillData>> _mutanterSkillsDatabase = new();
+        private static Dictionary<Tag, List<SkillData>> MutantersSkillDb = new();
 
-        private LaserBeamController laserBeamController;
-        public LaserBeamController LaserBeamController => laserBeamController ??= GetComponent<LaserBeamController>();
+        public List<SkillData> skills = new();
+
+        private MutanterAttackSystem attackSystem;
+        private MutanterAttackSystem AttackSystem => attackSystem ??= GetComponent<MutanterAttackSystem>();
 
         private WhiteMistController whiteMistController;
         public WhiteMistController WhiteMistControllerInstancce => whiteMistController ??= GetComponent<WhiteMistController>();
 
-        // 效果组件映射
-        private Dictionary<string, IExtraAnimationEffect> effectComponents = new();
+        private SkillTriggerManager triggerManager;
+        private SkillTriggerManager TriggerManager => triggerManager ??= GetComponent<SkillTriggerManager>();
 
-        private static Dictionary<Type, Type> EffectsCom = new();
+        private MutanterCombatManager combatManager;
+        private MutanterCombatManager CombatManager => combatManager ??= GetComponent<MutanterCombatManager>();
+        private SkillEffectorManager effectorManager;
+        private SkillEffectorManager EffectorManager => effectorManager ??= GetComponent<SkillEffectorManager>();
+        private VFXManager vFXManager;
+        private VFXManager VFXManagerInstancce=> vFXManager ??= GetComponent<VFXManager>();
         protected override void OnSpawn()
         {
             base.OnSpawn();
-            attackSystem = GetComponent<MutanterAttackSystem>();
 
             string mutanterId = gameObject.GetComponent<KPrefabID>().PrefabID().Name;
-            if (_mutanterSkillsDatabase.ContainsKey(mutanterId))
-            {
-                skills = new List<SkillData>(_mutanterSkillsDatabase[mutanterId]);
-            }
-            InitializeEffects();
-        }
 
-        private void InitializeEffects()
-        {
-            foreach (var kvp in EffectsCom)
-            {
-                try
-                {
-                    var effectController = gameObject.GetComponent(kvp.Key) ?? gameObject.AddComponent(kvp.Key);
-                    if (effectController != null)
-                    {
-                        var effect = (IExtraAnimationEffect)Activator.CreateInstance(kvp.Value, new object[] { effectController });
-                        string key = kvp.Key.Name;
-                        effectComponents[key] = effect;
-                    }
-                }
-                catch (Exception e)
-                {
-                    TbbDebuger.LogError($"初始化效果时出错: {e.Message}\n{e.StackTrace}");
-                }
-            }
-        }
-
-        public void RegisterEffectComponents<TEffectController, TAnimationEffect>()
-        where TEffectController : KMonoBehaviour
-        where TAnimationEffect : IExtraAnimationEffect
-        {
-            if (!EffectsCom.ContainsKey(typeof(TEffectController)))
-                EffectsCom.Add(typeof(TEffectController), typeof(TAnimationEffect));
-        }
-        private IExtraAnimationEffect GetExtraAnimationEffect(string effectId)
-        {
-            if (effectId != null && effectComponents.TryGetValue(effectId, out var effect))
-            {
-                return effect;
-            }
-            return null;
+            skills = MutantersSkillDb.TryGetValue(mutanterId, out var skillData)? skillData: new List<SkillData>();
+            // 执行被动触发器
+            TriggerManager?.ExecutePassiveTriggers(gameObject, skills);
+            EffectorManager?.LoadEffectors(gameObject,skills);
         }
 
         protected override void OnPrefabInit()
         {
             base.OnPrefabInit();
         }
-
-        // 添加技能到数据库
-        public static void AddSkillsToDatabase(string mutanterId, List<SkillData> skills)
-        {
-            _mutanterSkillsDatabase[mutanterId] = new List<SkillData>(skills);
+        public void AddSkillsToDb(List<SkillData> skills) {
+            string mutanterId = gameObject.GetComponent<KPrefabID>().PrefabID().Name;
+            if (!MutantersSkillDb.ContainsKey(mutanterId))
+            {
+                MutantersSkillDb.Add(mutanterId,skills);
+            }
         }
-
-        // 添加单个技能
         public void AddSkill(SkillData skill)
         {
             skills.Add(skill);
         }
-        public bool TryExecuteSkill(string extraAnimationEffectId, float damageAmount = 0, bool playAnimation = true)
+        //
+        public bool TryExecuteSkill(string skillName, float damageAmount = 0)
         {
-            if (extraAnimationEffectId == null || skills.Count == 0)
+            if (skillName == null || skills.Count == 0)
                 return false;
             for (int i = 0; i < skills.Count; i++)
             {
-                if (skills[i].extraAnimationEffectId == extraAnimationEffectId)
+                if (skills[i].name == skillName)
                 {
                     // 执行技能攻击
-                    ExecuteSkill(i, null, damageAmount, playAnimation);
+                    ExecuteSkill(i, null, damageAmount);
                     return true;
                 }
             }
             return false;
         }
+        private void FaceTarget(GameObject target)
+        {
+            if (target == null) return;
+            Vector3 targetPos = target.transform.position;
+            GetComponent<Facing>()?.Face(targetPos);
+        }
         public bool TryExecuteSkill(GameObject target, out SkillData? usedSkill)
         {
             usedSkill = null;
-            if (target == null || attackSystem == null || skills.Count == 0)
-                return false;
+            FaceTarget(target);
+            if (target == null || AttackSystem == null || skills.Count == 0) return false;
 
-            // 检查生命值，确保只有在生命值大于0时才尝试执行技能
-            var health = gameObject.GetComponent<Health>();
-            if (health != null && health.hitPoints <= 0f)
-            {
-                return false;
-            }
+            // 协调多个触发器，选择最佳技能
+            int selectedSkillIndex = CoordinateTriggers(target);
 
-            // 计算距离
-            int targetCell = Grid.PosToCell(target.transform.position);
-            int currentCell = Grid.PosToCell(gameObject.transform.position);
-            float distance = Mathf.Abs(Grid.CellToPos2D(targetCell).x - Grid.CellToPos2D(currentCell).x);
-            //TbbDebuger.LogDebug($"距离: {distance} 总技能数量:[{skills.Count}]");
-            // 选择合适的技能
-            int selectedSkillIndex = -1;
-
-            //distance = 10;//调试用，不要修改
-            // 筛选非被动技能
-            var activeSkills = new List<SkillData>();
-            for (int i = 0; i < skills.Count; i++)
-            {
-                if (!skills[i].isPassiveSkill)
-                {
-                    activeSkills.Add(skills[i]);
-                }
-            }
-
-            // 按距离和伤害排序技能
-            for (int i = 0; i < activeSkills.Count; i++)
-            {
-                var skill = activeSkills[i];
-                if (distance <= skill.range && Time.time - skill.lastUseTime >= skill.cooldown)
-                {
-                    // 找到原始技能索引
-                    int originalIndex = skills.FindIndex(s => s.name == skill.name && s.damage == skill.damage);
-                    if (selectedSkillIndex == -1 || skill.damage > skills[selectedSkillIndex].damage)
-                    {
-                        selectedSkillIndex = originalIndex;
-                    }
-                }
-            }
-            //TbbDebuger.LogDebug($"选择技能索引: {selectedSkillIndex} 技能名称：[{skills[selectedSkillIndex].name}]");
             if (selectedSkillIndex != -1)
             {
-
                 ExecuteSkill(selectedSkillIndex, target);
                 usedSkill = skills[selectedSkillIndex];
                 return true;
@@ -186,109 +128,76 @@ namespace MutantContainmentProject.MutanterComponent
             return false;
         }
 
+        /// <summary>
+        /// 协调多个触发器之间的触发逻辑，选择最佳技能
+        /// </summary>
+        /// <param name="target">目标</param>
+        /// <returns>选中的技能索引，-1表示没有选中</returns>
+        private int CoordinateTriggers(GameObject target)
+        {
+            if (TriggerManager != null)
+            {
+                return TriggerManager.SelectSkill(gameObject, target, skills);
+            }
+
+            return -1;
+        }
+
         public bool TryExecuteSkill(GameObject target)
         {
             return TryExecuteSkill(target, out _);
         }
 
-        private SkillData? GetAvailableSkill(string skillName, int distance)
+        private void ExecuteSkill(int skillIndex, GameObject target, float damageAmount = 0)
         {
-            foreach (var skill in skills)
-            {
-                if (skill.name == skillName && distance <= skill.range && Time.time - skill.lastUseTime >= skill.cooldown)
-                {
-                    return skill;
-                }
-            }
-            return null;
-        }
-
-        private void ExecuteSkill(int skillIndex, GameObject target, float damageAmount = 0, bool playAnimation = true)
-        {
-            // 检查生命值，确保只有在生命值大于0时才执行技能
-            var health = gameObject.GetComponent<Health>();
-            if (health != null && health.hitPoints <= 0f)
-            {
-                return;
-            }
-
-            if (skillIndex < 0 || skillIndex >= skills.Count)
-                return;
+            if (skillIndex < 0 || skillIndex >= skills.Count) return;
 
             var skill = skills[skillIndex];
 
-            var combatManager = gameObject.GetComponent<MutanterCombatManager>();
-            combatManager?.SetAttacking(true);
-
-            float damage = damageAmount == 0 ? skill.damage : damageAmount;
-            if (target != null)
+            CombatManager?.SetAttacking(true);
+            //表现层逻辑
+            var animController = gameObject.GetComponent<KBatchedAnimController>();
+            EffectorManager?.ApplyEffectorsBefore(skill);
+            if (animController != null && !string.IsNullOrEmpty(skill.animation))
             {
-                attackSystem.TryExecuteAttack(target, damage, skill.damageType);
-            }
-            else
-            {
-                //没有Target的情况分两种，一种是被动技能，一种是主动技能，主动技能没有目标，说明出错了
-                var extraEffect = GetExtraAnimationEffect(skill.extraAnimationEffectId);
+                //攻击特效
+                var attackVFX = VFXManagerInstancce.GetVFXController(skill.VFXName);
+                attackVFX?.Activate();
 
-                if (extraEffect != null)
+                void onComplete()
                 {
-                    List<KPrefabID> extralDamageTargets = extraEffect.GetAttackTargets();
-                    if (extralDamageTargets.Count > 0)
+                    if (attackVFX != null)
                     {
-                        foreach (var kPrefabID in extralDamageTargets)
+                        attackVFX.Deactivate();
+                        List<KPrefabID> extralDamageTargets = attackVFX.GetAttackTargets();
+                        if (extralDamageTargets.Count > 0)
                         {
-                            attackSystem.TryExecuteAttack(kPrefabID.gameObject, damage, skill.damageType);
-                        }
-                    }
-                }
-            }
-            if (playAnimation)
-            {
-                // 播放动画
-                var animController = gameObject.GetComponent<KBatchedAnimController>();
-                if (animController != null && !string.IsNullOrEmpty(skill.animation))
-                {
-                    // 获取额外动画效果
-                    var extraEffect = GetExtraAnimationEffect(skill.extraAnimationEffectId);
-                    // 激活额外动画效果
-                    if (extraEffect != null)
-                    {
-                        extraEffect.Activate();
-                    }
-
-
-                    System.Action onComplete = null;
-                    onComplete = () =>
-                    {
-                        // 停用额外动画效果
-                        if (extraEffect != null)
-                        {
-                            extraEffect.Deactivate();
-                            List<KPrefabID> extralDamageTargets = extraEffect.GetAttackTargets();
-                            if (extralDamageTargets.Count > 0)
+                            foreach (var target in extralDamageTargets)
                             {
-                                // 处理额外伤害目标
-                                foreach (var target in extralDamageTargets)
-                                {
-                                    attackSystem.TryExecuteAttack(target.gameObject, damage, skill.damageType);
-                                }
+                                //处理AOE伤害，碰撞判断对象伤害
+                                EffectorManager?.ApplyEffectorsAfter(target?.gameObject, skill);
                             }
                         }
-                        combatManager?.SetAttacking(false);
-                    };
-                    if (skill.animationDuration > 0f)
-                    {
-                        combatManager?.PlayAnimation(skill.animation, skill.animationDuration, onComplete);
                     }
                     else
                     {
-                        combatManager?.PlayAnimation(skill.animation, KAnim.PlayMode.Once, onComplete);
+                        EffectorManager?.ApplyEffectorsAfter(target,skill);
                     }
+                    CombatManager?.SetAttacking(false);
+                }
+
+                if (skill.animationDuration > 0f)
+                {
+                    CombatManager?.PlayAnimation(skill.animation, skill.animationDuration, onComplete);
                 }
                 else
                 {
-                    combatManager?.SetAttacking(false);
+                    CombatManager?.PlayAnimation(skill.animation, KAnim.PlayMode.Once, onComplete);
                 }
+            }
+            else
+            {
+                CombatManager?.SetAttacking(false);
             }
 
             // 更新技能冷却时间
@@ -299,8 +208,6 @@ namespace MutantContainmentProject.MutanterComponent
                 updatedSkill.isFirstUse = false;
             }
             skills[skillIndex] = updatedSkill;
-
-            TbbDebuger.LogDebug($"[MutanterSkillComponent] 执行攻击: {skill.name} 伤害: {skill.damage}, 攻击属性: {skill.damageType}");
         }
 
     }
