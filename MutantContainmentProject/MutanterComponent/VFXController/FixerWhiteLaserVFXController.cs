@@ -5,8 +5,7 @@ using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent.VFXController
 {
-    [VFXAttribute("FixerWhiteLaserVFX")]
-    public class FixerWhiteLaserVFXController : KMonoBehaviour, ISimEveryTick, IVFXController
+    public class FixerWhiteLaserVFXController : KMonoBehaviour, ISimEveryTick
     {
         private ParticleSystem ParticleSystemInstance;
         public GameObject LaserInstance;
@@ -18,6 +17,18 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
         private float PlayLaserDelay = 0.7f;
         private float PlayLaserDelayTime = 0;
         public float BeamLength = 30f;
+
+        // LOD配置
+        [Header("LOD配置")]
+        public float lodDistance1 = 5f; // 高细节距离
+        public float lodDistance2 = 10f; // 中等细节距离
+        public int maxParticlesHigh = 10000;
+        public int maxParticlesMedium = 5000;
+        public int maxParticlesLow = 1000;
+        public float emissionRateHigh = 1000f;
+        public float emissionRateMedium = 500f;
+        public float emissionRateLow = 100f;
+        private int currentLODLevel = 0;
 
         private float FacingDirection = 1;//默认面向右
 
@@ -79,25 +90,7 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
 
             return basePosition + beamDirection * BeamLength;
         }
-        public void SimEveryTick(float dt)
-        {
-            if (!isSkillActive || ParticleSystemInstance == null || LaserInstance == null) return;
-            if (PlayLaserDelayTime > 0)
-            {
-                PlayLaserDelayTime -= dt;
-                return;
-            }
-            if (!isRotating)
-            {
-                LaserInstance.transform.position = CalculateLaserParameters(dt);
-            }
-            if (isRotating)
-            {
-                LaserInstance.transform.position = BasePosition;
 
-                HandleBeamRotation();
-            }
-        }
         //旋转设置
         private Vector3 initialDirection;
         private float StartAngle = 90;
@@ -113,6 +106,13 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
         {
             // 增加旋转进度
             rotationProgress += 1f;
+
+            // 检查是否完成旋转
+            if (rotationProgress >= RotationFrameCount)
+            {
+                DeactivateLaser();
+                return;
+            }
 
             // 确保初始方向不为零
             if (initialDirection == Vector3.zero)
@@ -139,14 +139,6 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
                 // 调整旋转，使粒子系统沿光束方向发射
                 // 由于粒子系统默认沿Z轴发射，我们需要将Z轴对准光束方向
                 LaserInstance.transform.rotation = Quaternion.LookRotation(beamDirection, Vector3.up);
-            }
-
-            // 检查是否完成旋转
-            if (rotationProgress >= RotationFrameCount)
-            {
-                isRotating = false;
-                rotationProgress = 0f;
-                ParticleSystemInstance.Stop();
             }
         }
 
@@ -423,16 +415,45 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
             //朝向
             FacingDirection = FacingCom.GetFacing() ? -1f : 1f;
         }
+
+        private void ConfigureParticleSystem()
+        {
+            // 激光光束需要保证模拟空间使用local
+            ParticleSystem.MainModule mainModule = ParticleSystemInstance.main;
+            mainModule.startSpeed = 50f;
+            mainModule.simulationSpace = ParticleSystemSimulationSpace.Local;
+        }
+
+        private void UpdateLaserTransform(Vector3 direction)
+        {
+            LaserInstance.transform.position = BasePosition;
+            if (direction != Vector3.zero)
+            {
+                LaserInstance.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+            }
+        }
+
+        private void ActivateLaserCommon()
+        {
+            LaserInstance.SetActive(true);
+            ParticleSystemInstance?.Play();
+            isSkillActive = true;
+        }
+
         public void ActivateLaser()
         {
             TbbDebuger.LogDebug($"FixerWhiteLaserController激活!");
-            isSkillActive = true;
             rotationProgress = 0f;
+            isRotating = false;
 
             InitializeDefaultParams();
-
-            LaserInstance.SetActive(true);
-            ParticleSystemInstance?.Play();
+            ConfigureParticleSystem();
+            
+            // 设置初始方向为直线
+            beamDirection = new Vector3(FacingDirection, 0, 0);
+            UpdateLaserTransform(beamDirection);
+            
+            ActivateLaserCommon();
             PlayLaserDelayTime = PlayLaserDelay;
 
             // 检测直线激光路径上的碰撞
@@ -463,29 +484,127 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
             rotationProgress = 0f;
 
             InitializeDefaultParams();
+            ConfigureParticleSystem();
 
-            beamDirection = new Vector3(FacingDirection, 0, 0);
+            // 初始化初始方向为旋转开始角度
+            initialDirection = new Vector3(FacingDirection * Mathf.Cos(Mathf.Deg2Rad * StartAngle), Mathf.Sin(Mathf.Deg2Rad * StartAngle), 0f).normalized;
+            beamDirection = initialDirection;
 
-            // 激光光束旋转需要保证模拟空间使用local
-            ParticleSystem.MainModule mainModule = ParticleSystemInstance.main;
-            mainModule.startSpeed = 50f;
-            mainModule.simulationSpace = ParticleSystemSimulationSpace.Local;
+            // 设置初始旋转角度
+            UpdateLaserTransform(beamDirection);
 
-            ParticleSystemInstance?.Play();
+            ActivateLaserCommon();
 
             // 检测旋转激光路径上的碰撞
             CheckRotatingLaserCollision();
 
         }
 
-        public void Activate()
+        // 激活直线型激光
+        public void ActivateStraightLaser()
         {
-            this.ActivateLaser();
+            TbbDebuger.LogDebug("激活直线型激光");
+            isRotating = false;
+            rotationProgress = 0f;
+
+            InitializeDefaultParams();
+            ConfigureParticleSystem();
+
+            // 设置初始方向为直线
+            beamDirection = new Vector3(FacingDirection, 0, 0);
+            UpdateLaserTransform(beamDirection);
+
+            ActivateLaserCommon();
+            PlayLaserDelayTime = PlayLaserDelay;
+
+            // 检测直线激光路径上的碰撞
+            CheckStraightLaserCollision();
+
         }
 
         public void Deactivate()
         {
             this.DeactivateLaser();
+        }
+
+        public void UpdateLOD(float distance)
+        {
+            int newLODLevel = 0;
+            if (distance > lodDistance2)
+            {
+                newLODLevel = 2; // 低细节
+            }
+            else if (distance > lodDistance1)
+            {
+                newLODLevel = 1; // 中等细节
+            }
+            else
+            {
+                newLODLevel = 0; // 高细节
+            }
+
+            if (newLODLevel != currentLODLevel)
+            {
+                SetLODLevel(newLODLevel);
+            }
+        }
+
+        public void SetLODLevel(int level)
+        {
+            currentLODLevel = level;
+            
+            if (ParticleSystemInstance == null) return;
+            
+            ParticleSystem.MainModule mainModule = ParticleSystemInstance.main;
+            ParticleSystem.EmissionModule emissionModule = ParticleSystemInstance.emission;
+            
+            switch (level)
+            {
+                case 0: // 高细节
+                    mainModule.maxParticles = maxParticlesHigh;
+                    emissionModule.rateOverTime = emissionRateHigh;
+                    break;
+                case 1: // 中等细节
+                    mainModule.maxParticles = maxParticlesMedium;
+                    emissionModule.rateOverTime = emissionRateMedium;
+                    break;
+                case 2: // 低细节
+                    mainModule.maxParticles = maxParticlesLow;
+                    emissionModule.rateOverTime = emissionRateLow;
+                    break;
+            }
+        }
+
+        public int GetCurrentLODLevel()
+        {
+            return currentLODLevel;
+        }
+
+        public void SimEveryTick(float dt)
+        {
+            if (!isSkillActive || ParticleSystemInstance == null || LaserInstance == null) return;
+            if (PlayLaserDelayTime > 0)
+            {
+                PlayLaserDelayTime -= dt;
+                return;
+            }
+            if (!isRotating)
+            {
+                LaserInstance.transform.position = CalculateLaserParameters(dt);
+            }
+            if (isRotating)
+            {
+                LaserInstance.transform.position = BasePosition;
+
+                HandleBeamRotation();
+            }
+
+            // 更新LOD
+            if (CameraController.Instance != null)
+            {
+                float distance = Vector3.Distance(transform.position, CameraController.Instance.transform.position);
+                UpdateLOD(distance);
+            }
         }
     }
 }

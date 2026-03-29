@@ -202,6 +202,12 @@
             NOTIFICATION_NAME: SCP-049正在执行治愈
             NOTIFICATION_TOOLTIP: SCP-049正在使用治愈之手清除疾病和伤痛，但会导致压力值达到最大值
         }
+        CHASING: {
+            NAME: 追逐
+            TOOLTIP: 该实体正在追逐复制人
+            NOTIFICATION_NAME: 实体正在追逐复制人
+            NOTIFICATION_TOOLTIP: 实体正在追逐复制人
+        }
       }
     }
     MISC: {

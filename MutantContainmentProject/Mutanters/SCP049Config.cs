@@ -49,6 +49,13 @@ namespace MutantContainmentProject.Mutanters
             BaseMutanter.AddProductToMutanter(prefab, AdvancedCureConfig.ID, 1000f, 0.8f);//血清瓶
             BaseMutanter.AddProductToMutanter(prefab, BasicCureConfig.ID, 20f, 0.6f);// 治疗药片
 
+            // 配置攻击策略
+            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
+            
+            // 只启用基础攻击策略
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, true);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, false);
+
             return prefab;
         }
 

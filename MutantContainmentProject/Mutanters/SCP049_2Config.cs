@@ -1,5 +1,6 @@
-using Klei.AI;
 using HarmonyLib;
+using Klei.AI;
+using MutantContainmentProject.MutanterComponent;
 using System;
 using UnityEngine;
 
@@ -30,16 +31,16 @@ namespace MutantContainmentProject.Mutanters
         {
             BaseRoverConfig.OnSpawn(inst);
             Effects effects = inst.GetComponent<Effects>();
-            if ((UnityEngine.Object) inst.transform.parent == (UnityEngine.Object) null)
+            if ((UnityEngine.Object)inst.transform.parent == (UnityEngine.Object)null)
             {
                 if (effects.HasEffect("ScoutBotCharging"))
                     effects.Remove("ScoutBotCharging");
             }
             else if (!effects.HasEffect("ScoutBotCharging"))
                 effects.Add("ScoutBotCharging", false);
-            inst.Subscribe(856640610, (Action<object>) (_ =>
+            inst.Subscribe(856640610, (Action<object>)(_ =>
             {
-                if ((UnityEngine.Object) inst.transform.parent == (UnityEngine.Object) null)
+                if ((UnityEngine.Object)inst.transform.parent == (UnityEngine.Object)null)
                 {
                     if (!effects.HasEffect("ScoutBotCharging"))
                         return;
@@ -52,6 +53,13 @@ namespace MutantContainmentProject.Mutanters
                     effects.Add("ScoutBotCharging", false);
                 }
             }));
+
+            // 配置攻击策略
+            var strategyManager = inst.AddOrGet<AttackStrategyManager>();
+
+            // 只启用基础攻击策略
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, true);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, false);
         }
 
         public string[] GetAnyRequiredDlcIds() => null;

@@ -42,6 +42,13 @@ namespace MutantContainmentProject.Mutanters
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Ice.CreateTag(), 2000f, 0.9f);
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Snow.CreateTag(), 1500f, 0.8f);
 
+            // 配置攻击策略
+            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
+            
+            // 禁用所有攻击策略（安全级别，无攻击能力）
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, false);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, false);
+
             return prefab;
         }
 

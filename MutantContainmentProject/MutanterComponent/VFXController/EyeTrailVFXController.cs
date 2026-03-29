@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
@@ -10,6 +10,18 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
         public static string ID = "EyeTrailController";
         [Header("拖尾配置")]
         public string eyeSymbolName = "snapto_eye";
+
+        // LOD配置
+        [Header("LOD配置")]
+        public float lodDistance1 = 5f; // 高细节距离
+        public float lodDistance2 = 10f; // 中等细节距离
+        public int maxParticlesHigh = 5000;
+        public int maxParticlesMedium = 2000;
+        public int maxParticlesLow = 500;
+        public float emissionRateHigh = 500f;
+        public float emissionRateMedium = 200f;
+        public float emissionRateLow = 50f;
+        private int currentLODLevel = 0;
 
         private bool isSkillActive = false;
         private GameObject trailInstance;
@@ -83,14 +95,71 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
             }
             isSkillActive = false;
         }
-        // 每帧生成粒子
+
+        public List<KPrefabID> GetAttackTargets()
+        {
+            return new List<KPrefabID>();
+        }
+
+        public void UpdateLOD(float distance)
+        {
+            int newLODLevel = 0;
+            if (distance > lodDistance2)
+            {
+                newLODLevel = 2; // 低细节
+            }
+            else if (distance > lodDistance1)
+            {
+                newLODLevel = 1; // 中等细节
+            }
+            else
+            {
+                newLODLevel = 0; // 高细节
+            }
+
+            if (newLODLevel != currentLODLevel)
+            {
+                SetLODLevel(newLODLevel);
+            }
+        }
+
+        public void SetLODLevel(int level)
+        {
+            currentLODLevel = level;
+            
+            if (particleSystem == null) return;
+            
+            ParticleSystem.MainModule mainModule = particleSystem.main;
+            ParticleSystem.EmissionModule emissionModule = particleSystem.emission;
+            
+            switch (level)
+            {
+                case 0: // 高细节
+                    mainModule.maxParticles = maxParticlesHigh;
+                    emissionModule.rateOverTime = emissionRateHigh;
+                    break;
+                case 1: // 中等细节
+                    mainModule.maxParticles = maxParticlesMedium;
+                    emissionModule.rateOverTime = emissionRateMedium;
+                    break;
+                case 2: // 低细节
+                    mainModule.maxParticles = maxParticlesLow;
+                    emissionModule.rateOverTime = emissionRateLow;
+                    break;
+            }
+        }
+
+        public int GetCurrentLODLevel()
+        {
+            return currentLODLevel;
+        }
+
         public void SimEveryTick(float dt)
         {
             if (!isSkillActive || trailInstance == null || particleSystem == null) return;
 
             // 每帧更新畸变体的朝向
             float currentFacingDirection = FacingCom?.GetFacing() == true ? -1f : 1f;
-            TbbDebuger.LogDebug($"每帧生成粒子，当前朝向：{currentFacingDirection}，当前位置：{trailInstance.transform.position}");
             if (currentFacingDirection != facingDirection)
             {
                 facingDirection = currentFacingDirection;
@@ -136,10 +205,13 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
             {
                 trailInstance.transform.position = ellipsePosition;
             }
-        }
-        public List<KPrefabID> GetAttackTargets()
-        {
-            return new List<KPrefabID>();
+
+            // 更新LOD
+            if (CameraController.Instance != null)
+            {
+                float distance = Vector3.Distance(transform.position, CameraController.Instance.transform.position);
+                UpdateLOD(distance);
+            }
         }
     }
 }

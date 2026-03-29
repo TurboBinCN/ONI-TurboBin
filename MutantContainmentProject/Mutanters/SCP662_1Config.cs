@@ -32,6 +32,13 @@ namespace MutantContainmentProject.Mutanters
             var treeFilterable = prefab.AddOrGet<TreeFilterable>();
             treeFilterable.copySettingsEnabled = false;
 
+            // 配置攻击策略
+            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
+            
+            // 禁用所有攻击策略（安全级别，无攻击能力）
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, false);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, false);
+
             return prefab;
         }
 

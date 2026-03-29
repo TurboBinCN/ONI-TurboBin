@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 using static KAnim;
@@ -8,9 +9,7 @@ namespace MutantContainmentProject.MutanterComponent
     {
         // 攻击状态跟踪
         private bool isAttacking = false;
-
-        //基础技能攻击能力
-        public bool AbilityOfBasicAttaction = true;
+        public bool IsAttacking => isAttacking;
 
         // 动画协调器
         private AnimationCoordinator animationCoordinator;
@@ -21,18 +20,40 @@ namespace MutantContainmentProject.MutanterComponent
         // 技能组件
         private MutanterSkillComponent skillComponent;
 
+        // 攻击策略管理器
+        private AttackStrategyManager strategyManager;
+        // 初始化策略管理器
+        private AttackStrategyManager StrategyManager => strategyManager ??= gameObject.AddOrGet<AttackStrategyManager>();
+
+        // 状态机实例
+        private MutanterStateMachine.StatesInstance stateMachineInstance;
+
+        // 技能执行队列
+        private struct SkillExecutionRequest
+        {
+            public string skillName;
+            public int priority;
+            public GameObject target;
+            public int skillLevel;
+            public float damageAmount;
+        }
+
+        private List<SkillExecutionRequest> executionQueue = new List<SkillExecutionRequest>();
+        private bool isProcessingQueue = false;
         protected override void OnSpawn()
         {
             base.OnSpawn();
-
             // 初始化组件
             attackSystem = GetComponent<MutanterAttackSystem>();
             skillComponent = GetComponent<MutanterSkillComponent>();
+            StrategyManager.Initialize();
+            stateMachineInstance = gameObject.GetSMI<MutanterStateMachine.StatesInstance>();
 
             // 初始化系统
             animationCoordinator = new AnimationCoordinator(this);
         }
-        public bool MutiSegmentDamage() {
+        public bool MutiSegmentDamage()
+        {
             return false;
         }
         /// <summary>
@@ -75,26 +96,8 @@ namespace MutantContainmentProject.MutanterComponent
                 return false;
             }
 
-            if (skillComponent != null)
-            {
-                bool skillSuccess = skillComponent.TryExecuteSkill(target);
-                if (skillSuccess)
-                {
-                    return true;
-                }
-            }
-
-            // 尝试执行基础攻击
-            if (AbilityOfBasicAttaction && attackSystem != null)
-            {
-                bool attackSuccess = attackSystem.TryExecuteAttack(target);
-                if (attackSuccess)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            // 使用策略管理器执行攻击
+            return StrategyManager.ExecuteAttack(target);
         }
 
         /// <summary>
@@ -141,6 +144,138 @@ namespace MutantContainmentProject.MutanterComponent
         {
             SetAttacking(false);
             ClearAnimationQueue();
+        }
+
+        /// <summary>
+        /// 检查所有技能是否冷却完成
+        /// </summary>
+        /// <returns>所有技能是否冷却完成</returns>
+        public bool AreAnySkillsReady()
+        {
+            if (skillComponent == null || skillComponent.skills == null || skillComponent.skills.Count == 0)
+            {
+                return true;
+            }
+
+            foreach (var skill in skillComponent.skills)
+            {
+                if (Time.time - skill.lastUseTime > skill.cooldown)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 检查是否有任何可用的攻击策略（包括技能和基础攻击）
+        /// </summary>
+        /// <param name="target">攻击目标</param>
+        /// <returns>是否有可用的攻击策略</returns>
+        public bool HasAnyAvailableAttackStrategy(GameObject target)
+        {
+            return StrategyManager.HasAnyAvailableStrategy(target);
+        }
+
+        /// <summary>
+        /// 队列技能执行
+        /// </summary>
+        /// <param name="skillName">技能名称</param>
+        /// <param name="priority">优先级</param>
+        /// <param name="target">目标</param>
+        /// <param name="skillLevel">技能等级</param>
+        /// <param name="damageAmount">伤害量</param>
+        public void QueueSkillExecution(string skillName, int priority = 0, GameObject target = null, int skillLevel = 0, float damageAmount = 0f)
+        {
+            var request = new SkillExecutionRequest
+            {
+                skillName = skillName,
+                priority = priority,
+                target = target,
+                skillLevel = skillLevel,
+                damageAmount = damageAmount
+            };
+
+            executionQueue.Add(request);
+            executionQueue.Sort((a, b) => b.priority.CompareTo(a.priority));
+
+            if (!isProcessingQueue)
+            {
+                ProcessQueue();
+            }
+        }
+
+        /// <summary>
+        /// 处理技能执行队列
+        /// </summary>
+        private void ProcessQueue()
+        {
+            if (executionQueue.Count == 0)
+            {
+                isProcessingQueue = false;
+                return;
+            }
+
+            isProcessingQueue = true;
+            var request = executionQueue[0];
+            executionQueue.RemoveAt(0);
+
+            // 锁定状态机
+            LockStateMachine();
+
+            // 执行技能
+            bool success = TryExecuteSkill(request.skillName, request.damageAmount);
+
+            // 技能执行完成后会通过UnlockStateMachineAfterAnimation方法解锁状态机
+            // 这里不再立即解锁
+
+            // 处理下一个技能
+            // 注意：这里需要在动画完成后再处理下一个技能
+        }
+
+        /// <summary>
+        /// 动画完成后解锁状态机并继续处理队列
+        /// </summary>
+        public void UnlockStateMachineAfterAnimation()
+        {
+            // 解锁状态机
+            UnlockStateMachine();
+
+            // 处理下一个技能
+            ProcessQueue();
+        }
+
+        /// <summary>
+        /// 锁定状态机
+        /// </summary>
+        private void LockStateMachine()
+        {
+            if (stateMachineInstance != null)
+            {
+                stateMachineInstance.LockStateMachine();
+                TbbDebuger.LogDebug($"[MutanterCombatManager] 锁定状态机");
+            }
+        }
+
+        /// <summary>
+        /// 解锁状态机
+        /// </summary>
+        private void UnlockStateMachine()
+        {
+            if (stateMachineInstance != null)
+            {
+                stateMachineInstance.UnlockStateMachine();
+                TbbDebuger.LogDebug($"[MutanterCombatManager] 解锁状态机");
+            }
+        }
+
+        /// <summary>
+        /// 清空技能执行队列
+        /// </summary>
+        public void ClearSkillQueue()
+        {
+            executionQueue.Clear();
         }
 
         // 动画协调器

@@ -110,18 +110,28 @@ namespace MutantContainmentProject.MutanterComponent.Triggers
                 {
                     thresholdTriggered[i] = true;
                     // 触发固定阈值对应的技能
-                    CombatManager.TryExecuteSkill(Skill.name, 0);
-                    lastHealth = currentHealth;
-                    return;
+                        var combatManager = gameObject.GetComponent<MutanterCombatManager>();
+                        if (combatManager != null)
+                        {
+                            // 使用战斗管理器执行被动技能，优先级设为高
+                            combatManager.QueueSkillExecution(Skill.name, 50, null, 0);
+                        }
+                        lastHealth = currentHealth;
+                        return;
+                    }
                 }
-            }
 
-            // 检查30%伤害阈值
-            float healthLostRatio = healthLost / initialHealth;
-            if (healthLostRatio >= healthThreshold)
-            {
-                CombatManager.TryExecuteSkill(Skill.name, 0);
-            }
+                // 检查30%伤害阈值
+                float healthLostRatio = healthLost / initialHealth;
+                if (healthLostRatio >= healthThreshold)
+                {
+                    var combatManager = gameObject.GetComponent<MutanterCombatManager>();
+                    if (combatManager != null)
+                    {
+                        // 使用战斗管理器执行被动技能，优先级设为高
+                        combatManager.QueueSkillExecution(Skill.name, 50, null, 0);
+                    }
+                }
 
             // 更新上次生命值
             lastHealth = currentHealth;

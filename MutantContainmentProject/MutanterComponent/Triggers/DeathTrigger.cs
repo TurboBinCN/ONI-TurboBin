@@ -1,4 +1,4 @@
-﻿using TBB.He.TbbLib.Debuger;
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent.Triggers
@@ -48,10 +48,11 @@ namespace MutantContainmentProject.MutanterComponent.Triggers
             {
                 // 使用通用死亡类型
                 deathMonitor.Kill(Db.Get().Deaths.Generic);
-                var combat_manager = gameObject.GetComponent<MutanterCombatManager>();
-                if (combat_manager != null)
+                var combatManager = gameObject.GetComponent<MutanterCombatManager>();
+                if (combatManager != null)
                 {
-                    combat_manager.TryExecuteSkill(Skill.name);
+                    // 使用战斗管理器执行被动技能，优先级设为最高
+                    combatManager.QueueSkillExecution(Skill.name, 100);
                 }
                 TbbDebuger.LogDebug($"[FixerRedDeathDamage] Triggered DeathMonitor for {gameObject.name}");
             }

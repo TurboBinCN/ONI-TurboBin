@@ -43,6 +43,13 @@ namespace MutantContainmentProject.Mutanters
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Iron.CreateTag(), 1000f, 0.8f);
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Steel.CreateTag(), 500f, 0.4f);
 
+            // 配置攻击策略
+            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
+            
+            // 只启用基础攻击策略
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, true);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, false);
+
             return prefab;
         }
 

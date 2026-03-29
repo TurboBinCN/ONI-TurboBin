@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TBB.He.TbbLib.Debuger;
+using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
 
 namespace MutantContainmentProject.MutanterComponent.VFXController
 {
@@ -40,11 +41,13 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
                 }
             }
         }
-        public IVFXController GetVFXController(string vfxName)
+        public IVFXController GetVFXController(SkillData Skill)
         {
-            if (VFXList.TryGetValue(vfxName, out var vfx))
+            if (Skill.VFXName != null && VFXList.TryGetValue(Skill.VFXName, out var vfx))
             {
                 return gameObject.GetComponent(vfx) as IVFXController;
+            }else{
+                TbbDebuger.LogWarning($"未找到 VFX: [{Skill.VFXName}]实体：[{gameObject?.name}] 技能:[{Skill.name}]");
             }
             return null;
         }

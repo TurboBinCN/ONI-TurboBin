@@ -20,6 +20,8 @@ namespace MutantContainmentProject.MutanterComponent
         public StatusItem SoulAttack;// (灵魂攻击): 畸变体正在使用灵魂攻击。
         public StatusItem BuildingDestruction;// (建筑破坏): 畸变体正在破坏建筑。
 
+        public StatusItem Chasing;//追逐目标
+
         private static MutanterStatusItems _instance;
         public static MutanterStatusItems Instance { get => _instance; }
         public MutanterStatusItems(ResourceSet parent)
@@ -95,6 +97,9 @@ namespace MutantContainmentProject.MutanterComponent
             
             BuildingDestruction = CreateStatusItem("BuildingDestruction", "MUTANTERS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, allow_multiples: false, OverlayModes.None.ID);
             BuildingDestruction.AddNotification();
+
+            Chasing = CreateStatusItem("Chasing", "MUTANTERS", "", StatusItem.IconType.Exclamation, NotificationType.Bad, allow_multiples: false, OverlayModes.None.ID);
+            Chasing.AddNotification();
         }
     }
 }

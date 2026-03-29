@@ -179,8 +179,12 @@ namespace MutantContainmentProject.Mutanters
                 animController.SetSymbolVisiblity("snapto_gun_end", is_visible: false);
                 animController.SetSymbolVisiblity("snapto_eye", is_visible: false);
             };
-            //禁用基础攻击能力
-            prefab.AddOrGet<MutanterCombatManager>().AbilityOfBasicAttaction = false;
+            // 配置攻击策略
+            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, true);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, true);
+            strategyManager.SetStrategyPriority(AttackStrategyManager.StrategyType.SkillAttack, 2.0f);
+            strategyManager.SetStrategyPriority(AttackStrategyManager.StrategyType.BasicAttack, 1.0f);
             return prefab;
         }
 

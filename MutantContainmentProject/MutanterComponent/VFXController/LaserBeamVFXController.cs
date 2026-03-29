@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
@@ -15,6 +15,17 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
         public float beamWidth = 0.3f;
         public Color beamColor = Color.red;
 
+        // LOD配置
+        [Header("LOD配置")]
+        public float lodDistance1 = 5f; // 高细节距离
+        public float lodDistance2 = 10f; // 中等细节距离
+        public int maxParticlesHigh = 10000;
+        public int maxParticlesMedium = 5000;
+        public int maxParticlesLow = 1000;
+        public float emissionRateHigh = 1000f;
+        public float emissionRateMedium = 500f;
+        public float emissionRateLow = 100f;
+
         private Vector3 gunBasePosition;
         private Vector3 beamDirection;
         private float beamDistance;
@@ -24,6 +35,7 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
         private Texture2D particleTexture;
         // 存储检测到的攻击目标
         private List<KPrefabID> attackTargets = new List<KPrefabID>();
+        private int currentLODLevel = 0;
 
         private Facing facing;
         public Facing FacingCom => facing ??= gameObject.GetComponent<Facing>();
@@ -485,48 +497,7 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
             CheckRotatingLaserCollision();
         }
 
-        public void SimEveryTick(float dt)
-        {
-            if (AnimController == null || !isSkillActive) return;
 
-            if (beamInstance == null) CreateBeamInstance();
-            if (particleSystem == null && beamInstance != null) particleSystem = beamInstance.GetComponent<ParticleSystem>();
-
-            // 确保所有组件都初始化完成
-            if (beamInstance == null || particleSystem == null)
-            {
-                TbbDebuger.LogWarning($"[LaserBeamController] 组件未初始化完成: beamInstance={beamInstance}, particleSystem={particleSystem}");
-                return;
-            }
-
-            // 非旋转模式下，每帧更新激光参数
-            if (!isRotating)
-            {
-                CalculateLaserParameters();
-            }
-
-            beamInstance.transform.position = gunBasePosition;
-            if (beamDirection != Vector3.zero)
-            {
-                beamInstance.transform.rotation = Quaternion.LookRotation(beamDirection, Vector3.up);
-            }
-
-            if (!isRotating && !particleSystem.isPlaying)
-            {
-                beamInstance.SetActive(true);
-                particleSystem.Play();
-            }
-
-            // 处理光束旋转
-            if (isRotating)
-            {
-                HandleBeamRotation();
-            }
-
-            // 更新粒子系统的生命周期，根据光束长度
-            ParticleSystem.MainModule mainModule = particleSystem.main;
-            mainModule.startLifetime = beamLength / 5f; // 与初始化时保持一致
-        }
 
         // 处理光束旋转
         private void HandleBeamRotation()
@@ -587,6 +558,109 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
         public void Deactivate()
         {
             this.DeactiveParticle();
+        }
+
+        public void UpdateLOD(float distance)
+        {
+            int newLODLevel = 0;
+            if (distance > lodDistance2)
+            {
+                newLODLevel = 2; // 低细节
+            }
+            else if (distance > lodDistance1)
+            {
+                newLODLevel = 1; // 中等细节
+            }
+            else
+            {
+                newLODLevel = 0; // 高细节
+            }
+
+            if (newLODLevel != currentLODLevel)
+            {
+                SetLODLevel(newLODLevel);
+            }
+        }
+
+        public void SetLODLevel(int level)
+        {
+            currentLODLevel = level;
+            
+            if (particleSystem == null) return;
+            
+            ParticleSystem.MainModule mainModule = particleSystem.main;
+            ParticleSystem.EmissionModule emissionModule = particleSystem.emission;
+            
+            switch (level)
+            {
+                case 0: // 高细节
+                    mainModule.maxParticles = maxParticlesHigh;
+                    emissionModule.rateOverTime = emissionRateHigh;
+                    break;
+                case 1: // 中等细节
+                    mainModule.maxParticles = maxParticlesMedium;
+                    emissionModule.rateOverTime = emissionRateMedium;
+                    break;
+                case 2: // 低细节
+                    mainModule.maxParticles = maxParticlesLow;
+                    emissionModule.rateOverTime = emissionRateLow;
+                    break;
+            }
+        }
+
+        public int GetCurrentLODLevel()
+        {
+            return currentLODLevel;
+        }
+
+        public void SimEveryTick(float dt)
+        {
+            if (AnimController == null || !isSkillActive) return;
+
+            if (beamInstance == null) CreateBeamInstance();
+            if (particleSystem == null && beamInstance != null) particleSystem = beamInstance.GetComponent<ParticleSystem>();
+
+            // 确保所有组件都初始化完成
+            if (beamInstance == null || particleSystem == null)
+            {
+                TbbDebuger.LogWarning($"[LaserBeamController] 组件未初始化完成: beamInstance={beamInstance}, particleSystem={particleSystem}");
+                return;
+            }
+
+            // 非旋转模式下，每帧更新激光参数
+            if (!isRotating)
+            {
+                CalculateLaserParameters();
+            }
+
+            beamInstance.transform.position = gunBasePosition;
+            if (beamDirection != Vector3.zero)
+            {
+                beamInstance.transform.rotation = Quaternion.LookRotation(beamDirection, Vector3.up);
+            }
+
+            if (!isRotating && !particleSystem.isPlaying)
+            {
+                beamInstance.SetActive(true);
+                particleSystem.Play();
+            }
+
+            // 处理光束旋转
+            if (isRotating)
+            {
+                HandleBeamRotation();
+            }
+
+            // 更新粒子系统的生命周期，根据光束长度
+            ParticleSystem.MainModule mainModule = particleSystem.main;
+            mainModule.startLifetime = beamLength / 5f; // 与初始化时保持一致
+
+            // 更新LOD
+            if (CameraController.Instance != null)
+            {
+                float distance = Vector3.Distance(transform.position, CameraController.Instance.transform.position);
+                UpdateLOD(distance);
+            }
         }
     }
 }

@@ -42,6 +42,12 @@ namespace MutantContainmentProject.Mutanters
             // 添加产出物
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.ToxicSand.CreateTag(), 500f, 0.8f);
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.SlimeMold.CreateTag(), 300f, 0.5f);
+            
+            // 配置攻击策略
+            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, true);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, false);
+            strategyManager.SetStrategyPriority(AttackStrategyManager.StrategyType.BasicAttack, 1.0f);
 
             return prefab;
         }

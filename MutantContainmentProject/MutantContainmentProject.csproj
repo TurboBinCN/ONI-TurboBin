@@ -62,6 +62,7 @@
     <Compile Include="Buildings\GravitasMutanterFounder.cs" />
     <Compile Include="Buildings\GravitasMutanterFounderConfig.cs" />
     <Compile Include="Buildings\SecureTermDb.cs" />
+    <Compile Include="MutanterComponent\AttackStrategyManager.cs" />
     <Compile Include="MutanterComponent\CircusJokerBehavior.cs" />
     <Compile Include="MutanterComponent\Effector\BasicAttackBounsApplyEffctor.cs" />
     <Compile Include="MutanterComponent\Effector\DamageReflectionEffector.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="MutanterComponent\VFXController\FixerRedDeathDamageVFXController.cs" />
     <Compile Include="MutanterComponent\VFXController\FixerWhiteLaserSweepVFXController.cs" />
     <Compile Include="MutanterComponent\VFXController\FixerWhiteLaserVFXController.cs" />
+    <Compile Include="MutanterComponent\VFXController\FixerWhiteStraightLaserVFXController.cs" />
     <Compile Include="MutanterComponent\VFXController\IVFXController.cs" />
     <Compile Include="MutanterComponent\VFXController\LaserBeamVFXController.cs" />
     <Compile Include="MutanterComponent\VFXController\VFXAttribute.cs" />
@@ -130,7 +132,6 @@
     <Compile Include="Mutanters\CircusJokerConfig.cs" />
     <Compile Include="Mutanters\CosmicBugConfig.cs" />
     <Compile Include="Mutanters\DawnConfusionConfig.cs" />
-    <Compile Include="Mutanters\MutanterManager.cs" />
     <Compile Include="Mutanters\SCP096Config.cs" />
     <Compile Include="Mutanters\SCP4762Config.cs" />
     <Compile Include="Mutanters\SCP662Config.cs" />

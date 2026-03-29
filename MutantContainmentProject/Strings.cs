@@ -234,6 +234,13 @@ namespace MutantContainmentProject
                     public static LocString NOTIFICATION_NAME = "SCP-049 is performing healing.";
                     public static LocString NOTIFICATION_TOOLTIP = "SCP-049 is using its healing hands to cure diseases and injuries, but at the cost of maximum stress.";
                 }
+                public static class CHASING
+                {
+                    public static LocString NAME = "Chasing";
+                    public static LocString TOOLTIP = "The entity is Chasing a minion.";
+                    public static LocString NOTIFICATION_NAME = "Entity is Chasing a minion.";
+                    public static LocString NOTIFICATION_TOOLTIP = "The entity is Chasing a minion";
+                }
             }
         }
         public static class MISC {

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace MutantContainmentProject.MutanterComponent.VFXController
 {
@@ -7,5 +7,8 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
         void Activate();
         void Deactivate();
         List<KPrefabID> GetAttackTargets();
+        void UpdateLOD(float distance);
+        void SetLODLevel(int level);
+        int GetCurrentLODLevel();
     }
 }

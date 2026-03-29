@@ -50,8 +50,7 @@ namespace MutantContainmentProject.Mutanters
                     cooldown = Random.Range(20f, 30f),
                     animation = "attack_skill_1",
                     lastUseTime = 0f,
-                    VFXName = "FixerWhiteLaserVFX",
-                    //extraAnimationEffectId = typeof(FixerWhiteLaserVFXController).Name,
+                    VFXName = "FixerWhiteStraightLaserVFX",
                     isFirstUse = true,
                     attackEffectors = new List<AttackEffectorData>{
                         new(){ 
@@ -77,7 +76,6 @@ namespace MutantContainmentProject.Mutanters
                     animation = "attack_skill_2",
                     lastUseTime = 0f,
                     VFXName = "FixerWhiteLaserSweepVFX",
-                    //extraAnimationEffectId = typeof(FixerWhiteLaserSweepVFXController).Name,
                     isFirstUse = true,
                     attackEffectors = new List<AttackEffectorData>{
                         new(){
@@ -136,8 +134,11 @@ namespace MutantContainmentProject.Mutanters
             // 设置技能并添加到数据库
             skillComponent.AddSkillsToDb(skills);
 
-            //禁用基础攻击能力
-            prefab.AddOrGet<MutanterCombatManager>().AbilityOfBasicAttaction = false;
+            // 配置攻击策略
+            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, true);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, false);
+            strategyManager.SetStrategyPriority(AttackStrategyManager.StrategyType.SkillAttack, 2.0f);
 
             return prefab;
         }

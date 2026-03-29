@@ -42,6 +42,7 @@ namespace MutantContainmentProject.MutanterComponent.Triggers
                             if (Activator.CreateInstance(type) is ISkillTrigger trigger)
                             {
                                 triggers.Add(trigger);
+                                TbbDebuger.LogDebug($"[SkillTriggerManager] 注册主动触发器: {trigger.TriggerName} 实体： [{gameObject?.name}]");
                             }
                         }
                     }

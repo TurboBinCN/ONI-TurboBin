@@ -1,7 +1,6 @@
 using MutantContainmentProject.MutanterComponent.Effector;
 using MutantContainmentProject.MutanterComponent.Triggers;
 using MutantContainmentProject.MutanterComponent.VFXController;
-using System;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
@@ -48,39 +47,45 @@ namespace MutantContainmentProject.MutanterComponent
         private MutanterAttackSystem attackSystem;
         private MutanterAttackSystem AttackSystem => attackSystem ??= GetComponent<MutanterAttackSystem>();
 
-        private WhiteMistController whiteMistController;
-        public WhiteMistController WhiteMistControllerInstancce => whiteMistController ??= GetComponent<WhiteMistController>();
-
         private SkillTriggerManager triggerManager;
         private SkillTriggerManager TriggerManager => triggerManager ??= GetComponent<SkillTriggerManager>();
 
         private MutanterCombatManager combatManager;
         private MutanterCombatManager CombatManager => combatManager ??= GetComponent<MutanterCombatManager>();
+
         private SkillEffectorManager effectorManager;
         private SkillEffectorManager EffectorManager => effectorManager ??= GetComponent<SkillEffectorManager>();
+
         private VFXManager vFXManager;
-        private VFXManager VFXManagerInstancce=> vFXManager ??= GetComponent<VFXManager>();
+        private VFXManager VFXManagerInstancce => vFXManager ??= GetComponent<VFXManager>();
+
+        private AttackStrategyManager strategyManager;
+        private AttackStrategyManager StrategyManager => strategyManager ??= GetComponent<AttackStrategyManager>();
         protected override void OnSpawn()
         {
             base.OnSpawn();
 
             string mutanterId = gameObject.GetComponent<KPrefabID>().PrefabID().Name;
 
-            skills = MutantersSkillDb.TryGetValue(mutanterId, out var skillData)? skillData: new List<SkillData>();
+            skills = MutantersSkillDb.TryGetValue(mutanterId, out var skillData) ? skillData : new List<SkillData>();
             // 执行被动触发器
             TriggerManager?.ExecutePassiveTriggers(gameObject, skills);
-            EffectorManager?.LoadEffectors(gameObject,skills);
+            EffectorManager?.LoadEffectors(gameObject, skills);
+
+            // 技能加载完成后，重新初始化攻击策略管理器，确保技能攻击策略能够正确执行
+            StrategyManager?.Initialize();
         }
 
         protected override void OnPrefabInit()
         {
             base.OnPrefabInit();
         }
-        public void AddSkillsToDb(List<SkillData> skills) {
+        public void AddSkillsToDb(List<SkillData> skills)
+        {
             string mutanterId = gameObject.GetComponent<KPrefabID>().PrefabID().Name;
             if (!MutantersSkillDb.ContainsKey(mutanterId))
             {
-                MutantersSkillDb.Add(mutanterId,skills);
+                MutantersSkillDb.Add(mutanterId, skills);
             }
         }
         public void AddSkill(SkillData skill)
@@ -151,7 +156,7 @@ namespace MutantContainmentProject.MutanterComponent
         private void ExecuteSkill(int skillIndex, GameObject target, float damageAmount = 0)
         {
             if (skillIndex < 0 || skillIndex >= skills.Count) return;
-
+            TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} ExecuteSkill, 技能索引 = {skillIndex}");
             var skill = skills[skillIndex];
 
             CombatManager?.SetAttacking(true);
@@ -160,8 +165,9 @@ namespace MutantContainmentProject.MutanterComponent
             EffectorManager?.ApplyEffectorsBefore(skill);
             if (animController != null && !string.IsNullOrEmpty(skill.animation))
             {
+                TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} ExecuteSkill, 攻击动画 = {skill.animation}");
                 //攻击特效
-                var attackVFX = VFXManagerInstancce.GetVFXController(skill.VFXName);
+                var attackVFX = VFXManagerInstancce.GetVFXController(skill);
                 attackVFX?.Activate();
 
                 void onComplete()
@@ -181,9 +187,17 @@ namespace MutantContainmentProject.MutanterComponent
                     }
                     else
                     {
-                        EffectorManager?.ApplyEffectorsAfter(target,skill);
+                        EffectorManager?.ApplyEffectorsAfter(target, skill);
                     }
                     CombatManager?.SetAttacking(false);
+
+                    // 通知状态机攻击完成
+                    var stateMachine = gameObject.GetSMI<MutanterStateMachine.StatesInstance>();
+                    TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} ExecuteSkill, 攻击完成, 当前状态 = {stateMachine?.GetStatus()}");
+                    stateMachine?.OnAttackComplete();
+
+                    // 动画完成后解锁状态机并继续处理队列
+                    CombatManager?.UnlockStateMachineAfterAnimation();
                 }
 
                 if (skill.animationDuration > 0f)
@@ -198,8 +212,10 @@ namespace MutantContainmentProject.MutanterComponent
             else
             {
                 CombatManager?.SetAttacking(false);
-            }
 
+                // 没有动画时直接解锁状态机并继续处理队列
+                CombatManager?.UnlockStateMachineAfterAnimation();
+            }
             // 更新技能冷却时间
             var updatedSkill = skill;
             updatedSkill.lastUseTime = Time.time;
