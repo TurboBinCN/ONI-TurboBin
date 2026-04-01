@@ -6,7 +6,7 @@
 			<customDlls Include="$(ProjectDir)/../libs/Hjson.dll" />
 			<TranslationFiles Include="$(ProjectDir)/translations/*.*" />
 			<AssetsFiles Include="$(ProjectDir)/assets/**/*.*" />
-			<TbbLibDll Include="$(ProjectDir)/../TbbLib/bin/$(ConfigurationName)/TbbLib.dll" Condition="Exists('$(ProjectDir)/../TbbLib/bin/$(ConfigurationName)/TbbLib.dll')" />
+			<TbbLibDll Include="$(ProjectDir)/../TbbLib/bin/$(ConfigurationName)/$(TargetFramework)/TbbLib.dll" Condition="Exists('$(ProjectDir)/../TbbLib/bin/$(ConfigurationName)/$(TargetFramework)/TbbLib.dll')" />
 		</ItemGroup>
 		<Copy SourceFiles="@(customDlls)" DestinationFolder="$(InstallFolder)" />
 		<Copy SourceFiles="@(TbbLibDll)" DestinationFolder="$(InstallFolder)" />

@@ -289,7 +289,7 @@ namespace MutantContainmentProject.MutanterComponent
                 this.manager = manager;
                 this.animController = manager.gameObject.GetComponent<KBatchedAnimController>();
             }
-            public void PlayAnimation(string animationName, float duration, System.Action onComplete = null)
+            public void PlayAnimation(string animationName, float duration, System.Action? onComplete = null)
             {
                 if (animController != null)
                 {
@@ -322,7 +322,7 @@ namespace MutantContainmentProject.MutanterComponent
             /// <summary>
             /// 播放动画
             /// </summary>
-            public void PlayAnimation(string animationName, KAnim.PlayMode playMode, System.Action onComplete = null)
+            public void PlayAnimation(string animationName, KAnim.PlayMode playMode, System.Action? onComplete = null)
             {
                 if (animController != null && !string.IsNullOrEmpty(animationName))
                 {
@@ -330,7 +330,7 @@ namespace MutantContainmentProject.MutanterComponent
 
                     if (onComplete != null)
                     {
-                        System.Action<object> kAnimEvent = null;
+                        System.Action<object>? kAnimEvent = null;
                         kAnimEvent = (_) =>
                         {
                             onComplete();

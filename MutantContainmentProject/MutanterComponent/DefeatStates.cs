@@ -1,4 +1,3 @@
-using PeterHan.PLib.Core;
 using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent
@@ -9,7 +8,6 @@ namespace MutantContainmentProject.MutanterComponent
         public override void InitializeStates(out BaseState default_state)
         {
             default_state = root;
-            PUtil.LogDebug($"[DefeatStates] InitializeStates.");
             root
                 .Enter("InitializeDefeatState", (Instance smi) => smi.InitializeDefeatState())
                 .EventTransition(GameHashes.HealthChanged, check_health, null)
@@ -71,7 +69,6 @@ namespace MutantContainmentProject.MutanterComponent
                 CavityInfo cavityForCell = Game.Instance.roomProber.GetCavityForCell(Grid.PosToCell(_navigator));
                 Game.Instance.roomProber.UpdateRoom(cavityForCell);
 
-                PUtil.LogDebug($"[DefeatStates][{gameObject.name}] Health:[{_health?.hitPoints}] OnStoreHandler.");
             }
 
             public void InitializeDefeatState()

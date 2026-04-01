@@ -19,7 +19,7 @@ namespace RsLib.Adapter
 
             allowOverride = false;
 
-            font = TMP_FontAsset.defaultFontAsset;
+            font = TMP_FontAsset.FindFirstObjectByType<TMP_FontAsset>();
 
 
             LoclTextAwake.Invoke(this, new object[0]);

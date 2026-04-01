@@ -9,5 +9,7 @@
 		<Reference Include="Hjson" HintPath="../libs/Hjson.dll" />
 		<Reference Include="UnityEngine.AssetBundle" HintPath="$(GameFolder)/UnityEngine.AssetBundleModule.dll" />
 		<Reference Include="UnityEngine.ParticleSystemModule" HintPath="$(GameFolder)/UnityEngine.ParticleSystemModule.dll" />
+		<Reference Include="TbbLib" HintPath="$(ProjectDir)/../TbbLib/bin/$(ConfigurationName)/$(TargetFramework)/TbbLib.dll" />
+		
 	</ItemGroup>
 </Project>

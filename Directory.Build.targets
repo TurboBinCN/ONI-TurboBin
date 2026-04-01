@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+		<InstallRootFolder>$(ModOutputFolderDebug)/$(ProjectName)</InstallRootFolder>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<InstallRootFolder>$(ModOutputFolderRelease)/$(ProjectName)</InstallRootFolder>
+	</PropertyGroup>
+	<PropertyGroup>
+		<InstallFolder>$(InstallRootFolder)</InstallFolder>
+	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="scml/**" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.IO.Compression" Version="4.3.0" PrivateAssets="all" />
 	</ItemGroup>
 	<Target Name="SetPlatform" BeforeTargets="CoreCompile">
 		<PropertyGroup>
@@ -19,26 +32,10 @@
 		<PropertyGroup Condition=" '$(GamePlatform)' == 'Steam' ">
 			<DefineConstants>$(DefineConstants);STEAM</DefineConstants>
 		</PropertyGroup>
-		<PropertyGroup Condition=" '$(GamePlatform)' != 'Steam' ">
-			<DefineConstants>$(DefineConstants);BACKUP</DefineConstants>
-		</PropertyGroup>
-		<PropertyGroup Condition=" '$(UsesPLib)' == 'true' ">
-			<DefineConstants>$(DefineConstants);USESPLIB</DefineConstants>
-		</PropertyGroup>
-		<PropertyGroup Condition=" '$(UsesPublicise)' == 'true' ">
-			<DefineConstants>$(DefineConstants);PUBLICISED</DefineConstants>
-			<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		</PropertyGroup>
 
 		<ItemGroup>
 			<ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" />
 		</ItemGroup>
-	</Target>
-	<Target Name="CheckDependencies" BeforeTargets="PrepareForBuild">
-		<PropertyGroup>
-			<ErrorText>先编译'MSBuildTasksHelper'工程.</ErrorText>
-		</PropertyGroup>
-		<Error Condition=" '$(DistributeMod)' == 'true' And !Exists('$(MSBuildTasksHelperDLL)') " Text="$(ErrorText)" />
 	</Target>
 	<!-- 核心资源 -->
 	<Target Name="EmbeddedResources" BeforeTargets="PreBuildEvent">
@@ -53,159 +50,9 @@
 			-->
 		</ItemGroup>
 	</Target>
-	<Target Name="PubliciseMkdir" BeforeTargets="Publicise" Condition=" '$(DistributeMod)' == 'true' And '$(UsesPublicise)' == 'true' " >
-		<MakeDir Directories="$(PublicisedFolder)" Condition = "!Exists('$(PublicisedFolder)')" />
-		<ItemGroup>
-			<PubliciseInputAssemblies Include="$(GameFolder)/Assembly-CSharp.dll;$(GameFolder)/Assembly-CSharp-firstpass.dll;" />
-		</ItemGroup>
-	</Target>
-	<Target Name="Publicise" BeforeTargets="BeforeResolveReferences" Condition=" '$(DistributeMod)' == 'true' And '$(UsesPublicise)' == 'true' "
-	  Inputs="@(PubliciseInputAssemblies)"
-	  Outputs="@(PubliciseInputAssemblies->'$(PublicisedFolder)/%(Filename)_public%(Extension)')" >
-		<Publicise
-		   InputAssemblies="@(PubliciseInputAssemblies)"
-		   OutputPath="$(PublicisedFolder)"
-		   PubliciseCompilerGenerated="false"/>
-		<Touch Files="@(PubliciseInputAssemblies->'$(PublicisedFolder)/%(Filename)_public%(Extension)')" />
-	</Target>
-	<!-- 清理 -->
-	<Target Name="CleanPublicise" AfterTargets="Clean" Condition=" '$(DistributeMod)' == 'true' And '$(UsesPublicise)' == 'true' " >
-		<RemoveDir Directories="$(PublicisedFolder)" Condition="Exists('$(PublicisedFolder)')" />
-	</Target>
-	<!-- 从游戏文件中提取版本和分支信息。用于记录核磁共振和计算终点线 -->
-	<UsingTask
-	  Condition=" '$(DistributeMod)' == 'true' "
-	  TaskName="ONI_TurboBin.GetKleiAssemblyInfo"
-	  AssemblyFile="$(MSBuildTasksHelperDLL)" />
-	<Target Name="GetKleiAssemblyInfo" BeforeTargets="PreBuildEvent" AfterTargets="AssemblyInfo;Publicise" Condition=" '$(DistributeMod)' == 'true' ">
-		<PropertyGroup>
-			<AssemblyCSharp Condition=" '$(UsesPublicise)' != 'true' " >$(GameFolder)/Assembly-CSharp.dll</AssemblyCSharp>
-			<AssemblyCSharp Condition=" '$(UsesPublicise)' == 'true' " >$(PublicisedFolder)/Assembly-CSharp_public.dll</AssemblyCSharp>
-		</PropertyGroup>
-
-		<ONI_TurboBin.GetKleiAssemblyInfo AssemblyCSharp="$(AssemblyCSharp)" LibraryPath="$(GameFolder)" >
-			<Output TaskParameter="KleiGameVersion" PropertyName="GameVersion" />
-			<Output TaskParameter="KleiBuildNumber" PropertyName="BuildNumber" />
-			<Output TaskParameter="KleiBuildBranch" PropertyName="BuildBranch" />
-		</ONI_TurboBin.GetKleiAssemblyInfo>
-	</Target>
-	<!--创建Yaml文件-->
-	<UsingTask
-	  Condition=" '$(DistributeMod)' == 'true' "
-	  TaskName="ONI_TurboBin.WriteYamlFiles"
-	  AssemblyFile="$(MSBuildTasksHelperDLL)" />
-	<Target Name="WriteYamlFiles" BeforeTargets="PreBuildEvent"  AfterTargets="GetKleiAssemblyInfo" Condition=" '$(DistributeMod)' == 'true' ">
-		<PropertyGroup>
-			<ModInfoFile>$(IntermediateOutputPath)/mod_info.yaml</ModInfoFile>
-			<ModDescriptionFile>$(IntermediateOutputPath)/mod.yaml</ModDescriptionFile>
-		</PropertyGroup>
-
-		<ONI_TurboBin.WriteYamlFiles
-		  OutputPath="$(IntermediateOutputPath)"
-
-		  Title="$(Title)"
-		  Description="$(Description)"
-		  StaticID="ONI_TurboBin.ONIMods.$(AssemblyName)"
-      
-		  RequiredDlcIds="$(RequiredDlcIds)"
-		  ForbiddenDlcIds="$(ForbiddenDlcIds)"
-		  MinimumSupportedBuild="$(BuildNumber)"
-		  Version="$(ModVersion)"
-		  APIVersion="$(APIVersion)"
-    />
-
-		<ItemGroup>
-			<FileWrites Include="$(ModInfoFile)" />
-			<FileWrites Include="$(ModDescriptionFile)" />
-		</ItemGroup>
-	</Target>
-	<!-- 处理真正依赖的PLib*.dll-->
-	<UsingTask
-	  Condition=" '$(UsesPLib)' == 'true' "
-	  TaskName="ONI_TurboBin.GetReallyReferencedAssembliesAtFolder"
-	  AssemblyFile="$(MSBuildTasksHelperDLL)" />
-
-	<Target Name="CollectPLibDependencies" AfterTargets="Build" Condition=" '$(DistributeMod)' == 'true' And '$(UsesPLib)' == 'true' ">
-		<ItemGroup>
-			<_TempPLibAnalysisInput Include="$(TargetPath)" Condition="Exists('$(TargetPath)')" />
-			<!-- 可以通过分析 ProjectReference 的输出来动态添加 -->
-			<_TempPLibAnalysisInput Include="@(ReferencePath)" Condition=" '%(ReferencePath.NuGetPackageId)' == '' And '%(ReferencePath.CopyLocal)' == 'true' And '%(ReferencePath.Filename)' != '$(TargetName)' " />
-		</ItemGroup>
-
-		<ONI_TurboBin.GetReallyReferencedAssembliesAtFolder AssemblyName="@(_TempPLibAnalysisInput)" ReferencedAssembliesFolder="$(PLibFolder)">
-			<Output TaskParameter="ReallyReferencedAssemblies" ItemName="_CollectedPLibDependencies" />
-		</ONI_TurboBin.GetReallyReferencedAssembliesAtFolder>
-
-		<!-- 可选：输出找到的 PLib 列表，方便调试 -->
-		<Message Importance="high" Text="收集 项目 $(ProjectName) PLib 依赖 for : @(_CollectedPLibDependencies)" Condition=" '@(_CollectedPLibDependencies)' != '' "/>
-		<Message Importance="high" Text="项目 $(ProjectName) 无 PLib 依赖 ." Condition=" '@(_CollectedPLibDependencies)' == '' "/>
-	</Target>
-	<Target Name="CopyPLibDependenciesToInstallFolder" AfterTargets="CopyArtifactsToInstallFolder" Condition=" '$(DistributeMod)' == 'true' And '$(UsesPLib)' == 'true' And '@(_CollectedPLibDependencies)' != '' " DependsOnTargets="CollectPLibDependencies">		<!-- 确保先执行收集步骤 -->
-		<Copy SourceFiles="@(_CollectedPLibDependencies)" DestinationFolder="$(InstallFolder)" SkipUnchangedFiles="true" />
-		<Message Importance="high" Text="复制 PLib 依赖 to 发布目录: $(InstallFolder)" />
-	</Target>
-
-	<UsingTask
-	  Condition=" '$(DistributeMod)' == 'true' "
-	  TaskName="ONI_TurboBin.TestInstallFolder"
-	  AssemblyFile="$(MSBuildTasksHelperDLL)" />
-	<!-- 计算复制垃圾的目标文件夹 -->
-	<Target Name="DetermineInstallFolder" AfterTargets="CollectPLibDependencies" Condition=" '$(DistributeMod)' == 'true' ">
-
-		<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-			<InstallRootFolder>$(ModOutputFolderDebug)/$(ProjectName)</InstallRootFolder>
-		</PropertyGroup>
-
-		<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-			<InstallRootFolder>$(ModOutputFolderRelease)/$(ProjectName)</InstallRootFolder>
-		</PropertyGroup>
-
-		<ONI_TurboBin.TestInstallFolder
-		  RootModInfoFile="$(InstallRootFolder)/mod_info.yaml"
-		  KnownGameVersionsFile="$(ProjectDir)/../KnownGameVersions.yaml"
-		  CurrentGameVersion="$(GameVersion)"
-		  CurrentBuildNumber="$(BuildNumber)" >
-			<Output TaskParameter="PreviousGameVersion" PropertyName="PreviousGameVersion" />
-			<Output TaskParameter="PreviousBuildNumber" PropertyName="PreviousBuildNumber" />
-			<Output TaskParameter="DoInstallToRootFolder" PropertyName="DoInstallToRootFolder" />
-			<Output TaskParameter="NeededArchiving" PropertyName="NeededArchiving" />
-		</ONI_TurboBin.TestInstallFolder>
-
-		<PropertyGroup Condition=" '$(DoInstallToRootFolder)' == 'true' ">
-			<InstallFolder>$(InstallRootFolder)</InstallFolder>
-		</PropertyGroup>
-
-		<PropertyGroup Condition=" '$(DoInstallToRootFolder)' != 'true' And '$(GameVersion)' == '??' ">
-			<InstallFolder>$(InstallRootFolder)/archived_versions/previous_$(BuildNumber)</InstallFolder>
-		</PropertyGroup>
-
-		<PropertyGroup Condition=" '$(DoInstallToRootFolder)' != 'true' And '$(GameVersion)' != '??' ">
-			<InstallFolder>$(InstallRootFolder)/archived_versions/previous_$(GameVersion)</InstallFolder>
-		</PropertyGroup>
-	</Target>
-	<!-- 如有必要，将以前存在的缺陷归档 -->
-	<Target Name="Archiving" AfterTargets="DetermineInstallFolder" Condition=" '$(DistributeMod)' == 'true' And '$(NeededArchiving)' == 'true' ">
-		<Message Importance="high" Text="Found mod for Previous Game version $(PreviousGameVersion)-$(PreviousBuildNumber)" />
-
-		<PropertyGroup Condition=" '$(PreviousGameVersion)' == '??' ">
-			<ArchiveFolder>$(InstallRootFolder)/archived_versions/previous_$(PreviousBuildNumber)</ArchiveFolder>
-		</PropertyGroup>
-
-		<PropertyGroup Condition=" '$(PreviousGameVersion)' != '??' ">
-			<ArchiveFolder>$(InstallRootFolder)/archived_versions/previous_$(PreviousGameVersion)</ArchiveFolder>
-		</PropertyGroup>
-
-		<Message Importance="high" Text="Archiving into '$(ArchiveFolder)'" />
-
-		<ItemGroup>
-			<FilesToArchive Include="$(InstallRootFolder)/**/*" Exclude="$(InstallRootFolder)/archived_versions/**/*;$(InstallRootFolder)/mod.yaml" />
-		</ItemGroup>
-
-		<Move SourceFiles="@(FilesToArchive)" DestinationFiles="@(FilesToArchive->'$(ArchiveFolder)/%(RecursiveDir)%(Filename)%(Extension)')" />
-	</Target>
-
+	
 	<!-- 将所有内容复制到目标文件夹 -->
-	<Target Name="CopyArtifactsToInstallFolder" AfterTargets="Archiving" Condition=" '$(DistributeMod)' == 'true' ">
+	<Target Name="CopyArtifactsToInstallFolder" AfterTargets="Build">
 		<Message Importance="high" Text="Installing into '$(InstallFolder)'" />
 
 		<ItemGroup>
@@ -225,27 +72,5 @@
 		<Copy SourceFiles="$(ModInfoFile)" DestinationFolder="$(InstallFolder)" />
 		<Copy SourceFiles="$(ModDescriptionFile)" DestinationFolder="$(InstallRootFolder)" />
 		<Copy SourceFiles="$(ProjectDir)/Preview.png" DestinationFiles="$(InstallFolder)/preview.png" Condition=" $(CopyPreview) == true " />
-	</Target>
-	<!-- 搜索和清理旧的不必要的档案 -->
-	<UsingTask
-	  Condition=" '$(DistributeMod)' == 'true' "
-	  TaskName="ONI_TurboBin.FindTooOldArchivedVersions"
-	  AssemblyFile="$(MSBuildTasksHelperDLL)" />
-	<Target Name="CleanTooOldArchivedVersions" AfterTargets="CopyArtifactsToInstallFolder" Condition=" '$(DistributeMod)' == 'true' ">
-		<ItemGroup>
-			<ArchivedModInfoFiles Include="$(InstallRootFolder)/archived_versions/**/mod_info.yaml" />
-		</ItemGroup>
-
-		<ONI_TurboBin.FindTooOldArchivedVersions
-		  RootModInfoFile="$(InstallRootFolder)/mod_info.yaml"
-		  KnownGameVersionsFile="$(ProjectDir)/../KnownGameVersions.yaml"
-		  ArchivedModInfoFiles="@(ArchivedModInfoFiles)" >
-			<Output TaskParameter="TooOldArchivedVersions" ItemName="TooOldArchivedVersions" />
-		</ONI_TurboBin.FindTooOldArchivedVersions>
-
-		<Message Importance="high" Text="Found Too Old Archived Versions, delete:" Condition=" '@(TooOldArchivedVersions->Count())' &gt; 0 " />
-		<Message Importance="high" Text="%(TooOldArchivedVersions.Identity)" />
-
-		<RemoveDir Directories="@(TooOldArchivedVersions)" />
 	</Target>
 </Project>

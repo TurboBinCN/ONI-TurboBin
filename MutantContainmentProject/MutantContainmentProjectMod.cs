@@ -9,7 +9,6 @@ using MutantContainmentProject.Room;
 using MutantContainmentProject.SideScreen;
 using MutantContainmentProject.Skills;
 using MutantContainmentProject.Technology;
-using PeterHan.PLib.Core;
 using System.IO;
 using TBB.He.TbbLib.Debuger;
 using TBB.He.TbbLib.Module;
@@ -33,8 +32,6 @@ namespace MutantContainmentProject
                 base.OnLoad(harmony);
                 ModHarmony = harmony;
                 TbbDebuger.GlobalLogLevel = TbbDebuger.LogLevel.Debug;
-
-                PUtil.InitLibrary();
 
                 TbbAssetsUtils.Initialize(mod, harmony);
 

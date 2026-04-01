@@ -64,7 +64,10 @@ namespace RsLib
         {
             if (Instance.overlayFilterMap != null && Instance.overlayFilterMap.Count > 0)
             {
-                ___overlayFilterMap.AddRange(Instance.overlayFilterMap);
+                foreach (var kvp in Instance.overlayFilterMap)
+                {
+                    ___overlayFilterMap.Add(kvp.Key,kvp.Value);
+                }
             }
         }
 

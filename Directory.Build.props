@@ -1,12 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project>
 	<Import Condition=" !Exists('Directory.Build.props.user') " Project="Directory.Build.props.default" />
 	<Import Condition=" Exists('Directory.Build.props.user') " Project="Directory.Build.props.user" />
 
 	<!--配置-->
 	<PropertyGroup>
-		<TargetFramework>net48</TargetFramework>
-		<GamePlatforms>Steam;Backup</GamePlatforms>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<Nullable>disable</Nullable>
+		<GamePlatforms>Steam</GamePlatforms>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<LangVersion>9.0</LangVersion>
 		<OutputType>Library</OutputType>
@@ -41,59 +42,26 @@
         <RequiredDlcIds></RequiredDlcIds>
         <ForbiddenDlcIds></ForbiddenDlcIds>
         -->
-		<DistributeMod Condition=" '$(DistributeMod)' != 'false' ">true</DistributeMod>
-		<UsesPLib Condition=" '$(UsesPLib)' != 'true' ">false</UsesPLib>
-		<UsesPublicise Condition=" '$(UsesPublicise)' != 'true' ">false</UsesPublicise>
-		<MSBuildTasksHelperDLL>$(MSBuildProjectDirectory)/../MSBuildTasksHelper/bin/Release/MSBuildTasksHelper.dll</MSBuildTasksHelperDLL>
-		<PublicisedFolder>$(MSBuildProjectDirectory)/../../bin/Publicised/$(Platform)</PublicisedFolder>
 	</PropertyGroup>
 
 	<!-- 游戏目录 -->
 	<PropertyGroup Condition=" '$(GamePlatform)' == 'Steam' ">
 		<GameFolder>$(GameFolderSteam)</GameFolder>
 	</PropertyGroup>
-
-	<PropertyGroup Condition=" '$(GamePlatform)' != 'Steam' ">
-		<GameFolder>$(GameFolderBackup)</GameFolder>
+	<PropertyGroup>
+		<MSBuildTasksHelperDLL>$(ProjectDir)bin/MSBuildTasksHelper.dll</MSBuildTasksHelperDLL>
 	</PropertyGroup>
-
-	<!-- DLL: -->
 	<ItemDefinitionGroup>
 		<Reference Private="false" SpecificVersion="false" />
 		<ProjectReference Private="false" />
 		<PackageReference PrivateAssets="All" GeneratePathProperty="true" />
 	</ItemDefinitionGroup>
 
-	<!-- 公用Libs -->
-	<ItemGroup Condition=" '$(UsesPLib)' == 'true' ">
-		<PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.44.1" />
-	</ItemGroup>
-
-	<ItemGroup Condition=" '$(UsesPublicise)' == 'true' ">
-		<PackageReference Include="Aze.Publicise.MSBuild.Task" Version="1.1.0" />
-	</ItemGroup>
-
-	<ItemGroup Condition=" '$(DistributeMod)' == 'true' ">
-		<ProjectReference  Include="$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../MSBuildTasksHelper/MSBuildTasksHelper.csproj'))"  ReferenceOutputAssembly="false" SkipGetTargetFrameworkProperties="true" />
-	</ItemGroup>
-
-	<!-- DLL 游戏 -->
-	<!-- 正常 -->
-	<ItemGroup Condition=" '$(DistributeMod)' == 'true' And '$(UsesPublicise)' != 'true' ">
+	<!-- 其他 -->
+	<ItemGroup>
 		<Reference Include="Assembly-CSharp" HintPath="$(GameFolder)/Assembly-CSharp.dll" />
 		<Reference Include="Assembly-CSharp-firstpass" HintPath="$(GameFolder)/Assembly-CSharp-firstpass.dll" />
-	</ItemGroup>
-
-	<!-- 公开 -->
-	<ItemGroup Condition=" '$(DistributeMod)' == 'true' And '$(UsesPublicise)' == 'true' ">
-		<Reference Include="Assembly-CSharp" HintPath="$(PublicisedFolder)/Assembly-CSharp_public.dll" />
-		<Reference Include="Assembly-CSharp-firstpass" HintPath="$(PublicisedFolder)/Assembly-CSharp-firstpass_public.dll" />
-	</ItemGroup>
-
-	<!-- 其他 -->
-	<ItemGroup Condition=" '$(DistributeMod)' == 'true' ">
 	    <Reference Include="0Harmony" HintPath="$(GameFolder)/0Harmony.dll" />
-		<!--<PackageReference Include="Lib.Harmony" Version="2.2.2" />-->
 		<Reference Include="Newtonsoft.Json" HintPath="$(GameFolder)/Newtonsoft.Json.dll" />
 		<Reference Include="UnityEngine" HintPath="$(GameFolder)/UnityEngine.dll" />
 		<Reference Include="UnityEngine.CoreModule" HintPath="$(GameFolder)/UnityEngine.CoreModule.dll" />
@@ -103,18 +71,6 @@
 		<Reference Include="UnityEngine.UIModule" HintPath="$(GameFolder)/UnityEngine.UIModule.dll" />
 		<Reference Include="Unity.TextMeshPro" HintPath="$(GameFolder)/Unity.TextMeshPro.dll" />
 		<Reference Include="FMODUnity" HintPath="$(GameFolder)/FMODUnity.dll" />
-		<Reference Include="netstandard" HintPath="$(GameFolder)/netstandard.dll" />
-	</ItemGroup>
-	<!-- PLib -->
-	<ItemGroup Condition=" '$(DistributeMod)' == 'true' And '$(UsesPLib)' == 'true' ">
-		<Reference Include="PLibCore" HintPath="$(PLibFolder)/PLibCore.dll" />
-		<Reference Include="PLibActions" HintPath="$(PLibFolder)/PLibActions.dll" />
-		<Reference Include="PLibAVC" HintPath="$(PLibFolder)/PLibAVC.dll" />
-		<Reference Include="PLibBuildings" HintPath="$(PLibFolder)/PLibBuildings.dll" />
-		<Reference Include="PLibDatabase" HintPath="$(PLibFolder)/PLibDatabase.dll" />
-		<Reference Include="PLibLighting" HintPath="$(PLibFolder)/PLibLighting.dll" />
-		<Reference Include="PLibOptions" HintPath="$(PLibFolder)/PLibOptions.dll" />
-		<Reference Include="PLibUI" HintPath="$(PLibFolder)/PLibUI.dll" />
 	</ItemGroup>
 	<Target Name="UniversalDebugVariables"
         BeforeTargets="BeforeBuild;PrepareForBuild;InitializeBuildStatus"
@@ -133,23 +89,4 @@
 		<Product>priy0315's ONI Mods</Product>
 		<Copyright>Copyright © priy0315 2025-$([System.DateTime]::Now.Year)</Copyright>
 	</PropertyGroup>
-
-    <!-- 3. 直接添加分析器引用（硬编码路径，无元数据依赖） 
-    <ItemGroup Condition="'$(EnableGlobalReference)' == 'true'">
-        <Analyzer Include="$(GameFolderActive)\Assembly-CSharp.dll" Condition="Exists('$(GameFolderActive)\Assembly-CSharp.dll')" />
-        <Analyzer Include="$(GameFolderActive)\Assembly-CSharp-firstpass.dll" Condition="Exists('$(GameFolderActive)\Assembly-CSharp-firstpass.dll')" />
-        <Analyzer Include="$(GameFolderActive)\0Harmony.dll" Condition="Exists('$(GameFolderActive)\0Harmony.dll')" />
-        <Analyzer Include="$(GameFolderActive)\FMODUnity.dll" Condition="Exists('$(GameFolderActive)\FMODUnity.dll')" />
-        <Analyzer Include="$(GameFolderActive)\Newtonsoft.Json.dll" Condition="Exists('$(GameFolderActive)\Newtonsoft.Json.dll')" />
-        <Analyzer Include="$(GameFolderActive)\UnityEngine.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.dll')" />
-        <Analyzer Include="$(GameFolderActive)\UnityEngine.CoreModule.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.CoreModule.dll')" />
-        <Analyzer Include="$(GameFolderActive)\UnityEngine.ImageConversionModule.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.ImageConversionModule.dll')" />
-        <Analyzer Include="$(GameFolderActive)\UnityEngine.InputLegacyModule.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.InputLegacyModule.dll')" />
-        <Analyzer Include="$(GameFolderActive)\Unity.TextMeshPro.dll" Condition="Exists('$(GameFolderActive)\Unity.TextMeshPro.dll')" />
-        <Analyzer Include="$(GameFolderActive)\UnityEngine.TextRenderingModule.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.TextRenderingModule.dll')" />
-        <Analyzer Include="$(GameFolderActive)\UnityEngine.UI.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.UI.dll')" />
-        <Analyzer Include="$(GameFolderActive)\UnityEngine.UIModule.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.UIModule.dll')" />
-		<Analyzer Include="$(GameFolderActive)\UnityEngine.AssetBundleModule.dll" Condition="Exists('$(GameFolderActive)\UnityEngine.AssetBundleModule.dll')" />
-	</ItemGroup>
--->
 </Project>

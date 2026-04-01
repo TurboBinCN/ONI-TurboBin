@@ -9,7 +9,6 @@ namespace MutantFarmLab
         {
             private static void Prefix()
             {
-                // ✅ ========== 你的极简合法写法 ↓↓↓ 一行一个，直观无冗余 ==========
                 // 食物文本注入
                 Strings.Add("STRINGS.ITEMS.FOOD.RADSEED.NAME", STRINGS.ITEMS.FOOD.RADSEED.NAME);
                 Strings.Add("STRINGS.ITEMS.FOOD.RADSEED.DESC", STRINGS.ITEMS.FOOD.RADSEED.DESC);
