@@ -28,7 +28,6 @@ namespace MutantFarmLab.mutantplants
         }
         protected override void OnCompleteWork(WorkerBase worker)
         {
-            PUtil.LogDebug($"RadSeedEatWorkable OnCompleteWork [{worker.name}]");
             Effects effects = worker.GetComponent<Effects>();
             EffectInstance effectInstance = effects.Get(FoodEffectRegister.RAD_IMMUNE_ID);
             if (effectInstance != null)

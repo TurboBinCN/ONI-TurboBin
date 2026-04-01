@@ -28,7 +28,10 @@
 		<ErrorReport>prompt</ErrorReport>
 		<WarningLevel>4</WarningLevel>
 	</PropertyGroup>
-	
+	<!-- 热重载 -->
+	<PropertyGroup>
+		<HotReloadAutoRestart>true</HotReloadAutoRestart>
+	</PropertyGroup>
 	<!-- Mod基础设置 -->
 	<PropertyGroup>
 		<APIVersion>2</APIVersion>

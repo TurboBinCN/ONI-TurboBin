@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MutantFarmLab.mutantplants
+﻿namespace MutantFarmLab.mutantplants
 {
     public class RadSeedEatChore : Chore<RadSeedEatChore.StatesInstance>
     {
         private RadSeedEatWorkable radSeedEat;
         private Pickupable pickupable;
 
-        public RadSeedEatChore(RadSeedEatWorkable master) : base(Db.Get().ChoreTypes.Eat, master, null, false, null, null, null, PriorityScreen.PriorityClass.personalNeeds, 9, false, true, 0, false, ReportManager.ReportType.WorkTime)
+        public RadSeedEatChore(RadSeedEatWorkable master) : base(Db.Get().ChoreTypes.TakeMedicine, master, null, false, null, null, null, PriorityScreen.PriorityClass.personalNeeds, 9, false, true, 0, false, ReportManager.ReportType.WorkTime)
         {
             radSeedEat = master;
             pickupable = radSeedEat.GetComponent<Pickupable>();
@@ -19,6 +13,7 @@ namespace MutantFarmLab.mutantplants
             AddPrecondition(ChorePreconditions.instance.CanPickup, pickupable);
             AddPrecondition(CanCure, this);
             AddPrecondition(IsConsumptionPermitted, this);
+            AddPrecondition(ChorePreconditions.instance.IsNotARobot, (object)null);
 
         }
         public override void Begin(Chore.Precondition.Context context)
@@ -46,7 +41,7 @@ namespace MutantFarmLab.mutantplants
             {
                 RadSeedEatChore radSeedEatChore = (RadSeedEatChore)data;
                 ConsumableConsumer consumableConsumer = context.consumerState.consumableConsumer;
-                return consumableConsumer == null || consumableConsumer.IsPermitted(radSeedEatChore.radSeedEat.PrefabID().Name);
+                return consumableConsumer == null || consumableConsumer.IsPermitted(GameTags.Medicine.ToString());
             }
         };
         public class StatesInstance : GameStateMachine<States, StatesInstance, RadSeedEatChore, object>.GameInstance

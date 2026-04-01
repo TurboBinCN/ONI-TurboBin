@@ -28,8 +28,9 @@ namespace MutantFarmLab.mutantplants
                 SimHashes.Carbon,
                 null
             );
+            looseEntity.AddTag(GameTags.Medicine);
 
-            EdiblesManager.FoodInfo foodInfo = new EdiblesManager.FoodInfo(
+            EdiblesManager.FoodInfo foodInfo = new(
                 ID,
                 500000f,
                 FOOD.FOOD_QUALITY_GOOD,

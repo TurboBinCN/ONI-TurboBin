@@ -3,7 +3,6 @@ using KMod;
 using MutantFarmLab.mutantplants;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.PatchManager;
-using UnityEngine;
 
 namespace MutantFarmLab
 {
@@ -44,12 +43,10 @@ namespace MutantFarmLab
                 .RegisterAddStrings(typeof(STRINGS.UI));
         }
     }
-    /// <summary>
-    /// 指明要钩住的原生方法：Database.Db.Initialize()
-    /// </summary>
     [HarmonyPatch(typeof(Db), nameof(Db.Initialize))]
-    public static class DB_INIT_PATCH {
-        [HarmonyPostfix] // ✅ 关键：Postfix → 在原生方法执行【之后】运行
+    public static class DB_INIT_PATCH
+    {
+        [HarmonyPostfix]
         public static void Db_Initialize_Postfix(Db __instance)
         {
             try
@@ -57,8 +54,6 @@ namespace MutantFarmLab
                 PlantMutationRegister.RegisterAllCustomMutations();
                 FoodEffectRegister.RegisterAllEffects();
                 MutantEffects.RegisterAllEffect();
-
-                PUtil.LogDebug("============== 自定义变异+物品 注册全部成功！===============");
             }
             catch (System.Exception e)
             {
