@@ -1,49 +1,18 @@
-using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
-using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
 
-namespace MutantContainmentProject.MutanterComponent
+namespace MutantContainmentProject.MutanterComponent.VFXController
 {
-    public class WhiteMistAnimationEffect 
+    public class WhiteMistVFXController : KMonoBehaviour
     {
-        private WhiteMistController whiteMistController;
-
-        public WhiteMistAnimationEffect(WhiteMistController whiteMistController)
-        {
-            this.whiteMistController = whiteMistController;
-        }
-
-        public void Activate()
-        {
-            whiteMistController?.ActivateMist();
-        }
-
-        public void Deactivate()
-        {
-            whiteMistController?.DeactivateMist();
-        }
-
-        public List<KPrefabID> GetAttackTargets()
-        {
-            return new List<KPrefabID>();
-        }
-    }
-
-    public class WhiteMistController : KMonoBehaviour
-    {
-        public static string ID = "WhiteMist";
         [Header("白雾配置")]
         public float mistDuration = 5f;
         public float mistRange = 2f;
 
         private static GameObject FogPrefab;
-        private MutanterAttackSystem attackSystem;
         private GameObject MistInstance;
         SpriteRenderer SpriteRendererManager;
         private bool isSkillActive = false;
-
-        private MutanterAttackSystem AttackSystem => attackSystem ??= GetComponent<MutanterAttackSystem>();
 
         protected override void OnSpawn()
         {
@@ -97,7 +66,6 @@ namespace MutantContainmentProject.MutanterComponent
                 MistInstance.transform.position = position;
                 MistInstance.transform.localScale = new Vector3(5f, 4f, 0);
                 MistInstance.SetActive(true);
-                //MistInstance = WhiteMistEffect.CreateMist(position, mistDuration, AttackSystem);
             }
         }
     }

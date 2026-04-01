@@ -5,6 +5,37 @@ namespace MutantContainmentProject
 {
     public static class STRINGS
     {
+        public static class BLUEPRINTS
+        {
+            public static class CATEGORY
+            {
+                public static class CONTAINMENT_SUIT
+                {
+                    public static LocString NAME = "Containment Suit";
+                    public static LocString DESC = "Special clothing for containment personnel, providing protection and identification.";
+                }
+            }
+            public static class OUTFIT_BLACK_SUIT
+            {
+                public static LocString NAME = "Containment Black Suit";
+                public static LocString DESC = "A full-body protective suit designed for containment personnel.";
+            }
+            public static class TOP_BLACK_SUIT
+            {
+                public static LocString NAME = "Containment Black Suit Top";
+                public static LocString DESC = "A reinforced top that provides mental and physical protection.";
+            }
+            public static class PLANTS_BLACK_SUIT
+            {
+                public static LocString NAME = "Containment Black Suit Pants";
+                public static LocString DESC = "Durable pants for containment operations.";
+            }
+            public static class SHOES_BLACK_SUIT
+            {
+                public static LocString NAME = "Containment Black Suit Shoes";
+                public static LocString DESC = "Sturdy shoes for long-term containment duties.";
+            }
+        }
         public static class SECURE_ACTION
         {
             public static class ACTION_INSTINCT

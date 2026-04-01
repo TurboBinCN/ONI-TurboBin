@@ -1,9 +1,6 @@
 using Klei.AI;
-using MutantContainmentProject.MutanterEffect;
 using MutantContainmentProject.Mutanters;
 using System.Collections.Generic;
-using System.Linq;
-using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 using static Health;
 
@@ -14,36 +11,13 @@ namespace MutantContainmentProject.MutanterComponent
     {
         public Grave grave;
     }
-    
-    public class SCP049Controller : KMonoBehaviour, ISim1000ms
+
+    public class SCP049Controller : KMonoBehaviour
     {
-        private MutanterAttackSystem _attackSystem;
-
-        private MutanterAttackSystem attackSystem{
-            get{
-                if(_attackSystem == null){
-                    _attackSystem = gameObject.GetComponent<MutanterAttackSystem>();
-                }
-                return _attackSystem;
-            }
-        }
-
         private EmotionMonitor.StatesInstance _emotionMonitorSMI;
 
-        private EmotionMonitor.StatesInstance emotionMonitorInstance{
-            get{
-                if(_emotionMonitorSMI == null){
-                    _emotionMonitorSMI = gameObject.GetSMI<EmotionMonitor.StatesInstance>();
-                }
-                return _emotionMonitorSMI;
-            }
-        }
+        private EmotionMonitor.StatesInstance EmotionMonitorInstance => _emotionMonitorSMI ??= gameObject.GetSMI<EmotionMonitor.StatesInstance>();
 
-        private float checkInterval = 1f;
-        private float lastCheckTime = 0f;
-        private float contactKillRange = 1f;
-        private float healCooldown = 10f;
-        private float lastHealTime = 0f;
 
         // SCP-049-2相关
         private float surgeryTime = 5f;
@@ -61,29 +35,11 @@ namespace MutantContainmentProject.MutanterComponent
         {
             base.OnCleanUp();
         }
-        public void Sim1000ms(float dt)
-        {
-            Update();
-        }
-        private void Update()
-        {
-            // 定期检查周围环境
-            if (Time.time - lastCheckTime >= checkInterval)
-            {
-                lastCheckTime = Time.time;
-                CheckForPlague();
-                CheckForDeadBodies();
-                CheckForSickOrInjured();
-            }
-
-            // 检查是否有生物在接触范围内
-            CheckForContact();
-        }
 
         private void CheckForPlague()
         {
             // 使用EmotionMonitor中的threaters列表
-            var threaters = emotionMonitorInstance.GetThreaters();
+            var threaters = EmotionMonitorInstance.GetThreaters();
             foreach (var threater in threaters)
             {
                 if (threater != null && threater.gameObject != gameObject)
@@ -91,7 +47,6 @@ namespace MutantContainmentProject.MutanterComponent
                     if (IsInfectedWithPlague(threater.gameObject))
                     {
                         // 对感染"瘟疫"的生物发起攻击
-                        AttackTarget(threater.gameObject);
                     }
                 }
             }
@@ -104,14 +59,10 @@ namespace MutantContainmentProject.MutanterComponent
             return UnityEngine.Random.value < 0.3f; // 30%的概率被判定为感染"瘟疫"
         }
 
-        private void CheckForSickOrInjured()
+        public void PerformFlawedRecovery()
         {
-            // 检查是否在冷却期
-            if (Time.time - lastHealTime < healCooldown)
-                return;
-
             // 使用EmotionMonitor中的threaters列表
-            var threaters = emotionMonitorInstance.GetThreaters();
+            var threaters = EmotionMonitorInstance.GetThreaters();
             foreach (var threater in threaters)
             {
                 if (threater != null && threater.gameObject != gameObject)
@@ -120,7 +71,6 @@ namespace MutantContainmentProject.MutanterComponent
                     {
                         // 执行"治愈"之手
                         PerformHealing(threater.gameObject);
-                        lastHealTime = Time.time;
                         break;
                     }
                 }
@@ -197,57 +147,13 @@ namespace MutantContainmentProject.MutanterComponent
             Debug.Log($"[SCP049] Healing completed for {target.name}: all diseases and injuries cleared, stress maxed");
         }
 
-        private void AttackTarget(GameObject target)
-        {
-            // 尝试执行攻击行为
-            attackSystem.TryExecuteAttack(target);
-        }
-
-        private void CheckForContact()
-        {
-            // 使用EmotionMonitor中的threaters列表
-            var threaters = emotionMonitorInstance.GetThreaters();
-            foreach (var threater in threaters)
-            {
-                if (threater != null && threater.gameObject != gameObject)
-                {
-                    if (Vector3.Distance(transform.position, threater.transform.position) <= contactKillRange)
-                    {
-                        // 皮肤接触，瞬间终止生物的所有生理机能
-                        InstantKill(threater.gameObject);
-                    }
-                }
-            }
-        }
-
-        private void InstantKill(GameObject target)
-        {
-            // 使用攻击系统执行即死攻击
-            var health = target.GetComponent<Health>();
-            if (health != null)
-            {
-                // 计算需要的伤害值（确保杀死目标）
-                float damage = health.hitPoints;
-                if (attackSystem.ExecuteHealthAttack(target, damage, out _))
-                {
-                    TbbDebuger.LogDebug($"[SCP049] Instantly killed {target.name} via skin contact");
-                    
-                    // 将尸体添加到列表中，以便后续进行手术
-                    if (!deadBodies.Contains(target))
-                    {
-                        deadBodies.Add(target);
-                    }
-                }
-            }
-        }
-
-        private void CheckForDeadBodies()
+        public void PerformRevivedZombie()
         {
             // 清理无效的尸体
             deadBodies.RemoveAll(body => body == null || (!body.HasTag(GameTags.Dead) && !body.HasTag(GameTags.Corpse)));
 
             // 通过EmotionMonitor检查周围的小人是否死亡
-            var threaters = emotionMonitorInstance.GetThreaters();
+            var threaters = EmotionMonitorInstance.GetThreaters();
             foreach (var threater in threaters)
             {
                 if (threater != null && threater.gameObject != gameObject)
@@ -273,10 +179,10 @@ namespace MutantContainmentProject.MutanterComponent
                     GameObject graveCorpse = new GameObject($"GraveCorpse_{grave.graveName}");
                     graveCorpse.AddComponent<KPrefabID>();
                     graveCorpse.GetComponent<KPrefabID>().AddTag(GameTags.Corpse);
-                    
+
                     // 存储墓碑引用，以便后续销毁
                     graveCorpse.AddComponent<GraveReference>().grave = grave;
-                    
+
                     if (!deadBodies.Contains(graveCorpse))
                     {
                         deadBodies.Add(graveCorpse);
@@ -284,7 +190,7 @@ namespace MutantContainmentProject.MutanterComponent
                     }
                 }
             }
-            
+
             // 移除已处理的墓碑
             foreach (var grave in gravesToRemove)
             {
@@ -319,7 +225,7 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 // 使用墓碑的位置
                 spawnPosition = graveRef.grave.transform.position;
-                
+
                 // 销毁墓碑
                 Util.KDestroyGameObject(graveRef.grave.gameObject);
             }

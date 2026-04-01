@@ -1,5 +1,29 @@
 {
   STRINGS: {
+    BLUEPRINTS: {
+      CATEGORY: {
+        CONTAINMENT_SUIT: {
+          NAME: 收容所工作服
+          DESC: 为收容所工作人员提供的专属工作服，在收容工作中提供防护作用。
+        }
+      }
+      OUTFIT_BLACK_SUIT: {
+        NAME: 收容专用黑色套装
+        DESC: 为收容人员设计的全套防护制服，提供稳定的精神与物理防护。
+      }
+      TOP_BLACK_SUIT: {
+        NAME: 收容黑色套装上衣
+        DESC: 强化防护上衣，可抵御轻微物理伤害与精神干扰。
+      }
+      PLANTS_BLACK_SUIT: {
+        NAME: 收容黑色套装长裤
+        DESC: 适用于收容作业的耐磨长裤。
+      }
+      SHOES_BLACK_SUIT: {
+        NAME: 收容黑色套装皮鞋
+        DESC: 适合长期执行收容任务的坚固工作鞋。
+      }
+    }
     SECURE_ACTION: {
       ACTION_INSTINCT: {
         CHECK_VITAL_SIGNS: 检查生命体征

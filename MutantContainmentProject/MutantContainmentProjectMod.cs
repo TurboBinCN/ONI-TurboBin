@@ -83,6 +83,7 @@ namespace MutantContainmentProject
                     .RegisterAddStrings(typeof(STRINGS.CODEX))
                     .RegisterAddStrings(typeof(STRINGS.MUTANTERS))
                     .RegisterAddStrings(typeof(STRINGS.CREATURES))
+                    .RegisterAddStrings(typeof(STRINGS.BLUEPRINTS))
                     .RegisterAddStrings(typeof(STRINGS.DUPLICANTS))
                     .RegisterAddStrings(typeof(STRINGS.SKILLS))
                     .RegisterAddStrings(typeof(STRINGS.ENTITY))

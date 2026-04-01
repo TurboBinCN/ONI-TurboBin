@@ -2,6 +2,7 @@ using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
 using System.Collections.Generic;
 using UnityEngine;
+using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
 
 namespace MutantContainmentProject.Mutanters
 {
@@ -42,12 +43,40 @@ namespace MutantContainmentProject.Mutanters
             // 添加产出物
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.ToxicSand.CreateTag(), 500f, 0.8f);
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.SlimeMold.CreateTag(), 300f, 0.5f);
-            
+
+            // 添加技能攻击组件
+            var skillComponent = prefab.AddOrGet<MutanterSkillComponent>();
+            var skills = new List<SkillData>{
+                new() {
+                    name = "BasicAttack",
+                    isPassiveSkill = false,
+                    cooldown = 2f,
+                    animation = "attack_once",
+                    lastUseTime = 0f,
+                    isFirstUse = true,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.PhysicalAttack,
+                            damageAmount = 3f
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "DistanceTrigger",
+                            properties = new Dictionary<string, object> {
+                                { "Range", 2 }
+                            }
+                        }
+                    }
+                }
+            };
+            skillComponent.AddSkillsToDb(skills);
+
             // 配置攻击策略
             var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, true);
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, false);
-            strategyManager.SetStrategyPriority(AttackStrategyManager.StrategyType.BasicAttack, 1.0f);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, false);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, true);
 
             return prefab;
         }

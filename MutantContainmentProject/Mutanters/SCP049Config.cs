@@ -2,6 +2,7 @@ using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
 using System.Collections.Generic;
 using UnityEngine;
+using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
 
 namespace MutantContainmentProject.Mutanters
 {
@@ -49,12 +50,102 @@ namespace MutantContainmentProject.Mutanters
             BaseMutanter.AddProductToMutanter(prefab, AdvancedCureConfig.ID, 1000f, 0.8f);//血清瓶
             BaseMutanter.AddProductToMutanter(prefab, BasicCureConfig.ID, 20f, 0.6f);// 治疗药片
 
+            var skillComponent = prefab.AddOrGet<MutanterSkillComponent>();
+            var skills = new List<SkillData>{
+                new() {
+                    name = "BasicErosionAttack",
+                    isPassiveSkill = false,
+                    cooldown = 2f,
+                    animation = "attack_once",
+                    lastUseTime = 0f,
+                    isFirstUse = true,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.ErosionAttack,
+                            damageAmount = 3f
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "DistanceTrigger",
+                            properties = new Dictionary<string, object> {
+                                { "Range", 4 }
+                            }
+                        }
+                    }
+                },
+                new() {
+                    name = "InstantKill",
+                    isPassiveSkill = false,
+                    cooldown = 1f,
+                    animation = "attack_once",
+                    lastUseTime = 0f,
+                    isFirstUse = true,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.ErosionAttack,
+                            damageAmount = 500f
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "DistanceTrigger",
+                            properties = new Dictionary<string, object> {
+                                { "Range", 1 }
+                            }
+                        }
+                    }
+                },
+                new() {
+                    name = "RevivedZombie",
+                    isPassiveSkill = false,
+                    cooldown = 100f,
+                    animation = "attack_once",
+                    lastUseTime = 0f,
+                    isFirstUse = true,
+                    VFXName = "CastMagicVFX",
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "SCP049ReviveEffector"
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "CyclicCheckTrigger",
+                            properties = new Dictionary<string, object> {}
+                        }
+                    }
+                },
+                new() {
+
+                    name = "FlawedRecovery",
+                    isPassiveSkill = false,
+                    cooldown = 100f,
+                    animation = "attack_once",
+                    lastUseTime = 0f,
+                    isFirstUse = true,
+                    VFXName = "CastMagicVFX",
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "SCP049HealEffector"
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "CyclicCheckTrigger",
+                            properties = new Dictionary<string, object> {}
+                        }
+                    }
+
+                }
+            };
+            skillComponent.AddSkillsToDb(skills);
             // 配置攻击策略
             var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
-            
-            // 只启用基础攻击策略
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, true);
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, false);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, false);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, true);
 
             return prefab;
         }

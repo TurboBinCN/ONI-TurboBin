@@ -35,6 +35,7 @@ namespace MutantContainmentProject.MutanterComponent.Effector
                     try
                     {
                         effetors.Add(attribute.Name, type);
+                        TbbDebuger.LogDebug($"注册效果器 {attribute.Name}");
                     }
                     catch (Exception e)
                     {
@@ -55,6 +56,7 @@ namespace MutantContainmentProject.MutanterComponent.Effector
                         if (gameObject.GetComponent(effectorType) is not ISkillEffector component)
                         {
                             component = gameObject.AddComponent(effectorType) as ISkillEffector;
+                            TbbDebuger.LogDebug($"挂载效果器组件 {effectorType} [{component}] 到 {gameObject.name}");
                         }
                     }
                 }
@@ -67,6 +69,7 @@ namespace MutantContainmentProject.MutanterComponent.Effector
             {
                 if (effetors.TryGetValue(effector.attackEffectorName, out Type effectorType))
                 {
+                    TbbDebuger.LogDebug($"应用效果器 {effector.attackEffectorName} ApplyEffectorsBefore");
                     var component = gameObject.GetComponent(effectorType) as ISkillEffector;
                     component?.ApplyEffectorsBefore();
                 }
@@ -80,6 +83,7 @@ namespace MutantContainmentProject.MutanterComponent.Effector
                 if (effetors.TryGetValue(effector.attackEffectorName, out Type effectorType))
                 {
                     var component = gameObject.GetComponent(effectorType) as ISkillEffector;
+                    TbbDebuger.LogDebug($"应用效果器 {effector.attackEffectorName} [{component}] ApplyEffectorsAfter");
                     component?.ApplyEffectorAfter(target, skill);
                 }
             }

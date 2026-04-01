@@ -1,4 +1,4 @@
-﻿using Microsoft.Build.Framework;
+using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System;
 using System.IO;
@@ -25,7 +25,7 @@ namespace ONI_TurboBin
 
         [Required]
         public int MinimumSupportedBuild { get; set; }
-
+        [Required]
         public string Version { get; set; }
 
         [Required]

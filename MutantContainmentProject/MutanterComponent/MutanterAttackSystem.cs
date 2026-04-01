@@ -5,17 +5,19 @@ using System;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
-using static MutantContainmentProject.STRINGS.BUILDINGS.STATUSITEMS.CONTAINMENTMONITOR;
 
 namespace MutantContainmentProject.MutanterComponent
 {
     public class MutanterAttackSystem : KMonoBehaviour
     {
-        private List<IMutanterAttackBehavior> _availableBehaviors = new List<IMutanterAttackBehavior>();
-        private Dictionary<IMutanterAttackBehavior, float> _behaviorLastExecutionTimes = new Dictionary<IMutanterAttackBehavior, float>();
+        private List<IMutanterAttackBehavior> _availableBehaviors = new();
+        private Dictionary<IMutanterAttackBehavior, float> _behaviorLastExecutionTimes = new();
 
         private Effects _effects;
+        private Effects EffectsInstance => _effects ??= GetComponent<Effects>();
+
         private EmotionMonitor.StatesInstance _emotionMonitorSMI;
+        private EmotionMonitor.StatesInstance EmotionMonitorSMI => _emotionMonitorSMI ??= gameObject.GetSMI<EmotionMonitor.StatesInstance>();
 
         private bool _isContained = false;
         public bool IsContained { get => _isContained; }
@@ -31,12 +33,10 @@ namespace MutantContainmentProject.MutanterComponent
         protected override void OnSpawn()
         {
             base.OnSpawn();
-            _effects = GetComponent<Effects>();
-            _emotionMonitorSMI = gameObject.GetSMI<EmotionMonitor.StatesInstance>();
             InitializeBehaviors();
 
             // 初始化时检查当前的收容状态
-            if (_effects != null && _effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+            if (EffectsInstance?.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT) == true)
             {
                 _isContained = true;
                 TbbDebuger.LogDebug($"[MutanterAttackSystem] {gameObject.name} initialized with containment effect, IsContained = true");
@@ -133,7 +133,7 @@ namespace MutantContainmentProject.MutanterComponent
             }
 
             // 获取理智值
-            float insanityValue = _emotionMonitorSMI?.INSANITYValue ?? 100f;
+            float insanityValue = EmotionMonitorSMI?.INSANITYValue ?? 100f;
 
             // 执行攻击
             return ExecuteAttackInternal(target, insanityValue);
@@ -156,7 +156,7 @@ namespace MutantContainmentProject.MutanterComponent
             }
 
             // 获取理智值
-            float insanityValue = _emotionMonitorSMI?.INSANITYValue ?? 100f;
+            float insanityValue = EmotionMonitorSMI?.INSANITYValue ?? 100f;
 
             // 执行多目标攻击
             bool success = false;
@@ -188,14 +188,14 @@ namespace MutantContainmentProject.MutanterComponent
             }
 
             // // 检查是否有收容效果，如果有则限制攻击
-            // if (_effects != null && _effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+            // if (EffectsInstance?.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT) == true)
             // {
             //     TbbDebuger.LogDebug("[MutanterAttackSystem] Attack restricted due to containment effect");
             //     return false;
             // }
 
             // // 检查是否有攻击限制效果
-            // if (_effects != null && _effects.HasEffect(MutanterEffects.MUTANTER_ATTACK_RESTRICTED_EFFECT))
+            // if (EffectsInstance?.HasEffect(MutanterEffects.MUTANTER_ATTACK_RESTRICTED_EFFECT) == true)
             // {
             //     TbbDebuger.LogDebug("[MutanterAttackSystem] Attack restricted due to attack restricted effect");
             //     return false;
@@ -254,17 +254,17 @@ namespace MutantContainmentProject.MutanterComponent
         {
             float impact = 1.0f;
 
-            if (_effects == null)
+            if (EffectsInstance == null)
                 return impact;
 
             // 攻击增强效果：提高攻击效果
-            if (_effects.HasEffect(MutanterEffects.MUTANTER_ATTACK_ENHANCED_EFFECT))
+            if (EffectsInstance.HasEffect(MutanterEffects.MUTANTER_ATTACK_ENHANCED_EFFECT))
             {
                 impact *= 1.5f;
             }
 
             // 意志效果：小幅提高攻击效果
-            if (_effects.HasEffect(MutanterEffects.MUTANTER_WILLED_EFFECT))
+            if (EffectsInstance.HasEffect(MutanterEffects.MUTANTER_WILLED_EFFECT))
             {
                 impact *= 1.2f;
             }
@@ -280,29 +280,29 @@ namespace MutantContainmentProject.MutanterComponent
         {
             float capability = 1.0f;
 
-            if (_effects == null)
+            if (EffectsInstance == null)
                 return capability;
 
             // 收容效果：大幅降低攻击能力
-            if (_effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+            if (EffectsInstance.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
             {
                 capability *= 0.1f;
             }
 
             // 攻击限制效果：降低攻击能力
-            if (_effects.HasEffect(MutanterEffects.MUTANTER_ATTACK_RESTRICTED_EFFECT))
+            if (EffectsInstance.HasEffect(MutanterEffects.MUTANTER_ATTACK_RESTRICTED_EFFECT))
             {
                 capability *= 0.3f;
             }
 
             // 攻击增强效果：提高攻击能力
-            if (_effects.HasEffect(MutanterEffects.MUTANTER_ATTACK_ENHANCED_EFFECT))
+            if (EffectsInstance.HasEffect(MutanterEffects.MUTANTER_ATTACK_ENHANCED_EFFECT))
             {
                 capability *= 1.5f;
             }
 
             // 意志效果：小幅提高攻击能力
-            if (_effects.HasEffect(MutanterEffects.MUTANTER_WILLED_EFFECT))
+            if (EffectsInstance.HasEffect(MutanterEffects.MUTANTER_WILLED_EFFECT))
             {
                 capability *= 1.2f;
             }
@@ -327,7 +327,7 @@ namespace MutantContainmentProject.MutanterComponent
         public bool IsImmuneToInstantKill()
         {
             // 已收容效果免疫即死攻击
-            if (_effects != null && _effects.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT))
+            if (EffectsInstance?.HasEffect(MutanterEffects.MUTANTER_CONTAINED_EFFECT) == true)
             {
                 return true;
             }

@@ -1,7 +1,9 @@
 using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
 
 namespace MutantContainmentProject.Mutanters
 {
@@ -40,18 +42,60 @@ namespace MutantContainmentProject.Mutanters
             };
             BaseMutanter.ExtendToBaseMutanter(prefab, MutanterDangerLevel.Keter, faction: FactionManager.FactionID.Pest, attackTags: new List<Tag> { MutanterTags.PhysicalAttack, MutanterTags.PsychologicalAttack }, secureActionPreferences: secureActionPreferences);
 
-            // 添加SCP-939特有的组件
-            prefab.AddOrGet<SCP939Controller>();
-
-            // 添加动画调试组件
-            //prefab.AddOrGet<MutanterAnimationDebugger>();
+            // 添加技能攻击组件
+            var skillComponent = prefab.AddOrGet<MutanterSkillComponent>();
+            var skills = new List<SkillData>{new() {
+                    name = "BasicErosionAttack",
+                    isPassiveSkill = false,
+                    cooldown = 2f,
+                    animation = "attack_once",
+                    lastUseTime = 0f,
+                    isFirstUse = true,
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.ErosionAttack,
+                            damageAmount = 3f
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "DistanceTrigger",
+                            properties = new Dictionary<string, object> {
+                                { "Range", 2 }
+                            }
+                        }
+                    }
+                },
+                new() {
+                    name = "ReleaseAerosol",
+                    isPassiveSkill = false,
+                    cooldown = 50f,
+                    animation = "attack_aerosol",
+                    animationDuration = 10f,
+                    lastUseTime = 0f,
+                    isFirstUse = true,
+                    VFXName = "AerosolVFX",
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "SpecialAttact",
+                            kMonoBehaviours = new List<Type>(){ typeof(SCP939Amnesia) },
+                        }
+                    },
+                    triggers = new List<TriggerData> {
+                        new() {
+                            triggerName = "CyclicCheckTrigger",
+                            properties = new Dictionary<string, object> {}
+                        }
+                    }
+                }
+            };
+            skillComponent.AddSkillsToDb(skills);
 
             // 配置攻击策略
             var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
-            
-            // 只启用基础攻击策略
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, true);
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, false);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, false);
+            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, true);
 
             return prefab;
         }

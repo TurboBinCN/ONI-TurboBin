@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MutantContainmentProject</RootNamespace>
     <AssemblyName>MutantContainmentProject</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,8 +69,11 @@
     <Compile Include="MutanterComponent\Effector\DamageReflectionEffector.cs" />
     <Compile Include="MutanterComponent\Effector\FrozenHitPointsEffector.cs" />
     <Compile Include="MutanterComponent\Effector\ISkillEffector.cs" />
+    <Compile Include="MutanterComponent\Effector\SCP049HealEffector.cs" />
+    <Compile Include="MutanterComponent\Effector\SCP049ReviveEffector.cs" />
     <Compile Include="MutanterComponent\Effector\SkillEffectorAttribute.cs" />
     <Compile Include="MutanterComponent\Effector\SkillEffectorManager.cs" />
+    <Compile Include="MutanterComponent\Effector\SpecialAttactEffctor.cs" />
     <Compile Include="MutanterComponent\MoveImmediately.cs" />
     <Compile Include="MutanterComponent\MutanterColdIceMonitor.cs" />
     <Compile Include="MutanterComponent\MutanterCombatManager.cs" />
@@ -93,9 +97,9 @@
     <Compile Include="MutanterComponent\SCP662BellController.cs" />
     <Compile Include="MutanterComponent\SCP662_1Controller.cs" />
     <Compile Include="MutanterComponent\SCP939Amnesia.cs" />
-    <Compile Include="MutanterComponent\SCP939Controller.cs" />
     <Compile Include="MutanterComponent\SoulAttack.cs" />
     <Compile Include="MutanterComponent\Triggers\BerserkTrigger.cs" />
+    <Compile Include="MutanterComponent\Triggers\CyclicCheckTrigger.cs" />
     <Compile Include="MutanterComponent\Triggers\DeathTrigger.cs" />
     <Compile Include="MutanterComponent\Triggers\DistanceTrigger.cs" />
     <Compile Include="MutanterComponent\Triggers\HealthChangeTrigger.cs" />
@@ -103,6 +107,8 @@
     <Compile Include="MutanterComponent\Triggers\ISkillTrigger.cs" />
     <Compile Include="MutanterComponent\Triggers\SkillTriggerAttribute.cs" />
     <Compile Include="MutanterComponent\Triggers\SkillTriggerManager.cs" />
+    <Compile Include="MutanterComponent\VFXController\AerosolVFXController.cs" />
+    <Compile Include="MutanterComponent\VFXController\CastMagicVFXController.cs" />
     <Compile Include="MutanterComponent\VFXController\CircusJokerDeathDamangeVFXController.cs" />
     <Compile Include="MutanterComponent\VFXController\CosmicBugDeathDamangeVFXController.cs" />
     <Compile Include="MutanterComponent\VFXController\EyeTrailVFXController.cs" />
@@ -114,7 +120,7 @@
     <Compile Include="MutanterComponent\VFXController\LaserBeamVFXController.cs" />
     <Compile Include="MutanterComponent\VFXController\VFXAttribute.cs" />
     <Compile Include="MutanterComponent\VFXController\VFXManager.cs" />
-    <Compile Include="MutanterComponent\WhiteMistController.cs" />
+    <Compile Include="MutanterComponent\VFXController\WhiteMistController.cs" />
     <Compile Include="MutanterComponent\WhiteMistEffect.cs" />
     <Compile Include="MutanterEffect\MutanterEffects.cs" />
     <Compile Include="MutantContainmentProjectMod.cs" />
@@ -163,6 +169,8 @@
     <Compile Include="Skills\SkillAmountPerk.cs" />
     <Compile Include="Skills\SkillMinionWidgetPatch.cs" />
     <Compile Include="Strings.cs" />
+    <Compile Include="Suits\BlackSuitBlueprintProvider.cs" />
+    <Compile Include="Suits\BlackSuitBlueprintRegistry.cs" />
     <Compile Include="Technology\TechTreeRegister.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +190,8 @@
     <None Include="anim\assets\global_erosion_panel\global_erosion_panel_build.bytes" />
     <None Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder_anim.bytes" />
     <None Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder_build.bytes" />
+    <None Include="anim\assets\plants_black_suit\pants_black_suit_anim.bytes" />
+    <None Include="anim\assets\plants_black_suit\pants_black_suit_build.bytes" />
     <None Include="anim\assets\scp049\scp049_anim.bytes" />
     <None Include="anim\assets\scp049\scp049_build.bytes" />
     <None Include="anim\assets\scp096\scp096_anim.bytes" />
@@ -196,10 +206,14 @@
     <None Include="anim\assets\SCP662_1\scp662_1_build.bytes" />
     <None Include="anim\assets\scp939\scp939_anim.bytes" />
     <None Include="anim\assets\scp939\scp939_build.bytes" />
+    <None Include="anim\assets\shoes_black_suit\pants_black_suit_anim.bytes" />
+    <None Include="anim\assets\shoes_black_suit\shoes_black_suit_build.bytes" />
     <None Include="anim\assets\the_fixer_red\the_fixer_red_anim.bytes" />
     <None Include="anim\assets\the_fixer_red\the_fixer_red_build.bytes" />
     <None Include="anim\assets\the_fixer_white\the_fixer_white_anim.bytes" />
     <None Include="anim\assets\the_fixer_white\the_fixer_white_build.bytes" />
+    <None Include="anim\assets\top_black_suit\top_black_suit_anim.bytes" />
+    <None Include="anim\assets\top_black_suit\top_black_suit_build.bytes" />
     <None Include="assets\assetsBundle\mutant_containment_project" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_BugDusk.yaml" />
     <None Include="assets\codex\Creatures\DynamicCodexEntry_CircusJoker.yaml" />
@@ -231,6 +245,8 @@
     <Content Include="anim\assets\dawn_doubt\dawn_doubt.png" />
     <Content Include="anim\assets\global_erosion_panel\global_erosion_panel.png" />
     <Content Include="anim\assets\gravitas_mutanter_founder\gravitas_mutanter_founder.png" />
+    <Content Include="anim\assets\plants_black_suit\pants_black_suit_0.png" />
+    <Content Include="anim\assets\plants_black_suit\pants_black_suit_hires_0.png" />
     <Content Include="anim\assets\scp049\scp049.png" />
     <Content Include="anim\assets\scp096\scp096.png" />
     <Content Include="anim\assets\SCP173\scp173.png" />
@@ -238,8 +254,11 @@
     <Content Include="anim\assets\scp662\scp662.png" />
     <Content Include="anim\assets\SCP662_1\scp662_1.png" />
     <Content Include="anim\assets\scp939\scp939.png" />
+    <Content Include="anim\assets\shoes_black_suit\shoes_black_suit_0.png" />
+    <Content Include="anim\assets\shoes_black_suit\shoes_black_suit_hires_0.png" />
     <Content Include="anim\assets\the_fixer_red\the_fixer_red.png" />
     <Content Include="anim\assets\the_fixer_white\the_fixer_white.png" />
+    <Content Include="anim\assets\top_black_suit\top_black_suit_0.png" />
     <Content Include="assets\texture\containment_tile_solid.png" />
     <Content Include="DevelopNote\developNotes.txt" />
     <Content Include="DevelopNote\SCP-4762 极地守夜雪人 官方收容档案.txt" />
@@ -248,10 +267,10 @@
     <Content Include="Directory.Build.props.user" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="anim\assets\NewFolder1\" />
     <Folder Include="anim\assets\scp049_2\" />
     <Folder Include="Codex\" />
     <Folder Include="Duplicants\" />
+    <Folder Include="Incidents\" />
     <Folder Include="Patches\" />
     <Folder Include="UI\" />
   </ItemGroup>

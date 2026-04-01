@@ -1,6 +1,8 @@
+using Klei.AI;
 using MutantContainmentProject.MutanterComponent.Effector;
 using MutantContainmentProject.MutanterComponent.Triggers;
 using MutantContainmentProject.MutanterComponent.VFXController;
+using System;
 using System.Collections.Generic;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
@@ -22,6 +24,12 @@ namespace MutantContainmentProject.MutanterComponent
             public string attackEffectorName;
             public Tag damageType;
             public float damageAmount;
+            //应用特殊效果
+            public List<Effect> effects;
+            //应用组件
+            public List<Type> kMonoBehaviours;
+            //回调函数
+            public List<System.Action<GameObject>> callbackMethods;
         }
         public struct SkillData
         {
@@ -36,7 +44,6 @@ namespace MutantContainmentProject.MutanterComponent
             public string animation;
             public float animationDuration;
             public string VFXName;
-            //public string extraAnimationEffectId; // 额外动画效果ID
         }
 
         // 静态技能数据库
@@ -172,10 +179,12 @@ namespace MutantContainmentProject.MutanterComponent
 
                 void onComplete()
                 {
+                    TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} ExecuteSkill, 攻击动画完成");
                     if (attackVFX != null)
                     {
                         attackVFX.Deactivate();
                         List<KPrefabID> extralDamageTargets = attackVFX.GetAttackTargets();
+                        TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} ExecuteSkill, 攻击特效目标 = {extralDamageTargets.Count}");
                         if (extralDamageTargets.Count > 0)
                         {
                             foreach (var target in extralDamageTargets)
