@@ -7,13 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ONI-TurboBin", "ONI-TurboBi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransferPort", "TransferPort\TransferPort.csproj", "{5115CCAB-E700-419A-B9E7-A0E0A6889B52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSBuildTasksHelper", "MSBuildTasksHelper\MSBuildTasksHelper.csproj", "{AD63DE59-10C8-4A97-B9DE-718C1FEAEEB8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MutantFarmLab", "MutantFarmLab\MutantFarmLab.csproj", "{5C5D453D-D850-44C1-934C-576112F0B187}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MutantContainmentProject", "MutantContainmentProject\MutantContainmentProject.csproj", "{7EF70A9A-ADD7-4347-B4A2-D050546D21B0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TbbLib", "TbbLib\TbbLib.csproj", "{F7162753-681D-4DC6-9649-2CC944EC5834}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSBuildHelper", "MSBuildHelper\MSBuildHelper.csproj", "{A8A75017-D636-42B3-9DE0-C6D1A6C43857}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,6 @@ Global
 		{5115CCAB-E700-419A-B9E7-A0E0A6889B52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5115CCAB-E700-419A-B9E7-A0E0A6889B52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5115CCAB-E700-419A-B9E7-A0E0A6889B52}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD63DE59-10C8-4A97-B9DE-718C1FEAEEB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD63DE59-10C8-4A97-B9DE-718C1FEAEEB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD63DE59-10C8-4A97-B9DE-718C1FEAEEB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD63DE59-10C8-4A97-B9DE-718C1FEAEEB8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5C5D453D-D850-44C1-934C-576112F0B187}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5C5D453D-D850-44C1-934C-576112F0B187}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C5D453D-D850-44C1-934C-576112F0B187}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,6 +41,10 @@ Global
 		{F7162753-681D-4DC6-9649-2CC944EC5834}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7162753-681D-4DC6-9649-2CC944EC5834}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7162753-681D-4DC6-9649-2CC944EC5834}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8A75017-D636-42B3-9DE0-C6D1A6C43857}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8A75017-D636-42B3-9DE0-C6D1A6C43857}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8A75017-D636-42B3-9DE0-C6D1A6C43857}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8A75017-D636-42B3-9DE0-C6D1A6C43857}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

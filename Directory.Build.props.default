@@ -10,6 +10,7 @@
     <GameFolderSteam>G:\Program Files (x86)\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed</GameFolderSteam>
 	  
     <PLibFolder>E:\oni_mods\PLib</PLibFolder>
+    <LibsFolder>E:\oni_mods\ONIMod-TurboBin\libs</LibsFolder>
     <ModOutputFolderDebug>$(UserProfile)\Documents\Klei\OxygenNotIncluded\mods\Dev</ModOutputFolderDebug>
     <ModOutputFolderRelease>$(MSBuildProjectDirectory)\..\..\Mods</ModOutputFolderRelease>
   </PropertyGroup>

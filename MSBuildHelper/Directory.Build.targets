@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <Target Name="ILRepack" AfterTargets="Build" >
+    <Message Importance="high" Text="=== Starting ILRepack Task ===" />
+    <Message Importance="high" Text="ProjectDir: $(ProjectDir)" />
+    <Message Importance="high" Text="TargetFileName: $(TargetFileName)" />
+    <Message Importance="high" Text="OutputFile: $(ProjectDir)/../../bin/$(TargetFileName)" />
+    <Message Importance="high" Text="TargetPath: $(TargetPath)" />
+    <Message Importance="high" Text="OutputPath: $(OutputPath)" />
+    <ItemGroup>
+      <InputAssemblies Include="$(TargetPath)" />
+      <!-- Include YamlDotNet dependency from output directory -->
+      <InputAssemblies Include="$(OutputPath)YamlDotNet.dll" />
+    </ItemGroup>
+    <Message Importance="high" Text="InputAssemblies: @(InputAssemblies)" />
+    <ILRepack
+        TargetKind="SameAsPrimaryAssembly"
+        OutputFile="$(ProjectDir)../bin/$(TargetFileName)"
+        InputAssemblies="@(InputAssemblies)"
+        LibraryPath="$(MSBuildToolsPath)"
+        Internalize="true"
+        XmlDocumentation="false" />
+    <Message Importance="high" Text="=== ILRepack Task Completed ===" />
+  </Target>
+</Project>

@@ -73,4 +73,69 @@
 		<Copy SourceFiles="$(ModDescriptionFile)" DestinationFolder="$(InstallRootFolder)" />
 		<Copy SourceFiles="$(ProjectDir)/Preview.png" DestinationFiles="$(InstallFolder)/preview.png" Condition=" $(CopyPreview) == true " />
 	</Target>
+
+	<PropertyGroup>
+		<MSBuildTasksHelperDLL>$(MSBuildProjectDirectory)/../bin/MSBuildHelper.dll</MSBuildTasksHelperDLL>
+	</PropertyGroup>
+	<Target Name="CheckDependencies" BeforeTargets="PrepareForBuild">
+		<Error Condition="!Exists('$(MSBuildTasksHelperDLL)') "
+			   Text="你需要先编译'MSBuildHelper'工程." />
+	</Target>
+	<UsingTask
+	  TaskName="MSBuildHelper.GetKleiAssemblyInfo"
+	  AssemblyFile="$(MSBuildTasksHelperDLL)" />
+	<Target Name="GetKleiAssemblyInfo" BeforeTargets="PreBuildEvent" AfterTargets="AssemblyInfo;Publicise">
+		<PropertyGroup>
+			<AssemblyCSharp>$(GameFolder)/Assembly-CSharp.dll</AssemblyCSharp>
+		</PropertyGroup>
+
+		<MSBuildHelper.GetKleiAssemblyInfo AssemblyCSharp="$(AssemblyCSharp)" LibraryPath="$(GameFolder)" >
+			<Output TaskParameter="KleiGameVersion" PropertyName="GameVersion" />
+			<Output TaskParameter="KleiBuildNumber" PropertyName="BuildNumber" />
+			<Output TaskParameter="KleiBuildBranch" PropertyName="BuildBranch" />
+		</MSBuildHelper.GetKleiAssemblyInfo>
+	</Target>
+
+	<UsingTask
+	  TaskName="MSBuildHelper.GetReallyReferencedAssembliesAtFolder"
+	  AssemblyFile="$(MSBuildTasksHelperDLL)" />
+
+	<Target Name="CheckPlibs" AfterTargets="Build">
+		<ItemGroup>
+			<PLibAssemblies Include="$(TargetPath)" />
+		</ItemGroup>
+
+		<MSBuildHelper.GetReallyReferencedAssembliesAtFolder
+		  AssemblyName="$(IntermediateOutputPath)/$(TargetFileName)"
+		  ReferencedAssembliesFolder="$(PLibFolder)" >
+			<Output TaskParameter="ReallyReferencedAssemblies" ItemName="PLibAssemblies" />
+		</MSBuildHelper.GetReallyReferencedAssembliesAtFolder>
+	</Target>
+	
+	<Target Name="CheckLibs" AfterTargets="CheckPlibs">
+		<ItemGroup>
+			<LibAssemblies Include="$(TargetPath)" />
+		</ItemGroup>
+
+		<MSBuildHelper.GetReallyReferencedAssembliesAtFolder
+		  AssemblyName="$(IntermediateOutputPath)/$(TargetFileName)"
+		  ReferencedAssembliesFolder="$(LibsFolder)" >
+			<Output TaskParameter="ReallyReferencedAssemblies" ItemName="LibAssemblies" />
+		</MSBuildHelper.GetReallyReferencedAssembliesAtFolder>
+		
+		<!-- Merge assemblies from both folders and remove duplicates -->
+		<ItemGroup>
+			<InputAssemblies Include="@(PLibAssemblies)" />
+			<InputAssemblies Include="@(LibAssemblies)" />
+			<InputAssemblies Remove="$(TargetPath)" /><!-- Remove duplicate TargetPath -->
+		</ItemGroup>
+	</Target>
+	
+	<Target Name="InstallLibs" AfterTargets="CheckLibs">
+		<Message Importance="high" Text="==执行自动分析依赖DLL发布" />
+		<Message Importance="high" Text="复制 @(LibAssemblies->Count()) 依赖DLL 到： $(InstallFolder)" />
+		<Message Importance="high" Text="%(LibAssemblies.Identity)" />
+		<Copy SourceFiles="@(InputAssemblies)" DestinationFolder="$(InstallFolder)" />
+		<Message Importance="high" Text="==完成依赖DLL发布" />
+	</Target>
 </Project>
