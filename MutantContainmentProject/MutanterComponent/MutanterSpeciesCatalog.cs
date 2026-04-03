@@ -18,10 +18,10 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 if (_instance == null)
                 {
-                    _instance = FindObjectOfType<MutanterSpeciesCatalog>();
+                    _instance = FindAnyObjectByType<MutanterSpeciesCatalog>();
                     if (_instance == null)
                     {
-                        GameObject go = new GameObject("MutanterSpeciesCatalog");
+                        GameObject go = new("MutanterSpeciesCatalog");
                         _instance = go.AddComponent<MutanterSpeciesCatalog>();
                     }
                 }

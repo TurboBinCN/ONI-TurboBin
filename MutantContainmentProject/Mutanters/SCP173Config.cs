@@ -72,11 +72,7 @@ namespace MutantContainmentProject.Mutanters
                     }
                 }
             };
-
-            // 配置攻击策略
-            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, true);
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, false);
+            skillComponent.AddSkillsToDb(skills);
 
             return prefab;
         }

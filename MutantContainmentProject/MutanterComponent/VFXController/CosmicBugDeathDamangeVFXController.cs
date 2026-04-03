@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent.VFXController
 {
@@ -7,7 +8,7 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
     {
         private int currentLODLevel = 0;
 
-        public void Activate()
+        public void Activate(GameObject target = null)
         {
         }
 

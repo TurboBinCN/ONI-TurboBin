@@ -36,11 +36,6 @@ namespace MSBuildHelper
 
                 // Get all DLL files in the referenced assemblies folder
                 var referencedDlls = new HashSet<string>(Directory.GetFiles(ReferencedAssembliesFolder, "*.dll", SearchOption.TopDirectoryOnly));
-                foreach (var dllPath in referencedDlls)
-                {
-                    Log.LogMessage(MessageImportance.High, $"  - {Path.GetFileName(dllPath)}");
-                }
-
                 // Analyze dependencies
                 var dependencies = new HashSet<string>();
                 AnalyzeDependencies(AssemblyName, referencedDlls, dependencies);

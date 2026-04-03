@@ -13,8 +13,14 @@
 	<ItemGroup>
 		<None Remove="scml/**" />
 	</ItemGroup>
+	<!-- 解决System.IO.Compression版本冲突 -->
 	<ItemGroup>
-		<PackageReference Include="System.IO.Compression" Version="4.3.0" PrivateAssets="all" />
+		<Reference Include="System.IO.Compression" />
+	</ItemGroup>
+
+	<!-- 添加assembly binding redirects -->
+	<ItemGroup>
+		<None Include="app.config" />
 	</ItemGroup>
 	<Target Name="SetPlatform" BeforeTargets="CoreCompile">
 		<PropertyGroup>

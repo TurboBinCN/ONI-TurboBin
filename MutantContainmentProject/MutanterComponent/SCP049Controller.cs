@@ -1,6 +1,8 @@
 using Klei.AI;
 using MutantContainmentProject.Mutanters;
 using System.Collections.Generic;
+using System.Linq;
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 using static Health;
 
@@ -20,9 +22,7 @@ namespace MutantContainmentProject.MutanterComponent
 
 
         // SCP-049-2相关
-        private float surgeryTime = 5f;
-        private float lastSurgeryTime = 0f;
-        private List<GameObject> deadBodies = new();
+        public List<GameObject> deadBodies = new();
 
         protected override void OnSpawn()
         {
@@ -76,7 +76,12 @@ namespace MutantContainmentProject.MutanterComponent
                 }
             }
         }
-
+        public bool CheckCanFlawedRecovery()
+        {
+            var threaters = EmotionMonitorInstance.GetThreaters();
+            // 检查是否有任何需要"治愈"之手的生物
+            return threaters.Any(threater => IsSickOrInjured(threater.gameObject));
+        }
         private bool IsSickOrInjured(GameObject minion)
         {
             // 检查是否进入可被救援状态
@@ -114,7 +119,7 @@ namespace MutantContainmentProject.MutanterComponent
             var sicknesses = target.GetComponent<Sicknesses>();
             if (sicknesses != null)
             {
-                List<SicknessInstance> sicknessInstances = new List<SicknessInstance>();
+                List<SicknessInstance> sicknessInstances = new();
                 foreach (var sickness in sicknesses)
                 {
                     sicknessInstances.Add(sickness);
@@ -144,22 +149,19 @@ namespace MutantContainmentProject.MutanterComponent
                 }
             }
 
-            Debug.Log($"[SCP049] Healing completed for {target.name}: all diseases and injuries cleared, stress maxed");
+            TbbDebuger.LogDebug($"[SCP049] Healing completed for {target.name}: all diseases and injuries cleared, stress maxed");
         }
-
-        public void PerformRevivedZombie()
+        public bool CheckCanRevivedZombie()
         {
             // 清理无效的尸体
             deadBodies.RemoveAll(body => body == null || (!body.HasTag(GameTags.Dead) && !body.HasTag(GameTags.Corpse)));
-
             // 通过EmotionMonitor检查周围的小人是否死亡
             var threaters = EmotionMonitorInstance.GetThreaters();
             foreach (var threater in threaters)
             {
                 if (threater != null && threater.gameObject != gameObject)
                 {
-                    var health = threater.gameObject.GetComponent<Health>();
-                    if (health != null && health.State == HealthState.Dead)
+                    if (threater.HasTag(GameTags.Corpse))
                     {
                         if (!deadBodies.Contains(threater.gameObject))
                         {
@@ -168,15 +170,16 @@ namespace MutantContainmentProject.MutanterComponent
                     }
                 }
             }
-
-            // 直接检查所有墓碑
-            List<Grave> gravesToRemove = new List<Grave>();
-            foreach (var grave in Components.Graves.Items)
+            var buildings = EmotionMonitorInstance.GetBuildings();
+            List<Grave> gravesToRemove = new();
+            foreach (var building in buildings)
             {
+                Grave grave = null;
+                if (building.HasTag(GraveConfig.ID)) grave = building.GetComponent<Grave>();
                 if (grave != null && !string.IsNullOrEmpty(grave.graveName))
                 {
                     // 直接创建一个临时的尸体对象来表示墓碑中的尸体
-                    GameObject graveCorpse = new GameObject($"GraveCorpse_{grave.graveName}");
+                    GameObject graveCorpse = new($"GraveCorpse_{grave.graveName}");
                     graveCorpse.AddComponent<KPrefabID>();
                     graveCorpse.GetComponent<KPrefabID>().AddTag(GameTags.Corpse);
 
@@ -190,20 +193,14 @@ namespace MutantContainmentProject.MutanterComponent
                     }
                 }
             }
-
-            // 移除已处理的墓碑
-            foreach (var grave in gravesToRemove)
-            {
-                if (grave != null)
-                {
-                    Components.Graves.Remove(grave);
-                }
-            }
-
+            return deadBodies.Count > 0;
+        }
+        public void PerformRevivedZombie()
+        {
             // 对尸体进行手术
-            if (deadBodies.Count > 0 && Time.time - lastSurgeryTime >= surgeryTime)
+            if (deadBodies.Count > 0)
             {
-                lastSurgeryTime = Time.time;
+                TbbDebuger.LogDebug($"[SCP049] 复活 {deadBodies[0].name}");
                 PerformSurgery(deadBodies[0]);
                 deadBodies.RemoveAt(0);
             }
@@ -214,7 +211,7 @@ namespace MutantContainmentProject.MutanterComponent
             if (body == null || (!body.HasTag(GameTags.Dead) && !body.HasTag(GameTags.Corpse)))
                 return;
 
-            Debug.Log($"[SCP049] Performing surgery on {body.name}");
+            TbbDebuger.LogDebug($"[SCP049] Performing surgery on {body.name}");
 
             // 确定生成位置：优先使用尸体或墓碑的位置
             Vector3 spawnPosition = body.transform.position;

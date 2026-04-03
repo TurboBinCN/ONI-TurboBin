@@ -54,12 +54,6 @@ namespace MutantContainmentProject.Mutanters
                 }
             }));
 
-            // 配置攻击策略
-            var strategyManager = inst.AddOrGet<AttackStrategyManager>();
-
-            // 只启用基础攻击策略
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, true);
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, false);
         }
 
         public string[] GetAnyRequiredDlcIds() => null;

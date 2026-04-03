@@ -18,6 +18,7 @@ namespace MutantContainmentProject.MutanterComponent
         {
             public string triggerName;
             public Dictionary<string, object> properties; // 触发器属性
+            public Dictionary<string, Func<GameObject, bool>> conditionCallbackMethods;
         }
         public struct AttackEffectorData
         {
@@ -66,8 +67,6 @@ namespace MutantContainmentProject.MutanterComponent
         private VFXManager vFXManager;
         private VFXManager VFXManagerInstancce => vFXManager ??= GetComponent<VFXManager>();
 
-        private AttackStrategyManager strategyManager;
-        private AttackStrategyManager StrategyManager => strategyManager ??= GetComponent<AttackStrategyManager>();
         protected override void OnSpawn()
         {
             base.OnSpawn();
@@ -79,8 +78,6 @@ namespace MutantContainmentProject.MutanterComponent
             TriggerManager?.ExecutePassiveTriggers(gameObject, skills);
             EffectorManager?.LoadEffectors(gameObject, skills);
 
-            // 技能加载完成后，重新初始化攻击策略管理器，确保技能攻击策略能够正确执行
-            StrategyManager?.Initialize();
         }
 
         protected override void OnPrefabInit()
@@ -99,7 +96,22 @@ namespace MutantContainmentProject.MutanterComponent
         {
             skills.Add(skill);
         }
-        //
+        public bool IsSkillCooldown(string skillName) {
+            if (skillName == null || skills.Count == 0)
+                return false;
+            for (int i = 0; i < skills.Count; i++)
+            {
+                if (skills[i].name == skillName)
+                {
+                    // 添加冷却时间检查
+                    var skill = skills[i];
+                    if (!skill.isFirstUse && Time.time - skill.lastUseTime < skill.cooldown)
+                        return false;
+                    return true;
+                }
+            }
+            return false;
+        }
         public bool TryExecuteSkill(string skillName, float damageAmount = 0)
         {
             if (skillName == null || skills.Count == 0)
@@ -108,6 +120,12 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 if (skills[i].name == skillName)
                 {
+                    // 添加冷却时间检查
+                    var skill = skills[i];
+                    if (!skill.isPassiveSkill && !skill.isFirstUse && Time.time - skill.lastUseTime < skill.cooldown)
+                        return false;
+                    //执行攻击之前停止移动
+                    gameObject?.GetComponent<Navigator>()?.Stop();
                     // 执行技能攻击
                     ExecuteSkill(i, null, damageAmount);
                     return true;
@@ -166,16 +184,19 @@ namespace MutantContainmentProject.MutanterComponent
             TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} ExecuteSkill, 技能索引 = {skillIndex}");
             var skill = skills[skillIndex];
 
+            TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} 设置攻击状态为true");
             CombatManager?.SetAttacking(true);
             //表现层逻辑
             var animController = gameObject.GetComponent<KBatchedAnimController>();
+            TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} 动画控制器: {animController != null}, 动画名称: {skill.animation}");
             EffectorManager?.ApplyEffectorsBefore(skill);
             if (animController != null && !string.IsNullOrEmpty(skill.animation))
             {
                 TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} ExecuteSkill, 攻击动画 = {skill.animation}");
                 //攻击特效
                 var attackVFX = VFXManagerInstancce.GetVFXController(skill);
-                attackVFX?.Activate();
+                TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} 攻击特效: {attackVFX != null}");
+                attackVFX?.Activate(target);
 
                 void onComplete()
                 {
@@ -198,6 +219,7 @@ namespace MutantContainmentProject.MutanterComponent
                     {
                         EffectorManager?.ApplyEffectorsAfter(target, skill);
                     }
+                    TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} 设置攻击状态为false");
                     CombatManager?.SetAttacking(false);
 
                     // 通知状态机攻击完成
@@ -206,23 +228,28 @@ namespace MutantContainmentProject.MutanterComponent
                     stateMachine?.OnAttackComplete();
 
                     // 动画完成后解锁状态机并继续处理队列
+                    TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} 解锁状态机并处理下一个技能");
                     CombatManager?.UnlockStateMachineAfterAnimation();
                 }
 
                 if (skill.animationDuration > 0f)
                 {
+                    TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} 播放动画(带持续时间): {skill.animation}, 持续时间: {skill.animationDuration}");
                     CombatManager?.PlayAnimation(skill.animation, skill.animationDuration, onComplete);
                 }
                 else
                 {
+                    TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} 播放动画(一次性): {skill.animation}");
                     CombatManager?.PlayAnimation(skill.animation, KAnim.PlayMode.Once, onComplete);
                 }
             }
             else
             {
+                TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} 没有动画，直接设置攻击状态为false");
                 CombatManager?.SetAttacking(false);
 
                 // 没有动画时直接解锁状态机并继续处理队列
+                TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} 没有动画，直接解锁状态机并处理下一个技能");
                 CombatManager?.UnlockStateMachineAfterAnimation();
             }
             // 更新技能冷却时间
@@ -233,6 +260,7 @@ namespace MutantContainmentProject.MutanterComponent
                 updatedSkill.isFirstUse = false;
             }
             skills[skillIndex] = updatedSkill;
+            TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} 技能执行完成，更新冷却时间，动画异步执行中。");
         }
 
     }

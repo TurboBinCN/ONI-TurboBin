@@ -64,7 +64,7 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
             base.OnCleanUp();
         }
 
-        public void Activate()
+        public void Activate(GameObject target = null)
         {
             TbbDebuger.LogDebug($"激活红眼拖尾");
             // 更新畸变体的朝向

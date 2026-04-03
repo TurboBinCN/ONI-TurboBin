@@ -1,5 +1,6 @@
 using Klei.AI;
 using MutantContainmentProject.MutanterEffect;
+using System.Linq;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
@@ -165,9 +166,12 @@ namespace MutantContainmentProject.MutanterComponent
                 })
                 .Update((smi, dt) =>
                 {
+                    TbbDebuger.LogDebug($"[MutanterStateMachine] AttackStates.chasing.scanning Update IsStateMachineLocked：{smi.IsStateMachineLocked}");
+                    if (smi.IsStateMachineLocked) return;
                     var targets = smi.EmotionSMI?.GetThreaters();
                     if (targets != null && targets.Count > 0)
                     {
+                        if (!targets.Any(target => target?.GetComponent<Health>()?.hitPoints > 0)) return;
                         smi.NavigatorInstance?.Stop();
                         GameScheduler.Instance.Schedule("StartChasing", 0.1f, (_) =>
                         {
@@ -175,8 +179,8 @@ namespace MutantContainmentProject.MutanterComponent
                         });
                     }
                 }, UpdateRate.SIM_1000ms)
-                .EventTransition(GameHashes.DestinationReached, attackStates.chasing.scanning)
-                .EventTransition(GameHashes.NavigationFailed, attackStates.chasing.scanning)
+                .EventTransition(GameHashes.DestinationReached, attackStates.chasing.scanning, smi => !smi.IsStateMachineLocked)
+                .EventTransition(GameHashes.NavigationFailed, attackStates.chasing.scanning, smi => !smi.IsStateMachineLocked)
                 .Transition(hostile, smi => smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue > smi.def.sanityThresholdToAttack)
                 .Transition(incapacitated, smi => smi.HealthInstance != null && smi.HealthInstance.hitPoints <= 10f)
                 .Transition(attackStates.staggering, smi => smi.IsStaggered);
@@ -196,7 +200,7 @@ namespace MutantContainmentProject.MutanterComponent
 
                     // 追逐目标逻辑
                     var targets = smi.EmotionSMI?.GetThreaters();
-                    if (targets == null || targets.Count == 0)
+                    if (targets == null || targets.Count == 0 || targets.Any(target=>target?.GetComponent<Health>()?.hitPoints <= 0))
                     {
                         smi.GoTo(attackStates.chasing.scanning);
                         return;
@@ -222,7 +226,7 @@ namespace MutantContainmentProject.MutanterComponent
                             float distance = Mathf.Abs(target.gameObject.transform.position.x - smi.gameObject.transform.position.x);
                             if (distance < 4f)
                             {
-                                if (smi.CombatManager != null && smi.CombatManager.HasAnyAvailableAttackStrategy(target.gameObject))
+                                if (smi.CombatManager != null && smi.CombatManager.HasAvailableSkill())
                                 {
                                     TbbDebuger.LogDebug($"[MutanterStateMachine] 目标在攻击范围内且可以攻击，直接攻击 From AttackStates.chasing.chasing GoTo状态 AttackStates.attacking");
                                     smi.GoTo(attackStates.attacking);
@@ -248,7 +252,7 @@ namespace MutantContainmentProject.MutanterComponent
                     }
 
                 }, UpdateRate.SIM_1000ms)
-                .EventTransition(GameHashes.NavigationFailed, attackStates.chasing.chasing)
+                .EventTransition(GameHashes.NavigationFailed, attackStates.chasing.chasing, smi => !smi.IsStateMachineLocked)
                 .EventTransition(GameHashes.DestinationReached, attackStates.attacking, smi =>
                 {
                     try
@@ -263,7 +267,7 @@ namespace MutantContainmentProject.MutanterComponent
                         var targets = smi.EmotionSMI?.GetThreaters();
                         if (targets != null && targets.Count > 0 && targets[0] != null && targets[0].gameObject != null)
                         {
-                            bool canAttack = smi.CombatManager != null && smi.CombatManager.HasAnyAvailableAttackStrategy(targets[0].gameObject);
+                            bool canAttack = smi.CombatManager != null && smi.CombatManager.HasAvailableSkill();
                             TbbDebuger.LogDebug($"[MutanterStateMachine] 目标在攻击范围内且可以攻击，直接攻击 From AttackStates.chasing.chasing GoTo状态 AttackStates.attacking 可以攻击: {canAttack}");
                             return canAttack;
                         }
@@ -290,6 +294,7 @@ namespace MutantContainmentProject.MutanterComponent
                         // 攻击失败，转换到追逐状态
                         if (!smi.IsStateMachineLocked)
                         {
+                            TbbDebuger.LogDebug($"[MutanterStateMachine] 攻击失败，转换到追逐状态");
                             smi.SetCurrentTarget(null);
                             smi.GoTo(attackStates.chasing);
                         }
@@ -297,17 +302,23 @@ namespace MutantContainmentProject.MutanterComponent
                 })
                 .Update((smi, dt) =>
                 {
+                    TbbDebuger.LogDebug($"[MutanterStateMachine] Attacking状态Update - 锁定状态: {smi.IsStateMachineLocked}, 攻击状态: {smi.CombatManager?.IsAttacking}");
                     // 状态机锁定时不执行状态转换
                     if (smi.IsStateMachineLocked)
                     {
+                        TbbDebuger.LogDebug($"[MutanterStateMachine] 状态机锁定，跳过状态转换");
                         return;
                     }
 
                     // 检查攻击是否完成
                     if (smi.CombatManager != null && !smi.CombatManager.IsAttacking)
                     {
-                        smi.SetCurrentTarget(null);
-                        smi.GoTo(attackStates.chasing);
+                        TbbDebuger.LogDebug($"[MutanterStateMachine] 攻击完成，转换到追逐状态");
+                        if (!smi.IsStateMachineLocked)
+                        {
+                            smi.SetCurrentTarget(null);
+                            smi.GoTo(attackStates.chasing);
+                        }
                     }
                 }, UpdateRate.SIM_1000ms)
                 .Transition(hostile, smi => !smi.IsStateMachineLocked && smi.EmotionSMI != null && smi.EmotionSMI.INSANITYValue > smi.def.sanityThresholdToAttack)
@@ -394,9 +405,10 @@ namespace MutantContainmentProject.MutanterComponent
             {
                 // 攻击完成，转换到追逐状态
                 var smi = master.gameObject.GetSMI<StatesInstance>();
-                TbbDebuger.LogDebug($"[MutanterStateMachine] {gameObject.name} OnAttackComplete, 当前状态 = {smi.GetStatus()}");
+                TbbDebuger.LogDebug($"[MutanterStateMachine] {gameObject.name} OnAttackComplete, 当前状态 = {smi?.GetStatus()}, 锁定状态: {smi?.IsStateMachineLocked}");
                 if (smi != null && smi.IsInsideState(sm.attackStates.attacking))
                 {
+                    TbbDebuger.LogDebug($"[MutanterStateMachine] 攻击完成回调，转换到追逐状态");
                     smi.SetCurrentTarget(null);
                     smi.GoTo(sm.attackStates.chasing);
                 }
@@ -466,12 +478,12 @@ namespace MutantContainmentProject.MutanterComponent
                                 break;
                             }
                         }
-                        // 使用战斗管理器执行攻击
+                        // 使用战斗管理器执行攻击（通过队列）
                         if (target != null)
                         {
                             TbbDebuger.LogDebug($"[MutanterStateMachine] 攻击目标: {target.name}");
                             smi.SetCurrentTarget(target);
-                            return combatManager.TryExecuteAttack(target);
+                            return combatManager.QueueExecuteAttack(target);
                         }
                     }
                 }
@@ -538,9 +550,11 @@ namespace MutantContainmentProject.MutanterComponent
                     return;
 
                 // 使用类似IdleStates的移动逻辑
-                MoveCellQuery query = new MoveCellQuery(navigator.CurrentNavType);
-                query.allowLiquid = kpid.HasTag(GameTags.Amphibious);
-                query.submerged = kpid.HasTag(GameTags.Creatures.Submerged);
+                MoveCellQuery query = new(navigator.CurrentNavType)
+                {
+                    allowLiquid = kpid.HasTag(GameTags.Amphibious),
+                    submerged = kpid.HasTag(GameTags.Creatures.Submerged)
+                };
 
                 int cell = Grid.PosToCell(navigator);
                 if (navigator.CurrentNavType == NavType.Hover && IsExposedToSpace(cell))

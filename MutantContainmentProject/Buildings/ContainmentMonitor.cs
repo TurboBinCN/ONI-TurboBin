@@ -154,7 +154,7 @@ namespace MutantContainmentProject.Buildings
                         instance.GoOutOfContainment();
                         this.TargetSecurables.Remove(instance);
 
-                        if (_mutantersInRoom != null) _mutantersInRoom.Clear();
+                        _mutantersInRoom?.Clear();
                     }
                 }
                 TbbDebuger.LogDebug($"[畸变收容所] 房间属性变更，不再是收容所");

@@ -171,10 +171,7 @@ namespace MutantContainmentProject.Buildings
                 if (station != null)
                 {
                     ContainmentMonitor.Instance monitor = station.gameObject.GetSMI<ContainmentMonitor.Instance>();
-                    if (monitor != null)
-                    {
-                        monitor.EnableControlStationEffect();
-                    }
+                    monitor?.EnableControlStationEffect();
                 }
             }
         }
@@ -186,10 +183,7 @@ namespace MutantContainmentProject.Buildings
                 if (station != null)
                 {
                     ContainmentMonitor.Instance monitor = station.gameObject.GetSMI<ContainmentMonitor.Instance>();
-                    if (monitor != null)
-                    {
-                        monitor.DisableControlStationEffect();
-                    }
+                    monitor?.DisableControlStationEffect();
                 }
             }
         }

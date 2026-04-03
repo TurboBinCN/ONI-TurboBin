@@ -24,7 +24,7 @@ namespace MutantContainmentProject.Mutanters
 
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name, 350);
             // 安全措施偏好值
-            Dictionary<SecureAction, float[]> secureActionPreferences = new Dictionary<SecureAction, float[]>
+            Dictionary<SecureAction, float[]> secureActionPreferences = new()
             {
                 // 本能操作（对应勇气技能）
                 [SecureAction.Instinct] = new float[] { 70f, 70f, 70f },
@@ -41,13 +41,6 @@ namespace MutantContainmentProject.Mutanters
 
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Ice.CreateTag(), 2000f, 0.9f);
             BaseMutanter.AddProductToMutanter(prefab, SimHashes.Snow.CreateTag(), 1500f, 0.8f);
-
-            // 配置攻击策略
-            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
-            
-            // 禁用所有攻击策略（安全级别，无攻击能力）
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, false);
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, false);
 
             return prefab;
         }

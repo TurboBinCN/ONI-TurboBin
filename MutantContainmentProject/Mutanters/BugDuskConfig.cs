@@ -26,7 +26,7 @@ namespace MutantContainmentProject.Mutanters
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name, 40);
 
             // 安全措施偏好值 - 无收容偏好
-            Dictionary<SecureAction, float[]> secureActionPreferences = new Dictionary<SecureAction, float[]>
+            Dictionary<SecureAction, float[]> secureActionPreferences = new()
             {
                 // 本能操作（对应勇气技能）
                 [SecureAction.Instinct] = new float[] { 50f, 50f, 50f },
@@ -72,19 +72,14 @@ namespace MutantContainmentProject.Mutanters
                 }
             };
             skillComponent.AddSkillsToDb(skills);
-
-            // 配置攻击策略
-            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, false);
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, true);
-
             return prefab;
         }
 
-
+        [System.Obsolete]
         public string[] GetRequiredDlcIds() => DlcManager.AVAILABLE_ALL_VERSIONS;
         public string[] GetForbiddenDlcIds() => null;
         public string[] GetAnyRequiredDlcIds() => null;
+        [System.Obsolete]
         public string[] GetDlcIds() => DlcManager.AVAILABLE_ALL_VERSIONS;
 
         public void OnPrefabInit(GameObject inst) { }

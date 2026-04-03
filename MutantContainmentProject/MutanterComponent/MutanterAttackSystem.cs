@@ -342,7 +342,7 @@ namespace MutantContainmentProject.MutanterComponent
         /// <returns>选中的攻击行为，如果无合适行为则返回 null</returns>
         private IMutanterAttackBehavior SelectBehavior(GameObject target, float insanityValue)
         {
-            List<IMutanterAttackBehavior> candidates = new List<IMutanterAttackBehavior>();
+            List<IMutanterAttackBehavior> candidates = new();
 
             foreach (var behavior in _availableBehaviors)
             {
@@ -470,6 +470,7 @@ namespace MutantContainmentProject.MutanterComponent
                 }
 
                 finalDamage = damage * physicalDefenseFactor;
+                finalDamage = finalDamage > health.hitPoints ? health.hitPoints : finalDamage;
                 health.Damage(finalDamage);
 
                 TbbDebuger.LogDebug($"[MutanterAttackSystem] Health attack: {target.name} took {finalDamage} damage (original: {damage}, defense factor: {physicalDefenseFactor})");
@@ -596,7 +597,7 @@ namespace MutantContainmentProject.MutanterComponent
             switch (damageType.ToLower())
             {
                 case "physical":
-                    return ExecuteHealthAttack(target, damageAmount, out float damage);
+                    return ExecuteHealthAttack(target, damageAmount, out _);
                 case "mental":
                     return ExecuteStressAttack(target, damageAmount, out _);
                 case "erosion":

@@ -76,10 +76,10 @@ namespace MutantContainmentProject.Buildings
             {
                 if (_instance == null)
                 {
-                    _instance = FindObjectOfType<GlobalErosionManager>();
+                    _instance = FindAnyObjectByType<GlobalErosionManager>();
                     if (_instance == null)
                     {
-                        GameObject go = new GameObject("GlobalErosionManager");
+                        GameObject go = new("GlobalErosionManager");
                         _instance = go.AddComponent<GlobalErosionManager>();
                     }
                 }

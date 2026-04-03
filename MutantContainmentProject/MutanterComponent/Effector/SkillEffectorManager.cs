@@ -28,9 +28,8 @@ namespace MutantContainmentProject.MutanterComponent.Effector
                 .Where(type => typeof(ISkillEffector).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract);
             foreach (var type in effctorTypes)
             {
-                var attribute = type.GetCustomAttributes(typeof(SkillEffectorAttribute), false)
-                    .FirstOrDefault() as SkillEffectorAttribute;
-                if (attribute != null)
+                if (type.GetCustomAttributes(typeof(SkillEffectorAttribute), false)
+                    .FirstOrDefault() is SkillEffectorAttribute attribute)
                 {
                     try
                     {
@@ -53,9 +52,9 @@ namespace MutantContainmentProject.MutanterComponent.Effector
                 {
                     if (effetors.TryGetValue(effector.attackEffectorName, out Type effectorType))
                     {
-                        if (gameObject.GetComponent(effectorType) is not ISkillEffector component)
+                        if (gameObject.GetComponent(effectorType) is not ISkillEffector)
                         {
-                            component = gameObject.AddComponent(effectorType) as ISkillEffector;
+                            ISkillEffector component = gameObject.AddComponent(effectorType) as ISkillEffector;
                             TbbDebuger.LogDebug($"挂载效果器组件 {effectorType} [{component}] 到 {gameObject.name}");
                         }
                     }

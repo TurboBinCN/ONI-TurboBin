@@ -17,7 +17,7 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
             FogPrefab = MutantContainmentProjectMod.MutantContainmentProject.ModAssetBundle.LoadAsset<GameObject>("TheFixerWhiteFog");
             if (FogPrefab == null) TbbDebuger.LogError($"加载迷雾预制体失败");
         }
-        public void Activate()
+        public void Activate(GameObject target = null)
         {
             CreateMistInstance();
         }

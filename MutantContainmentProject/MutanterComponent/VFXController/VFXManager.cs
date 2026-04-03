@@ -23,10 +23,8 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
 
             foreach (var type in VFXTypes)
             {
-                var attribute = type.GetCustomAttributes(typeof(VFXAttribute), false)
-                    .FirstOrDefault() as VFXAttribute;
-
-                if (attribute != null)
+                if (type.GetCustomAttributes(typeof(VFXAttribute), false)
+                    .FirstOrDefault() is VFXAttribute attribute)
                 {
                     try
                     {

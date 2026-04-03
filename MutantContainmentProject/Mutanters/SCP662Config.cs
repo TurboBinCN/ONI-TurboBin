@@ -36,11 +36,6 @@ namespace MutantContainmentProject.Mutanters
 
             prefab.AddOrGet<SCP662BellController>();
 
-            // 配置攻击策略
-            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, false);
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, false);
-
             return prefab;
         }
 

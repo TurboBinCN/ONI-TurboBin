@@ -550,7 +550,7 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
             }
         }
 
-        public void Activate()
+        public void Activate(GameObject target = null)
         {
             this.ActiveParticle();
         }

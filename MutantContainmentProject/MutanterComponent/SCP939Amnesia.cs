@@ -5,7 +5,7 @@ namespace MutantContainmentProject.MutanterComponent
     [SkipSaveFileSerialization]
     public class SCP939Amnesia : StateMachineComponent<SCP939Amnesia.StatesInstance>
     {
-        public static readonly Chore.Precondition IsSCP939AmnesiaPrecondition = new Chore.Precondition()
+        public static readonly Chore.Precondition IsSCP939AmnesiaPrecondition = new()
         {
             fn = (ref Chore.Precondition.Context context, object data) =>
             {
@@ -62,7 +62,7 @@ namespace MutantContainmentProject.MutanterComponent
             private Chore CreateSCP939AmnesiaChore(StatesInstance smi)
             {
                 GameObject floorLocator = smi.CreateFloorLocator();
-                SleepChore amnesiaChore = new SleepChore(Db.Get().ChoreTypes.Sleep, smi.master, floorLocator, true, false);
+                SleepChore amnesiaChore = new(Db.Get().ChoreTypes.Sleep, smi.master, floorLocator, true, false);
                 amnesiaChore.AddPrecondition(IsSCP939AmnesiaPrecondition, null);
                 return amnesiaChore;
             }

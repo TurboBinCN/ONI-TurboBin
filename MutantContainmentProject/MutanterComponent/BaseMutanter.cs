@@ -52,7 +52,7 @@ namespace MutantContainmentProject.MutanterComponent
             template.AddOrGet<TbbRangeVisualizer>();//挂载：威胁范围显示
 
             // 挂载：攻击能力，并传递攻击标签
-            var attackSystem = template.AddOrGet<MutanterAttackSystem>();
+            template.AddOrGet<MutanterAttackSystem>();
             if (attackTags != null)
             {
                 foreach (var tag in attackTags)
@@ -71,8 +71,6 @@ namespace MutantContainmentProject.MutanterComponent
             template.AddOrGet<VFXManager>();
             // 挂载：技能组件
             template.AddOrGet<MutanterSkillComponent>();
-            // 挂载：攻击策略管理器
-            template.AddOrGet<AttackStrategyManager>();
             
             EntityTemplates.CreateAndRegisterBaggedCreature(template, true, canBeCaptured, false);//挂载：被击败后打包
             if (!canBekilled)
@@ -165,7 +163,7 @@ namespace MutantContainmentProject.MutanterComponent
 
         public static GameObject ExtendEntityToBasicCreature(bool isWarmBlooded, GameObject template, string anim_filename, string build_filename = null, string symbol_override_prefix = null, float warningLowTemperature = 283.15f, float warningHighTemperature = 293.15f, float lethalLowTemperature = 243.15f, float lethalHighTemperature = 343.15f)
         {
-            List<KAnimFile> list = new List<KAnimFile>();
+            List<KAnimFile> list = new();
             KAnimFile kAnimFile = ((anim_filename != null) ? Assets.GetAnim(anim_filename) : null);
             KAnimFile kAnimFile2 = ((build_filename != null) ? Assets.GetAnim(build_filename) : null);
             list.Add(kAnimFile2);
@@ -202,7 +200,7 @@ namespace MutantContainmentProject.MutanterComponent
             SymbolOverrideController symbol_override_controller = SymbolOverrideControllerUtil.AddToPrefab(template);
             if (symbol_override_prefix != null && kAnimFile != null)
             {
-                symbol_override_controller.ApplySymbolOverridesByAffix((kAnimFile2 == null) ? kAnimFile : kAnimFile2, symbol_override_prefix);
+                symbol_override_controller.ApplySymbolOverridesByAffix(kAnimFile2 ?? kAnimFile, symbol_override_prefix);
             }
 
             CritterTemperatureMonitor.Def def = template.AddOrGetDef<CritterTemperatureMonitor.Def>();
@@ -251,7 +249,7 @@ namespace MutantContainmentProject.MutanterComponent
             EffectorValues decor = tier;
 
             float defaultTemperature = (warnLowTemp + warnHighTemp) / 2f;
-            GameObject gameObject = EntityTemplates.CreatePlacedEntity(id, name, desc, mass, anim, initialAnim, sceneLayer, width, height, decor, default(EffectorValues), SimHashes.Creature, null, defaultTemperature);
+            GameObject gameObject = EntityTemplates.CreatePlacedEntity(id, name, desc, mass, anim, initialAnim, sceneLayer, width, height, decor, default, SimHashes.Creature, null, defaultTemperature);
 
             ExtendEntityToBasicCreature(false, gameObject, anim_file, anim_build_file, null, warnLowTemp, warnHighTemp, lethalLowTemp, lethalHighTemp);
             if (!string.IsNullOrEmpty(symbol_override_prefix))

@@ -1,5 +1,6 @@
 using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using static MutantContainmentProject.MutanterComponent.MutanterSkillComponent;
@@ -25,7 +26,7 @@ namespace MutantContainmentProject.Mutanters
 
             BaseMutanter.ExtendTraitsToBaseMutanter(prefab, TRAIT_ID, name, 50);
             // 安全措施偏好值
-            Dictionary<SecureAction, float[]> secureActionPreferences = new Dictionary<SecureAction, float[]>
+            Dictionary<SecureAction, float[]> secureActionPreferences = new()
             {
                 // 本能操作（对应勇气技能）
                 [SecureAction.Instinct] = new float[] { 20f, 30f, 30f },
@@ -55,10 +56,11 @@ namespace MutantContainmentProject.Mutanters
                 new() {
                     name = "BasicErosionAttack",
                     isPassiveSkill = false,
-                    cooldown = 2f,
+                    cooldown = 10f,
                     animation = "attack_once",
                     lastUseTime = 0f,
                     isFirstUse = true,
+                    VFXName = "CastMagicVFX",
                     attackEffectors = new List<AttackEffectorData>{
                         new(){
                             attackEffectorName = "BasicAttackBounsApply",
@@ -79,7 +81,7 @@ namespace MutantContainmentProject.Mutanters
                     name = "InstantKill",
                     isPassiveSkill = false,
                     cooldown = 1f,
-                    animation = "attack_once",
+                    animation = "attack_instant_kill",
                     lastUseTime = 0f,
                     isFirstUse = true,
                     attackEffectors = new List<AttackEffectorData>{
@@ -100,12 +102,12 @@ namespace MutantContainmentProject.Mutanters
                 },
                 new() {
                     name = "RevivedZombie",
-                    isPassiveSkill = false,
+                    isPassiveSkill = true,
                     cooldown = 100f,
                     animation = "attack_once",
                     lastUseTime = 0f,
                     isFirstUse = true,
-                    VFXName = "CastMagicVFX",
+                    VFXName = "SCP049RevivedDeadVFX",
                     attackEffectors = new List<AttackEffectorData>{
                         new(){
                             attackEffectorName = "SCP049ReviveEffector"
@@ -114,38 +116,50 @@ namespace MutantContainmentProject.Mutanters
                     triggers = new List<TriggerData> {
                         new() {
                             triggerName = "CyclicCheckTrigger",
-                            properties = new Dictionary<string, object> {}
+                            properties = new Dictionary<string, object> {},
+                            conditionCallbackMethods = new Dictionary<string, Func<GameObject,bool>> {
+                                { "CheckRevivedZombie", (go) => { 
+                                    if (go.GetComponent<SCP049Controller>().CheckCanRevivedZombie())
+                                    {
+                                        return true;
+                                    }
+                                    return false;
+                                } } }
+                            }
                         }
-                    }
-                },
-                new() {
-
-                    name = "FlawedRecovery",
-                    isPassiveSkill = false,
-                    cooldown = 100f,
-                    animation = "attack_once",
-                    lastUseTime = 0f,
-                    isFirstUse = true,
-                    VFXName = "CastMagicVFX",
-                    attackEffectors = new List<AttackEffectorData>{
-                        new(){
-                            attackEffectorName = "SCP049HealEffector"
-                        }
-                    },
-                    triggers = new List<TriggerData> {
-                        new() {
-                            triggerName = "CyclicCheckTrigger",
-                            properties = new Dictionary<string, object> {}
-                        }
-                    }
-
-                }
+                    } 
+                //,
+                //new() {
+                //    name = "FlawedRecovery",
+                //    isPassiveSkill = true,
+                //    cooldown = 100f,
+                //    animation = "attack_once",
+                //    lastUseTime = 0f,
+                //    isFirstUse = true,
+                //    VFXName = "CastMagicVFX",
+                //    attackEffectors = new List<AttackEffectorData>{
+                //        new(){
+                //            attackEffectorName = "SCP049HealEffector"
+                //        }
+                //    },
+                //    triggers = new List<TriggerData> {
+                //        new() {
+                //            triggerName = "CyclicCheckTrigger",
+                //            properties = new Dictionary<string, object> {},
+                //            conditionCallbackMethods = new Dictionary<string, Func<GameObject,bool>> {
+                //                { "CheckFlawedRecovery", (go) => {
+                //                    if (go.GetComponent<SCP049Controller>().CheckCanFlawedRecovery())
+                //                    {
+                //                        return true;
+                //                    }
+                //                    return false;
+                //                }} 
+                //            }
+                //        }
+                //    }
+                //}
             };
             skillComponent.AddSkillsToDb(skills);
-            // 配置攻击策略
-            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, false);
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, true);
 
             return prefab;
         }

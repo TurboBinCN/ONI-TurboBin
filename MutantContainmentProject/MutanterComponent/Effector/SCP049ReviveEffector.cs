@@ -1,3 +1,4 @@
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent.Effector

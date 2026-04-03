@@ -79,13 +79,6 @@ namespace MutantContainmentProject.Mutanters
             // 设置技能并添加到数据库
             skillComponent.AddSkillsToDb(skills);
 
-            // 配置攻击策略
-            var strategyManager = prefab.AddOrGet<AttackStrategyManager>();
-            
-            // 只启用基础攻击策略
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.BasicAttack, true);
-            strategyManager.SetStrategyEnabled(AttackStrategyManager.StrategyType.SkillAttack, true);
-
             return prefab;
         }
 

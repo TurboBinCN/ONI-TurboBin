@@ -26,16 +26,15 @@ namespace MutantContainmentProject.MutanterComponent.Triggers
 
             foreach (var type in triggerTypes)
             {
-                var attribute = type.GetCustomAttributes(typeof(SkillTriggerAttribute), false)
-                    .FirstOrDefault() as SkillTriggerAttribute;
-
-                if (attribute != null)
+                if (type.GetCustomAttributes(typeof(SkillTriggerAttribute), false)
+                    .FirstOrDefault() is SkillTriggerAttribute attribute)
                 {
                     try
                     {
                         if (attribute.IsPassive)
                         {
                             passiveTriggers.Add(attribute.Name, type);
+                            TbbDebuger.LogDebug($"[SkillTriggerManager] 注册被动触发器: {attribute.Name} 实体： [{gameObject?.name}]");
                         }
                         else
                         {
@@ -93,12 +92,13 @@ namespace MutantContainmentProject.MutanterComponent.Triggers
                 if (!skill.isPassiveSkill) continue;
                 foreach (var trigger in skill.triggers)
                 {
+                    TbbDebuger.LogDebug($"[SkillTriggerManager] 检查被动触发器: {trigger.triggerName} 实体： [{gameObject?.name}]");
                     if (passiveTriggers.TryGetValue(trigger.triggerName, out Type triggerType))
                     {
-                        var component = gameObject.GetComponent(triggerType) as IPassiveSkillTrigger;
-                        if (component == null)
+                        if (gameObject.GetComponent(triggerType) is not IPassiveSkillTrigger component)
                         {
                             component = gameObject.AddComponent(triggerType) as IPassiveSkillTrigger;
+                            TbbDebuger.LogDebug($"[SkillTriggerManager] 挂载被动触发器: {trigger.triggerName} 实体： [{gameObject?.name}]");
                         }
                         component.Skill = skill;
                     }

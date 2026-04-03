@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
 namespace MutantContainmentProject
@@ -8,7 +9,7 @@ namespace MutantContainmentProject
     {
         private TreeFilterable treeFilterable;
         private Storage storage;
-        private HashSet<Tag> selectedTags = new HashSet<Tag>();
+        private HashSet<Tag> selectedTags = new();
 
         protected override void OnSpawn()
         {
@@ -52,7 +53,7 @@ namespace MutantContainmentProject
                 }
                 catch (System.Exception e)
                 {
-                    Debug.Log("Unpossible to load " + food.Id);
+                    TbbDebuger.LogWarning("Unpossible to load " + food.Id + e.Message + e.StackTrace);
                 }
             }
         }
