@@ -1,5 +1,6 @@
 using HarmonyLib;
 using KMod;
+using MutantContainmentProject.ArmorSystem;
 using MutantContainmentProject.Buildings;
 using MutantContainmentProject.MutanterComponent;
 using MutantContainmentProject.MutanterEffect;
@@ -125,6 +126,7 @@ namespace MutantContainmentProject
                     .Add(MutanterEffects.MutanterAttackRestrictedEffect)
                     .Add(MutanterEffects.MutanterAttackEnhancedEffect)
                     .Add(MutanterEffects.SCP939AmnesiaEffect)
+                    .Add(MutanterEffects.IsInhalationMiasamEffect)
                     .Add(MutanterEffects.MutanterControlSpeedEffect)
                     .Add(MutanterEffects.MutanterControlSuppressionEffect);
                 //小人属性
@@ -202,7 +204,8 @@ namespace MutantContainmentProject
                 //全局单例
                 TbbSingleTone.Initialize(mod, harmony)
                     .Add<MutanterSpeciesCatalog>()
-                    .Add<GlobalErosionManager>();
+                    .Add<GlobalErosionManager>()
+                    .Add<ArmorManager>();
 
                 // 科技树
                 TbbTechTree.Initialize(mod, harmony)

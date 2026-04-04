@@ -38,8 +38,10 @@ namespace MutantContainmentProject.MutanterComponent.Effector
                     }
                     catch (Exception e)
                     {
-                        TbbDebuger.LogError($"Failed to create effctorTypes instance: {e.Message}");
+                        TbbDebuger.LogWarning($"Failed to create effctorTypes instance: {e.Message}");
                     }
+                }else{
+                    TbbDebuger.LogWarning($"注册效果器失败: {type.Name} 实体： [{gameObject?.name}]");
                 }
             }
         }
@@ -57,6 +59,8 @@ namespace MutantContainmentProject.MutanterComponent.Effector
                             ISkillEffector component = gameObject.AddComponent(effectorType) as ISkillEffector;
                             TbbDebuger.LogDebug($"挂载效果器组件 {effectorType} [{component}] 到 {gameObject.name}");
                         }
+                    }else{
+                        TbbDebuger.LogWarning($"挂载效果器组件 {effectorType} 失败");
                     }
                 }
             }
@@ -71,6 +75,8 @@ namespace MutantContainmentProject.MutanterComponent.Effector
                     TbbDebuger.LogDebug($"应用效果器 {effector.attackEffectorName} ApplyEffectorsBefore");
                     var component = gameObject.GetComponent(effectorType) as ISkillEffector;
                     component?.ApplyEffectorsBefore();
+                }else{
+                    TbbDebuger.LogWarning($"应用效果器 {effector.attackEffectorName} ApplyEffectorsBefore 失败");
                 }
             }
         }
@@ -84,6 +90,8 @@ namespace MutantContainmentProject.MutanterComponent.Effector
                     var component = gameObject.GetComponent(effectorType) as ISkillEffector;
                     TbbDebuger.LogDebug($"应用效果器 {effector.attackEffectorName} [{component}] ApplyEffectorsAfter");
                     component?.ApplyEffectorAfter(target, skill);
+                }else{
+                    TbbDebuger.LogWarning($"应用效果器 {effector.attackEffectorName} ApplyEffectorsAfter 失败");
                 }
             }
         }

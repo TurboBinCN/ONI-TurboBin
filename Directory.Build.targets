@@ -13,11 +13,6 @@
 	<ItemGroup>
 		<None Remove="scml/**" />
 	</ItemGroup>
-	<!-- 解决System.IO.Compression版本冲突 -->
-	<ItemGroup>
-		<Reference Include="System.IO.Compression" />
-	</ItemGroup>
-
 	<!-- 添加assembly binding redirects -->
 	<ItemGroup>
 		<None Include="app.config" />

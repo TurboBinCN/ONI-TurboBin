@@ -48,14 +48,15 @@ namespace MutantContainmentProject.MutanterComponent
         /// 执行技能攻击
         /// </summary>
         /// <param name="skillName">技能名称</param>
+        /// <param name="target">攻击目标</param>
         /// <param name="damageAmount">伤害金额</param>
         /// <returns>是否成功执行技能攻击</returns>
-        public bool ExecuteSkill(string skillName, float damageAmount = 0f)
+        public bool ExecuteSkill(string skillName, GameObject target = null, float damageAmount = 0f)
         {
             // 直接执行技能（内部会调用ExecuteSkill）
             if (skillComponent != null)
             {
-                return skillComponent.TryExecuteSkill(skillName, damageAmount);
+                return skillComponent.TryExecuteSkill(skillName, target, damageAmount);
             }
             return false;
         }
@@ -80,7 +81,7 @@ namespace MutantContainmentProject.MutanterComponent
                 {
                     if (!skill.isPassiveSkill && (skill.isFirstUse || Time.time - skill.lastUseTime >= skill.cooldown))
                     {
-                        return ExecuteSkill(skill.name, 0f);
+                        return ExecuteSkill(skill.name, target, 0f);
                     }
                 }
             }
@@ -235,9 +236,17 @@ namespace MutantContainmentProject.MutanterComponent
             // 锁定状态机
             LockStateMachine();
 
+            // 停止IdleStates，防止技能执行时被游走打断
+            var stateMachine = gameObject.GetSMI<MutanterStateMachine.StatesInstance>();
+            if (stateMachine != null)
+            {
+                TbbDebuger.LogDebug($"[MutanterCombatManager] 停止IdleStates，开始执行技能");
+                stateMachine.StopIdleStates();
+            }
+
             // 执行技能
             TbbDebuger.LogDebug($"[MutanterCombatManager] 执行技能: {request.skillName}");
-            bool success = ExecuteSkill(request.skillName, request.damageAmount);
+            bool success = ExecuteSkill(request.skillName, request.target, request.damageAmount);
             TbbDebuger.LogDebug($"[MutanterCombatManager] 技能执行结果: {success}");
 
 
@@ -259,6 +268,17 @@ namespace MutantContainmentProject.MutanterComponent
 
             // 处理下一个技能
             ProcessQueue();
+
+            // 如果队列处理完成，恢复IdleStates
+            if (executionQueue.Count == 0 && isProcessingQueue == false)
+            {
+                var stateMachine = gameObject.GetSMI<MutanterStateMachine.StatesInstance>();
+                if (stateMachine != null)
+                {
+                    TbbDebuger.LogDebug($"[MutanterCombatManager] 技能队列处理完成，恢复IdleStates");
+                    stateMachine.ContinueIdleStates();
+                }
+            }
         }
 
         /// <summary>
@@ -322,12 +342,12 @@ namespace MutantContainmentProject.MutanterComponent
                             if (currentAnim != null && currentAnim.name == $"{animationName}_pst")
                             {
                                 onComplete();
+                                AnimController.gameObject.Unsubscribe((int)GameHashes.AnimQueueComplete, kAnimEvent);
                             }
                             else
                             {
                                 string currentAnimName = currentAnim != null ? currentAnim.name : "null";
                             }
-                            AnimController.gameObject.Unsubscribe((int)GameHashes.AnimQueueComplete, kAnimEvent);
                         }
 
                         AnimController.gameObject.Subscribe((int)GameHashes.AnimQueueComplete, kAnimEvent);

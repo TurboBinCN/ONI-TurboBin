@@ -10,6 +10,7 @@ namespace MutantContainmentProject.MutanterEffect
         public static readonly string MUTANTER_ATTACK_RESTRICTED_EFFECT = "MutanterAttackRestricted";
         public static readonly string MUTANTER_ATTACK_ENHANCED_EFFECT = "MutanterAttackEnhanced";
         public static readonly string SCP939_AMNESIA_EFFECT = "SCP939Amnesia";
+        public static readonly string INHALATIONMIASAM_EFFECT = "InhalationMiasam";
         public static readonly string MUTANTER_CONTROL_SPEED_EFFECT = "MutanterControlSpeed";
         public static readonly string MUTANTER_CONTROL_SUPPRESSION_EFFECT = "MutanterControlSuppression";
         public static readonly string WHITE_MIST_SLOW_EFFECT = "WhiteMistSlow";
@@ -87,13 +88,26 @@ namespace MutantContainmentProject.MutanterEffect
                 id: SCP939_AMNESIA_EFFECT,
                 name: STRINGS.EFFECTS.SCP939_AMNESIA_EFFECT.NAME,
                 description: STRINGS.EFFECTS.SCP939_AMNESIA_EFFECT.DESCRIPTION,
-                duration: 1800f, // 30分钟
+                duration: -1f, 
                 show_in_ui: true,
                 trigger_floating_text: true,
                 is_bad: true
             );
             // 添加效果修改器，降低体力恢复效率
-            //scp939AmnesiaEffect.Add(new AttributeModifier(Db.Get().Attributes.StaminaDelta.Id, -0.5f, "SCP-939 Amnesia"));
+            scp939AmnesiaEffect.Add(new AttributeModifier(Db.Get().Amounts.Stamina.Id, 0.2f, "SCP-939 Amnesia"));
+            Db.Get().effects.Add(scp939AmnesiaEffect);
+        }
+        public static void IsInhalationMiasamEffect()
+        {
+            Effect scp939AmnesiaEffect = new(
+                id: INHALATIONMIASAM_EFFECT,
+                name: STRINGS.EFFECTS.INHALATIONMIASAM_EFFECT.NAME,
+                description: STRINGS.EFFECTS.INHALATIONMIASAM_EFFECT.DESCRIPTION,
+                duration: 1800f, // 3*600 3周期
+                show_in_ui: true,
+                trigger_floating_text: true,
+                is_bad: true
+            );
             Db.Get().effects.Add(scp939AmnesiaEffect);
         }
         public static void MutanterControlSpeedEffect()

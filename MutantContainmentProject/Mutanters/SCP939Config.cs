@@ -69,8 +69,8 @@ namespace MutantContainmentProject.Mutanters
                 },
                 new() {
                     name = "ReleaseAerosol",
-                    isPassiveSkill = false,
-                    cooldown = 50f,
+                    isPassiveSkill = true,
+                    cooldown = 100f,
                     animation = "attack_aerosol",
                     animationDuration = 10f,
                     lastUseTime = 0f,
@@ -85,7 +85,10 @@ namespace MutantContainmentProject.Mutanters
                     triggers = new List<TriggerData> {
                         new() {
                             triggerName = "CyclicCheckTrigger",
-                            properties = new Dictionary<string, object> {}
+                            properties = new Dictionary<string, object> {},
+                            conditionCallbackMethods = new Dictionary<string, Func<GameObject, bool>> {
+                                { "ReleaseAerosolCondition", (_) => true}
+                            }
                         }
                     }
                 }

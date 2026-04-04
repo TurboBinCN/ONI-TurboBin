@@ -12,7 +12,7 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
 
         private float facingDirection;
         private float tickStep;
-        private const float defaultTickStep = 0.5f; // 默认每帧移动距离
+        private const float defaultTickStep = 0.1f; // 默认每帧移动距离
         private const float castDuration = 2f; // 魔法持续时间
         private const float minPlayDuration = 2f; // 最短播放时长
         private float playTime; // 播放计时器
@@ -111,12 +111,12 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
             if (hasTarget)
             {
                 // 有目标时，tickStep已经包含方向信息，直接使用
-                position.x += tickStep * dt;
+                position.x += tickStep;
             }
             else
             {
                 // 无目标时，使用facingDirection控制方向
-                position.x += facingDirection * tickStep * dt;
+                position.x += facingDirection * tickStep;
             }
             trailInstance.transform.position = position;
 

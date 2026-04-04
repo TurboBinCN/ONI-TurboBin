@@ -112,7 +112,7 @@ namespace MutantContainmentProject.MutanterComponent
             }
             return false;
         }
-        public bool TryExecuteSkill(string skillName, float damageAmount = 0)
+        public bool TryExecuteSkill(string skillName, GameObject target = null, float damageAmount = 0)
         {
             if (skillName == null || skills.Count == 0)
                 return false;
@@ -126,8 +126,10 @@ namespace MutantContainmentProject.MutanterComponent
                         return false;
                     //执行攻击之前停止移动
                     gameObject?.GetComponent<Navigator>()?.Stop();
+                    //改变攻击朝向
+                    FaceTarget(target);
                     // 执行技能攻击
-                    ExecuteSkill(i, null, damageAmount);
+                    ExecuteSkill(i, target, damageAmount);
                     return true;
                 }
             }
@@ -138,44 +140,6 @@ namespace MutantContainmentProject.MutanterComponent
             if (target == null) return;
             Vector3 targetPos = target.transform.position;
             GetComponent<Facing>()?.Face(targetPos);
-        }
-        public bool TryExecuteSkill(GameObject target, out SkillData? usedSkill)
-        {
-            usedSkill = null;
-            FaceTarget(target);
-            if (target == null || AttackSystem == null || skills.Count == 0) return false;
-
-            // 协调多个触发器，选择最佳技能
-            int selectedSkillIndex = CoordinateTriggers(target);
-
-            if (selectedSkillIndex != -1)
-            {
-                ExecuteSkill(selectedSkillIndex, target);
-                usedSkill = skills[selectedSkillIndex];
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// 协调多个触发器之间的触发逻辑，选择最佳技能
-        /// </summary>
-        /// <param name="target">目标</param>
-        /// <returns>选中的技能索引，-1表示没有选中</returns>
-        private int CoordinateTriggers(GameObject target)
-        {
-            if (TriggerManager != null)
-            {
-                return TriggerManager.SelectSkill(gameObject, target, skills);
-            }
-
-            return -1;
-        }
-
-        public bool TryExecuteSkill(GameObject target)
-        {
-            return TryExecuteSkill(target, out _);
         }
 
         private void ExecuteSkill(int skillIndex, GameObject target, float damageAmount = 0)
@@ -204,15 +168,19 @@ namespace MutantContainmentProject.MutanterComponent
                     if (attackVFX != null)
                     {
                         attackVFX.Deactivate();
-                        List<KPrefabID> extralDamageTargets = attackVFX.GetAttackTargets();
-                        TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} ExecuteSkill, 攻击特效目标 = {extralDamageTargets.Count}");
-                        if (extralDamageTargets.Count > 0)
+                        List<KPrefabID> aoeTargets = attackVFX.GetAttackTargets();
+                        TbbDebuger.LogDebug($"[MutanterSkillComponent] {gameObject.name} ExecuteSkill, 攻击特效目标 = {aoeTargets.Count}");
+                        if (aoeTargets.Count > 0)
                         {
-                            foreach (var target in extralDamageTargets)
+                            foreach (var aoeTarget in aoeTargets)
                             {
                                 //处理AOE伤害，碰撞判断对象伤害
-                                EffectorManager?.ApplyEffectorsAfter(target?.gameObject, skill);
+                                EffectorManager?.ApplyEffectorsAfter(aoeTarget?.gameObject, skill);
                             }
+                        }
+                        else
+                        {
+                            EffectorManager?.ApplyEffectorsAfter(target?.gameObject, skill);
                         }
                     }
                     else

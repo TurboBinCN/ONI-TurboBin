@@ -797,7 +797,12 @@ namespace MutantContainmentProject
             public static class SCP939_AMNESIA_EFFECT
             {
                 public static LocString NAME = "Memory Erase";
-                public static LocString DESCRIPTION = "Exposed to SCP-939's memory-erasing aerosol, causing anterograde amnesia and possible sudden sleep within one cycle.";
+                public static LocString DESCRIPTION = "Sudden sleep caused by SCP-939's memory-erasing aerosol";
+            }
+            public static class INHALATIONMIASAM_EFFECT
+            {
+                public static LocString NAME = "Inhalated Aerosol";
+                public static LocString DESCRIPTION = "Exposed to SCP-939's memory-erasing aerosol, causing anterograde amnesia and possible sudden sleep within 3 cycle.";
             }
             public static class MUTANTER_CONTROL_SPEED_EFFECT
             {
@@ -870,6 +875,12 @@ namespace MutantContainmentProject
                 public static class FILTER_BUTTONS
                 {
                     public static LocString MUTANTER = "Mutanter";
+                }
+            }
+            public static class KLEI_INVENTORY_SCREEN { 
+                public static class SUBCATEGORIES
+                {
+                    public static LocString CLOTHING_TOPS_CONTAINMENT_SUIT = "Containment Suit";
                 }
             }
         }

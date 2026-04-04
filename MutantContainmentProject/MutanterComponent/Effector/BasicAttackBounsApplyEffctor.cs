@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TBB.He.TbbLib.Debuger;
 using UnityEngine;
 
 namespace MutantContainmentProject.MutanterComponent.Effector
@@ -31,7 +32,6 @@ namespace MutantContainmentProject.MutanterComponent.Effector
             
             //基础伤害应用
             AttackSystem.TryExecuteAttack(target, effectorData.damageAmount, effectorData.damageType);
-            //碰撞伤害应用
             return true;
         }
 

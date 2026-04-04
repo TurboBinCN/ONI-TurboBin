@@ -34,8 +34,10 @@ namespace MutantContainmentProject.MutanterComponent.VFXController
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError($"Failed to create trigger instance: {e.Message}");
+                        TbbDebuger.LogWarning($"Failed to create VFXController instance: {e.Message}");
                     }
+                }else{
+                    TbbDebuger.LogWarning($"注册 VFX 失败: {type.Name} 实体： [{gameObject?.name}]");
                 }
             }
         }

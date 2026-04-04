@@ -34,7 +34,7 @@ namespace MutantContainmentProject.MutanterComponent.Triggers
                         if (attribute.IsPassive)
                         {
                             passiveTriggers.Add(attribute.Name, type);
-                            TbbDebuger.LogDebug($"[SkillTriggerManager] 注册被动触发器: {attribute.Name} 实体： [{gameObject?.name}]");
+                            TbbDebuger.LogDebug($"[SkillTriggerManager] 添加被动触发器: {attribute.Name} 实体： [{gameObject?.name}] 等待被动触发器挂载 ");
                         }
                         else
                         {
@@ -47,8 +47,10 @@ namespace MutantContainmentProject.MutanterComponent.Triggers
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError($"Failed to create trigger instance: {e.Message}");
+                        TbbDebuger.LogWarning($"Failed to create trigger instance: {e.Message}");
                     }
+                }else{
+                    TbbDebuger.LogDebug($"[SkillTriggerManager] 注册触发器失败: {type.Name} 实体： [{gameObject?.name}]");
                 }
             }
 
@@ -92,7 +94,6 @@ namespace MutantContainmentProject.MutanterComponent.Triggers
                 if (!skill.isPassiveSkill) continue;
                 foreach (var trigger in skill.triggers)
                 {
-                    TbbDebuger.LogDebug($"[SkillTriggerManager] 检查被动触发器: {trigger.triggerName} 实体： [{gameObject?.name}]");
                     if (passiveTriggers.TryGetValue(trigger.triggerName, out Type triggerType))
                     {
                         if (gameObject.GetComponent(triggerType) is not IPassiveSkillTrigger component)
@@ -101,6 +102,8 @@ namespace MutantContainmentProject.MutanterComponent.Triggers
                             TbbDebuger.LogDebug($"[SkillTriggerManager] 挂载被动触发器: {trigger.triggerName} 实体： [{gameObject?.name}]");
                         }
                         component.Skill = skill;
+                    }else{
+                        TbbDebuger.LogWarning($"[SkillTriggerManager] 挂载被动触发器: {trigger.triggerName} 实体： [{gameObject?.name}] 失败");
                     }
                 }
             }

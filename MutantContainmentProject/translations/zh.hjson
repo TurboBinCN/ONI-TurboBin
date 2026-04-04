@@ -603,7 +603,11 @@
       }
       SCP939_AMNESIA_EFFECT: {
         NAME: 记忆消除
-        DESCRIPTION: 暴露于SCP-939的记忆消除气雾中，会导致顺行性失忆，并有几率在一周期内无征兆进入沉睡状态。
+        DESCRIPTION: 吸入记忆清除气雾引起的突发性入睡。
+      }
+      INHALATIONMIASAM_EFFECT: {
+        NAME: 吸入气雾
+        DESCRIPTION: 暴露于SCP-939的记忆消除气雾中，会导致顺行性失忆，并有几率在3周期内无征兆进入沉睡状态。
       }
       MUTANTER_CONTROL_SPEED_EFFECT: {
         NAME: 控制部速度加成
@@ -659,6 +663,12 @@
       RESEARCHSCREEN: {
         FILTER_BUTTONS:{
             MUTANTER: 畸变体
+        }
+      }
+      KLEI_INVENTORY_SCREEN: {
+        SUBCATEGORIES:{
+            CLOTHING_TOPS_CONTAINMENT_SUIT: 收容所工作服
+            DESC:为收容所工作人员提供的专属工作服，在收容工作中提供防护作用。
         }
       }
     }
