@@ -47,41 +47,8 @@ namespace MutantContainmentProject.Mutanters
             // 添加ChoreProvider组件
             prefab.AddOrGet<ChoreProvider>();
 
-            // 添加技能攻击组件
-            var skillComponent = prefab.AddOrGet<MutanterSkillComponent>();
-            var skills = new List<SkillData>{
-                //死亡攻击
-                new() {
-                    name = "DeathAttack",
-                    isPassiveSkill = true,
-                    cooldown = 0f,
-                    animation = "death",
-                    lastUseTime = 0f,
-                    isFirstUse = true,
-                    VFXName = "CircusJokerDeathDamangeVFX",
-                    attackEffectors = new List<AttackEffectorData>{
-                        new(){
-                            attackEffectorName = "BasicAttackBounsApply",
-                            damageType = MutanterTags.PhysicalAttack,
-                            damageAmount = Random.Range(30f, 50f)
-                        }
-                    },
-                    triggers = new List<TriggerData>()
-                    {
-                        new(){
-                            triggerName = "DeathTrigger",
-                            properties = new Dictionary<string, object>()
-                        }
-                    }
-                }
-            };
-
-            // 设置技能并添加到数据库
-            skillComponent.AddSkillsToDb(skills);
-
             return prefab;
         }
-
 
         public string[] GetRequiredDlcIds() => DlcManager.AVAILABLE_ALL_VERSIONS;
         public string[] GetForbiddenDlcIds() => null;

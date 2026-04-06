@@ -1,8 +1,8 @@
+using Database;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection;
 using TBB.He.TbbLib.Debuger;
-using UnityEngine;
 
 namespace MutantContainmentProject.ArmorSystem
 {
@@ -23,29 +23,22 @@ namespace MutantContainmentProject.ArmorSystem
                 var provider = new ArmorBlueprintProvider();
                 __result.all.AddBlueprintsFrom(provider);
 
-                // 将所有防具添加到收容所工作服子分类
-                AddArmorsToContainmentSubcategory();
+                SettingArmors(ArmorBlueprintProvider.ArmorPieceIds);
 
                 Initialized = true;
             }
         }
 
         // 将所有防具添加到收容所工作服子分类
-        private static void AddArmorsToContainmentSubcategory()
+        private static void SettingArmors(List<string> armorPieceIds)
         {
-            // 获取所有防具ID
-            List<string> armorIds = new List<string>();
-            foreach (ArmorPiece armorPiece in ArmorDB.Instance.GetAllArmorPieces())
-            {
-                armorIds.Add(armorPiece.Id);
-            }
-
             // 添加到收容所工作服子分类
-            AddToContainmentSubcategory(armorIds.ToArray());
+            AddToContainmentSubcategory(armorPieceIds);
+            //设置数量
         }
 
         // 添加防具到收容所工作服子分类
-        private static void AddToContainmentSubcategory(string[] armorIds)
+        private static void AddToContainmentSubcategory(List<string> armorPieceIds)
         {
             // 获取AddSubcategory方法
             var addSubcategoryMethod = typeof(InventoryOrganization).GetMethod("AddSubcategory", BindingFlags.Static | BindingFlags.NonPublic);
@@ -56,9 +49,20 @@ namespace MutantContainmentProject.ArmorSystem
                     "CLOTHING_TOPS_CONTAINMENT_SUIT",
                     Assets.GetSprite((HashedString) "icon_inventory_tops"),
                     600, // 排序键
-                    armorIds
+                    armorPieceIds.ToArray()
                 };
                 addSubcategoryMethod.Invoke(null, parameters);
+            }
+        }
+        [HarmonyPatch(typeof(PermitItems), "GetOwnedCount")]
+        public class PermitItemsGetOwnedCountPatch
+        {
+            public static void Postfix(PermitResource permit, ref int __result)
+            {
+                if (permit != null && ArmorBlueprintProvider.ArmorPieceIds.Contains(permit.Id))
+                {
+                    __result = 1;
+                }
             }
         }
     }

@@ -242,7 +242,7 @@
     BUILDINGS: {
       PREFABS: {
         GRAVITASMUTANTERFOUNDER: {
-          NAME: 畸变源核祭坛遗迹
+          NAME: <link="GRAVITASMUTANTERFOUNDER\">畸变源核祭坛遗迹</link>
           DESC: 深埋异星地下的古老遗迹，承载着未知文明的畸变研究痕迹，核心蕴含强烈的畸变能量，是畸变体诞生的源头，需通过献祭与特定条件解锁，唤醒其中封存的独特畸变体。
           EFFECT: 作为畸变体的诞生源头，提供独特的畸变体诞生机制和特殊的环境效果。
         }
@@ -252,17 +252,17 @@
           EFFECT: 在畸变体收容所内，对畸变体进行安全防治。
         }
         CONTAINMENTTILE: {
-          NAME: <link="ContainmentTile">中子质收容护壁</link>
+          NAME: <link="CONTAINMENTTILE">中子质收容护壁</link>
           DESC: 由中子质锻造而成的强化护壁，构成畸变体收容室的核心结构屏障。可抵御物理突破，并抑制收容实体释放的不稳定能量。
           EFFECT: 为畸变体收容室内的畸变体提供无法穿透的物理收容防护与能量抑制效果。
         }
         GLOBALEROSIONPLANEL: {
-          NAME: <link="GlobalErosionPlanel">全局侵蚀面板</link>
+          NAME: <link="GLOBALEROSIONPLANEL">全局侵蚀面板</link>
           DESC: 一个监控面板，显示全局侵蚀等级并为收容状态提供视觉警报。
           EFFECT: 显示当前全局侵蚀等级和潜在的收容风险。
         }
         CONTROLDEPARTMENTCONSOLE: {
-          NAME: <link="ControlDepartmentConsole">控制部操作台</link>
+          NAME: <link="CONTROLDEPARTMENTCONSOLE">控制部操作台</link>
           DESC: 中央控制控制台，管理收容系统并为选定的复制人提供速度提升。防止低等级畸变体突破收容。
           EFFECT: 防止欧几里得级以下的畸变体突破收容，并为选定的复制人提供移动速度提升。
           LOGIC_PORT: 控制状态

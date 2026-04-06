@@ -128,6 +128,30 @@ namespace MutantContainmentProject.Mutanters
                             }
                         }
                     }
+                },
+                //死亡迷雾
+                new() {
+                    name = "DeathMist",
+                    isPassiveSkill = true,
+                    cooldown = 0f,
+                    animation = "death",
+                    lastUseTime = 0f,
+                    isFirstUse = true,
+                    VFXName = "FixedWhiteDeathMistVFX",
+                    attackEffectors = new List<AttackEffectorData>{
+                        new(){
+                            attackEffectorName = "BasicAttackBounsApply",
+                            damageType = MutanterTags.PhysicalAttack,
+                            damageAmount = Random.Range(30f, 50f)
+                        }
+                    },
+                    triggers = new List<TriggerData>()
+                    {
+                        new(){
+                            triggerName = "DeathTrigger",
+                            properties = new Dictionary<string, object>()
+                        }
+                    }
                 }
             };
 

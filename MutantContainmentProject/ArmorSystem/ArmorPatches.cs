@@ -92,7 +92,6 @@ namespace MutantContainmentProject.ArmorSystem
     {
         public static void Postfix(string dlcId, ref Color __result)
         {
-            // 为我们的自定义DLC ID返回正确的颜色
             if (dlcId == ArmorBlueprintProvider.MUTANT_CONTAINMENT_DLC_ID)
             {
                 __result = new Color(0.8f, 0.2f, 0.2f); // 红色斜纹
@@ -106,7 +105,6 @@ namespace MutantContainmentProject.ArmorSystem
     {
         public static void Postfix(string dlcId, ref string __result)
         {
-            // 为我们的自定义DLC ID返回正确的标题
             if (dlcId == ArmorBlueprintProvider.MUTANT_CONTAINMENT_DLC_ID)
             {
                 __result = $"<i><color=#{new Color(0.8f, 0.2f, 0.2f).ToHexString()}>{STRINGS.BLUEPRINTS.CATEGORY.CONTAINMENT_SUIT.NAME}</color></i>";
@@ -155,36 +153,4 @@ namespace MutantContainmentProject.ArmorSystem
             }
         }
     }
-
-    // 使用Harmony补丁修改PermitItems.IsPermitUnlocked方法，让我们的自定义服装默认解锁
-    [HarmonyPatch(typeof(PermitItems), "IsPermitUnlocked")]
-    public class PermitItemsIsPermitUnlockedPatch
-    {
-        public static void Postfix(PermitResource permit, ref bool __result)
-        {
-            // 检查是否是我们的自定义服装
-            if (permit != null && (permit.Id == "top_black_suit" || permit.Id == "shoes_black_suit" || permit.Id == "plants_black_suit"))
-            {
-                // 默认解锁我们的自定义服装
-                __result = true;
-                //TODO 使用Game.Instance.unlock 来根据进程解锁
-            }
-        }
-    }
-
-    // 使用Harmony补丁修改PermitItems.GetOwnedCount方法，让我们的自定义服装返回拥有数量为1
-    [HarmonyPatch(typeof(PermitItems), "GetOwnedCount")]
-    public class PermitItemsGetOwnedCountPatch
-    {
-        public static void Postfix(PermitResource permit, ref int __result)
-        {
-            // 检查是否是我们的自定义服装
-            if (permit != null && (permit.Id == "top_black_suit" || permit.Id == "shoes_black_suit" || permit.Id == "plants_black_suit"))
-            {
-                // 让我们的自定义服装返回拥有数量为1
-                __result = 1;
-            }
-        }
-    }
 }
-

@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Klei;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,9 +12,8 @@ namespace TBB.He.TbbLib.Module
     {
         private string MOD_DIRECTORY_ROOT = "";
         private static readonly string CODEX_FILE_PATH_RELATIVE = "assets/codex/";
-        private static readonly string CODEX_FILE_PREFIX = "DynamicCodexEntry_";
 
-        private Dictionary<string, string> entities = new();
+        private List<string> customDirectories = new();
 
         protected override void Initialized()
         {
@@ -24,9 +22,9 @@ namespace TBB.He.TbbLib.Module
             Harmony.Patch(typeof(CodexCache), "CollectYAMLEntries",
                 postfix: new HarmonyMethod(typeof(TbbCodexEntries), nameof(CodexCache_CollectYAMLEntitries_Postfix)));
         }
-        public TbbCodexEntries ADD(string entry, string category)
+        public TbbCodexEntries AddDirectory(string directory)
         {
-            entities.Add(entry,category);
+            customDirectories.Add(directory);
             return Instance;
         }
         public static void CodexCache_CollectYAMLEntitries_Postfix(List<CategoryEntry> categories)
@@ -34,65 +32,99 @@ namespace TBB.He.TbbLib.Module
             try
             {
                 var instance = Instance;
-                if (instance == null || instance.entities.Count == 0)
+                if (instance == null)
                 {
                     TbbDebuger.LogDebug("[TbbCodexEntries] 没有要加载的 Codex 条目.");
                     return;
                 }
-                var fileCategoryMap = new List<(FileHandle file, string category)>();
-                var searchBasePath = instance.fullPath(CODEX_FILE_PATH_RELATIVE);
 
-
-                foreach (var kvp in instance.entities)
+                // 保存原始的 baseEntryPath
+                FieldInfo baseEntryPathField = typeof(CodexCache).GetField("baseEntryPath", BindingFlags.NonPublic | BindingFlags.Static);
+                if (baseEntryPathField == null)
                 {
-                    var searchPath = Path.Combine(searchBasePath, $"{kvp.Value}/");
-                    var expectedFileName = $"{CODEX_FILE_PREFIX}{kvp.Key}.yaml";
-
-                    var searchPattern = Path.Combine(searchPath, expectedFileName);
-                    var filesInThisCategory = new List<FileHandle>();
-
-                    FileSystem.GetFiles(searchPath, expectedFileName, filesInThisCategory);
-                    TbbDebuger.LogDebug($"[TbbCodexEntries] 文件: {searchPath} -> {expectedFileName}");
-                    foreach (var file in filesInThisCategory)
-                    {
-                        if (!fileCategoryMap.Exists(existingTuple => existingTuple.file.full_path == file.full_path))
-                        {
-                            fileCategoryMap.Add((file, kvp.Value)); // 将文件和其类别绑定
-                            TbbDebuger.LogDebug($"[TbbCodexEntries] 发现 Codex 文件: {expectedFileName} -> {file.full_path}");
-                        }
-                    }
-                }
-
-                if (fileCategoryMap.Count == 0)
-                {
-                    TbbDebuger.LogDebug($"[TbbCodexEntries] 未找到.{CODEX_FILE_PATH_RELATIVE}*.yaml 相关的CodexCache文件");
+                    TbbDebuger.LogWarning("[TbbCodexEntries] 反射获取属性'baseEntryPath'为NULL");
                     return;
                 }
-                TbbDebuger.LogDebug($"[TbbStoryTraits] list.Count:[{fileCategoryMap.Count}]");
-                FieldInfo widgetTagMappingsField = typeof(CodexCache).GetField("widgetTagMappings", BindingFlags.NonPublic | BindingFlags.Static);
-                if (widgetTagMappingsField == null)
-                {
-                    TbbDebuger.LogWarning("[TbbCodexEntries]反射获取属性'widgetTagMappings'为NULL");
-                    return;
-                }
-                List<Tuple<string, Type>> widgetTagMappings = (List<Tuple<string, Type>>)widgetTagMappingsField.GetValue(null);
 
-                foreach (var (file, category) in fileCategoryMap)
-                {
-                    TbbDebuger.LogDebug($"[TbbCodexEntries]开始加载[{file.full_path}]");
-                    CodexEntry customEntry = YamlIO.LoadFile<CodexEntry>(file, new YamlIO.ErrorHandler(MyYamlErrorHandler), widgetTagMappings);
+                string originalBaseEntryPath = (string)baseEntryPathField.GetValue(null);
 
-                    if (customEntry == null)
+                try
+                {
+                    // 确定要加载的目录列表
+                    List<string> directoriesToLoad = new();
+
+                    // 如果有自定义目录，只加载自定义目录
+                    if (instance.customDirectories.Count > 0)
                     {
-                        TbbDebuger.LogDebug($"[TbbCodexEntries]加载 CodexEntry {file.full_path} 失败");
+                        directoriesToLoad.AddRange(instance.customDirectories);
                     }
                     else
                     {
-                        customEntry.category = category.ToUpper();
-                        CodexCache.AddEntry(customEntry.id, customEntry, categories);
-
-                        TbbDebuger.LogDebug($"[TbbCodexEntries]成功加载 Codex entry id: {customEntry.id} parentID:{customEntry.parentId} YAML:[{file.full_path}]");
+                        // 否则加载默认目录
+                        directoriesToLoad.Add(CODEX_FILE_PATH_RELATIVE);
                     }
+
+                    // 加载所有指定的目录
+                    foreach (string directory in directoriesToLoad)
+                    {
+                        string codexPath = instance.FullPath(directory);
+                        if (Directory.Exists(codexPath))
+                        {
+                            // 设置 baseEntryPath 为当前目录
+                            baseEntryPathField.SetValue(null, codexPath);
+
+                            // 加载根目录下的词条
+                            TbbDebuger.LogDebug($"[TbbCodexEntries] 开始加载 codex 目录: {codexPath}");
+                            foreach (CodexEntry entry in CodexCache.CollectEntries(""))
+                            {
+                                if (entry != null && entry.id != null && entry.contentContainers != null && Game.IsCorrectDlcActiveForCurrentSave((IHasDlcRestrictions)entry))
+                                {
+                                    if (CodexCache.entries.ContainsKey(CodexCache.FormatLinkID(entry.id)))
+                                    {
+                                        CodexCache.MergeEntry(entry.id, entry);
+                                    }
+                                    else
+                                    {
+                                        CodexCache.AddEntry(entry.id, entry, categories);
+                                        entry.customContentLength = entry.contentContainers.Count;
+                                    }
+                                    TbbDebuger.LogDebug($"[TbbCodexEntries] 成功加载 Codex entry id: {entry.id}");
+                                }
+                            }
+
+                            // 加载子目录下的词条
+                            foreach (string subDirectory in Directory.GetDirectories(codexPath))
+                            {
+                                string folderName = Path.GetFileNameWithoutExtension(subDirectory);
+                                TbbDebuger.LogDebug($"[TbbCodexEntries] 开始加载 codex 子目录: {folderName}");
+                                foreach (CodexEntry entry in CodexCache.CollectEntries(folderName))
+                                {
+                                    if (entry != null && entry.id != null && entry.contentContainers != null && Game.IsCorrectDlcActiveForCurrentSave((IHasDlcRestrictions)entry))
+                                    {
+                                        if (CodexCache.entries.ContainsKey(CodexCache.FormatLinkID(entry.id)))
+                                        {
+                                            CodexCache.MergeEntry(entry.id, entry);
+                                        }
+                                        else
+                                        {
+                                            CodexCache.AddEntry(entry.id, entry, categories);
+                                            entry.customContentLength = entry.contentContainers.Count;
+                                        }
+                                        TbbDebuger.LogDebug($"[TbbCodexEntries] 成功加载 Codex entry id: {entry.id} from folder: {folderName}");
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            TbbDebuger.LogDebug($"[TbbCodexEntries] 目录不存在: {codexPath}");
+                        }
+                    }
+                }
+                finally
+                {
+                    // 恢复原始的 baseEntryPath
+                    baseEntryPathField.SetValue(null, originalBaseEntryPath);
                 }
             }
             catch (Exception e)
@@ -100,13 +132,9 @@ namespace TBB.He.TbbLib.Module
                 TbbDebuger.LogWarning($"[TbbCodexEntries] 错误: {e.Message}\n{e.StackTrace}");
             }
         }
-        private string fullPath(string path)
+        private string FullPath(string path)
         {
             return Path.Combine(MOD_DIRECTORY_ROOT, path);
-        }
-        private static void MyYamlErrorHandler(YamlIO.Error error, bool force_log_as_warning)
-        {
-            TbbDebuger.LogWarning($"[TbbCodexEntries] YAML Parse Error in {error.file.full_path}: {error.message}");
         }
     }
 }

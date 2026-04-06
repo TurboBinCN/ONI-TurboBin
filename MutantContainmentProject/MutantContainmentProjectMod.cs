@@ -97,20 +97,7 @@ namespace MutantContainmentProject
                     .Add(MutanterStoris.StoryGravitasMutanterFounder);
                 //百科词条
                 TbbCodexEntries.Initialize(mod, harmony)
-                    .ADD("SCP173", "Creatures")
-                    .ADD("SCP096", "Creatures")
-                    .ADD("SCP662", "IndustrialIngredients")
-                    .ADD("SCP662_1", "Creatures")
-                    .ADD("SCP049", "Creatures")
-                    .ADD("SCP049_2", "Creatures")
-                    .ADD("SCP939", "Creatures")
-                    .ADD("SCP4762", "Creatures")
-                    .ADD("DawnConfusion", "Creatures")
-                    .ADD("BugDusk", "Creatures")
-                    .ADD("CosmicBug", "Creatures")
-                    .ADD("CircusJoker", "Creatures")
-                    .ADD("TheFixerRed", "Creatures")
-                    .ADD("TheFixerWhite", "Creatures");
+                    .AddDirectory("assets/codex");
                 //房间
                 TbbRoom.Initialize(mod, harmony)
                     .Add(ContainmentCharmberRoom.Register)
@@ -205,7 +192,8 @@ namespace MutantContainmentProject
                 TbbSingleTone.Initialize(mod, harmony)
                     .Add<MutanterSpeciesCatalog>()
                     .Add<GlobalErosionManager>()
-                    .Add<ArmorManager>();
+                    .Add<ArmorManager>()
+                    .Add<ArmorPiecesUnlocker>();
 
                 // 科技树
                 TbbTechTree.Initialize(mod, harmony)

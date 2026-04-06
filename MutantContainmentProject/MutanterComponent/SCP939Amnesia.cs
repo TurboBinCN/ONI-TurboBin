@@ -2,7 +2,6 @@ using Klei.AI;
 using MutantContainmentProject.MutanterEffect;
 using TBB.He.TbbLib.Debuger;
 using UnityEngine;
-using static STRINGS.DUPLICANTS.PERSONALITIES;
 
 namespace MutantContainmentProject.MutanterComponent
 {
@@ -14,7 +13,6 @@ namespace MutantContainmentProject.MutanterComponent
             fn = (ref Chore.Precondition.Context context, object data) =>
             {
                 SCP939Amnesia component = context.consumerState.consumer.GetComponent<SCP939Amnesia>();
-                TbbDebuger.LogDebug($"入睡任务 Precondition: {component != null && component.IsAmnesiaActive()}");
                 return component != null && component.IsAmnesiaActive();
             }
         };
@@ -26,11 +24,11 @@ namespace MutantContainmentProject.MutanterComponent
         public class StatesInstance : GameStateMachine<States, StatesInstance, SCP939Amnesia, object>.GameInstance
         {
             private Effects effects;
-            public Effects EffectsInstance => effects??= gameObject.GetComponent<Effects>();
+            public Effects EffectsInstance => effects ??= gameObject.GetComponent<Effects>();
             public StatesInstance(SCP939Amnesia master) : base(master)
             {
                 TbbDebuger.LogDebug($"添加SCP939Amnesia效果");
-                 EffectsInstance?.Add(Db.Get().effects.Get(MutanterEffects.INHALATIONMIASAM_EFFECT), true);
+                EffectsInstance?.Add(Db.Get().effects.Get(MutanterEffects.INHALATIONMIASAM_EFFECT), true);
             }
             public bool IsInhalationMiasam()
             {
@@ -42,8 +40,9 @@ namespace MutantContainmentProject.MutanterComponent
                 return smi != null && smi.IsSleeping();
             }
 
-            public bool IsAmnesiaActive() {
-                return IsInhalationMiasam(); 
+            public bool IsAmnesiaActive()
+            {
+                return IsInhalationMiasam();
             }
 
             public GameObject CreateFloorLocator()
@@ -67,8 +66,9 @@ namespace MutantContainmentProject.MutanterComponent
                 root
                     .TagTransition(GameTags.Dead, null);
                 idle
-                    .Enter("ScheduleNextSleep", smi => {
-                        smi.ScheduleGoTo(Random.Range(50f, 150f), sleepy); 
+                    .Enter("ScheduleNextSleep", smi =>
+                    {
+                        smi.ScheduleGoTo(Random.Range(50f, 150f), sleepy);
                     });
                 sleepy
                     .Enter("Is Already Sleeping Check", smi =>
@@ -76,7 +76,7 @@ namespace MutantContainmentProject.MutanterComponent
                             if (smi.master.GetSMI<StaminaMonitor.Instance>().IsSleeping())
                                 smi.GoTo(idle);
                             else
-                                smi.ScheduleGoTo(Random.Range(300f, 600f), idle); 
+                                smi.ScheduleGoTo(Random.Range(300f, 600f), idle);
                         })
                     .ToggleUrge(Db.Get().Urges.Narcolepsy)
                     .ToggleChore(CreateSCP939AmnesiaChore, idle);
@@ -88,7 +88,7 @@ namespace MutantContainmentProject.MutanterComponent
                 GameObject floorLocator = smi.CreateFloorLocator();
                 SleepChore amnesiaChore = new(Db.Get().ChoreTypes.Narcolepsy, smi.master, floorLocator, true, false);
                 amnesiaChore.GetPreconditions().Clear();
-                 amnesiaChore.AddPrecondition(IsSCP939AmnesiaPrecondition, null);
+                amnesiaChore.AddPrecondition(IsSCP939AmnesiaPrecondition, null);
                 return amnesiaChore;
             }
         }

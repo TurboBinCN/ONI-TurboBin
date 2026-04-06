@@ -1,4 +1,5 @@
 using Database;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MutantContainmentProject.ArmorSystem
@@ -6,9 +7,10 @@ namespace MutantContainmentProject.ArmorSystem
     public class ArmorBlueprintProvider : BlueprintProvider
     {
         public const string MUTANT_CONTAINMENT_DLC_ID = "MUTANT_CONTAINMENT_DLC_ID";
+        private static List<string> armorPieceIds = new();
+        public static List<string> ArmorPieceIds => armorPieceIds;
         public override void SetupBlueprints()
         {
-            // 注册防具相关的蓝图
             RegisterArmors();
         }
 
@@ -26,10 +28,9 @@ namespace MutantContainmentProject.ArmorSystem
                 // 检查该防具是否已经存在于系统中
                 if (!IsClothingAlreadyExists(armorPiece.Id))
                 {
-                    // 根据防具类型映射到BlueprintProvider.ClothingType
-                    BlueprintProvider.ClothingType clothingType = MapArmorTypeToClothingType(armorPiece.Type);
-                    // 注册防具
+                    ClothingType clothingType = MapArmorTypeToClothingType(armorPiece.Type);
                     AddClothing(clothingType, PermitRarity.Decent, armorPiece.Id, armorPiece.Id + "_kanim");
+                    armorPieceIds.Add(armorPiece.Id);
                 }
             }
 
@@ -40,7 +41,7 @@ namespace MutantContainmentProject.ArmorSystem
                 if (!IsOutfitAlreadyExists(armorSet.Id))
                 {
                     // 注册套装
-                    AddOutfit(BlueprintProvider.OutfitType.Clothing, armorSet.Id, armorSet.ArmorPieceIds.ToArray());
+                    AddOutfit(OutfitType.Clothing, armorSet.Id, armorSet.ArmorPieceIds.ToArray());
                 }
             }
         }
@@ -58,31 +59,31 @@ namespace MutantContainmentProject.ArmorSystem
         }
 
 
-        private BlueprintProvider.ClothingType MapArmorTypeToClothingType(ArmorType armorType)
+        private ClothingType MapArmorTypeToClothingType(ArmorType armorType)
         {
             switch (armorType)
             {
                 case ArmorType.Suit:
-                    return BlueprintProvider.ClothingType.DupeTops;
+                    return ClothingType.DupeTops;
                 case ArmorType.Plants:
-                    return BlueprintProvider.ClothingType.DupeBottoms;
+                    return ClothingType.DupeBottoms;
                 case ArmorType.Gloves:
-                    return BlueprintProvider.ClothingType.DupeGloves;
+                    return ClothingType.DupeGloves;
                 case ArmorType.Shoes:
-                    return BlueprintProvider.ClothingType.DupeShoes;
+                    return ClothingType.DupeShoes;
                 default:
-                    return BlueprintProvider.ClothingType.DupeTops;
+                    return ClothingType.DupeTops;
             }
         }
 
         public override string[] GetRequiredDlcIds()
         {
-            return null; // 没有需要的DLC
+            return new string[] { MUTANT_CONTAINMENT_DLC_ID };
         }
 
         public override string[] GetForbiddenDlcIds()
         {
-            return null; // 没有禁止的DLC
+            return null;
         }
     }
 }

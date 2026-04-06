@@ -285,7 +285,7 @@ namespace MutantContainmentProject
             {
                 public static class GRAVITASMUTANTERFOUNDER
                 {
-                    public static LocString NAME = "Mutant Seal Altar Ruins";
+                    public static LocString NAME = global::STRINGS.UI.FormatAsLink("Mutant Seal Altar Ruins", GravitasMutanterFounderConfig.ID);
                     public static LocString DESC = "An ancient ruin buried deep underground on an alien planet, carrying traces of mutation research from an unknown civilization. It seals powerful mutant energy and unique mutants, which can only be unlocked through sacrifices and specific conditions to awaken the sealed creatures.";
                     public static LocString EFFECT = "EFFECT";
                 }
