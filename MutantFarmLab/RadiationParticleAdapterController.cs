@@ -1,5 +1,5 @@
-﻿using KSerialization;
-using PeterHan.PLib.Core;
+using KSerialization;
+using MutantFarmLab.tbbLibs;
 using STRINGS;
 using System;
 using System.Collections.Generic;
@@ -168,7 +168,7 @@ namespace MutantFarmLab
                 {
                     _bindFarmTile = farmTileObj;
                     _isBindFarmTileValid = true;
-                    PUtil.LogDebug($"✅ 绑定成功✅ 自身占据格子={targetCell} | 种植砖={farmTileObj.name}");
+                    TbbDebuger.LogDebug($"✅ 绑定成功✅ 自身占据格子={targetCell} | 种植砖={farmTileObj.name}");
                     return;
                 }
             }

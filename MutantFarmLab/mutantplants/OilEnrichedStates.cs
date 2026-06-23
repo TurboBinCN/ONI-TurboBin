@@ -1,4 +1,4 @@
-﻿using PeterHan.PLib.Core;
+using MutantFarmLab.tbbLibs;
 using STRINGS;
 using System;
 using System.Collections.Generic;
@@ -84,13 +84,13 @@ namespace MutantFarmLab.mutantplants
             }
             private void OnStorageChangeHandler(object obj)
             {
-                // PUtil.LogDebug("[原油富集] onStorageChangeHandler");
+                // TbbDebuger.LogDebug("[原油富集] onStorageChangeHandler");
 
                 // 假设 master 是持有 Storage 组件的对象
                 var storageComponent = master?.GetComponent<Storage>();
                 if (storageComponent == null)
                 {
-                    PUtil.LogError($"[OilEnriched] Storage component is null in OnStorageChangeHandler for {master?.name}");
+                    TbbDebuger.LogError($"[OilEnriched] Storage component is null in OnStorageChangeHandler for {master?.name}");
                     return;
                 }
 
@@ -143,11 +143,11 @@ namespace MutantFarmLab.mutantplants
                 if (actualCo2MassToConsume <= 0)
                 {
                     // 空间不足，无法生成任何原油，不消耗CO2
-                    PUtil.LogDebug($"[原油富集变异] 存储空间已满，无法生成原油，不消耗CO2。");
+                    TbbDebuger.LogDebug($"[原油富集变异] 存储空间已满，无法生成原油，不消耗CO2。");
                     return;
                 }
 
-                PUtil.LogDebug($"[原油富集变异] 理论可转化CO2: {totalPotentialCo2MassToConvert} kg, 实际转化CO2: {actualCo2MassToConsume} kg, 计划生成原油: {actualOilMassToGenerate} kg.");
+                TbbDebuger.LogDebug($"[原油富集变异] 理论可转化CO2: {totalPotentialCo2MassToConvert} kg, 实际转化CO2: {actualCo2MassToConsume} kg, 计划生成原油: {actualOilMassToGenerate} kg.");
 
                 // --- 3. 执行CO2质量扣除 (按实际转化量) ---
                 float remainingCo2ToConsume = actualCo2MassToConsume;
@@ -182,7 +182,7 @@ namespace MutantFarmLab.mutantplants
                 // 确保扣除量准确（理论上应该相等）
                 if (Math.Abs(remainingCo2ToConsume) > float.Epsilon)
                 {
-                    PUtil.LogError($"[OilEnriched] 严重错误：计划扣除 {actualCo2MassToConsume} kg CO2，但只扣除了 {actualCo2MassToConsume - remainingCo2ToConsume} kg。");
+                    TbbDebuger.LogError($"[OilEnriched] 严重错误：计划扣除 {actualCo2MassToConsume} kg CO2，但只扣除了 {actualCo2MassToConsume - remainingCo2ToConsume} kg。");
                     // 尝试恢复逻辑，但这很复杂且容易出错，最好的办法是确保上面逻辑不出错
                     return; // 退出，避免进一步错误
                 }
@@ -194,7 +194,7 @@ namespace MutantFarmLab.mutantplants
                     var oilPrefab = Assets.GetPrefab(SimHashes.CrudeOil.CreateTag());
                     if (oilPrefab == null)
                     {
-                        PUtil.LogError($"[OilEnriched] Crude Oil prefab not found.");
+                        TbbDebuger.LogError($"[OilEnriched] Crude Oil prefab not found.");
                         // 注意：此时CO2已经扣除了，但无法生成原油，这是一个问题。可能需要回滚CO2扣除，但这增加了复杂性。
                         return;
                     }
@@ -230,7 +230,7 @@ namespace MutantFarmLab.mutantplants
                                 {
                                     // 如果存储失败，销毁生成的物品
                                     // 这里理论上不应该发生，因为我们已经在前面检查了可用空间
-                                    PUtil.LogDebug($"[原油富集变异] 严重警告：理论空间充足但原油存储失败，销毁: {oilInstance.name}, Mass: {massThisIteration}");
+                                    TbbDebuger.LogDebug($"[原油富集变异] 严重警告：理论空间充足但原油存储失败，销毁: {oilInstance.name}, Mass: {massThisIteration}");
                                     Util.KDestroyGameObject(oilInstance);
                                     // 尝试恢复CO2扣除，但这很复杂
                                     break; // 停止生成
@@ -238,20 +238,20 @@ namespace MutantFarmLab.mutantplants
                             }
                             else
                             {
-                                PUtil.LogError($"[OilEnriched] Generated oil item missing PrimaryElement component: {oilInstance.name}");
+                                TbbDebuger.LogError($"[OilEnriched] Generated oil item missing PrimaryElement component: {oilInstance.name}");
                                 Util.KDestroyGameObject(oilInstance); // 没有 PrimaryElement，销毁
                             }
                         }
                         else
                         {
-                            PUtil.LogError($"[OilEnriched] Failed to instantiate Crude Oil prefab: {oilPrefab.name}");
+                            TbbDebuger.LogError($"[OilEnriched] Failed to instantiate Crude Oil prefab: {oilPrefab.name}");
                             break; // 实例化失败，停止循环
                         }
                     }
 
                     if (generatedOilMass > 0)
                     {
-                        PUtil.LogDebug($"[原油富集变异] 成功生成 {generatedOilMass} kg 原油.");
+                        TbbDebuger.LogDebug($"[原油富集变异] 成功生成 {generatedOilMass} kg 原油.");
                     }
                 }
             }

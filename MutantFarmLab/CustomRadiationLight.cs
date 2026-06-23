@@ -1,13 +1,10 @@
-﻿using KSerialization;
-using PeterHan.PLib.Core;
-using STRINGS;
+using KSerialization;
 using System.Collections.Generic;
 using UnityEngine;
-using static LogicGateBase;
 
 namespace MutantFarmLab
 {
-    public class CustomRadiationLight : KMonoBehaviour, ISingleSliderControl, ISliderControl,ISaveLoadable, IGameObjectEffectDescriptor
+    public class CustomRadiationLight : KMonoBehaviour, ISingleSliderControl, ISliderControl, ISaveLoadable, IGameObjectEffectDescriptor
     {
         //建筑配置项
         public RadiationEmitter radiationEmitter;
@@ -50,12 +47,12 @@ namespace MutantFarmLab
                     case Orientation.FlipV:
                     case Orientation.R270:
                         radiationEmitter.emitDirection = 90f;
-                        radiationEmitter.emissionOffset = new Vector3(1f, 1f, 0f);
+                        radiationEmitter.emissionOffset = new Vector3(0f, 1f, 0f);
                         break;
 
                     case Orientation.Neutral:
                         radiationEmitter.emitDirection = 270f;
-                        radiationEmitter.emissionOffset = new Vector3(1f, -1f, 0f);
+                        radiationEmitter.emissionOffset = new Vector3(0f, -1f, 0f);
                         break;
                 }
                 radiationEmitter.Refresh();
@@ -93,7 +90,7 @@ namespace MutantFarmLab
             KBatchedAnimController anim = GetComponent<KBatchedAnimController>();
             if (anim != null)
             {
-                if (canRun && !(anim.GetCurrentFrameIndex() == 0) ) anim.Play("on", KAnim.PlayMode.Loop);
+                if (canRun && !(anim.GetCurrentFrameIndex() == 0)) anim.Play("on", KAnim.PlayMode.Loop);
                 if (!canRun && !(anim.GetCurrentFrameIndex() == 1)) anim.Play("off", KAnim.PlayMode.Once);
             }
         }
@@ -112,7 +109,7 @@ namespace MutantFarmLab
             if (particleAmount <= lowParticleThreshold + floatTolerance)
             {
                 highEnergyParticaleRQSignal = 1;
-                _logicPort_holder = true; 
+                _logicPort_holder = true;
             }
             else if (particleAmount >= stopThreshold - floatTolerance)
             {
@@ -141,15 +138,15 @@ namespace MutantFarmLab
 
         public string SliderUnits => STRINGS.UI.UNITSUFFIXES.RADIATION.RADLEVEL;
 
-        public float GetSliderMax(int index)=> 5f;
+        public float GetSliderMax(int index) => 5f;
 
-        public float GetSliderMin(int index)=> 0f;
+        public float GetSliderMin(int index) => 0f;
 
-        public string GetSliderTooltip(int index) =>"";
+        public string GetSliderTooltip(int index) => "";
 
         public string GetSliderTooltipKey(int index) => "";
 
-        public float GetSliderValue(int index)=>RadiationLevel;
+        public float GetSliderValue(int index) => RadiationLevel;
 
         public void SetSliderValue(float value, int index)
         {
@@ -163,7 +160,7 @@ namespace MutantFarmLab
             Refresh();
         }
 
-        public int SliderDecimalPlaces(int index)=>0;
+        public int SliderDecimalPlaces(int index) => 0;
 
         public List<Descriptor> GetDescriptors(GameObject go)
         {

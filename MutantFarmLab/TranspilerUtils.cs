@@ -1,12 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
-#if USESPLIB
-using PeterHan.PLib.Core;
-#endif
+using MutantFarmLab.tbbLibs;
 
 namespace MutantFarmLab
 {
@@ -32,22 +30,14 @@ namespace MutantFarmLab
             {
 #if DEBUG
                 var message = $"Transpiler '{transpiler_name}' injected to the method '{method_name}'";
-#if USESPLIB
-                PUtil.LogDebug(message);
-#else
-                Debug.Log(message);
-#endif
+                TbbDebuger.LogDebug(message);
 #endif
                 return modified_instructions;
             }
             else
             {
                 var message = $"Could not apply Transpiler '{transpiler_name}' to the method '{method_name}'";
-#if USESPLIB
-                PUtil.LogWarning(message);
-#else
-                Debug.LogWarning(message);
-#endif
+                TbbDebuger.LogWarning(message);
                 return instructions;
             }
         }

@@ -1,5 +1,5 @@
-﻿using Klei.AI;
-using PeterHan.PLib.Core;
+using Klei.AI;
+using MutantFarmLab.tbbLibs;
 using System;
 using UnityEngine;
 
@@ -11,7 +11,7 @@ namespace MutantFarmLab.mutantplants
         {
             if (plant == null || targetPlot == null)
             {
-                PUtil.LogWarning("[双头株]Source or Target plot is null.");
+                TbbDebuger.LogWarning("[双头株]Source or Target plot is null.");
                 return;
             }
             Rotatable rotatable = targetPlot.gameObject.transform.parent?.gameObject.GetComponent<Rotatable>();
@@ -24,7 +24,7 @@ namespace MutantFarmLab.mutantplants
             var sourcePlantablePlot = sourcePlantObject.GetComponent<ReceptacleMonitor>()?.GetReceptacle();
             if (sourcePlantablePlot == null)
             {
-                PUtil.LogWarning("[双头株]植株没有种植槽，直接放入目标种植槽.");
+                TbbDebuger.LogWarning("[双头株]植株没有种植槽，直接放入目标种植槽.");
                 targetPlot.ReplacePlant(sourcePlantObject, keepPlantablePlotStorage);
                 return;
             }
@@ -34,18 +34,18 @@ namespace MutantFarmLab.mutantplants
             KPrefabID plantKpid = sourcePlantObject.GetComponent<KPrefabID>();
             if (plantKpid == null)
             {
-                PUtil.LogWarning("[双头株]Source plant object does not have KPrefabID component.");
+                TbbDebuger.LogWarning("[双头株]Source plant object does not have KPrefabID component.");
                 return;
             }
             string plantId = plantKpid.PrefabTag.Name; // 例如 "PrickleFlower"
-            PUtil.LogDebug($"[双头株]Identified plant ID: {plantId}");
+            TbbDebuger.LogDebug($"[双头株]Identified plant ID: {plantId}");
 
             // --- 步骤 2: 重建植株 ---
             GameObject rebuildedPlantObject = GameUtil.KInstantiate(Assets.GetPrefab(plantId), Grid.SceneLayer.BuildingBack, null, 0);
             rebuildedPlantObject.transform.SetPosition(targetPlot.transform.GetPosition());
 
             // 获取种子组件并设置突变 (如果原植物有突变)
-            PUtil.LogDebug($"[双头株]复制变异");
+            TbbDebuger.LogDebug($"[双头株]复制变异");
             MutantPlant component = sourcePlantObject.GetComponent<MutantPlant>();
             MutantPlant component2 = rebuildedPlantObject.GetComponent<MutantPlant>();
             if (component != null && rebuildedPlantObject != null)
@@ -55,7 +55,7 @@ namespace MutantFarmLab.mutantplants
             }
             rebuildedPlantObject.SetActive(true);
 
-            PUtil.LogDebug($"[双头株]复制生长状态");
+            TbbDebuger.LogDebug($"[双头株]复制生长状态");
             Growing component3 = sourcePlantObject.GetComponent<Growing>();
             Growing component4 = rebuildedPlantObject.GetComponent<Growing>();
             if (component3 != null && component4 != null)
@@ -72,16 +72,16 @@ namespace MutantFarmLab.mutantplants
             }
             try
             {
-                PUtil.LogDebug($"复制PrimaryElement/Effects");
+                TbbDebuger.LogDebug($"复制PrimaryElement/Effects");
                 PrimaryElement component5 = rebuildedPlantObject.GetComponent<PrimaryElement>();
                 PrimaryElement component6 = sourcePlantObject.GetComponent<PrimaryElement>();
                 component5.Temperature = component6.Temperature;
                 component5.AddDisease(component6.DiseaseIdx, component6.DiseaseCount, "TransformedPlant");
                 rebuildedPlantObject.GetComponent<Effects>().CopyEffects(sourcePlantObject.GetComponent<Effects>());
             }
-            catch (Exception ex) { PUtil.LogWarning($"{ex.Message}\n{ex.StackTrace}"); }
+            catch (Exception ex) { TbbDebuger.LogWarning($"{ex.Message}\n{ex.StackTrace}"); }
 
-            PUtil.LogDebug($"[双头株]复制HarvestDesignatable");
+            TbbDebuger.LogDebug($"[双头株]复制HarvestDesignatable");
             HarvestDesignatable component7 = sourcePlantObject.GetComponent<HarvestDesignatable>();
             HarvestDesignatable component8 = rebuildedPlantObject.GetComponent<HarvestDesignatable>();
             if (component7 != null && component8 != null)
@@ -89,7 +89,7 @@ namespace MutantFarmLab.mutantplants
                 component8.SetHarvestWhenReady(component7.HarvestWhenReady);
             }
 
-            PUtil.LogDebug($"[双头株]Prioritizable");
+            TbbDebuger.LogDebug($"[双头株]Prioritizable");
             Prioritizable component9 = sourcePlantObject.GetComponent<Prioritizable>();
             Prioritizable component10 = rebuildedPlantObject.GetComponent<Prioritizable>();
             if (component9 != null && component10 != null)
@@ -98,20 +98,20 @@ namespace MutantFarmLab.mutantplants
             }
             if (rebuildedPlantObject == null)
             {
-                PUtil.LogError("[双头株]Failed to instantiate the standard seed object.");
+                TbbDebuger.LogError("[双头株]Failed to instantiate the standard seed object.");
                 return;
             }
-            PUtil.LogDebug($"[双头株]Instantiated standard seed object: {rebuildedPlantObject.name}");
+            TbbDebuger.LogDebug($"[双头株]Instantiated standard seed object: {rebuildedPlantObject.name}");
 
             // --- 步骤 3: 销毁源植物 ---
             if (sourcePlantObject != null)
             {
-                PUtil.LogDebug("[双头株]执行拔除植物");
+                TbbDebuger.LogDebug("[双头株]执行拔除植物");
                 Util.KDestroyGameObject(sourcePlantObject);
                 TbbHarmonyExtension.InvokeMethod(sourcePlantObject.GetComponent<ReceptacleMonitor>().GetReceptacle(), "ClearOccupant", new object[] { });
             }
             // --- 步骤 4: 强制放入目标种植槽 ---
-            PUtil.LogDebug("[双头株]调用 ReplacePlant 放入种植槽.");
+            TbbDebuger.LogDebug("[双头株]调用 ReplacePlant 放入种植槽.");
             targetPlot.gameObject.SetActive(true);
             targetPlot.ReplacePlant(rebuildedPlantObject, keepPlantablePlotStorage);
             var dualHeadPlantComponent = rebuildedPlantObject.AddOrGet<DualHeadPlantComponent>();

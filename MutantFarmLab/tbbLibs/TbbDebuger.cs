@@ -1,81 +1,149 @@
-﻿using PeterHan.PLib.Core;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
 using UnityEngine;
 
 namespace MutantFarmLab.tbbLibs
 {
-    /// <summary>
-    /// 基于Plib风格的GameObject全量调试打印工具
-    /// 适配ONI模组开发，无第三方依赖（仅Plib）
-    /// </summary>
     public static class TbbDebuger
     {
-        public static void CallTrace(string funName)
+        public enum LogLevel
         {
-            PUtil.LogDebug($"[TraceCallTree] [{funName}][{Environment.StackTrace}]");
-
+            None = 0,
+            Error = 1,
+            Warning = 2,
+            Info = 3,
+            Debug = 4
         }
-        /// <summary>
-        /// 打印GameObject的完整信息（自身+所有组件+所有子物体）
-        /// </summary>
-        /// <param name="rootObj">要调试的根GameObject</param>
-        /// <param name="indentLevel">缩进层级（外部调用传0即可）</param>
-        public static void PrintGameObjectFullInfo(GameObject rootObj, int indentLevel = 0)
+        private enum LogType
         {
-            // 1. 核心空值校验（Plib风格：优先防御性编程）
+            Log,
+            Warning,
+            Error
+        }
+        public static LogLevel GlobalLogLevel { get; set; } = LogLevel.Debug;
+        public static bool EnableErrorStackTrace { get; set; } = true;
+
+        private static bool IsLevelAllowed(LogLevel level)
+        {
+            return GlobalLogLevel >= level && GlobalLogLevel != LogLevel.None;
+        }
+        private static void WriteLog(LogLevel level, LogType logType, string message, string assemblyName, bool ignoreLevel = false)
+        {
+            if (!ignoreLevel && !IsLevelAllowed(level)) return;
+
+            switch (logType)
+            {
+                case LogType.Log:
+                    Debug.LogFormat("[Tbb/{0}] {1}", assemblyName, message);
+                    break;
+                case LogType.Warning:
+                    Debug.LogWarningFormat("[Tbb/{0}] {1}", assemblyName, message);
+                    break;
+                case LogType.Error:
+                    Debug.LogErrorFormat("[Tbb/{0}] {1}", assemblyName, message);
+                    break;
+            }
+        }
+        public static void LogDebug(object message,
+            [CallerMemberName] string memberName = "",
+            [CallerFilePath] string filePath = "",
+            [CallerLineNumber] int lineNumber = 0)
+        {
+            Assembly callingAssembly = Assembly.GetCallingAssembly();
+            string fileName = Path.GetFileName(filePath);
+            string logPrefix = $"{callingAssembly?.GetName()?.Name}:{fileName}:{memberName}({lineNumber})";
+            WriteLog(LogLevel.Debug, LogType.Log, $"[DEBUG] {message}", logPrefix);
+        }
+        public static void LogWarning(object message,
+            [CallerMemberName] string memberName = "",
+            [CallerFilePath] string filePath = "",
+            [CallerLineNumber] int lineNumber = 0)
+        {
+            Assembly callingAssembly = Assembly.GetCallingAssembly();
+            string fileName = Path.GetFileName(filePath);
+            string logPrefix = $"{callingAssembly?.GetName()?.Name}:{fileName}:{memberName}({lineNumber})";
+            WriteLog(LogLevel.Warning, LogType.Log, $"[WARNING] {message}", logPrefix);
+        }
+        public static void LogError(object message,
+            [CallerMemberName] string memberName = "",
+            [CallerFilePath] string filePath = "",
+            [CallerLineNumber] int lineNumber = 0)
+        {
+            Assembly callingAssembly = Assembly.GetCallingAssembly();
+            string fileName = Path.GetFileName(filePath);
+            string logPrefix = $"{callingAssembly?.GetName()?.Name}:{fileName}:{memberName}({lineNumber})";
+            var errorMsg = $"[ERROR] {message}";
+            if (EnableErrorStackTrace)
+            {
+                errorMsg += $"\n调用栈：{Environment.StackTrace}";
+            }
+            WriteLog(LogLevel.Error, LogType.Error, errorMsg, logPrefix);
+        }
+        public static void LogForce(string message)
+        {
+            WriteLog(LogLevel.None, LogType.Log, $"[FORCE] {message}", Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?", ignoreLevel: true);
+        }
+        public static void LogTrace()
+        {
+            WriteLog(LogLevel.Debug, LogType.Log, Environment.StackTrace, Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?");
+        }
+        public static void LogGameObjectFullInfo(GameObject rootObj, int indentLevel = 4)
+        {
+            WriteLog(LogLevel.Debug, LogType.Log, GetGameObjectFullInfoString(rootObj, indentLevel), Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?");
+        }
+        private static string GetGameObjectFullInfoString(GameObject rootObj, int indentLevel = 4)
+        {
             if (rootObj == null)
             {
-                PUtil.LogWarning("[PlibDebug] 传入的GameObject为空！");
-                return;
+                return "[Error] 传入的GameObject为空！\n";
             }
 
-            // 生成缩进，保持层级清晰（Plib风格：格式化输出）
+            StringBuilder outputBuilder = new StringBuilder();
+
             string indent = new string(' ', indentLevel * 4);
             string separator = $"{indent}========================================";
 
-            // 2. 打印GameObject基础信息
-            PUtil.LogDebug(separator);
-            PUtil.LogDebug($"{indent}[GameObject 基础信息]");
-            PUtil.LogDebug($"{indent}名称: {rootObj.name}");
-            PUtil.LogDebug($"{indent}实例ID: {rootObj.GetInstanceID()}");
-            PUtil.LogDebug($"{indent}标签: {rootObj.tag}");
-            PUtil.LogDebug($"{indent}层级: {rootObj.layer} ({LayerMask.LayerToName(rootObj.layer)})");
-            PUtil.LogDebug($"{indent}激活状态: {rootObj.activeSelf}");
-            PUtil.LogDebug($"{indent}场景: {rootObj.scene.name}");
+            outputBuilder.AppendLine(separator);
+            outputBuilder.AppendLine($"{indent}[GameObject 基础信息]");
+            outputBuilder.AppendLine($"{indent}名称: {rootObj.name}");
+            outputBuilder.AppendLine($"{indent}实例ID: {rootObj.GetInstanceID()}");
+            outputBuilder.AppendLine($"{indent}标签: {rootObj.tag}");
+            outputBuilder.AppendLine($"{indent}层级: {rootObj.layer} ({LayerMask.LayerToName(rootObj.layer)})");
+            outputBuilder.AppendLine($"{indent}激活状态: {rootObj.activeSelf}");
+            outputBuilder.AppendLine($"{indent}场景: {rootObj.scene.name}");
 
-            // 3. 遍历所有组件（使用GetComponentAtIndex替代扩展方法）
-            PUtil.LogDebug($"{indent}[组件列表]");
+            outputBuilder.AppendLine($"{indent}[组件列表]");
             int componentCount = rootObj.GetComponentCount();
-            PUtil.LogDebug($"{indent}组件总数: {componentCount}");
+            outputBuilder.AppendLine($"{indent}组件总数: {componentCount}");
 
             for (int i = 0; i < componentCount; i++)
             {
                 try
                 {
-                    // 使用GetComponentAtIndex获取指定索引的组件
                     Component component = rootObj.GetComponentAtIndex(i);
                     if (component == null)
                     {
-                        PUtil.LogDebug($"{indent}→ 索引{i}: 空组件（Unity内置隐藏组件）");
+                        outputBuilder.AppendLine($"{indent}→ 索引{i}: 空组件（Unity内置隐藏组件）");
                         continue;
                     }
 
-                    // 打印组件类型信息
                     Type compType = component.GetType();
-                    PUtil.LogDebug($"{indent}→ 索引{i}: {compType.FullName} (简称: {compType.Name})");
+                    outputBuilder.AppendLine($"{indent}→ 索引{i}: {compType.FullName} (简称: {compType.Name})");
                 }
                 catch (Exception ex)
                 {
-                    // Plib风格：捕获异常但不中断流程，仅打印警告
-                    PUtil.LogWarning($"{indent}→ 索引{i}: 获取组件失败: {ex.Message}");
+                    outputBuilder.AppendLine($"{indent}→ 索引{i}: 获取组件失败: {ex.Message}");
                 }
             }
 
-            // 4. 遍历所有子物体（替代rootObj.GetChildren()）
-            PUtil.LogDebug($"{indent}[子物体列表]");
+            outputBuilder.AppendLine($"{indent}[子物体列表]");
             Transform rootTransform = rootObj.transform;
             int childCount = rootTransform.childCount;
-            PUtil.LogDebug($"{indent}直接子物体数量: {childCount}");
+            outputBuilder.AppendLine($"{indent}直接子物体数量: {childCount}");
 
             for (int i = 0; i < childCount; i++)
             {
@@ -84,26 +152,152 @@ namespace MutantFarmLab.tbbLibs
                     continue;
 
                 GameObject childObj = childTransform.gameObject;
-                PUtil.LogDebug($"{indent}└── 子物体[{i}]: {childObj.name}");
+                outputBuilder.AppendLine($"{indent}└── 子物体[{i}]: {childObj.name}");
 
-                // 递归打印子物体的完整信息（缩进+1）
-                PrintGameObjectFullInfo(childObj, indentLevel + 1);
+                string childInfo = GetGameObjectFullInfoString(childObj, indentLevel + 1);
+                outputBuilder.Append(childInfo);
             }
 
-            PUtil.LogDebug(separator);
-            PUtil.LogDebug(""); // 空行分隔不同GameObject的输出
+            outputBuilder.AppendLine(separator);
+            outputBuilder.AppendLine();
+
+            return outputBuilder.ToString();
         }
 
-        /// <summary>
-        /// 辅助方法：获取GameObject的组件总数（适配GetComponentAtIndex）
-        /// </summary>
-        /// <param name="gameObject">目标GameObject</param>
-        /// <returns>组件总数</returns>
+        public static Transform FindChildByName(Transform parent, string name)
+        {
+            if (parent.name == name)
+                return parent;
+
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                Transform result = FindChildByName(parent.GetChild(i), name);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+        public static string GetFullPath(this Transform transform)
+        {
+            if (transform.parent == null)
+                return "/" + transform.name;
+            return transform.parent.GetFullPath() + "/" + transform.name;
+        }
+
+        public static void LogUITree(Transform targetTransform)
+        {
+            LogUITree(targetTransform, null);
+        }
+
+        public static void LogUITree(Transform targetTransform, Transform rootTransform)
+        {
+            WriteLog(LogLevel.Debug, LogType.Log, "=== UI树调试 ===", Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?");
+            if (targetTransform == null)
+            {
+                WriteLog(LogLevel.Error, LogType.Error, "目标Transform为null！", Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?");
+                return;
+            }
+            
+            if (rootTransform == null)
+            {
+                rootTransform = FindUITreeRoot(targetTransform);
+            }
+            
+            WriteLog(LogLevel.Debug, LogType.Log, GetUITreeString(rootTransform, 0, targetTransform), Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?");
+            WriteLog(LogLevel.Debug, LogType.Log, "====================", Assembly.GetCallingAssembly()?.GetName()?.Name ?? "?");
+        }
+
+        private static Transform FindUITreeRoot(Transform transform)
+        {
+            if (transform == null)
+                return null;
+
+            Transform current = transform;
+            while (current != null)
+            {
+                if (current.gameObject.GetComponent("KScreen") != null)
+                {
+                    return current;
+                }
+
+                if (current.parent == null)
+                {
+                    return current;
+                }
+
+                current = current.parent;
+            }
+
+            return transform;
+        }
+
+        private static string GetUITreeString(Transform transform, int indentLevel, Transform targetTransform)
+        {
+            if (transform == null)
+                return "";
+
+            StringBuilder sb = new StringBuilder();
+            string indent = new string(' ', indentLevel * 4);
+
+            string nodeName = transform.name;
+            bool isTarget = transform == targetTransform;
+
+            string uiComponentTypes = GetUIComponentTypes(transform.gameObject);
+
+            sb.AppendLine($"{indent}{(isTarget ? "[CURRENT] " : "")}[{uiComponentTypes}] {nodeName}");
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Transform child = transform.GetChild(i);
+                sb.Append(GetUITreeString(child, indentLevel + 1, targetTransform));
+            }
+
+            return sb.ToString();
+        }
+
+        private static string GetUIComponentTypes(GameObject gameObject)
+        {
+            if (gameObject == null)
+                return "Transform";
+
+            List<string> uiTypes = new List<string>();
+
+            uiTypes.Add("Transform");
+
+            Component[] components = gameObject.GetComponents<Component>();
+
+            foreach (Component component in components)
+            {
+                if (component == null)
+                    continue;
+
+                string componentName = component.GetType().Name;
+
+                if (IsUIComponent(componentName))
+                {
+                    uiTypes.Add(componentName);
+                }
+            }
+
+            return string.Join(", ", uiTypes);
+        }
+
+        private static bool IsUIComponent(string componentName)
+        {
+            string[] uiComponentNames = {
+                "Text", "Image", "Button", "Toggle", "Slider", "Scrollbar", "ScrollView",
+                "InputField", "Dropdown", "Canvas", "CanvasRenderer", "RectTransform",
+                "Mask", "RectMask2D", "GridLayoutGroup", "HorizontalLayoutGroup", "VerticalLayoutGroup",
+                "LayoutElement", "AspectRatioFitter", "ContentSizeFitter", "EventSystem",
+                "StandaloneInputModule", "TouchInputModule", "TextMeshProUGUI", "Image", "Icon"
+            };
+
+            return Array.Exists(uiComponentNames, name => name.Equals(componentName, StringComparison.OrdinalIgnoreCase));
+        }
+
         private static int GetComponentCount(this GameObject gameObject)
         {
             if (gameObject == null) return 0;
-
-            // 先通过GetComponents获取总数（GetComponentAtIndex需要索引范围）
             Component[] allComponents = gameObject.GetComponents<Component>();
             return allComponents.Length;
         }

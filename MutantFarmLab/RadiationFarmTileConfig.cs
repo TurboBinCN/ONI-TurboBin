@@ -1,6 +1,6 @@
-﻿using KSerialization;
+using KSerialization;
 using MutantFarmLab.mutantplants;
-using PeterHan.PLib.Core;
+using MutantFarmLab.tbbLibs;
 using STRINGS;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -66,7 +66,7 @@ namespace MutantFarmLab
             }
             protected override void OnCleanUp()
             {
-                PUtil.LogDebug($"SubGoStorage OnCleanUp DropALl items.");
+                TbbDebuger.LogDebug($"SubGoStorage OnCleanUp DropALl items.");
                 DropAll();
                 base.OnCleanUp();
             }
@@ -109,7 +109,7 @@ namespace MutantFarmLab
             KPrefabID kPrefabID = RadiationPlot.AddOrGet<KPrefabID>();
             kPrefabID.PrefabTag = RadiationPlotTag;
             kPrefabID.InstanceID = KPrefabID.GetUniqueID();
-            PUtil.LogDebug($"RadiationPlot InstanceID:[{kPrefabID.InstanceID}]");
+            TbbDebuger.LogDebug($"RadiationPlot InstanceID:[{kPrefabID.InstanceID}]");
             kPrefabID.AddTag(GameTags.StorageLocker, false);
             KPrefabIDTracker.Get().Register(kPrefabID);
 
@@ -247,7 +247,7 @@ namespace MutantFarmLab
 
         private void RestoreItems()
         {
-            PUtil.LogDebug($"RadiationPlotStorageSaver RestoreItems savedItems:{savedItems.Count}");
+            TbbDebuger.LogDebug($"RadiationPlotStorageSaver RestoreItems savedItems:{savedItems.Count}");
 
             if (savedItems.Count <= 0) return;
             if (uraniumStorage == null)

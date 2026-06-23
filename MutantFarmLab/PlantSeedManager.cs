@@ -1,7 +1,7 @@
-﻿using Database;
+using Database;
 using HarmonyLib;
 using Klei.AI;
-using PeterHan.PLib.Core;
+using MutantFarmLab.tbbLibs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,7 +68,7 @@ namespace MutantFarmLab
                 if (validSeedTag.IsValid)
                     setForbidden(validSeedTag, true);
             }
-            PUtil.LogDebug("[PlantSeedManager] 全种子禁用完成 → 所有种子已加入黑名单");
+            TbbDebuger.LogDebug("[PlantSeedManager] 全种子禁用完成 → 所有种子已加入黑名单");
         }
 
         #region ========== 原有逻辑：完整保留 植物<->种子 资源映射/缓存 ==========
@@ -81,17 +81,17 @@ namespace MutantFarmLab
             {
                 foreach (var (tag, infos) in (Dictionary<Tag, List<PlantSubSpeciesCatalog.SubSpeciesInfo>>)discoveredSubspeciesBySpecies)
                 {
-                    PUtil.LogDebug($"[PlantSeedManager] 遍历植物Tag:{tag}");
+                    TbbDebuger.LogDebug($"[PlantSeedManager] 遍历植物Tag:{tag}");
                     
                     foreach (var list in infos)
                     {
                         var plantName = list.ID.ToString();
-                        PUtil.LogDebug($"[PlantSeedManager] |__ID:{list.ID} | speciesID:{list.speciesID}");
+                        TbbDebuger.LogDebug($"[PlantSeedManager] |__ID:{list.ID} | speciesID:{list.speciesID}");
 
                         if (Assets.GetPrefab(list.speciesID) is GameObject plantPrefab)
                         {
                             plantName = plantPrefab.name;
-                            PUtil.LogDebug($"[PlantSeedManager] |__植物名称:{plantPrefab.name} | 本地化名称:{plantPrefab.GetProperName()}");
+                            TbbDebuger.LogDebug($"[PlantSeedManager] |__植物名称:{plantPrefab.name} | 本地化名称:{plantPrefab.GetProperName()}");
                             if (plantPrefab.GetComponent<MutantPlant>() == null) break;
                         }
                         Tag seedID = null;
@@ -103,9 +103,9 @@ namespace MutantFarmLab
 
                             if (Assets.GetPrefab($"{seedID}") is GameObject plantSeedPrefab)
                             {
-                                PUtil.LogDebug($"[PlantSeedManager] |__种子预制体ID:{plantSeedPrefab.PrefabID()}");
-                                PUtil.LogDebug($"[PlantSeedManager]    |__Seed ID:{seedID}");
-                                PUtil.LogDebug($"[PlantSeedManager]    |__种子名称:{plantSeedPrefab.name} | 本地化名称:{plantSeedPrefab.GetProperName()}");
+                                TbbDebuger.LogDebug($"[PlantSeedManager] |__种子预制体ID:{plantSeedPrefab.PrefabID()}");
+                                TbbDebuger.LogDebug($"[PlantSeedManager]    |__Seed ID:{seedID}");
+                                TbbDebuger.LogDebug($"[PlantSeedManager]    |__种子名称:{plantSeedPrefab.name} | 本地化名称:{plantSeedPrefab.GetProperName()}");
 
                                 seedName = plantSeedPrefab.name;
                                 seedPropName = plantSeedPrefab.GetProperName();
@@ -122,12 +122,12 @@ namespace MutantFarmLab
                                 SeedName = seedName,
                                 SeedPropName = seedPropName
                             });
-                            PUtil.LogDebug($"[PlantSeedManager] 缓存映射成功：{tag} → {seedID}");
+                            TbbDebuger.LogDebug($"[PlantSeedManager] 缓存映射成功：{tag} → {seedID}");
                         }
                     }
                 }
             }
-            PUtil.LogDebug($"[PlantSeedManager] 初始化完成，共缓存 {_plantToSeedCache.Count} 组植物-种子映射关系");
+            TbbDebuger.LogDebug($"[PlantSeedManager] 初始化完成，共缓存 {_plantToSeedCache.Count} 组植物-种子映射关系");
         }
 
         public static bool ContainsTag(Tag tag)
@@ -146,7 +146,7 @@ namespace MutantFarmLab
         {
             if (sourceSeed == null || !sourceSeed.activeInHierarchy)
             {
-                PUtil.LogError("[PlantSeedManager] 生成失败：源种子无效/已销毁");
+                TbbDebuger.LogError("[PlantSeedManager] 生成失败：源种子无效/已销毁");
                 return null;
             }
             
@@ -156,13 +156,13 @@ namespace MutantFarmLab
 
             if (sourceMutant == null || sourcePrimary == null || sourcePickable == null)
             {
-                PUtil.LogError("[PlantSeedManager] 生成失败：源种子缺少核心组件（MutantPlant/SeedProducer/PrimaryElement/Pickable）");
+                TbbDebuger.LogError("[PlantSeedManager] 生成失败：源种子缺少核心组件（MutantPlant/SeedProducer/PrimaryElement/Pickable）");
                 return null;
             }
 
             if (string.IsNullOrEmpty(sourceMutant.SpeciesID.ToString()) || !Assets.GetPrefab(sourceMutant.SpeciesID))
             {
-                PUtil.LogError($"[PlantSeedManager] 生成失败：源种子物种ID无效 → {sourceMutant.SpeciesID}");
+                TbbDebuger.LogError($"[PlantSeedManager] 生成失败：源种子物种ID无效 → {sourceMutant.SpeciesID}");
                 return null;
             }
 
@@ -172,17 +172,17 @@ namespace MutantFarmLab
                 if (!forceMutate && sourceMutant.IsOriginal)
                 {
                     isNeedMutate = RollNativeMutationChance(sourceSeed);
-                    PUtil.LogDebug($"[PlantSeedManager] 原生概率判定结果：{(isNeedMutate ? "触发新变异" : "不触发变异，复制原有状态")}");
+                    TbbDebuger.LogDebug($"[PlantSeedManager] 原生概率判定结果：{(isNeedMutate ? "触发新变异" : "不触发变异，复制原有状态")}");
                 }
 
                 GameObject mutantSeed = GameUtil.KInstantiate(original: sourceSeed, position: spawnPos, sceneLayer: Grid.SceneLayer.Front);
-                PUtil.LogDebug($"[PlantSeedManager] 变异种子初始化位置: {mutantSeed.transform.GetPosition()} - spawnPos:{spawnPos}");
+                TbbDebuger.LogDebug($"[PlantSeedManager] 变异种子初始化位置: {mutantSeed.transform.GetPosition()} - spawnPos:{spawnPos}");
                 SyncSeedBaseProperties(sourceSeed, mutantSeed);
 
                 var targetMutant = mutantSeed.GetComponent<MutantPlant>();
                 if (targetMutant == null)
                 {
-                    PUtil.LogError("[PlantSeedManager] 生成失败：新种子无MutantPlant组件");
+                    TbbDebuger.LogError("[PlantSeedManager] 生成失败：新种子无MutantPlant组件");
                     UnityEngine.Object.DestroyImmediate(mutantSeed);
                     return null;
                 }
@@ -196,18 +196,18 @@ namespace MutantFarmLab
                 {
                     if (sourceMutant != null)
                         sourceMutant.CopyMutationsTo(targetMutant);
-                    PUtil.LogDebug($"[PlantSeedManager] 变异状态处理完成 → {targetMutant.SubSpeciesID}");
+                    TbbDebuger.LogDebug($"[PlantSeedManager] 变异状态处理完成 → {targetMutant.SubSpeciesID}");
                 }
 
                 RegisterUndiscoveredSubspecies(targetMutant);
                 FinalizeMutantSeed(mutantSeed, spawnPos, storage);
 
-                PUtil.LogDebug($"[PlantSeedManager] 变异种子生成成功 ✅ → 亚种ID：{targetMutant.SubSpeciesID}（未发现状态）");
+                TbbDebuger.LogDebug($"[PlantSeedManager] 变异种子生成成功 ✅ → 亚种ID：{targetMutant.SubSpeciesID}（未发现状态）");
                 return mutantSeed;
             }
             catch (Exception ex)
             {
-                PUtil.LogError($"[PlantSeedManager] 生成变异种子异常：{ex.Message}\n{ex.StackTrace}");
+                TbbDebuger.LogError($"[PlantSeedManager] 生成变异种子异常：{ex.Message}\n{ex.StackTrace}");
                 return null;
             }
         }
@@ -217,7 +217,7 @@ namespace MutantFarmLab
             var maxRadiationAttr = Db.Get().PlantAttributes.MaxRadiationThreshold.Lookup(seed);
             if (maxRadiationAttr == null)
             {
-                PUtil.LogWarning("[PlantSeedManager] 无法获取植物辐射阈值，默认变异概率0");
+                TbbDebuger.LogWarning("[PlantSeedManager] 无法获取植物辐射阈值，默认变异概率0");
                 return false;
             }
 
@@ -227,7 +227,7 @@ namespace MutantFarmLab
             float mutateChance = Mathf.Clamp01(currentRad / maxRad) * 0.8f;
             bool rollSuccess = UnityEngine.Random.value < mutateChance;
 
-            PUtil.LogDebug($"[PlantSeedManager] 辐射概率计算：当前辐射={currentRad:F1} | 阈值={maxRad:F1} | 概率={mutateChance:P2} | 判定={rollSuccess}");
+            TbbDebuger.LogDebug($"[PlantSeedManager] 辐射概率计算：当前辐射={currentRad:F1} | 阈值={maxRad:F1} | 概率={mutateChance:P2} | 判定={rollSuccess}");
             return rollSuccess;
         }
 
@@ -255,7 +255,7 @@ namespace MutantFarmLab
         {
             if (source == null || target == null || string.IsNullOrEmpty(source.SpeciesID.ToString()))
             {
-                PUtil.LogError("[PlantSeedManager] 原生随机变异失败：核心参数为空");
+                TbbDebuger.LogError("[PlantSeedManager] 原生随机变异失败：核心参数为空");
                 return;
             }
 
@@ -263,7 +263,7 @@ namespace MutantFarmLab
             string plantPrefabID = source.SpeciesID.ToString();
             if (string.IsNullOrEmpty(plantPrefabID))
             {
-                PUtil.LogError("[PlantSeedManager] 原生随机变异失败：植物预制体ID为空");
+                TbbDebuger.LogError("[PlantSeedManager] 原生随机变异失败：植物预制体ID为空");
                 return;
             }
 
@@ -277,7 +277,7 @@ namespace MutantFarmLab
                 PlantMutation randomMutation = NativePlantMutations.GetRandomMutation(plantPrefabID);
                 if (randomMutation == null)
                 {
-                    PUtil.LogWarning($"[PlantSeedManager] 原生随机变异警告：植物[{plantPrefabID}]无适配的变异类型，终止抽取");
+                    TbbDebuger.LogWarning($"[PlantSeedManager] 原生随机变异警告：植物[{plantPrefabID}]无适配的变异类型，终止抽取");
                     break;
                 }
 
@@ -288,11 +288,11 @@ namespace MutantFarmLab
                 if (!randomMutationIDs.Contains(mutationID))
                 {
                     randomMutationIDs.Add(mutationID);
-                    PUtil.LogDebug($"[PlantSeedManager] ✅ 抽取到原生合规变异 → ID:{mutationID} | 名称:{randomMutation.Name}");
+                    TbbDebuger.LogDebug($"[PlantSeedManager] ✅ 抽取到原生合规变异 → ID:{mutationID} | 名称:{randomMutation.Name}");
                 }
                 else
                 {
-                    PUtil.LogDebug($"[PlantSeedManager] 原生随机变异去重：已抽取[{mutationID}]，跳过");
+                    TbbDebuger.LogDebug($"[PlantSeedManager] 原生随机变异去重：已抽取[{mutationID}]，跳过");
                     i--; // 重新抽取一次
                 }
             }
@@ -300,7 +300,7 @@ namespace MutantFarmLab
             // 4. 校验抽取结果，调用原生API生成亚种
             if (randomMutationIDs.Count == 0)
             {
-                PUtil.LogError("[PlantSeedManager] 原生随机变异失败：未抽取到任何合规变异ID");
+                TbbDebuger.LogError("[PlantSeedManager] 原生随机变异失败：未抽取到任何合规变异ID");
                 return;
             }
 
@@ -308,11 +308,11 @@ namespace MutantFarmLab
             {
                 // ✅ 调用原生亚种生成API，传入随机变异ID列表
                 target.SetSubSpecies(randomMutationIDs);
-                PUtil.LogDebug($"[PlantSeedManager] ✅ 原生亚种生成成功 → 亚种ID：{target.SubSpeciesID} | 变异组合：{string.Join("+", randomMutationIDs)}");
+                TbbDebuger.LogDebug($"[PlantSeedManager] ✅ 原生亚种生成成功 → 亚种ID：{target.SubSpeciesID} | 变异组合：{string.Join("+", randomMutationIDs)}");
             }
             catch (Exception ex)
             {
-                PUtil.LogWarning($"[PlantSeedManager] 原生亚种生成容错 → {ex.Message}");
+                TbbDebuger.LogWarning($"[PlantSeedManager] 原生亚种生成容错 → {ex.Message}");
             }
         }
         #endregion
@@ -323,11 +323,11 @@ namespace MutantFarmLab
             PlantSubSpeciesCatalog.SubSpeciesInfo subInfo = mutantPlant.GetSubSpeciesInfo();
             if (subInfo == null)
             {
-                PUtil.LogError("[PlantSeedManager] 亚种信息为空，注册失败");
+                TbbDebuger.LogError("[PlantSeedManager] 亚种信息为空，注册失败");
                 return;
             }
             PlantSubSpeciesCatalog.Instance.DiscoverSubSpecies(subInfo, mutantPlant);
-            PUtil.LogDebug($"[PlantSeedManager] ✅ 注册未发现变异亚种 → {subInfo.speciesID.ToString()}");
+            TbbDebuger.LogDebug($"[PlantSeedManager] ✅ 注册未发现变异亚种 → {subInfo.speciesID.ToString()}");
         }
 
         private static void FinalizeMutantSeed(GameObject seed, Vector3 spawnPos, Storage storage = null, bool dropByStorage = true)
@@ -344,7 +344,7 @@ namespace MutantFarmLab
                 if (seedPickable != null)
                 {
                     storage.Store(seed);
-                    PUtil.LogDebug("[PlantSeedManager] 变异种子已存入建筑仓储");
+                    TbbDebuger.LogDebug("[PlantSeedManager] 变异种子已存入建筑仓储");
                 }
 
                 GameObject droppedSeed = null;
@@ -360,7 +360,7 @@ namespace MutantFarmLab
 
             seed.Trigger(1623392196, null);
             seed.Trigger(-1736624145, seed);
-            PUtil.LogDebug($"[PlantSeedManager] ✅ 种子激活成功，掉落位置：{spawnPos}");
+            TbbDebuger.LogDebug($"[PlantSeedManager] ✅ 种子激活成功，掉落位置：{spawnPos}");
         }
         #endregion
         #region 种子有效性判定（供Workable/StatesInstance调用）

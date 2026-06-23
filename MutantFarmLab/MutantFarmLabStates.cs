@@ -1,5 +1,5 @@
-﻿using KSerialization;
-using PeterHan.PLib.Core;
+using KSerialization;
+using MutantFarmLab.tbbLibs;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -34,13 +34,13 @@ namespace MutantFarmLab
                 .Exit(smi => { if (smi.controller != null) smi.controller.ResetMutationTimer(); });
 
             idle
-                .Enter(smi => { PUtil.LogDebug("[变异农场试验台]State:Idle"); smi.ClearMutantSeedOutput(); })
+                .Enter(smi => { TbbDebuger.LogDebug("[变异农场试验台]State:Idle"); smi.ClearMutantSeedOutput(); })
                 .Update("CheckStorage", (smi, dt) => {
                     if (smi.IsMachineOperational)
                     {
                         if (smi?.HasEnoughParticles != true)
                         {
-                            PUtil.LogDebug("[变异农场试验台]状态机检测到能量粒子不足，切换至无粒子状态");
+                            TbbDebuger.LogDebug("[变异农场试验台]状态机检测到能量粒子不足，切换至无粒子状态");
                             smi.GoTo(noParticles);
                         }
                         else if (smi?.HasValidSeed == true && smi?.HasEnoughParticles == true)
@@ -53,7 +53,7 @@ namespace MutantFarmLab
                 .EventTransition(GameHashes.OnStorageChange, ready, smi => smi.HasValidSeed && smi.HasEnoughParticles && smi.IsMachineOperational);
 
             noParticles
-                .Enter((smi)=> PUtil.LogDebug("[变异农场试验台]State:noParticles"))
+                .Enter((smi)=> TbbDebuger.LogDebug("[变异农场试验台]State:noParticles"))
                 .ToggleStatusItem(
                 STRINGS.UI.STATUSITEMS.NEEDPARTICLES.NAME,
                 string.Format(STRINGS.UI.STATUSITEMS.NEEDPARTICLES.TOOLTIP, Mathf.RoundToInt(_particleConsumeAmount)), "", StatusItem.IconType.Info, NotificationType.BadMinor, allow_multiples: false, default(HashedString), 129022, null, null, Db.Get().StatusItemCategories.Main)
@@ -63,7 +63,7 @@ namespace MutantFarmLab
 
             ready
                 .Enter(OnReadyStateEnter)
-                .Exit(smi =>{ PUtil.LogDebug("[变异农场试验台]State:ready"); smi.CancelMutationWorkChore(); })
+                .Exit(smi =>{ TbbDebuger.LogDebug("[变异农场试验台]State:ready"); smi.CancelMutationWorkChore(); })
                 .EventTransition(GameHashes.OnParticleStorageChanged, idle, smi => !smi.HasEnoughParticles)
                 .Update("CheckChoreStatus", (smi, dt) => {
                     if (smi.IsMachineOperational && smi.HasValidSeed && smi.HasEnoughParticles)
@@ -80,14 +80,14 @@ namespace MutantFarmLab
         #region ===== 全局通用方法 =====
         private void OnInitRoot(StatesInstance smi)
         {
-            PUtil.LogDebug("[变异农场试验台]State:OnInitRoot");
+            TbbDebuger.LogDebug("[变异农场试验台]State:OnInitRoot");
             smi.controller = smi.master.gameObject.GetComponent<MutantFarmLabController>();
 
             smi.controller.ResetMutationTimer();
         }
         private void OnReadyStateEnter(StatesInstance smi)
         {
-            PUtil.LogDebug("[变异农场试验台]State:ready");
+            TbbDebuger.LogDebug("[变异农场试验台]State:ready");
             var workable = smi.gameObject.GetComponent<MutantFarmLabWorkable>();
             if (!smi.IsMachineOperational || !smi.HasValidSeed || !smi.HasEnoughParticles)
             {
@@ -298,7 +298,7 @@ namespace MutantFarmLab
                     var taskHash = task.GetHashCode();
                     if (taskHashSet.Contains(taskHash))
                     {
-                        PUtil.LogWarning($"队列存在重复任务：{taskHash}");
+                        TbbDebuger.LogWarning($"队列存在重复任务：{taskHash}");
                     }
                     else
                     {

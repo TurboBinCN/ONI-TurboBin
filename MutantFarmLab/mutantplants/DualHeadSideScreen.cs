@@ -1,6 +1,6 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using MutantFarmLab.mutantplants;
-using PeterHan.PLib.Core;
+using MutantFarmLab.tbbLibs;
 using System;
 using System.Reflection;
 using UnityEngine;
@@ -58,20 +58,20 @@ namespace MutantFarmLab
             CacheComponents(plotObject, sideScreenRoot);
             CreateOrShowButton(sideScreenRoot);
             
-            PUtil.LogDebug("[双头株] UI 初始化完成");
+            TbbDebuger.LogDebug("[双头株] UI 初始化完成");
         }
 
         private bool ValidateInitialization(GameObject plot, GameObject screen)
         {
             if (plot == null || screen == null)
             {
-                PUtil.LogWarning("[双头株] 初始化失败：目标对象为空");
+                TbbDebuger.LogWarning("[双头株] 初始化失败：目标对象为空");
                 return false;
             }
 
             if (_detailsScreen == null)
             {
-                PUtil.LogWarning("[双头株] 未找到 DetailsScreen");
+                TbbDebuger.LogWarning("[双头株] 未找到 DetailsScreen");
                 return false;
             }
 
@@ -86,10 +86,10 @@ namespace MutantFarmLab
             _plotOperational = plot.GetComponent<Operational>();
 
             if (_targetPlot == null || _targetReceptacle == null)
-                PUtil.LogError("[双头株] 缺少 PlantablePlot 或 SingleEntityReceptacle");
+                TbbDebuger.LogError("[双头株] 缺少 PlantablePlot 或 SingleEntityReceptacle");
 
             if (_planterSideScreen == null)
-                PUtil.LogError("[双头株] 未找到 PlanterSideScreen");
+                TbbDebuger.LogError("[双头株] 未找到 PlanterSideScreen");
         }
 
         private void CreateOrShowButton(GameObject sideScreenRoot)
@@ -97,7 +97,7 @@ namespace MutantFarmLab
             var buttonArea = FindButtonArea(sideScreenRoot);
             if (buttonArea == null)
             {
-                PUtil.LogWarning("[双头株] 未找到 ButtonArea 容器");
+                TbbDebuger.LogWarning("[双头株] 未找到 ButtonArea 容器");
                 return;
             }
             if (_dualPlantButton == null)
@@ -184,19 +184,19 @@ namespace MutantFarmLab
 
         private void HandleButtonClick()
         {
-            PUtil.LogDebug("[双头株] 按钮点击，开始清空种植盆（保留植株）");
+            TbbDebuger.LogDebug("[双头株] 按钮点击，开始清空种植盆（保留植株）");
 
             try
             {
                 PlantMigrationHelper2.MigratePlant(_targetPlot.Occupant, PlantablePlotGameObject.GetGameObject(_targetPlot.gameObject).GetComponent<PlantablePlot>());
                 RefreshUIAfterDelay();
 
-                PUtil.LogDebug("[双头株] 操作完成，等待 UI 刷新");
+                TbbDebuger.LogDebug("[双头株] 操作完成，等待 UI 刷新");
 
             }
             catch (Exception ex)
             {
-                PUtil.LogWarning($"[双头株] 操作异常: {ex}");
+                TbbDebuger.LogWarning($"[双头株] 操作异常: {ex}");
             }
         }
 
@@ -219,7 +219,7 @@ namespace MutantFarmLab
                     LayoutRebuilder.ForceRebuildLayoutImmediate(
                         _planterSideScreen.GetComponent<RectTransform>()
                     );
-                    PUtil.LogDebug("[双头株] UI 刷新完成");
+                    TbbDebuger.LogDebug("[双头株] UI 刷新完成");
                 }
             });
         }
@@ -344,13 +344,13 @@ namespace MutantFarmLab
                     // 4.检查当前已种植物是否挂载DHP组件 没有即挂载=====
                     //existPlant.AddOrGet<DualHeadPlantComponent>();
 
-                    //PUtil.LogDebug($"[双头株] 所有 IsValidEntity 检查已完成 -> 允许种植第二株");
+                    //TbbDebuger.LogDebug($"[双头株] 所有 IsValidEntity 检查已完成 -> 允许种植第二株");
                     __result = true; // ✅ 强制判定「合法可种植」
                     return false;    // ✅ 终止原生逻辑，直接生效我们的判定结果
                 }
                 catch (Exception ex)
                 {
-                    PUtil.LogWarning($"[双头株] 操作异常: {ex}");
+                    TbbDebuger.LogWarning($"[双头株] 操作异常: {ex}");
                     return true;
                 }
                 finally

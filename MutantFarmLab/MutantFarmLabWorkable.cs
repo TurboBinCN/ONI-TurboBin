@@ -1,4 +1,4 @@
-﻿using PeterHan.PLib.Core;
+using MutantFarmLab.tbbLibs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -104,7 +104,7 @@ namespace MutantFarmLab
             var rawSeedPickupable = rawSeed.GetComponent<Pickupable>();
             if (rawSeedPickupable == null)
             {
-                PUtil.LogError("[SpawnFinalMutantSeed] 找到的种子对象缺少 Pickupable 组件！");
+                TbbDebuger.LogError("[SpawnFinalMutantSeed] 找到的种子对象缺少 Pickupable 组件！");
                 return;
             }
             var seedComp = rawSeed.GetComponent<PlantableSeed>();
@@ -116,7 +116,7 @@ namespace MutantFarmLab
             {
                 // 如果是堆叠，取一个单位
                 singleSeedToUse = rawSeedPickupable.TakeUnit(1f);
-                PUtil.LogDebug($"[SpawnFinalMutantSeed] 从堆叠中取出一个单位种子进行变异。原堆叠剩余数量: {rawSeedPickupable.TotalAmount}");
+                TbbDebuger.LogDebug($"[SpawnFinalMutantSeed] 从堆叠中取出一个单位种子进行变异。原堆叠剩余数量: {rawSeedPickupable.TotalAmount}");
             }
             else
             {
@@ -126,12 +126,12 @@ namespace MutantFarmLab
                 // 但为了模仿 GeneticAnalysisStation，我们先把它从存储中移除
                 SeedStorage.Remove(rawSeed);
                 singleSeedToUse = rawSeedPickupable;
-                PUtil.LogDebug($"[SpawnFinalMutantSeed] 使用单个种子进行变异。");
+                TbbDebuger.LogDebug($"[SpawnFinalMutantSeed] 使用单个种子进行变异。");
             }
 
             if (singleSeedToUse == null)
             {
-                PUtil.LogError("[SpawnFinalMutantSeed] 无法获取单个种子对象（可能 TakeUnit 失败）！");
+                TbbDebuger.LogError("[SpawnFinalMutantSeed] 无法获取单个种子对象（可能 TakeUnit 失败）！");
                 return; // 如果 TakeUnit 失败，singleSeedToUse 会是 null
             }
 
@@ -142,7 +142,7 @@ namespace MutantFarmLab
                 var mutantSeed = PlantSeedManager.GenerateMutantSubspeciesSeed(singleSeedGameObject, dropPos, SeedStorage, true);
                 if (mutantSeed == null)
                 {
-                    PUtil.LogError("[SpawnFinalMutantSeed] 生成变异种子失败！");
+                    TbbDebuger.LogError("[SpawnFinalMutantSeed] 生成变异种子失败！");
                     // 如果变异失败，需要处理这个被取出来的单个种子
                     // 一种方式是将其放回存储
                     SeedStorage.Store(singleSeedGameObject);
@@ -154,7 +154,7 @@ namespace MutantFarmLab
             catch (Exception e)
             {
                 //SeedStorage.Drop(seedComp.PlantID, new List<GameObject> { rawSeed });
-                PUtil.LogError($"[变异失败] 物种：{seedComp.PlantID}，错误：{e.Message}");
+                TbbDebuger.LogError($"[变异失败] 物种：{seedComp.PlantID}，错误：{e.Message}");
                 // 发生异常时，也应将取出的单个种子放回存储
                 if (singleSeedGameObject != null && singleSeedGameObject.activeSelf)
                 {

@@ -1,5 +1,5 @@
-﻿using Klei.AI;
-using PeterHan.PLib.Core;
+using Klei.AI;
+using MutantFarmLab.tbbLibs;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -62,7 +62,7 @@ namespace MutantFarmLab.mutantplants
             bool sharedDark = _originalState.prefersDarkness ||
                              (partnerIllum?.prefersDarkness ?? false);
             if (myIllum != null) {
-                PUtil.LogDebug($"[双头株] 设置[{gameObject.name}]修改项-黑暗 ");
+                TbbDebuger.LogDebug($"[双头株] 设置[{gameObject.name}]修改项-黑暗 ");
                 myIllum.prefersDarkness = sharedDark; 
             }
 
@@ -100,7 +100,7 @@ namespace MutantFarmLab.mutantplants
                 twin.AddOrGet<DualHeadSymbiosisEffectController>().maturity = maturity;
             }
             float finalDelta = GetMaturityModifierDelta(gameObject,maturity);
-            PUtil.LogDebug($"[双头株] maturity：[{maturity}] finalDelta：[{finalDelta}]");
+            TbbDebuger.LogDebug($"[双头株] maturity：[{maturity}] finalDelta：[{finalDelta}]");
             _originalState.attributeModifier.Add(new AttributeModifier(
                 Db.Get().Amounts.Maturity.maxAttribute.Id,
                 finalDelta,
@@ -119,12 +119,12 @@ namespace MutantFarmLab.mutantplants
             {
                 gameObject.GetComponent<Modifiers>().attributes.Add( attr );
                 // 注意：这里我们仍依赖 attribute 查询是否实时生效
-                PUtil.LogDebug($"[双头株] 设置[{gameObject.name}] 修改项 [{attr.AttributeId}] 最终值:[{gameObject.GetComponent<Modifiers>().attributes.Get(attr.AttributeId)?.GetTotalValue()}]");
+                TbbDebuger.LogDebug($"[双头株] 设置[{gameObject.name}] 修改项 [{attr.AttributeId}] 最终值:[{gameObject.GetComponent<Modifiers>().attributes.Get(attr.AttributeId)?.GetTotalValue()}]");
             }
             //----生长进度同步
             Growing growingA = gameObject.GetComponent<Growing>();
             AmountInstance growiingAAmountInstance = TbbHarmonyExtension.GetField(growingA, "maturity") as AmountInstance;
-            PUtil.LogDebug($"[双头株] [{gameObject.name}] 设置生长进度: [{twin.GetComponent<Growing>().PercentGrown()}%] [{twin.GetComponent<Growing>().PercentGrown() * maturity}]");
+            TbbDebuger.LogDebug($"[双头株] [{gameObject.name}] 设置生长进度: [{twin.GetComponent<Growing>().PercentGrown()}%] [{twin.GetComponent<Growing>().PercentGrown() * maturity}]");
             growiingAAmountInstance.SetValue(twin.GetComponent<Growing>().PercentGrown() * maturity);
         }
 
@@ -143,11 +143,11 @@ namespace MutantFarmLab.mutantplants
                 {
                     if (modifier != null) {
                         modifiers.attributes.Get(modifier.AttributeId)?.Remove(modifier);
-                        PUtil.LogDebug($"[双头株]Remove AttrModifier [{modifier.AttributeId}] totalValue:[{gameObject.GetComponent<Modifiers>().attributes.Get(modifier.AttributeId)?.GetTotalValue()}]");
+                        TbbDebuger.LogDebug($"[双头株]Remove AttrModifier [{modifier.AttributeId}] totalValue:[{gameObject.GetComponent<Modifiers>().attributes.Get(modifier.AttributeId)?.GetTotalValue()}]");
                     }
                 }
             }
-            PUtil.LogDebug($"[双头株] 恢复[{gameObject.name}]为原始状态。");
+            TbbDebuger.LogDebug($"[双头株] 恢复[{gameObject.name}]为原始状态。");
         }
         public float GetMaturityModifierDelta(GameObject plant,float targetMaturity)
         {

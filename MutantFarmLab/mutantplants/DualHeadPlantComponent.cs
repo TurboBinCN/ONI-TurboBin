@@ -1,7 +1,7 @@
-﻿// DualHeadPlantComponent.cs
+// DualHeadPlantComponent.cs
 using HarmonyLib;
 using Klei.AI;
-using PeterHan.PLib.Core;
+using MutantFarmLab.tbbLibs;
 using UnityEngine;
 
 namespace MutantFarmLab.mutantplants
@@ -55,7 +55,7 @@ namespace MutantFarmLab.mutantplants
             if (RootPlotGameObject == null && isDulHeadMutantPlant())
             {
 
-                PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}] 开始数据重建.");
+                TbbDebuger.LogDebug($"[双头株]Plant:[{_PlantI.name}] 开始数据重建.");
                 //TODO 子株也是双头株变异需要判断
                 //母株逻辑
                 int centerCell = Grid.PosToCell(_PlantI); // 自身中心格子（判定基准）
@@ -85,14 +85,14 @@ namespace MutantFarmLab.mutantplants
                     if (IsTargetFarmTile(farmTileObj))
                     {
                         RootPlotGameObject = farmTileObj;
-                        PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}] cell:[{targetCell}] | 种植砖={farmTileObj.name}");
+                        TbbDebuger.LogDebug($"[双头株]Plant:[{_PlantI.name}] cell:[{targetCell}] | 种植砖={farmTileObj.name}");
                         break;
                     }
                 }
             }
             if (RootPlotGameObject == null)
             {
-                PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}] 未找到种植砖，结束");
+                TbbDebuger.LogDebug($"[双头株]Plant:[{_PlantI.name}] 未找到种植砖，结束");
                 return;
             }
             _marker = RootPlotGameObject.GetComponent<DualHeadReceptacleMarker>();
@@ -104,7 +104,7 @@ namespace MutantFarmLab.mutantplants
             //子株占据Farmtile
             var OccupantPlant = RootPlotGameObject.GetComponent<PlantablePlot>().Occupant;
 
-            PUtil.LogDebug($"[双头株] 母株：[{_PlantI.name}] [{_PlantI.GetComponent<ReceptacleMonitor>()?.GetReceptacle()?.gameObject?.name}] OccupantPlant株: [{OccupantPlant?.name}] [{OccupantPlant?.GetComponent<ReceptacleMonitor>()?.GetReceptacle()?.gameObject?.name}]");
+            TbbDebuger.LogDebug($"[双头株] 母株：[{_PlantI.name}] [{_PlantI.GetComponent<ReceptacleMonitor>()?.GetReceptacle()?.gameObject?.name}] OccupantPlant株: [{OccupantPlant?.name}] [{OccupantPlant?.GetComponent<ReceptacleMonitor>()?.GetReceptacle()?.gameObject?.name}]");
 
             //===读档时迁移操作，判断：读档 && 有双株 时机：母株重建时
             //注释:DualHeadSideScreen ClickHandler中完成初次迁移
@@ -122,7 +122,7 @@ namespace MutantFarmLab.mutantplants
                     plot.InitializeComponent();
                     _PlantI.transform.SetParent(plot.transform);
                     PlantMigrationHelper2.MigratePlant(_PlantI, plot);
-                    PUtil.LogDebug($"[双头株] 完成母株[{_PlantI.name}]迁移Plot:[{plot.gameObject.name}]");
+                    TbbDebuger.LogDebug($"[双头株] 完成母株[{_PlantI.name}]迁移Plot:[{plot.gameObject.name}]");
                 }
             }
             //===绑定双株，设置增益，判断： 有双株 && 没有开启 双头株增益
@@ -172,7 +172,7 @@ namespace MutantFarmLab.mutantplants
                     SetDualHead(true);
                     ApplyDualHeadBonuses(_PlantI, twinPlant);
 
-                    PUtil.LogDebug($"[双头株] 完成绑定与Effect 母株[{_PlantI.name}] 子株:[{twin.gameObject.name}] 标记:[{_marker.primaryPlant.name}] dualHead:[{dualHead}]");
+                    TbbDebuger.LogDebug($"[双头株] 完成绑定与Effect 母株[{_PlantI.name}] 子株:[{twin.gameObject.name}] 标记:[{_marker.primaryPlant.name}] dualHead:[{dualHead}]");
                 }
             }
         }
@@ -195,7 +195,7 @@ namespace MutantFarmLab.mutantplants
             {
                 //清理关联引用与增益
                 var dulHeadPlantCom = _PlantI.GetComponent<DualHeadPlantComponent>();
-                PUtil.LogDebug($"[双头株]Plant:[{_PlantI.name}]CleanUP 开始清理[{dulHeadPlantCom?.twin?.gameObject.name}]共生状态.");
+                TbbDebuger.LogDebug($"[双头株]Plant:[{_PlantI.name}]CleanUP 开始清理[{dulHeadPlantCom?.twin?.gameObject.name}]共生状态.");
                 BreakSymbiosis(dulHeadPlantCom?.twin?.gameObject);
 
                 //断开配对
@@ -299,7 +299,7 @@ namespace MutantFarmLab.mutantplants
                 dualHeadPlantCom.RootPlotGameObject = __instance.gameObject;
 
                 marker.primaryPlant = newPlant;
-                PUtil.LogDebug($"[双头株] 母株[{marker.primaryPlant.name}]种植配置");
+                TbbDebuger.LogDebug($"[双头株] 母株[{marker.primaryPlant.name}]种植配置");
                 // 锁定 receptacle
                 __instance.autoReplaceEntity = false;
             }
@@ -309,7 +309,7 @@ namespace MutantFarmLab.mutantplants
                 var secondDHP = newPlant.AddOrGet<DualHeadPlantComponent>();
                 secondDHP.RootPlotGameObject = __instance.gameObject;
 
-                PUtil.LogDebug($"[双头株] 子株种植配置 [子:{secondDHP.name} 母:{marker.primaryPlant.name}]");
+                TbbDebuger.LogDebug($"[双头株] 子株种植配置 [子:{secondDHP.name} 母:{marker.primaryPlant.name}]");
             }
         }
     }

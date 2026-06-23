@@ -1,7 +1,7 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using KSerialization;
 using MutantFarmLab.mutantplants;
-using PeterHan.PLib.Core;
+using MutantFarmLab.tbbLibs;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -28,7 +28,7 @@ namespace MutantFarmLab
             }
             protected override void OnCleanUp()
             {
-                PUtil.LogDebug($"SubGoStorage OnCleanUp DropALl items.");
+                TbbDebuger.LogDebug($"SubGoStorage OnCleanUp DropALl items.");
                 DropAll();
                 base.OnCleanUp();
             }
@@ -75,7 +75,7 @@ namespace MutantFarmLab
 
             //SubGameObject.SetActive(true);//需要的时候SetActive 否则种植砖底下会有两个未种植的图标
             if (parentGo != null)
-                PUtil.LogDebug($"[SubGO] transfromGOName:[{parentGo.name}] transfromGOID：[{parentGo.GetMyWorldId()}] transform localPosition:[{parentGo.transform.localPosition.ToString()}] transform postion:[{parentGo.transform.position}] SubGameObject worldID:[{SubGameObject.GetMyWorldId()}] SubGameObjectl localPosition:[{SubGameObject.transform.localPosition.ToString()} subGameObject postion: [{SubGameObject.transform.position}]");
+                TbbDebuger.LogDebug($"[SubGO] transfromGOName:[{parentGo.name}] transfromGOID：[{parentGo.GetMyWorldId()}] transform localPosition:[{parentGo.transform.localPosition.ToString()}] transform postion:[{parentGo.transform.position}] SubGameObject worldID:[{SubGameObject.GetMyWorldId()}] SubGameObjectl localPosition:[{SubGameObject.transform.localPosition.ToString()} subGameObject postion: [{SubGameObject.transform.position}]");
 
             return SubGameObject;
         }
@@ -250,7 +250,7 @@ namespace MutantFarmLab
             }
             catch (Exception ex)
             {
-                PUtil.LogWarning($"{ex.Message}\n{ex.StackTrace}");
+                TbbDebuger.LogWarning($"{ex.Message}\n{ex.StackTrace}");
                 return false;
             }
             return true;
