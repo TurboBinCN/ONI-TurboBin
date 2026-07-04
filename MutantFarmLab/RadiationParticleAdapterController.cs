@@ -149,25 +149,23 @@ namespace MutantFarmLab
 
             foreach (var offset in checkOffsets)
             {
-                // 1. 计算「自身中心±上下左右1格」的目标格子ID
                 int targetCell = Grid.OffsetCell(adapterCenterCell, offset);
-                GameObject cellObjectaa = Grid.Objects[targetCell, (int)ObjectLayer.FoundationTile];
-                TbbDebuger.LogDebug($"🔍 检测目标格子 (Layer-FoundationTile) ={targetCell} | 目标格子对象={cellObjectaa?.name ?? "null"}");
-                GameObject cellObjectbb = Grid.Objects[targetCell, (int)ObjectLayer.Building];
-                TbbDebuger.LogDebug($"🔍 检测目标格子 (Layer-Building) ={targetCell} | 目标格子对象={cellObjectbb?.name ?? "null"}");
-                // ❗ 过滤1：目标格子无效 → 直接跳过
-                if (!Grid.IsValidCell(targetCell)) { 
-                    TbbDebuger.LogDebug($"⚠️ 检测目标格子无效，跳过 | 目标格子ID={targetCell}");
-                    continue; 
+                if (!Grid.IsValidCell(targetCell))
+                {
+                    continue;
                 }
 
-                // ❗ 核心判定（严格匹配规则）：该格子是否被【当前Adapter自己】占据
+                GameObject cellObjectaa = Grid.Objects[targetCell, (int)ObjectLayer.FoundationTile];
+                TbbDebuger.LogDebug($"🔍 检测目标格子 (Layer-FoundationTile) ={targetCell} | 目标格子对象={GetObjectNameSafe(cellObjectaa)}");
+                GameObject cellObjectbb = Grid.Objects[targetCell, (int)ObjectLayer.Building];
+                TbbDebuger.LogDebug($"🔍 检测目标格子 (Layer-Building) ={targetCell} | 目标格子对象={GetObjectNameSafe(cellObjectbb)}");
+
                 GameObject cellObj = Grid.Objects[targetCell, (int)ObjectLayer.Building];
                 bool isSelfOccupyCell = cellObj != null && cellObj == this.gameObject;
                 if (!isSelfOccupyCell)
                 {
-                    TbbDebuger.LogDebug($"⚠️ 检测目标格子非自身占据，跳过 | 目标格子ID={targetCell} | 目标格子对象={cellObj?.name ?? "null"}");
-                    continue; // 不是自己占据的格子 → 直接跳过
+                    TbbDebuger.LogDebug($"⚠️ 检测目标格子非自身占据，跳过 | 目标格子ID={targetCell} | 目标格子对象={GetObjectNameSafe(cellObj)}");
+                    continue;
                 }
 
                 // ✅ 满足所有规则：自身中心±1格 + 是自己占据的格子 → 检测种植砖
@@ -182,7 +180,7 @@ namespace MutantFarmLab
                 {
                     _bindFarmTile = farmTileObj;
                     _isBindFarmTileValid = true;
-                    TbbDebuger.LogDebug($"✅ 绑定成功✅ 自身占据格子={targetCell} | 种植砖={farmTileObj.name}");
+                    TbbDebuger.LogDebug($"✅ 绑定成功✅ 自身占据格子={targetCell} | 种植砖={GetObjectNameSafe(farmTileObj)}");
                     return;
                 }
             }
@@ -191,16 +189,32 @@ namespace MutantFarmLab
         }
 
         #region 核心辅助方法（精准无错，可复用）
-        /// <summary>
-        /// ✅ 判断目标对象是否为种植砖/水培砖（三重保险，100%命中）
-        /// </summary>
+        private string GetObjectNameSafe(GameObject go)
+        {
+            if (go == null)
+                return "null";
+            try
+            {
+                return go.name;
+            }
+            catch (NullReferenceException)
+            {
+                return "[destroyed]";
+            }
+        }
+
         private bool IsTargetFarmTile(GameObject targetObj)
         {
+            if (targetObj == null)
+                return false;
+
             KPrefabID prefabId = targetObj.GetComponent<KPrefabID>();
-            TbbDebuger.LogDebug($"🔍 判定目标对象={targetObj.name} | prefabId={prefabId?.HasTag(GameTags.CodexCategories.FarmBuilding).ToString() ?? "null"}");
+            TbbDebuger.LogDebug($"🔍 判定目标对象={GetObjectNameSafe(targetObj)} | prefabId={prefabId?.HasTag(GameTags.CodexCategories.FarmBuilding).ToString() ?? "null"}");
             if (prefabId != null && prefabId.HasTag(GameTags.CodexCategories.FarmBuilding)) return true;
-            if (targetObj.name.Contains("FarmTile")) return true;
-            return targetObj.name.Contains("Hydroponic");
+
+            string objName = GetObjectNameSafe(targetObj);
+            if (objName.Contains("FarmTile")) return true;
+            return objName.Contains("Hydroponic");
         }
         #endregion
 
