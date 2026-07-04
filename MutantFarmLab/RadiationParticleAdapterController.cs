@@ -8,7 +8,8 @@ using UnityEngine;
 namespace MutantFarmLab
 {
     /// <summary>
-    /// 辐射粒子配件核心控制器【终极修复版】
+    /// 辐射粒子配件核心控制器
+    /// 核心Patch ： BuildLocationPatch.cs 控制建筑叠放问题
     /// </summary>
     [SerializationConfig(MemberSerialization.OptIn)]
     public class RadiationParticleAdapterController : KMonoBehaviour, ISaveLoadable, IGameObjectEffectDescriptor, ISingleSliderControl, ISliderControl
@@ -150,18 +151,31 @@ namespace MutantFarmLab
             {
                 // 1. 计算「自身中心±上下左右1格」的目标格子ID
                 int targetCell = Grid.OffsetCell(adapterCenterCell, offset);
-
+                GameObject cellObjectaa = Grid.Objects[targetCell, (int)ObjectLayer.FoundationTile];
+                TbbDebuger.LogDebug($"🔍 检测目标格子 (Layer-FoundationTile) ={targetCell} | 目标格子对象={cellObjectaa?.name ?? "null"}");
+                GameObject cellObjectbb = Grid.Objects[targetCell, (int)ObjectLayer.Building];
+                TbbDebuger.LogDebug($"🔍 检测目标格子 (Layer-Building) ={targetCell} | 目标格子对象={cellObjectbb?.name ?? "null"}");
                 // ❗ 过滤1：目标格子无效 → 直接跳过
-                if (!Grid.IsValidCell(targetCell)) continue;
+                if (!Grid.IsValidCell(targetCell)) { 
+                    TbbDebuger.LogDebug($"⚠️ 检测目标格子无效，跳过 | 目标格子ID={targetCell}");
+                    continue; 
+                }
 
                 // ❗ 核心判定（严格匹配规则）：该格子是否被【当前Adapter自己】占据
                 GameObject cellObj = Grid.Objects[targetCell, (int)ObjectLayer.Building];
                 bool isSelfOccupyCell = cellObj != null && cellObj == this.gameObject;
-                if (!isSelfOccupyCell) continue; // 不是自己占据的格子 → 直接跳过
+                if (!isSelfOccupyCell)
+                {
+                    TbbDebuger.LogDebug($"⚠️ 检测目标格子非自身占据，跳过 | 目标格子ID={targetCell} | 目标格子对象={cellObj?.name ?? "null"}");
+                    continue; // 不是自己占据的格子 → 直接跳过
+                }
 
                 // ✅ 满足所有规则：自身中心±1格 + 是自己占据的格子 → 检测种植砖
                 GameObject farmTileObj = Grid.Objects[targetCell, (int)ObjectLayer.FoundationTile];
-                if (farmTileObj == null) continue;
+                if (farmTileObj == null){ 
+                    TbbDebuger.LogDebug($"⚠️ 检测目标格子无种植砖，跳过 | 目标格子ID={targetCell}");
+                    continue;
+                }
 
                 // ✅ 精准判定种植砖，命中即绑定
                 if (IsTargetFarmTile(farmTileObj))
@@ -173,7 +187,7 @@ namespace MutantFarmLab
                 }
             }
 
-            //PUtil.LogDebug($"⚠️ 绑定失败：自身中心上下左右1格范围内，无自身占据且包含种植砖的格子");
+            TbbDebuger.LogDebug($"⚠️ 绑定失败：自身中心上下左右1格范围内，无自身占据且包含种植砖的格子");
         }
 
         #region 核心辅助方法（精准无错，可复用）
@@ -183,13 +197,15 @@ namespace MutantFarmLab
         private bool IsTargetFarmTile(GameObject targetObj)
         {
             KPrefabID prefabId = targetObj.GetComponent<KPrefabID>();
-            if (prefabId != null && prefabId.HasTag(GameTags.FarmTiles)) return true;
+            TbbDebuger.LogDebug($"🔍 判定目标对象={targetObj.name} | prefabId={prefabId?.HasTag(GameTags.CodexCategories.FarmBuilding).ToString() ?? "null"}");
+            if (prefabId != null && prefabId.HasTag(GameTags.CodexCategories.FarmBuilding)) return true;
             if (targetObj.name.Contains("FarmTile")) return true;
             return targetObj.name.Contains("Hydroponic");
         }
         #endregion
 
-        #region 粒子状态判定 + 联动控制
+        
+#region 粒子状态判定 + 联动控制
         private void JudgeParticleEnoughState()
         {
             _isParticleEnough = ParticleStorage != null && ParticleStorage.GetAmountAvailable(GameTags.HighEnergyParticle) > 0;
@@ -236,7 +252,6 @@ namespace MutantFarmLab
             HEP_RQ_LogicPort.SendSignal(RadiationParticleAdapterConfig.HEP_RQ_LOGIC_PORT_ID, highEnergyParticaleRQSignal);
         }
         #endregion
-
         #region 侧边栏提示（核心）
         public List<Descriptor> GetDescriptors(GameObject go)
         {

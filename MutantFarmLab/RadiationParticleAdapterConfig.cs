@@ -7,7 +7,7 @@ using BUILDINGS = TUNING.BUILDINGS;
 namespace MutantFarmLab
 {
     /// <summary>
-    /// 辐射粒子适配配件【适配原生种植砖/水培砖】- 全报错修复版
+    /// 辐射粒子适配配件【适配原生种植砖/水培砖】
     /// </summary>
     public class RadiationParticleAdapterConfig : IBuildingConfig
     {
