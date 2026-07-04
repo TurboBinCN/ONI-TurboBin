@@ -1,8 +1,5 @@
 {
   STRINGS: {
-    # ==============================================
-    # ✅ 建筑翻译 → 严格对齐 C# BUILDINGS.PREFABS
-    # ==============================================
     BUILDINGS: {
       PREFABS: {
         MUTANTFARMLAB: {
@@ -41,10 +38,6 @@
         }
       }
     }
-
-    # ==============================================
-    # ✅ UI翻译 → 严格对齐 C# UI 所有节点
-    # ==============================================
     UI: {
       UISIDESCREENS: {
         PLANTERSIDESCREEN: {
@@ -101,11 +94,18 @@
           TOOLTIP: 建筑所需辐射粒子消耗速率：{0}/秒
         }
       }
+      OPTIONS: {
+        GROUP_MUTANT_PLANT: 变异植物
+        OPTION_DUAL_HEAD_NAME: 双头株变异
+        OPTION_DUAL_HEAD_DESC: 启用双头株植物变异，植物有几率变异为双头形态
+        OPTION_ACTINO_NAME: 辐光菌变异
+        OPTION_ACTINO_DESC: 启用辐光菌植物变异，植物可在低光照低养料条件下生长
+        OPTION_OILENRICH_NAME: 原油富集变异
+        OPTION_OILENRICH_DESC: 启用原油富集植物变异，植物可产出原油
+        OPTION_RADSEED_NAME: 辐射籽变异
+        OPTION_RADSEED_DESC: 启用辐射籽变异，种子获得辐射抗性
+      }
     }
-
-    # ==============================================
-    # ✅ 核心翻译：抗辐籽 RADSEED → 与C# ELEMENT.RADSEED严格对齐
-    # ==============================================
     ELEMENT: {
       RADSEED: {
         NAME: 辐射籽
@@ -124,7 +124,6 @@
         DESC: "辐射农场专属的工业级变异植株，核心功能为高效吸收二氧化碳并转化为高价值原油，是后期基地“碳-油-能”闭环的核心枢纽。需依赖辐射环境激活转化机制，搭配辐光菌可实现光照自给与病菌净化，代价为养料消耗增加与生长周期延长，适配大规模工业基地的资源循环需求。"
       }
     }
-    # ✅ 新增：食物中文翻译（对应 ITEMS.FOOD.RADSEED）
     ITEMS: {
       FOOD: {
         RADSEED: {
@@ -134,7 +133,6 @@
       }
     }
 
-    # ✅ 新增：效果中文翻译（对应 DUPLICANTS.MODIFIERS）
     DUPLICANTS: {
       MODIFIERS: {
         RADCLEAR: {
@@ -147,7 +145,6 @@
         }
       }
     }
-    # 🔧 修正：添加缺失的大括号
     MUTANTS: {
       EFFECTS: {
         DUAL_HEAD_SYMBIOSIS: {
@@ -158,4 +155,3 @@
     }
   }
 }
-// 确保文件末尾有一个换行符（虽然 HJSON 规范不强制要求，但良好实践）

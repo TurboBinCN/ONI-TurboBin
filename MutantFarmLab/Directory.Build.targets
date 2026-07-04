@@ -4,9 +4,11 @@
 	<Target Name="copyPorjectFiles" DependsOnTargets="CopyArtifactsToInstallFolder" AfterTargets="CopyArtifactsToInstallFolder">
 		<ItemGroup>
 			<customDlls Include="$(ProjectDir)/../libs/Hjson.dll" />
+			<PlibDlls Include="$(ProjectDir)/../libs/PLib*.*" />
 			<TranslationFiles Include="$(ProjectDir)/translations/*.*" />
 		</ItemGroup>
 		<Copy SourceFiles="@(customDlls)" DestinationFolder="$(InstallFolder)" />
+		<Copy SourceFiles="@(PlibDlls)" DestinationFolder="$(InstallFolder)" />
 		<Copy SourceFiles="@(TranslationFiles)" DestinationFiles="@(TranslationFiles->'$(InstallFolder)/translations/%(RecursiveDir)%(Filename)%(Extension)')" />
 	</Target>
 	<Target Name="RunONI" DependsOnTargets="copyPorjectFiles" AfterTargets="copyPorjectFiles" Condition=" '$(ForceONIRestart)' == 'true' ">

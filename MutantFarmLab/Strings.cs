@@ -4,7 +4,6 @@ namespace MutantFarmLab
 {
     public static class STRINGS
     {
-        #region 建筑文本配置（设备名称/描述/效果）
         public static class BUILDINGS
         {
             public static class PREFABS
@@ -52,16 +51,13 @@ namespace MutantFarmLab
                 }
             }
         }
-        #endregion
-
-        #region UI界面文本配置（面板/提示/任务）
         public static class UI
         {
             public static class UISIDESCREENS
             {
                 public static class PLANTERSIDESCREEN
                 {
-                    public static LocString PLANT = "植株";
+                    public static LocString PLANT = "Plant";
                 }
                 public static class MUTANTFARMLAB
                 {
@@ -127,10 +123,20 @@ namespace MutantFarmLab
                     public static LocString TOOLTIP = "Requires Radiation Particles {0}/s";
                 }
             }
+            public static class OPTIONS
+            {
+                public static LocString GROUP_MUTANT_PLANT = "Mutant Plant";
+                public static LocString OPTION_DUAL_HEAD_NAME = "Dual Head Mutation";
+                public static LocString OPTION_DUAL_HEAD_DESC = "Enable Dual Head Mutation, plants have a chance to mutate into Dual Head form.";
+                public static LocString OPTION_ACTINO_NAME = "Actinobacteria Mutation";
+                public static LocString OPTION_ACTINO_DESC = "Enable Actinobacteria Mutation, plants have a chance to mutate into Actinobacteria form.";
+                public static LocString OPTION_OILENRICH_NAME = "Oil-Enrich Mutation";
+                public static LocString OPTION_OILENRICH_DESC = "Enable Oil-Enrich Mutation, plants have a chance to mutate into Oil-Enrich form.";
+                public static LocString OPTION_RADSEED_NAME = "Rad Seed Mutation";
+                public static LocString OPTION_RADSEED_DESC = "Enable Rad Seed Mutation, plants have a chance to mutate into Rad Seed form.";
+            }
         }
-        #endregion
 
-        #region 物品文本配置（核心：抗辐籽RADSEED，与hjson严格对齐）
         public static class ELEMENT
         {
             public static class RADSEED
@@ -153,8 +159,6 @@ namespace MutantFarmLab
                 public static LocString DESC = "An industrial-grade mutant plant exclusive to radiation farms, whose core function is to efficiently absorb carbon dioxide and convert it into high-value crude oil, serving as the core hub of the \"carbon-oil-energy\" cycle in late-game bases. It relies on a radiation environment to activate the conversion mechanism; when paired with Actinobacteria, it can achieve self-sufficiency in lighting and germ purification. The cost is increased nutrient consumption and extended growth cycle, suitable for the resource cycle needs of large-scale industrial bases.";
             }
         }
-        #endregion
-        #region ✅ 新增：食物文本节点（解决 ITEMS.FOOD 缺失）
         public static class ITEMS
         {
             public static class FOOD
@@ -166,9 +170,6 @@ namespace MutantFarmLab
                 }
             }
         }
-        #endregion
-
-        #region ✅ 新增：效果文本节点（解决 DUPLICANTS.MODIFIERS 缺失）
         public static class DUPLICANTS
         {
             public static class MODIFIERS
@@ -187,7 +188,6 @@ namespace MutantFarmLab
                 }
             }
         }
-        #endregion
         public static class MUTANTS
         {
             public static class EFFECTS

@@ -2,6 +2,8 @@ using HarmonyLib;
 using KMod;
 using MutantFarmLab.mutantplants;
 using MutantFarmLab.tbbLibs;
+using PeterHan.PLib.Core;
+using PeterHan.PLib.Options;
 
 namespace MutantFarmLab
 {
@@ -11,11 +13,15 @@ namespace MutantFarmLab
         {
             base.OnLoad(harmony);
 
+            PUtil.InitLibrary();
+
             if (KPrefabID.NextUniqueID <= 0)
                 KPrefabID.NextUniqueID = 1;
 
             TbbDebuger.GlobalLogLevel = TbbDebuger.LogLevel.None;
             harmony.PatchAll();
+
+            new POptions().RegisterOptions(this, typeof(MutantFarmLabOptions));
 
             ManualDeliveryKGPatch.Patch(harmony);
 

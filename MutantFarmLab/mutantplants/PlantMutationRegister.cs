@@ -2,18 +2,17 @@ using Database;
 using HarmonyLib;
 using Klei.AI;
 using MutantFarmLab.tbbLibs;
+using PeterHan.PLib.Options;
 using STRINGS;
 using TUNING;
 using UnityEngine;
 
 namespace MutantFarmLab.mutantplants
 {
-    /// <summary>
-    /// 自定义变异注册器（挂载式接入原生系统）
-    /// ✅ 已删除MutantDefs依赖，所有常量内联，零逻辑改动
-    /// </summary>
     public static class PlantMutationRegister
     {
+        private static MutantFarmLabOptions Options => POptions.ReadSettings<MutantFarmLabOptions>() ?? new MutantFarmLabOptions();
+
         // ========== 抗辐籽变异 ==========
         private const string RAD_RESIST_MUT_ID = "RadiationResistSeedMutation";
         private const float MIN_RADIATION_REQ = 250f;
@@ -23,15 +22,15 @@ namespace MutantFarmLab.mutantplants
         private const int MIN_LIGHT_REQ = 800;
 
         // ========== 双头株变异 ==========
-        public static bool DUAL_HEAD_ENABLED = true; //双头株变异开关
+        public static bool DUAL_HEAD_ENABLED => Options.EnableDualHeadMutation;
         public static string DUAL_HEAD_MUT_ID = "DualHeadPlantMutation";
         public static float DUAL_SINGLE_HEAD_YIELD_MOD = -0.3f;
-        private const float DUAL_MIN_RADIATION_ADD = 250f;//辐射门槛+250（原生变异标配）
-        private const float DUAL_FERTILIZER_COST_MOD = 1.5f;//养料消耗+50%
-        private const float DUAL_GROWTH_CYCLE_MOD = 1.2f;//生长周期+20%
-        private const string DUAL_SOUND_EVENT = "Plant_mutation_Leaf";//变异音效（复用原生绿叶变异）
-
         // ---双头株 双株共生 增益---
+        private const float DUAL_MIN_RADIATION_ADD = 250f;
+        private const float DUAL_FERTILIZER_COST_MOD = 1.5f;
+        private const float DUAL_GROWTH_CYCLE_MOD = 1.2f;
+        private const string DUAL_SOUND_EVENT = "Plant_mutation_Leaf";
+
         public const float DUAL_HEAD_SYMBIOSIS_FertilizerUsageMod = 0.1f;
         public const float DUAL_HEAD_SYMBIOSIS_Maturity_RATIO = 6 / 4f; //生长周期加权比例
         public const float DUAL_HEAD_SYMBIOSIS_YIELD_MOD = 0.7f;//产量+70%
@@ -59,10 +58,15 @@ namespace MutantFarmLab.mutantplants
         public static void RegisterAllCustomMutations()
         {
             TbbDebuger.LogDebug("[原生挂载] 开始注册自定义变异到原生系统...");
-            RegisterRadiationResistMutation();
-            if(DUAL_HEAD_ENABLED) RegisterDualHeadMutation();
-            RegisterActinobacteriaMutation();
-            RegisterOilEnrichMutation();
+            var options = Options;
+            if (options.EnableRadiationResistMutation)
+                RegisterRadiationResistMutation();
+            if (options.EnableDualHeadMutation)
+                RegisterDualHeadMutation();
+            if (options.EnableActinobacteriaMutation)
+                RegisterActinobacteriaMutation();
+            if (options.EnableOilEnrichMutation)
+                RegisterOilEnrichMutation();
             TbbDebuger.LogDebug("[原生挂载] 所有自定义变异注册完成！");
         }
 
@@ -166,7 +170,6 @@ namespace MutantFarmLab.mutantplants
                     if(__instance.MutationIDs?.Contains(PlantMutationRegister.ACTINO_MUT_ID) == true)
                         __instance.gameObject.AddOrGet<ActinoMutantionComponent>();
                     else if (DUAL_HEAD_ENABLED && __instance.MutationIDs?.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID) == true){
-                        //功能暂时关掉，严重问题没解决
                         __instance.gameObject.AddOrGet<DualHeadPlantComponent>();
                     }
                     else if (__instance.MutationIDs?.Contains(PlantMutationRegister.OIL_ENRICH_MUT_ID) == true)

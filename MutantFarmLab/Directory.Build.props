@@ -7,5 +7,9 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="Hjson" HintPath="../libs/Hjson.dll" />
+		<Reference Include="Plib.Options" HintPath="../libs/PLibOptions.dll" />
+		<Reference Include="PLib.UI" HintPath="../libs/PLibUI.dll" />
+		<Reference Include="PLib.Core" HintPath="../libs/PLibCore.dll" />
+		
 	</ItemGroup>
 </Project>

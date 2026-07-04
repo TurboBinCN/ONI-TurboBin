@@ -11,10 +11,10 @@ namespace MutantFarmLab.mutantplants
         public const string RAD_CLEAR_ID = "RadClear";
         public const string RAD_IMMUNE_ID = "RadImmunity";
 
-        #region ✅ 辐射清零效果（100%生效，源码属性+强制归零）
+        //辐射清零效果
         private static void RegisterMethodRadClear()
         {
-            // 瞬时效果：生效后立即消失，无时长、无UI残留
+            // 瞬时效果：生效后立即消失
             Effect radClear = new Effect(
                 id: RAD_CLEAR_ID,
                 name: STRINGS.DUPLICANTS.MODIFIERS.RADCLEAR.NAME,
@@ -27,9 +27,8 @@ namespace MutantFarmLab.mutantplants
 
             Db.Get().effects.Add(radClear);
         }
-        #endregion
 
-        #region ✅ 辐射免疫效果（5周期完全免疫）
+        //辐射免疫效果（5周期完全免疫）
         private static void RegisterMethodRadImmune()
         {
             // 持续5周期效果（3000秒）
@@ -61,8 +60,6 @@ namespace MutantFarmLab.mutantplants
 
             Db.Get().effects.Add(radImmune);
         }
-        #endregion
-        // 统一注册入口，与你的调用完全匹配
         public static void RegisterAllEffects()
         {
             RegisterMethodRadClear();
@@ -126,8 +123,7 @@ namespace MutantFarmLab.mutantplants
             if (radiationAmount != null && radiationAmount.value > 0f)
             {
                 float value = radiationAmount.value;
-                radiationAmount.value = 0f; // 一键清零，无残留
-                                            // 添加飘字提示
+                radiationAmount.value = 0f; 
                 PopFXManager.Instance.SpawnFX(PopFXManager.Instance.sprite_Negative,
                     $"- {value} Rads", minionGo.transform, 1.5f, false);
             }
