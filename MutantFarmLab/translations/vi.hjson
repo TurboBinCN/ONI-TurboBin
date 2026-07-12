@@ -1,0 +1,157 @@
+{
+  STRINGS: {
+    BUILDINGS: {
+      PREFABS: {
+        MUTANTFARMLAB: {
+          NAME: Bàn Thí Nghiệm Đột Biến Nông Trại
+          DESC: Phòng thí nghiệm công nghệ cao tiêu thụ hạt bức xạ, có thể gây đột biến hạt giống cây trồng thường thành giống đột biến hiếm.
+          EFFECT: Tiêu thụ hạt bức xạ, gây đột biến định hướng cho hạt giống cây trồng
+        }
+        CUSTOMRADIATIONLIGHT: {
+          NAME: Dải Đèn Bức Xạ
+          DESC: Dùng hạt bức xạ dự trữ làm năng lượng, cung cấp môi trường bức xạ cần thiết cho cây đột biến sinh trưởng, có thể điều chỉnh mức công suất để thay đổi cường độ bức xạ.
+          EFFECT: Dùng hạt dự trữ bên trong làm năng lượng, cung cấp bức xạ trên phạm vi rộng
+          LOW_PARTICLE_SIGNAL: Tín hiệu thiếu hạt
+          LOW_PARTICLE_SIGNAL_TOOLTIP: Kích hoạt xuất tín hiệu khi lượng hạt dự trữ dưới ngưỡng khởi động
+          LOGIC_PORT_STORAGE: Trạng thái lượng hạt dự trữ
+          LOGIC_PORT_STORAGE_ACTIVE: Dự trữ không đủ
+          LOGIC_PORT_STORAGE_INACTIVE: Dự trữ đầy đủ
+        }
+        RADIATIONPARTICLEADAPTER: {
+          NAME: Mô-đun Chuyển Đổi Hạt Bức Xạ
+          DESC: Phụ kiện tự động có thể gắn lên bề mặt bất kỳ ô trồng cây/ô thủy canh nào, tiếp nhận hạt năng lượng cao và giải phóng bức xạ định hướng, đẩy nhanh quá trình đột biến của cây trồng.
+          EFFECT: Dùng hạt dự trữ bên trong làm năng lượng, cung cấp bức xạ cho ô trồng cây/ô thủy canh
+          LOGIC_PORT_NAME: Cảnh báo thiếu hạt
+          LOGIC_PORT_ACTIVE: Lượng hạt dự trữ không đủ, yêu cầu bổ sung năng lượng
+          LOGIC_PORT_INACTIVE: Lượng hạt dự trữ đầy đủ, hoạt động bình thường
+          WARNING_NO_FARMTILE: Chưa gắn với ô trồng cây
+          WARNING_NO_FARMTILE_TOOLTIP: Vui lòng đặt ô đầu tiên của phụ kiện sát với ô trồng cây/ô thủy canh!
+          WARNING_LOW_PARTICLE: Lượng hạt dự trữ không đủ
+          WARNING_LOW_PARTICLE_TOOLTIP: Nguồn cung hạt năng lượng cao không đủ, bức xạ đã tạm ngừng, vui lòng kiểm tra trạng thái máy phát hạt.
+        }
+        RADIATIONFARMTILE: {
+          NAME: Ô Trồng Cây Bức Xạ
+          DESC: Có thể cung cấp môi trường bức xạ sinh trưởng cho cây trồng phía trên
+          EFFECT: Tiêu thụ quặng Uranium để liên tục cung cấp môi trường bức xạ cho cây trồng phía trên
+          LOW_URANIUMORE: Dự trữ quặng Uranium thấp
+          LOW_URANIUMORE_TOOLTIP: Dự trữ quặng Uranium không đủ, không thể phát bức xạ.
+        }
+      }
+    }
+    UI: {
+      UISIDESCREENS: {
+        PLANTERSIDESCREEN: {
+          PLANT: Cây trồng
+        }
+        MUTANTFARMLAB: {
+          TITLE: Bảng Đột Biến Hạt Giống
+          NONE_DISCOVERED: Chưa mở khóa hạt giống nào
+          SELECT_SEEDS: Chọn hạt giống để gây đột biến
+          SEED_FORBIDDEN: Hạt giống bị cấm
+          SEED_ALLOWED: Hạt giống được phép
+          SEED_NO_MUTANTS: Không có nhánh đột biến
+          FILTER_CATEGORY: Danh sách hạt giống chờ đưa vào
+        }
+        SLIDERCONTROL: {
+          TITLE: Điều Chỉnh Công Suất Bức Xạ
+          DESC: Điều chỉnh mức công suất bức xạ, đồng thời thay đổi tốc độ tiêu thụ hạt
+          TOOLTIP: Công suất càng cao, bức xạ càng mạnh, tốc độ tiêu thụ hạt càng nhanh
+          ANOTHER_PLANT: Cây con
+        }
+      }
+
+      NOTIFICATIONS: {
+        MUTANTFARM_NEED_MATERIALS: {
+          NAME: Điều kiện đột biến chưa đủ
+          TOOLTIP: Cần thỏa mãn điều kiện: thiết bị có điện + có hạt giống hợp lệ trong kho + lượng hạt năng lượng cao ≥ 10
+        }
+      }
+
+      UNITSUFFIXES: {
+        RADIATION: {
+          SETTING_RAD_LEVEL: Cài Đặt Mức Bức Xạ
+          RADLEVEL: Mức Bức Xạ
+        }
+      }
+
+      TASKS: {
+        CANCEL_REASONS: {
+          STORAGE_FULL: Kho lưu trữ đã đầy.
+          DESTROYED: Công việc đã bị hủy.
+        }
+      }
+      STATUSITEMS: {
+        NEEDPARTICLES: {
+          NAME: Thiếu Hạt Bức Xạ
+          TOOLTIP: Đột biến hạt giống dựa vào bức xạ nên cần hạt bức xạ, mỗi lần đột biến 1 hạt giống cần {0} hạt.
+        }
+        CONSUMERATEURANIUMORE: {
+          NAME: Tốc độ tiêu thụ quặng Uranium: {0}g/giây
+          TOOLTIP: Tốc độ tiêu thụ quặng Uranium của Ô Trồng Cây Bức Xạ: {0}g/giây
+        }
+        CONSUMERATEPARTICLES: {
+          NAME: Tốc độ tiêu thụ hạt bức xạ: {0}/giây
+          TOOLTIP: Tốc độ tiêu thụ hạt bức xạ cần thiết của công trình: {0}/giây
+        }
+      }
+      OPTIONS: {
+        GROUP_MUTANT_PLANT: Cây Đột Biến
+        OPTION_DUAL_HEAD_NAME: Đột Biến Song Đầu
+        OPTION_DUAL_HEAD_DESC: Bật đột biến cây song đầu, cây có cơ hội đột biến thành dạng song đầu
+        OPTION_ACTINO_NAME: Đột Biến Nấm Phát Xạ
+        OPTION_ACTINO_DESC: Bật đột biến Nấm Phát Xạ, cây có thể sinh trưởng trong điều kiện ánh sáng và dinh dưỡng thấp
+        OPTION_OILENRICH_NAME: Đột Biến Làm Giàu Dầu Thô
+        OPTION_OILENRICH_DESC: Bật đột biến Làm Giàu Dầu Thô, cây có thể tạo ra dầu thô
+        OPTION_RADSEED_NAME: Đột Biến Hạt Giống Bức Xạ
+        OPTION_RADSEED_DESC: Bật đột biến Hạt Giống Bức Xạ, hạt giống có được khả năng kháng bức xạ
+      }
+    }
+    ELEMENT: {
+      RADSEED: {
+        NAME: Hạt Giống Bức Xạ
+        DESC: Hạt giống đặc biệt có khả năng kháng bức xạ mạnh, ăn vào có thể loại bỏ hoàn toàn bức xạ trong cơ thể, và có được khả năng miễn dịch bức xạ trong một khoảng thời gian.
+      }
+      DULHEAD: {
+        NAME: "Cây Song Đầu"
+        DESC: "Cây trồng tiến hóa thành cấu trúc song sinh, một ô chứa 2 lõi sinh trưởng song sinh, dùng chung điều kiện trồng nhưng trưởng thành độc lập; sản lượng mỗi đầu giảm nhẹ, nhưng hiệu quả sử dụng không gian tổng thể tăng mạnh, khi chất lượng cao 2 lõi sẽ kết trái riêng biệt."
+      }
+      ACTINO: {
+        NAME: "Nấm Phát Xạ"
+        DESC: "Thể đột biến nấm đặc biệt được nuôi dưỡng bởi bức xạ, hội tụ ba giá trị cốt lõi \"lọc khuẩn, phát quang, tiết kiệm năng lượng\". Có thể dùng năng lượng bức xạ để loại bỏ mầm bệnh của bản thân và xung quanh, phát ra ánh sáng dịu nhẹ đáp ứng nhu cầu chiếu sáng khi trồng, đồng thời giảm mạnh tiêu thụ nước và phân bón, là \"người quản gia môi trường\" của nông trại bức xạ; cái giá phải trả là chu kỳ sinh trưởng rất dài, và sẽ phát tán ra ngoài một lượng nhỏ bức xạ."
+      }
+      OILENRICH: {
+        NAME: "Làm Giàu Dầu Thô"
+        DESC: "Cây trồng đột biến cấp công nghiệp độc quyền của nông trại bức xạ, chức năng cốt lõi là hấp thụ CO2 hiệu quả và chuyển hóa thành dầu thô giá trị cao, là trung tâm cốt lõi của vòng khép kín \"carbon - dầu - năng lượng\" cho căn cứ giai đoạn cuối. Cần dựa vào môi trường bức xạ để kích hoạt cơ chế chuyển hóa, kết hợp Nấm Phát Xạ có thể tự cung cấp ánh sáng và lọc khuẩn, cái giá phải trả là tiêu thụ dinh dưỡng tăng và chu kỳ sinh trưởng kéo dài, phù hợp nhu cầu tuần hoàn tài nguyên của căn cứ công nghiệp quy mô lớn."
+      }
+    }
+    ITEMS: {
+      FOOD: {
+        RADSEED: {
+          NAME: "Hạt Giống Bức Xạ"
+          DESC: "Một loại hạt giống đặc biệt phát ra ánh sáng nhẹ, ăn vào có thể loại bỏ hoàn toàn bức xạ trong cơ thể, và có được khả năng miễn dịch bức xạ."
+        }
+      }
+    }
+
+    DUPLICANTS: {
+      MODIFIERS: {
+        RADCLEAR: {
+          NAME: "Thanh Tẩy Bức Xạ"
+          DESCRIPTION: "Toàn bộ bức xạ trong cơ thể đã bị loại bỏ tức thì."
+        }
+        RADIMMUNITY: {
+          NAME: "Miễn Dịch Bức Xạ"
+          DESCRIPTION: "Hoàn toàn miễn dịch với sát thương bức xạ trong 5 chu kỳ."
+        }
+      }
+    }
+    MUTANTS: {
+      EFFECTS: {
+        DUAL_HEAD_SYMBIOSIS: {
+          NAME: "Cộng Sinh Đôi"
+          DESC: "Hai lõi cây của Cây Song Đầu dùng chung điều kiện trồng, sản lượng mỗi đầu giảm nhẹ.\nHiệu ứng 'Cộng Sinh Đôi' của Cây Song Đầu:\n-50% Nhu cầu phân bón\n+70% Sản lượng\nChu kỳ sinh trưởng lấy trung bình có trọng số"
+        }
+      }
+    }
+  }
+}
