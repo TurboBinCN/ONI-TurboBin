@@ -31,7 +31,7 @@ namespace MutantFarmLab.mutantplants
 
             // 2. 获取当前关联的旧 Plot
             PlantablePlot oldReceptacle = receptacleMonitor.GetReceptacle();
-            if (oldReceptacle == null) TbbDebuger.LogDebug($"[双头株] 植株[{plant.name}]已经没有PlantablePlot");
+            if (oldReceptacle == null) return;
 
             // 4. 开始迁移流程
             try
@@ -48,7 +48,6 @@ namespace MutantFarmLab.mutantplants
                 InvokeMethod(newPlot, "RegisterWithPlant",new object[] { plant });
 
                 Components.PlantablePlots.Add(newPlot.gameObject.GetMyWorldId(), newPlot);
-                TbbDebuger.LogDebug($"[双头株] 迁移 [{plant?.name}] 注册新Plot[{newPlot?.name}] ");
                 //newPlot.gameObject.Trigger(-1820564715);//OccupantValidChanged
                 //plant.Unsubscribe(1969584890);//ObjectDestroyed 
                 //肥料SMI
@@ -56,7 +55,6 @@ namespace MutantFarmLab.mutantplants
                 if (fertilizationSMI != null)
                 {
                     fertilizationSMI.SetStorage(newPlot.gameObject.GetComponent<Storage>());
-                    TbbDebuger.LogDebug($"[双头株] 迁移 [{plant?.name}] 肥料Storage ");
                 }
                 else
                 {
@@ -72,10 +70,8 @@ namespace MutantFarmLab.mutantplants
                 if(irrigationSMI != null)
                 {
                     irrigationSMI.SetStorage(newPlot.gameObject.GetComponent<Storage>());
-                    TbbDebuger.LogDebug($"[双头株] 迁移 [{plant?.name}] 灌溉Storage ");
                 }
 
-                TbbDebuger.LogDebug($"[双头株] 植株:[{plant.name}] 完成迁移[{oldReceptacle?.name}]TO[{newPlot.name}].");
 
                 return true;
             }
@@ -92,7 +88,6 @@ namespace MutantFarmLab.mutantplants
         }
         private static void delayCall(object data)
         {
-            TbbDebuger.LogDebug($"[双头株] 迁移 Delay Call");
             var paramsObj = (ScheduleParams)data;
 
             var fertilizationSMI = paramsObj.PlantObj.GetSMI<FertilizationMonitor.Instance>();
@@ -102,7 +97,6 @@ namespace MutantFarmLab.mutantplants
                 //TODO 处理灌溉
                 fertilizationSMI.SetStorage(paramsObj.NewPlotObj.GetComponent<Storage>());
 
-                TbbDebuger.LogDebug($"[双头株] 延迟迁移 设置[{paramsObj.PlantObj?.name}] Storage ");
             }
         }
         public static void ClearPlotWithoutDestroyingPlant(PlantablePlot targetReceptacle)
@@ -110,7 +104,6 @@ namespace MutantFarmLab.mutantplants
             var currentPlant = targetReceptacle?.Occupant;
             if (currentPlant == null)
             {
-                TbbDebuger.LogDebug("[双头株] 种植盆已为空");
                 return;
             }
 
@@ -145,7 +138,6 @@ namespace MutantFarmLab.mutantplants
             InvokeMethod(receptacle, "UnsubscribeFromOccupant");
             InvokeMethod(receptacle, "UpdateActive");
 
-            TbbDebuger.LogDebug($"[双头株] 已移出植株 '{currentPlant.name}' 并清空 receptacle");
         }
         private static void ClearPlantRef(PlantablePlot targetPlot)
         {
@@ -159,7 +151,6 @@ namespace MutantFarmLab.mutantplants
                     field.SetValue(targetPlot, plantRef);
                 }
                 plantRef.Set(null);
-                TbbDebuger.LogDebug("[双头株] plantRef 已设为 null");
             }
         }
         public static void ResetPlotToPlantableState(PlantablePlot targetPlot, Operational plotOperational)

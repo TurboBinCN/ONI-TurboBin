@@ -1,9 +1,10 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using KSerialization;
 using MutantFarmLab.mutantplants;
 using MutantFarmLab.tbbLibs;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.Serialization;
 using UnityEngine;
 
@@ -28,20 +29,18 @@ namespace MutantFarmLab
             }
             protected override void OnCleanUp()
             {
-                TbbDebuger.LogDebug($"SubGoStorage OnCleanUp DropALl items.");
                 DropAll();
                 base.OnCleanUp();
             }
         }
-        public static GameObject Init(GameObject parentGo)
+        public static GameObject Init(GameObject parentGo, Vector3 centerOffset = default)
         {
             GameObject SubGameObject;
 
             SubGameObject = new GameObject(storageName);
-            SubGameObject.SetActive(false); // ← 关键！先禁用
+            SubGameObject.SetActive(false);
             SubGameObject.transform.SetParent(parentGo.transform, false);
-            SubGameObject.transform.localPosition = Vector3.zero;//setParent false这里是偏移
-            SubGameObject.transform.position = parentGo.transform.position;
+            SubGameObject.transform.localPosition = centerOffset;
 
             var kPrefabID = SubGameObject.AddOrGet<KPrefabID>();
             kPrefabID.PrefabTag = TagManager.Create(storageName + "Tag");
@@ -73,10 +72,6 @@ namespace MutantFarmLab
 
             parentGo.AddOrGet<SubStorageSaver>();
 
-            //SubGameObject.SetActive(true);//需要的时候SetActive 否则种植砖底下会有两个未种植的图标
-            if (parentGo != null)
-                TbbDebuger.LogDebug($"[SubGO] transfromGOName:[{parentGo.name}] transfromGOID：[{parentGo.GetMyWorldId()}] transform localPosition:[{parentGo.transform.localPosition.ToString()}] transform postion:[{parentGo.transform.position}] SubGameObject worldID:[{SubGameObject.GetMyWorldId()}] SubGameObjectl localPosition:[{SubGameObject.transform.localPosition.ToString()} subGameObject postion: [{SubGameObject.transform.position}]");
-
             return SubGameObject;
         }
         public static GameObject GetGameObject(GameObject farmtileObj)
@@ -97,30 +92,60 @@ namespace MutantFarmLab
 
         public static void SetUpFarmPlotTags(GameObject go, GameObject subGo)
         {
+            PlantablePlot plantablePlot = subGo.GetComponent<PlantablePlot>();
+            if (plantablePlot == null)
+                return;
+
+            Rotatable rotatable = go.GetComponent<Rotatable>();
+            if (rotatable == null)
+            {
+                plantablePlot.occupyingObjectRelativePosition.y = 1f;
+                return;
+            }
+
             go.GetComponent<KPrefabID>().prefabSpawnFn += delegate (GameObject inst)
             {
+                if (inst == null)
+                    return;
+
                 Rotatable component = inst.GetComponent<Rotatable>();
-                PlantablePlot component2 = subGo.GetComponent<PlantablePlot>();
+                if (component == null)
+                    return;
 
                 switch (component.GetOrientation())
                 {
                     case Orientation.Neutral:
                     case Orientation.FlipH:
-                        component2.occupyingObjectRelativePosition.y = 1f;
+                        plantablePlot.occupyingObjectRelativePosition.y = 1f;
                         break;
                     case Orientation.R90:
                     case Orientation.R270:
                     case Orientation.R180:
                     case Orientation.FlipV:
-                        component2.occupyingObjectRelativePosition.y = -1f;
+                        plantablePlot.occupyingObjectRelativePosition.y = -1f;
                         break;
                     case Orientation.NumRotations:
                         break;
                     default:
-                        component2.occupyingObjectRelativePosition.y = 1f;
+                        plantablePlot.occupyingObjectRelativePosition.y = 1f;
                         break;
                 }
             };
+        }
+
+        public static Type FindType(string typeName)
+        {
+            Type type = Type.GetType(typeName);
+            if (type != null)
+                return type;
+
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                type = assembly.GetType(typeName);
+                if (type != null)
+                    return type;
+            }
+            return null;
         }
 
     }
@@ -236,6 +261,117 @@ namespace MutantFarmLab
             go.AddOrGet<DualHeadReceptacleMarker>();
 
             PlantablePlotGameObject.SetUpFarmPlotTags(go, sub);
+        }
+    }
+    [HarmonyPatch]
+    public static class WideFarmTileConfig_DoPostConfigureComplete_Patches
+    {
+        public static bool Prepare()
+        {
+            Type type = PlantablePlotGameObject.FindType("WideFarmTileConfig");
+            bool result = type != null;
+            if (!result)
+            return result;
+        }
+
+        public static MethodBase TargetMethod()
+        {
+            Type type = PlantablePlotGameObject.FindType("WideFarmTileConfig");
+            if (type == null)
+                return null;
+            return type.GetMethod("DoPostConfigureComplete", BindingFlags.Public | BindingFlags.Instance);
+        }
+
+        [HarmonyPostfix]
+        public static void Postfix(ref GameObject go)
+        {
+            if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
+
+            var building = go.GetComponent<Building>();
+            Vector3 centerOffset = Vector3.zero;
+            if (building != null && building.Def != null)
+            {
+                centerOffset = new Vector3((building.Def.WidthInCells - 1) * 0.5f, (building.Def.HeightInCells - 1) * 0.5f, 0f);
+            }
+
+            var sub = PlantablePlotGameObject.Init(go, centerOffset);
+            var plantablePlot = sub.AddOrGet<PlantablePlot>();
+            
+            var originalPlot = go.GetComponent<PlantablePlot>();
+            if (originalPlot != null)
+            {
+                Vector3 adjustedOffset = originalPlot.occupyingObjectRelativePosition - centerOffset;
+                plantablePlot.occupyingObjectRelativePosition = adjustedOffset;
+            }
+            else
+            {
+                plantablePlot.occupyingObjectRelativePosition.y = 1f;
+            }
+
+            plantablePlot.SetFertilizationFlags(true, true);
+
+            go.AddOrGet<DualHeadReceptacleMarker>();
+
+            PlantablePlotGameObject.SetUpFarmPlotTags(go, sub);
+        }
+    }
+    [HarmonyPatch]
+    public static class LargeBackwallFarmConfig_DoPostConfigureComplete_Patches
+    {
+        public static bool Prepare()
+        {
+            Type type = PlantablePlotGameObject.FindType("LargeBackwallFarmConfig");
+            bool result = type != null;
+            if (!result)
+            return result;
+        }
+
+        public static MethodBase TargetMethod()
+        {
+            Type type = PlantablePlotGameObject.FindType("LargeBackwallFarmConfig");
+            if (type == null)
+                return null;
+            return type.GetMethod("DoPostConfigureComplete", BindingFlags.Public | BindingFlags.Instance);
+        }
+
+        [HarmonyPostfix]
+        public static void Postfix(ref GameObject go)
+        {
+            if (!PlantMutationRegister.DUAL_HEAD_ENABLED) return;
+
+            var building = go.GetComponent<Building>();
+            Vector3 centerOffset = Vector3.zero;
+            if (building != null && building.Def != null)
+            {
+                centerOffset = new Vector3((building.Def.WidthInCells - 1) * 0.5f, (building.Def.HeightInCells - 1) * 0.5f, 0f);
+            }
+            else
+            {
+                TbbDebuger.LogWarning($"[双头株] building或building.Def为null, go.name={go.name}");
+            }
+
+            var sub = PlantablePlotGameObject.Init(go, centerOffset);
+            
+            var originalPlot = go.GetComponent<PlantablePlot>();
+            var plantablePlot = sub.GetComponent<PlantablePlot>();
+            
+            if (originalPlot != null)
+            {
+                Vector3 adjustedOffset = originalPlot.occupyingObjectRelativePosition - centerOffset;
+                plantablePlot.occupyingObjectRelativePosition = adjustedOffset;
+            }
+            else
+            {
+                Vector3 defaultOffset = new Vector3(0.49f, 0.0f, -0.5f) - centerOffset;
+                plantablePlot.occupyingObjectRelativePosition = defaultOffset;
+            }
+            
+            plantablePlot.AddDepositTag(GameTags.BackwallSeed);
+            plantablePlot.SetReceptacleDirection(SingleEntityReceptacle.ReceptacleDirection.Top);
+            plantablePlot.SetFertilizationFlags(true, false);
+            
+            // 设置标记用于按钮状态检测
+            var marker = go.AddOrGet<DualHeadReceptacleMarker>();
         }
     }
     [HarmonyPatch(typeof(SingleEntityReceptacle), "OnOccupantDestroyed")]

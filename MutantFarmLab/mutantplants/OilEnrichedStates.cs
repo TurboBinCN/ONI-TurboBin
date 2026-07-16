@@ -1,4 +1,4 @@
-using MutantFarmLab.tbbLibs;
+﻿using MutantFarmLab.tbbLibs;
 using STRINGS;
 using System;
 using System.Collections.Generic;
@@ -143,11 +143,9 @@ namespace MutantFarmLab.mutantplants
                 if (actualCo2MassToConsume <= 0)
                 {
                     // 空间不足，无法生成任何原油，不消耗CO2
-                    TbbDebuger.LogDebug($"[原油富集变异] 存储空间已满，无法生成原油，不消耗CO2。");
                     return;
                 }
 
-                TbbDebuger.LogDebug($"[原油富集变异] 理论可转化CO2: {totalPotentialCo2MassToConvert} kg, 实际转化CO2: {actualCo2MassToConsume} kg, 计划生成原油: {actualOilMassToGenerate} kg.");
 
                 // --- 3. 执行CO2质量扣除 (按实际转化量) ---
                 float remainingCo2ToConsume = actualCo2MassToConsume;
@@ -230,7 +228,6 @@ namespace MutantFarmLab.mutantplants
                                 {
                                     // 如果存储失败，销毁生成的物品
                                     // 这里理论上不应该发生，因为我们已经在前面检查了可用空间
-                                    TbbDebuger.LogDebug($"[原油富集变异] 严重警告：理论空间充足但原油存储失败，销毁: {oilInstance.name}, Mass: {massThisIteration}");
                                     Util.KDestroyGameObject(oilInstance);
                                     // 尝试恢复CO2扣除，但这很复杂
                                     break; // 停止生成
@@ -251,7 +248,6 @@ namespace MutantFarmLab.mutantplants
 
                     if (generatedOilMass > 0)
                     {
-                        TbbDebuger.LogDebug($"[原油富集变异] 成功生成 {generatedOilMass} kg 原油.");
                     }
                 }
             }

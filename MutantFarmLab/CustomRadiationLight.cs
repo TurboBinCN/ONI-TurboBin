@@ -73,7 +73,7 @@ namespace MutantFarmLab
         }
         private float RadiationRads()
         {
-            return RadiationLevel * 300;
+            return RadiationLevel * 400;
         }
         private bool IsRunningAvailable()
         {

@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using Klei.AI;
 using MutantFarmLab.tbbLibs;
 using UnityEngine;
@@ -85,7 +85,6 @@ namespace MutantFarmLab.mutantplants
             if (__instance.gameObject.name != RadiationResistSeedConfig.ID)
                 return;
 
-            TbbDebuger.LogDebug($"Edible topConsuming [{worker.name}]");
             Effects effects = worker.GetComponent<Effects>();
             EffectInstance effectInstance = effects?.Get(FoodEffectRegister.RAD_IMMUNE_ID);
             if (effectInstance != null)

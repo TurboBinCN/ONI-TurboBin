@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using MutantFarmLab.mutantplants;
 using MutantFarmLab.tbbLibs;
 using System;
@@ -58,7 +58,6 @@ namespace MutantFarmLab
             CacheComponents(plotObject, sideScreenRoot);
             CreateOrShowButton(sideScreenRoot);
             
-            TbbDebuger.LogDebug("[双头株] UI 初始化完成");
         }
 
         private bool ValidateInitialization(GameObject plot, GameObject screen)
@@ -184,19 +183,43 @@ namespace MutantFarmLab
 
         private void HandleButtonClick()
         {
-            TbbDebuger.LogDebug("[双头株] 按钮点击，开始清空种植盆（保留植株）");
 
             try
             {
-                PlantMigrationHelper2.MigratePlant(_targetPlot.Occupant, PlantablePlotGameObject.GetGameObject(_targetPlot.gameObject).GetComponent<PlantablePlot>());
+                if (_targetPlot == null)
+                {
+                    TbbDebuger.LogWarning("[双头株] _targetPlot 为 null");
+                    return;
+                }
+
+                GameObject occupant = _targetPlot.Occupant;
+                if (occupant == null)
+                {
+                    TbbDebuger.LogWarning("[双头株] 当前没有已种植的植物");
+                    return;
+                }
+
+                GameObject subGameObject = PlantablePlotGameObject.GetGameObject(_targetPlot.gameObject);
+                if (subGameObject == null)
+                {
+                    TbbDebuger.LogWarning($"[双头株] 未找到 Dual_Head_Plot 子对象，父对象: {_targetPlot.gameObject.name}");
+                    return;
+                }
+
+                PlantablePlot targetPlot = subGameObject.GetComponent<PlantablePlot>();
+                if (targetPlot == null)
+                {
+                    TbbDebuger.LogWarning($"[双头株] Dual_Head_Plot 子对象缺少 PlantablePlot 组件");
+                    return;
+                }
+
+                PlantMigrationHelper2.MigratePlant(occupant, targetPlot);
+                
                 RefreshUIAfterDelay();
-
-                TbbDebuger.LogDebug("[双头株] 操作完成，等待 UI 刷新");
-
             }
             catch (Exception ex)
             {
-                TbbDebuger.LogWarning($"[双头株] 操作异常: {ex}");
+                TbbDebuger.LogWarning($"[双头株] 操作异常: {ex}\n{ex.StackTrace}");
             }
         }
 
@@ -219,7 +242,6 @@ namespace MutantFarmLab
                     LayoutRebuilder.ForceRebuildLayoutImmediate(
                         _planterSideScreen.GetComponent<RectTransform>()
                     );
-                    TbbDebuger.LogDebug("[双头株] UI 刷新完成");
                 }
             });
         }
@@ -239,19 +261,37 @@ namespace MutantFarmLab
             bool active = true;
             if (_dualPlantButton == null || _targetReceptacle == null) return;
 
-            //双株变异植株
-            var marker = _targetPlot.GetComponent<DualHeadReceptacleMarker>();
+            // 先从当前种植槽获取marker，如果没有则从父对象查找
+            var marker = _targetPlot.gameObject.GetComponent<DualHeadReceptacleMarker>();
+            if (marker == null)
+            {
+                marker = _targetPlot.gameObject.transform.parent?.GetComponent<DualHeadReceptacleMarker>();
+            }
+
+            // 如果还是没有，尝试从主建筑查找
+            if (marker == null && _targetPlot.gameObject.transform.parent != null)
+            {
+                foreach (Transform child in _targetPlot.gameObject.transform.parent)
+                {
+                    if (child.name.Contains("FarmTile"))
+                    {
+                        marker = child.GetComponent<DualHeadReceptacleMarker>();
+                        if (marker != null) break;
+                    }
+                }
+            }
+
             if (marker == null || marker.primaryPlant == null)
             {
                 active = false;
             }
-            //双株已配对
-            else if (marker.primaryPlant.GetComponent<DualHeadPlantComponent>().twin != null)
+            else if (marker.primaryPlant.GetComponent<DualHeadPlantComponent>()?.twin != null)
             {
                 active = false;
             }
 
-            _dualPlantButton.gameObject.SetActive(active); // 或者隐藏按钮
+            _dualPlantButton.gameObject.SetActive(active);
+            TbbDebuger.LogDebug($"[双头株] 按钮状态: active={active}, marker={marker != null}, primaryPlant={marker?.primaryPlant?.name ?? "null"}, twin={marker?.primaryPlant?.GetComponent<DualHeadPlantComponent>()?.twin != null}");
         }
         private void OnDestroy()
         {
@@ -338,7 +378,7 @@ namespace MutantFarmLab
                     if (existPlant == null) return true; // ✅ 放行原生逻辑，不干预空地块种植
                                                          // 3. 检查当前已种是否是双头突变植物
                     var mutantComp = existPlant.GetComponent<MutantPlant>();
-                    if (mutantComp == null || !mutantComp.MutationIDs.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID))
+                    if (mutantComp == null || mutantComp.MutationIDs == null || !mutantComp.MutationIDs.Contains(PlantMutationRegister.DUAL_HEAD_MUT_ID))
                         return true; // 不是双头突变，走默认逻辑（拒绝第二株）
 
                     // 4.检查当前已种植物是否挂载DHP组件 没有即挂载=====

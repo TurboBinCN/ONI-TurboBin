@@ -1,4 +1,4 @@
-using Klei.AI;
+﻿using Klei.AI;
 using MutantFarmLab.tbbLibs;
 using System;
 using UnityEngine;
@@ -25,6 +25,10 @@ namespace MutantFarmLab.mutantplants
             if (sourcePlantablePlot == null)
             {
                 TbbDebuger.LogWarning("[双头株]植株没有种植槽，直接放入目标种植槽.");
+                Vector3 pos1 = targetPlot.transform.GetPosition();
+                Vector3 offset1 = targetPlot.occupyingObjectRelativePosition;
+                Vector3 dest1 = pos1 + offset1;
+                sourcePlantObject.transform.SetPosition(dest1);
                 targetPlot.ReplacePlant(sourcePlantObject, keepPlantablePlotStorage);
                 return;
             }
@@ -38,14 +42,17 @@ namespace MutantFarmLab.mutantplants
                 return;
             }
             string plantId = plantKpid.PrefabTag.Name; // 例如 "PrickleFlower"
-            TbbDebuger.LogDebug($"[双头株]Identified plant ID: {plantId}");
 
             // --- 步骤 2: 重建植株 ---
             GameObject rebuildedPlantObject = GameUtil.KInstantiate(Assets.GetPrefab(plantId), Grid.SceneLayer.BuildingBack, null, 0);
-            rebuildedPlantObject.transform.SetPosition(targetPlot.transform.GetPosition());
+            
+            Vector3 plotWorldPos = targetPlot.transform.GetPosition();
+            Vector3 relativeOffset = targetPlot.occupyingObjectRelativePosition;
+            Vector3 targetWorldPos = plotWorldPos + relativeOffset;
+            rebuildedPlantObject.transform.SetPosition(targetWorldPos);
+            
 
             // 获取种子组件并设置突变 (如果原植物有突变)
-            TbbDebuger.LogDebug($"[双头株]复制变异");
             MutantPlant component = sourcePlantObject.GetComponent<MutantPlant>();
             MutantPlant component2 = rebuildedPlantObject.GetComponent<MutantPlant>();
             if (component != null && rebuildedPlantObject != null)
@@ -55,7 +62,6 @@ namespace MutantFarmLab.mutantplants
             }
             rebuildedPlantObject.SetActive(true);
 
-            TbbDebuger.LogDebug($"[双头株]复制生长状态");
             Growing component3 = sourcePlantObject.GetComponent<Growing>();
             Growing component4 = rebuildedPlantObject.GetComponent<Growing>();
             if (component3 != null && component4 != null)
@@ -72,7 +78,6 @@ namespace MutantFarmLab.mutantplants
             }
             try
             {
-                TbbDebuger.LogDebug($"复制PrimaryElement/Effects");
                 PrimaryElement component5 = rebuildedPlantObject.GetComponent<PrimaryElement>();
                 PrimaryElement component6 = sourcePlantObject.GetComponent<PrimaryElement>();
                 component5.Temperature = component6.Temperature;
@@ -81,7 +86,6 @@ namespace MutantFarmLab.mutantplants
             }
             catch (Exception ex) { TbbDebuger.LogWarning($"{ex.Message}\n{ex.StackTrace}"); }
 
-            TbbDebuger.LogDebug($"[双头株]复制HarvestDesignatable");
             HarvestDesignatable component7 = sourcePlantObject.GetComponent<HarvestDesignatable>();
             HarvestDesignatable component8 = rebuildedPlantObject.GetComponent<HarvestDesignatable>();
             if (component7 != null && component8 != null)
@@ -89,7 +93,6 @@ namespace MutantFarmLab.mutantplants
                 component8.SetHarvestWhenReady(component7.HarvestWhenReady);
             }
 
-            TbbDebuger.LogDebug($"[双头株]Prioritizable");
             Prioritizable component9 = sourcePlantObject.GetComponent<Prioritizable>();
             Prioritizable component10 = rebuildedPlantObject.GetComponent<Prioritizable>();
             if (component9 != null && component10 != null)
@@ -101,17 +104,14 @@ namespace MutantFarmLab.mutantplants
                 TbbDebuger.LogError("[双头株]Failed to instantiate the standard seed object.");
                 return;
             }
-            TbbDebuger.LogDebug($"[双头株]Instantiated standard seed object: {rebuildedPlantObject.name}");
 
             // --- 步骤 3: 销毁源植物 ---
             if (sourcePlantObject != null)
             {
-                TbbDebuger.LogDebug("[双头株]执行拔除植物");
                 Util.KDestroyGameObject(sourcePlantObject);
                 TbbHarmonyExtension.InvokeMethod(sourcePlantObject.GetComponent<ReceptacleMonitor>().GetReceptacle(), "ClearOccupant", new object[] { });
             }
             // --- 步骤 4: 强制放入目标种植槽 ---
-            TbbDebuger.LogDebug("[双头株]调用 ReplacePlant 放入种植槽.");
             targetPlot.gameObject.SetActive(true);
             targetPlot.ReplacePlant(rebuildedPlantObject, keepPlantablePlotStorage);
             var dualHeadPlantComponent = rebuildedPlantObject.AddOrGet<DualHeadPlantComponent>();

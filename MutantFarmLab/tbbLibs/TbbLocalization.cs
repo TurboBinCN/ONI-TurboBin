@@ -1,9 +1,11 @@
 ﻿using HarmonyLib;
 using Hjson;
 using KMod;
+using MutantFarmLab.tbbLibs;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace MutantFarmLab
 {
@@ -41,29 +43,34 @@ namespace MutantFarmLab
             addStringsTypes.Add(type);
             return this;
         }
-
+        private static readonly Regex LocaleSuffixRegex = new Regex(@"_.*$", RegexOptions.Compiled);
         public static void Load(Type type, Mod mod)
         {
-            var locale = Localization.GetLocale();
-            var text = locale != null ? locale.Code : null;
-            if (text.IsNullOrWhiteSpace()) return;
+            var localeCode = Localization.GetLocale()?.Code;
+            if (localeCode.IsNullOrWhiteSpace()) return;
 
-            //Hjson
-            var path = Path.Combine(mod.ContentPath, "translations",
-                Localization.GetLocale().Code + ".hjson");
-            if (File.Exists(path))
+            //定义加载优先级列表（Hjson 主文件 -> Hjson Fallback -> Po 文件）
+            var translationsDir = Path.Combine(mod.ContentPath, "translations");
+            var candidates = new List<string>
             {
-                OverloadStrings(LoadStringsFileByHJson(path), type.Name, type);
-                return;
-            }
+                Path.Combine(translationsDir, $"{localeCode}.hjson"),
+                Path.Combine(translationsDir, $"{LocaleSuffixRegex.Replace(localeCode, "")}.hjson"),
+                Path.Combine(translationsDir, $"{localeCode}.po"),
+                Path.Combine(translationsDir, $"{LocaleSuffixRegex.Replace(localeCode, "")}.po")
+            };
 
-            //Po文件
-            path = Path.Combine(mod.ContentPath, "translations",
-                Localization.GetLocale().Code + ".po");
-
-            if (File.Exists(path))
+            foreach (var path in candidates)
             {
-                OverloadStrings(Localization.LoadStringsFile(path, false), type.Name, type);
+                if (!File.Exists(path)) continue;
+
+                TbbDebuger.LogDebug($"加载翻译文件: {path}");
+
+                // 根据后缀选择加载方式
+                var strings = path.EndsWith(".hjson")
+                    ? LoadStringsFileByHJson(path)
+                    : Localization.LoadStringsFile(path, false);
+
+                OverloadStrings(strings, type.Name, type);
                 return;
             }
         }

@@ -1,4 +1,4 @@
-using Database;
+﻿using Database;
 using HarmonyLib;
 using Klei.AI;
 using MutantFarmLab.tbbLibs;
@@ -57,7 +57,6 @@ namespace MutantFarmLab.mutantplants
         /// </summary>
         public static void RegisterAllCustomMutations()
         {
-            TbbDebuger.LogDebug("[原生挂载] 开始注册自定义变异到原生系统...");
             var options = Options;
             if (options.EnableRadiationResistMutation)
                 RegisterRadiationResistMutation();
@@ -67,7 +66,6 @@ namespace MutantFarmLab.mutantplants
                 RegisterActinobacteriaMutation();
             if (options.EnableOilEnrichMutation)
                 RegisterOilEnrichMutation();
-            TbbDebuger.LogDebug("[原生挂载] 所有自定义变异注册完成！");
         }
 
         /// <summary>
@@ -88,7 +86,6 @@ namespace MutantFarmLab.mutantplants
                 .AddSoundEvent("Plant_mutation_Leaf");
 
             Db.Get().PlantMutations.Add(radMut);
-            TbbDebuger.LogDebug($"[原生挂载] 变异「{RAD_RESIST_MUT_ID}」已存入原生PlantMutations仓库");
         }
 
         /// <summary>
@@ -118,7 +115,6 @@ namespace MutantFarmLab.mutantplants
 
             // 2. 关键：将双头株变异存入原生PlantMutations仓库（与你的抗辐籽逻辑完全一致）
             Db.Get().PlantMutations.Add(dualHeadMut);
-            TbbDebuger.LogDebug($"[原生挂载] 变异「{DUAL_HEAD_MUT_ID}」已存入原生PlantMutations仓库，数值配置生效！");
         }
         private static void RegisterActinobacteriaMutation()
         {
@@ -133,7 +129,6 @@ namespace MutantFarmLab.mutantplants
                 .VisualSymbolOverride("snapTo_mutate1", "mutantfarmlab_mutant_snaps_kanim", "light1")
                 .VisualSymbolOverride("snapTo_mutate2", "mutantfarmlab_mutant_snaps_kanim", "light");
             Db.Get().PlantMutations.Add(actinoMut);
-            TbbDebuger.LogDebug($"[原生挂载] 变异「{ACTINO_MUT_ID}」已存入原生PlantMutations仓库");
         }
         private static void RegisterOilEnrichMutation()
         {
@@ -149,7 +144,6 @@ namespace MutantFarmLab.mutantplants
                 .AddSoundEvent("Plant_mutation_Leaf");
             Db.Get().PlantMutations.Add(oilEnrichMut);
 
-            TbbDebuger.LogDebug($"[原生挂载] 变异「{OIL_ENRICH_MUT_ID}」已存入原生PlantMutations仓库");
         }
         /// <summary>
         /// 工具方法：获取基础种子预制体

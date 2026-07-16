@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using Klei.AI;
 using MutantFarmLab.tbbLibs;
 using System;
@@ -30,7 +30,6 @@ namespace MutantFarmLab.mutantplants
                 illumCom.prefersDarkness = false;
                 if(illumCom.LightIntensityThreshold != 0)
                 {
-                    TbbDebuger.LogDebug($"[辐光菌][{illumCom.LightIntensityThreshold}] removing light requirement for " + gameObject.name);
                     gameObject.GetComponent<Modifiers>().attributes.Add(
                     new AttributeModifier(
                         Db.Get().PlantAttributes.MinLightLux.Id,

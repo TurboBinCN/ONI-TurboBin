@@ -155,23 +155,16 @@ namespace MutantFarmLab
                     continue;
                 }
 
-                GameObject cellObjectaa = Grid.Objects[targetCell, (int)ObjectLayer.FoundationTile];
-                TbbDebuger.LogDebug($"🔍 检测目标格子 (Layer-FoundationTile) ={targetCell} | 目标格子对象={GetObjectNameSafe(cellObjectaa)}");
-                GameObject cellObjectbb = Grid.Objects[targetCell, (int)ObjectLayer.Building];
-                TbbDebuger.LogDebug($"🔍 检测目标格子 (Layer-Building) ={targetCell} | 目标格子对象={GetObjectNameSafe(cellObjectbb)}");
-
                 GameObject cellObj = Grid.Objects[targetCell, (int)ObjectLayer.Building];
                 bool isSelfOccupyCell = cellObj != null && cellObj == this.gameObject;
                 if (!isSelfOccupyCell)
                 {
-                    TbbDebuger.LogDebug($"⚠️ 检测目标格子非自身占据，跳过 | 目标格子ID={targetCell} | 目标格子对象={GetObjectNameSafe(cellObj)}");
                     continue;
                 }
 
                 // ✅ 满足所有规则：自身中心±1格 + 是自己占据的格子 → 检测种植砖
                 GameObject farmTileObj = Grid.Objects[targetCell, (int)ObjectLayer.FoundationTile];
                 if (farmTileObj == null){ 
-                    TbbDebuger.LogDebug($"⚠️ 检测目标格子无种植砖，跳过 | 目标格子ID={targetCell}");
                     continue;
                 }
 
