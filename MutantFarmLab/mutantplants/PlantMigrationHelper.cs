@@ -31,7 +31,7 @@ namespace MutantFarmLab.mutantplants
 
             // 2. 获取当前关联的旧 Plot
             PlantablePlot oldReceptacle = receptacleMonitor.GetReceptacle();
-            if (oldReceptacle == null) return;
+            if (oldReceptacle == null) return false;
 
             // 4. 开始迁移流程
             try

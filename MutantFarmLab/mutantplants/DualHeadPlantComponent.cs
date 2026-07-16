@@ -84,7 +84,6 @@ namespace MutantFarmLab.mutantplants
                 
                 int plantX = Grid.CellToXY(centerCell).x;
                 int plantY = Grid.CellToXY(centerCell).y;
-                TbbDebuger.LogDebug($"[双头株]Plant:[{_PlantI.name}] 植物中心cell={centerCell}, XY=({plantX},{plantY}), 世界坐标={_PlantI.transform.GetPosition()}");
 
                 CellOffset[] checkOffsets = new[]
                 {
@@ -147,21 +146,14 @@ namespace MutantFarmLab.mutantplants
                             
                             bool isInRange = plantX >= minX && plantX <= maxX && plantY >= minY && plantY <= maxY;
                             
-                            TbbDebuger.LogDebug($"[双头株]Plant:[{_PlantI.name}] 搜索到建筑={farmTileObj.name}, 锚点cell={buildingCell}, XY=({buildingX},{buildingY}), 尺寸={buildingWidth}x{buildingHeight}, 占据格子: {occupiedCells}");
-                            TbbDebuger.LogDebug($"[双头株]Plant:[{_PlantI.name}]   植物位置=({plantX},{plantY}), 是否在范围内={isInRange}, 原生Plot.Occupant={occupantName}");
-                            
                             if (isInRange)
                             {
                                 candidateFarmTiles.Add(farmTileObj);
-                            }
-                            else
-                            {
                             }
                         }
                         else
                         {
                             candidateFarmTiles.Add(farmTileObj);
-                            TbbDebuger.LogDebug($"[双头株]Plant:[{_PlantI.name}] 候选种植砖={farmTileObj.name} (无Building组件)");
                         }
                     }
                 }
@@ -193,12 +185,10 @@ namespace MutantFarmLab.mutantplants
                                 float distance = Mathf.Abs(buildingCenterX - plantX) + Mathf.Abs(buildingCenterY - plantY);
                                 
                                 if (distance < minDistance)
-                                {
-                                    minDistance = distance;
-                                    bestMatch = farmTileObj;
-                                }
-                                
-                                TbbDebuger.LogDebug($"[双头株]Plant:[{_PlantI.name}] 候选={farmTileObj.name}, 建筑中心=({buildingCenterX},{buildingCenterY}), 植物中心=({plantX},{plantY}), 距离={distance}");
+                                    {
+                                        minDistance = distance;
+                                        bestMatch = farmTileObj;
+                                    }
                             }
                         }
                         

@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using MutantFarmLab.mutantplants;
 using MutantFarmLab.tbbLibs;
 using System;
@@ -291,7 +291,6 @@ namespace MutantFarmLab
             }
 
             _dualPlantButton.gameObject.SetActive(active);
-            TbbDebuger.LogDebug($"[双头株] 按钮状态: active={active}, marker={marker != null}, primaryPlant={marker?.primaryPlant?.name ?? "null"}, twin={marker?.primaryPlant?.GetComponent<DualHeadPlantComponent>()?.twin != null}");
         }
         private void OnDestroy()
         {

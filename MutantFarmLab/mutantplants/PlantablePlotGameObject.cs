@@ -270,7 +270,6 @@ namespace MutantFarmLab
         {
             Type type = PlantablePlotGameObject.FindType("WideFarmTileConfig");
             bool result = type != null;
-            if (!result)
             return result;
         }
 
@@ -322,7 +321,6 @@ namespace MutantFarmLab
         {
             Type type = PlantablePlotGameObject.FindType("LargeBackwallFarmConfig");
             bool result = type != null;
-            if (!result)
             return result;
         }
 
