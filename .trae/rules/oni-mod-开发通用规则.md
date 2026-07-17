@@ -1,12 +1,6 @@
 ---
 alwaysApply: true
 ---
-{
-  "alwaysApply": false,
-  "description": "ONI (Oxygen Not Included) mod 开发规则，当处理 .cs 文件时生效",
-  "globs": ["**/*.cs"],
-  "priority": 100
-}
 
 # ONI Mods 开发规则
 
@@ -27,6 +21,7 @@ alwaysApply: true
   - UnityEngine.CoreModule: 当前ONI使用的UnityEngine.CoreModule源码
 - ONI 日志文件: C:\Users\Administrator\AppData\LocalLow\Klei\Oxygen Not Included\Player.log
 - ONI 总结文档目录: E:\oni_mods\ONI-TurboBin\DevelopNotes
+- ONI 发布目录: C:\Users\Administrator\Documents\Klei\OxygenNotIncluded\mods\dev
 
 ## Log 使用原则
 - 初次开发必须添加 log 文件调试，确保 mod 正常运行
@@ -54,3 +49,26 @@ alwaysApply: true
 - Module 模块: TbbModule.cs - 资源加载与卸载管理
 - Extension 模块: TbbHarmonyExtension.cs - Harmony 补丁辅助方法
 - Utils 模块: TbbUtils.cs - 通用工具方法
+
+## 经验总结引用规则
+
+### 1. 开发前必须查阅经验总结
+- 开发前必须先阅读 [DevelopNotes](file:///e:/oni_mods/ONI-TurboBin/DevelopNotes) 目录下的相关经验总结文档
+- 重点关注 [oni mod开发经验.md](file:///e:/oni_mods/ONI-TurboBin/DevelopNotes/oni%20mod开发经验.md) 中的已知问题和解决方案
+- 避免重复踩坑，优先使用已验证的解决方案
+
+### 2. 遇到问题必须记录经验总结
+- 当遇到新的开发问题或 bug 时，必须在 [oni mod开发经验.md](file:///e:/oni_mods/ONI-TurboBin/DevelopNotes/oni%20mod开发经验.md) 中记录完整的经验总结
+- 经验总结必须包含：问题描述、根因分析、解决方案、经验教训
+- 引用相关文件时使用 `[文件名](file:///绝对路径)` 格式
+
+### 3. 经验总结文档管理
+- 系统分析文档：`{SystemName}Analysis.md` - 分析游戏原生系统的实现机制
+- 实现方案文档：`实现{功能描述}.md` - 记录新功能的实现计划和设计方案
+- 问题排查文档：`{问题描述}_排查.md` - 记录问题排查过程
+- 经验总结文档：`oni mod开发经验.md` - 汇总开发过程中积累的经验和最佳实践
+
+### 4. 规则升级流程
+- 当某个经验被多次验证有效后，可以从经验总结文档中提炼为正式开发规则
+- 正式规则应标注验证次数和适用场景
+- 规则变更应在经验总结文档中记录变更历史
