@@ -1,4 +1,4 @@
-﻿// DualHeadPlantComponent.cs
+﻿﻿﻿﻿// DualHeadPlantComponent.cs
 using HarmonyLib;
 using Klei.AI;
 using MutantFarmLab.tbbLibs;

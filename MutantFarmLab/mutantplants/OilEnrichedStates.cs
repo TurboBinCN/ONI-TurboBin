@@ -1,4 +1,4 @@
-﻿using MutantFarmLab.tbbLibs;
+using MutantFarmLab.tbbLibs;
 using STRINGS;
 using System;
 using System.Collections.Generic;
@@ -49,17 +49,17 @@ namespace MutantFarmLab.mutantplants
         {
             if (this.receptacleMonitor.Replanted)
             {
-                this.elementConsumer.consumptionRate = PlantMutationRegister.OIL_ENRICH_CARBONGAS_MOD;
+                this.oilEnrichedMutantComponent.co2Consumer.consumptionRate = PlantMutationRegister.OIL_ENRICH_CARBONGAS_MOD;
                 return;
             }
-            this.elementConsumer.consumptionRate = PlantMutationRegister.OIL_ENRICH_CARBONGAS_MOD/4;
+            this.oilEnrichedMutantComponent.co2Consumer.consumptionRate = PlantMutationRegister.OIL_ENRICH_CARBONGAS_MOD/4;
         }
 
 
         [MyCmpReq]
         private WiltCondition wiltCondition;
         [MyCmpReq]
-        private ElementConsumer elementConsumer;
+        private OilEnrichedMutantComponent oilEnrichedMutantComponent;
         [MyCmpReq]
         private ReceptacleMonitor receptacleMonitor;
         [MyCmpReq]
@@ -293,10 +293,10 @@ namespace MutantFarmLab.mutantplants
                 });
                 this.alive.growing.EventTransition(GameHashes.Wilt, this.alive.wilting, (StatesInstance smi) => smi.master.wiltCondition.IsWilting()).Enter(delegate (StatesInstance smi)
                 {
-                    smi.master.elementConsumer.EnableConsumption(true);
+                    smi.master.oilEnrichedMutantComponent.co2Consumer.EnableConsumption(true);
                 }).Exit(delegate (StatesInstance smi)
                 {
-                    smi.master.elementConsumer.EnableConsumption(false);
+                    smi.master.oilEnrichedMutantComponent.co2Consumer.EnableConsumption(false);
                 }).EventTransition(GameHashes.Grow, this.alive.fullygrown, (StatesInstance smi) => smi.master.growing.IsGrown());
                 this.alive.fullygrown.EventTransition(GameHashes.Wilt, this.alive.wilting, (StatesInstance smi) => smi.master.wiltCondition.IsWilting()).EventTransition(GameHashes.HarvestComplete, this.alive.growing, null);
                 this.alive.wilting.EventTransition(GameHashes.WiltRecover, this.alive.growing, (StatesInstance smi) => !smi.master.wiltCondition.IsWilting());

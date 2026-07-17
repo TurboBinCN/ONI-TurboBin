@@ -1,20 +1,15 @@
-﻿using KSerialization;
-using MutantFarmLab.tbbLibs;
-using System;
+using KSerialization;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using static STRINGS.BUILDING.STATUSITEMS;
 
 namespace MutantFarmLab.mutantplants
 {
     internal class OilEnrichedMutantComponent : KMonoBehaviour
     {
-        public static CellOffset OUTPUT_CONDUIT_CELL_OFFSET = new CellOffset(0, 0);
-        private static readonly List<Storage.StoredItemModifier> storedItemModifiers = new List<Storage.StoredItemModifier>
+        public static CellOffset OUTPUT_CONDUIT_CELL_OFFSET = new(0, 0);
+        public ElementConsumer co2Consumer;
+        private static readonly List<Storage.StoredItemModifier> storedItemModifiers = new()
         {
             Storage.StoredItemModifier.Hide,
             Storage.StoredItemModifier.Preserve,
@@ -30,16 +25,16 @@ namespace MutantFarmLab.mutantplants
             storage.capacityKg = 2000f;
             storage.SetDefaultStoredItemModifiers(storedItemModifiers);
 
-            var elementConsumer = gameObject.AddOrGet<ElementConsumer>();
-            elementConsumer.storage = storage;
-            elementConsumer.showInStatusPanel = true;
-            elementConsumer.storeOnConsume = true;
-            elementConsumer.elementToConsume = SimHashes.CarbonDioxide;
-            elementConsumer.configuration = ElementConsumer.Configuration.Element;
-            elementConsumer.consumptionRadius = 2;
-            elementConsumer.EnableConsumption(true);
-            elementConsumer.sampleCellOffset = new Vector3(0f, 0f);
-            elementConsumer.consumptionRate = PlantMutationRegister.OIL_ENRICH_CARBONGAS_MOD;
+            co2Consumer = gameObject.AddComponent<ElementConsumer>();
+            co2Consumer.storage = storage;
+            co2Consumer.showInStatusPanel = true;
+            co2Consumer.storeOnConsume = true;
+            co2Consumer.elementToConsume = SimHashes.CarbonDioxide;
+            co2Consumer.configuration = ElementConsumer.Configuration.Element;
+            co2Consumer.consumptionRadius = 2;
+            co2Consumer.EnableConsumption(true);
+            co2Consumer.sampleCellOffset = new Vector3(0f, 0f);
+            co2Consumer.consumptionRate = PlantMutationRegister.OIL_ENRICH_CARBONGAS_MOD;
 
             ConduitDispenser conduitDispenser = gameObject.AddOrGet<ConduitDispenser>();
             conduitDispenser.noBuildingOutputCellOffset = OUTPUT_CONDUIT_CELL_OFFSET;
@@ -52,10 +47,10 @@ namespace MutantFarmLab.mutantplants
 
             //气压
             var pressureVulnerable = gameObject.GetComponent<PressureVulnerable>();
-            if(pressureVulnerable != null)
+            if (pressureVulnerable != null)
             {
                 pressureVulnerable.pressureWarning_High = PlantMutationRegister.OIL_ENRICH_AIRPRESS_RANGE_MOD;
-                pressureVulnerable.pressureLethal_High = pressureVulnerable.pressureWarning_High*1.5f;
+                pressureVulnerable.pressureLethal_High = pressureVulnerable.pressureWarning_High * 1.5f;
                 pressureVulnerable.pressureWarning_Low = 0;
                 pressureVulnerable.pressureLethal_Low = 0;
             }
